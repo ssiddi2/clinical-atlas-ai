@@ -15,6 +15,9 @@ import ELI from "./pages/ELI";
 import Programs from "./pages/Programs";
 import Rotations from "./pages/Rotations";
 import Institutions from "./pages/Institutions";
+import Curriculum from "./pages/Curriculum";
+import ModuleView from "./pages/ModuleView";
+import Assessments from "./pages/Assessments";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -40,6 +43,13 @@ const App = () => (
 
           {/* Dashboard (authenticated) */}
           <Route path="/dashboard" element={<Dashboard />} />
+
+          {/* Curriculum (authenticated) */}
+          <Route path="/curriculum" element={<Curriculum />} />
+          <Route path="/curriculum/:moduleId" element={<ModuleView />} />
+
+          {/* Assessments (authenticated) */}
+          <Route path="/assessments" element={<Assessments />} />
 
           {/* ELI AI Professor (authenticated) */}
           <Route path="/eli" element={<ELI />} />
