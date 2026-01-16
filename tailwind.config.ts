@@ -57,6 +57,13 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        livemed: {
+          navy: "hsl(var(--livemed-navy))",
+          blue: "hsl(var(--livemed-blue))",
+          "light-blue": "hsl(var(--livemed-light-blue))",
+          success: "hsl(var(--livemed-success))",
+          warning: "hsl(var(--livemed-warning))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",

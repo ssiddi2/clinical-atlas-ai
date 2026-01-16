@@ -3,7 +3,18 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Index from "./pages/Index";
+
+// Layouts
+import PublicLayout from "./components/layout/PublicLayout";
+
+// Pages
+import Landing from "./pages/Landing";
+import Auth from "./pages/Auth";
+import Dashboard from "./pages/Dashboard";
+import ELI from "./pages/ELI";
+import Programs from "./pages/Programs";
+import Rotations from "./pages/Rotations";
+import Institutions from "./pages/Institutions";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -15,8 +26,25 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Index />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          {/* Public Routes with Header/Footer */}
+          <Route element={<PublicLayout />}>
+            <Route path="/" element={<Landing />} />
+            <Route path="/programs" element={<Programs />} />
+            <Route path="/programs/:level" element={<Programs />} />
+            <Route path="/rotations" element={<Rotations />} />
+            <Route path="/institutions" element={<Institutions />} />
+          </Route>
+
+          {/* Auth Route (standalone) */}
+          <Route path="/auth" element={<Auth />} />
+
+          {/* Dashboard (authenticated) */}
+          <Route path="/dashboard" element={<Dashboard />} />
+
+          {/* ELI AI Professor (authenticated) */}
+          <Route path="/eli" element={<ELI />} />
+
+          {/* Catch-all */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
