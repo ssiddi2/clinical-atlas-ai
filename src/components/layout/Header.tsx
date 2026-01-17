@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
-import livemedLogo from "@/assets/livemed-logo.png";
+import livemedLogoFull from "@/assets/livemed-logo-full.png";
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -10,28 +10,29 @@ const Header = () => {
   const navItems = [
     { label: "Programs", href: "/programs" },
     { label: "AI Faculty", href: "/eli" },
-    { label: "Clinical Rotations", href: "/rotations" },
-    { label: "For Institutions", href: "/institutions" },
+    { label: "Rotations", href: "/rotations" },
+    { label: "Institutions", href: "/institutions" },
   ];
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/40 glass-effect">
-      <div className="container mx-auto flex h-16 items-center justify-between px-4">
+    <header className="fixed top-0 left-0 right-0 z-50 glass-effect border-b border-border/20">
+      <div className="container mx-auto flex h-16 items-center justify-between px-6">
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-2">
-          <img src={livemedLogo} alt="LIVEMED" className="h-10 w-auto" />
-          <span className="text-lg font-semibold text-primary hidden sm:inline">
-            University
-          </span>
+        <Link to="/" className="flex items-center">
+          <img 
+            src={livemedLogoFull} 
+            alt="LIVEMED" 
+            className="h-8 w-auto" 
+          />
         </Link>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center gap-6">
+        <nav className="hidden md:flex items-center gap-8">
           {navItems.map((item) => (
             <Link
               key={item.href}
               to={item.href}
-              className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
+              className="text-sm font-medium text-foreground/70 hover:text-foreground transition-colors duration-300"
             >
               {item.label}
             </Link>
@@ -40,46 +41,53 @@ const Header = () => {
 
         {/* Auth Buttons */}
         <div className="hidden md:flex items-center gap-3">
-          <Button variant="ghost" asChild>
+          <Button 
+            variant="ghost" 
+            className="text-sm font-medium text-foreground/70 hover:text-foreground hover:bg-transparent"
+            asChild
+          >
             <Link to="/auth">Sign In</Link>
           </Button>
-          <Button className="gradient-livemed" asChild>
+          <Button 
+            className="gradient-livemed rounded-full px-6 text-sm font-medium shadow-sm hover:shadow-md transition-shadow" 
+            asChild
+          >
             <Link to="/auth?mode=signup">Get Started</Link>
           </Button>
         </div>
 
         {/* Mobile Menu Toggle */}
         <button
-          className="md:hidden p-2"
+          className="md:hidden p-2 text-foreground/70 hover:text-foreground transition-colors"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
         >
           {mobileMenuOpen ? (
-            <X className="h-6 w-6 text-foreground" />
+            <X className="h-5 w-5" />
           ) : (
-            <Menu className="h-6 w-6 text-foreground" />
+            <Menu className="h-5 w-5" />
           )}
         </button>
       </div>
 
       {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-t border-border bg-background">
-          <nav className="container mx-auto px-4 py-4 flex flex-col gap-4">
+        <div className="md:hidden glass-effect border-t border-border/20">
+          <nav className="container mx-auto px-6 py-6 flex flex-col gap-1">
             {navItems.map((item) => (
               <Link
                 key={item.href}
                 to={item.href}
-                className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors py-2"
+                className="text-sm font-medium text-foreground/70 hover:text-foreground transition-colors py-3 px-2 rounded-lg hover:bg-muted/50"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 {item.label}
               </Link>
             ))}
-            <div className="flex flex-col gap-2 pt-4 border-t border-border">
-              <Button variant="ghost" asChild>
+            <div className="flex flex-col gap-3 pt-6 mt-4 border-t border-border/20">
+              <Button variant="ghost" className="justify-start" asChild>
                 <Link to="/auth">Sign In</Link>
               </Button>
-              <Button className="gradient-livemed" asChild>
+              <Button className="gradient-livemed rounded-full" asChild>
                 <Link to="/auth?mode=signup">Get Started</Link>
               </Button>
             </div>
