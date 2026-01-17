@@ -1,6 +1,4 @@
 import { Link } from "react-router-dom";
-import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -27,7 +25,7 @@ const Institutions = () => {
     {
       icon: TrendingUp,
       title: "Scalable AI Faculty",
-      description: "ELI™ delivers consistent, high-quality instruction to every student without faculty burnout or quality variance.",
+      description: "ATLAS™ delivers consistent, high-quality instruction to every student without faculty burnout or quality variance.",
     },
     {
       icon: BarChart3,
@@ -77,10 +75,7 @@ const Institutions = () => {
   ];
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <Header />
-
-      <main className="flex-1">
+    <main className="flex-1">
         {/* Hero */}
         <section className="relative py-20 md:py-28 overflow-hidden">
           <div className="absolute inset-0 gradient-livemed" />
@@ -96,7 +91,7 @@ const Institutions = () => {
                 Transform Medical Education at Scale
               </h1>
               <p className="text-lg text-white/80 mb-8">
-                Partner with LIVEMED University to bring AI-powered, U.S.-standard 
+                Partner with Livemed Learning to bring AI-powered, U.S.-standard 
                 medical education to your students, residents, and physicians — 
                 without the infrastructure overhead.
               </p>
@@ -134,9 +129,9 @@ const Institutions = () => {
         {/* Benefits */}
         <section className="py-20">
           <div className="container mx-auto px-4">
-            <div className="text-center mb-16">
+          <div className="text-center mb-16">
               <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                Why Institutions Choose LIVEMED
+                Why Institutions Choose Livemed
               </h2>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
                 We provide the technology, curriculum, and support to modernize 
@@ -202,7 +197,7 @@ const Institutions = () => {
                 </h2>
                 <p className="text-lg text-muted-foreground mb-8">
                   Our team works closely with your institution to ensure successful 
-                  deployment and ongoing optimization of the LIVEMED platform.
+                  deployment and ongoing optimization of the Livemed platform.
                 </p>
 
                 <div className="space-y-6">
@@ -234,7 +229,7 @@ const Institutions = () => {
                   </h3>
                   <p className="text-white/80 mb-6">
                     Schedule a consultation with our partnerships team to discuss 
-                    how LIVEMED can support your medical education goals.
+                    how Livemed can support your medical education goals.
                   </p>
                   <Button size="lg" variant="secondary" className="w-full" asChild>
                     <Link to="/contact">
@@ -245,12 +240,9 @@ const Institutions = () => {
                 </CardContent>
               </Card>
             </div>
-          </div>
-        </section>
-      </main>
-
-      <Footer />
-    </div>
+            </div>
+          </section>
+    </main>
   );
 };
 
