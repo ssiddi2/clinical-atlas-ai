@@ -8,7 +8,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { Eye, EyeOff, Loader2, ArrowLeft } from "lucide-react";
-import livemedLogo from "@/assets/livemed-logo.png";
+import livemedLogoFull from "@/assets/livemed-logo-full.png";
+import livemedLogoIcon from "@/assets/livemed-logo-icon.png";
 
 const Auth = () => {
   const [searchParams] = useSearchParams();
@@ -125,29 +126,35 @@ const Auth = () => {
   return (
     <div className="min-h-screen flex">
       {/* Left side - Branding */}
-      <div className="hidden lg:flex lg:w-1/2 gradient-livemed p-12 flex-col justify-between relative overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(255,255,255,0.1),transparent_50%)]" />
+      <div className="hidden lg:flex lg:w-1/2 bg-livemed-navy p-12 flex-col justify-between relative overflow-hidden">
+        {/* Subtle gradient orbs */}
+        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-livemed-blue/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-accent/5 rounded-full blur-3xl" />
         
-        <div className="relative">
-          <Link to="/" className="inline-flex items-center gap-2 text-white/80 hover:text-white transition-colors mb-8">
+        <div className="relative z-10">
+          <Link to="/" className="inline-flex items-center gap-2 text-white/60 hover:text-white transition-colors mb-12 text-sm">
             <ArrowLeft className="h-4 w-4" />
             Back to home
           </Link>
-          <img src={livemedLogo} alt="LIVEMED" className="h-12 w-auto brightness-0 invert" />
+          <img 
+            src={livemedLogoFull} 
+            alt="LIVEMED" 
+            className="h-10 w-auto" 
+          />
         </div>
 
-        <div className="relative">
-          <h1 className="text-4xl font-bold text-white mb-4">
+        <div className="relative z-10 max-w-md">
+          <h1 className="text-4xl font-semibold text-white mb-6 leading-tight">
             The Future of Medical Education
           </h1>
-          <p className="text-lg text-white/80 max-w-md">
+          <p className="text-lg text-white/60 leading-relaxed">
             Join thousands of medical students and physicians worldwide 
             learning with AI-powered curriculum and virtual U.S. clinical rotations.
           </p>
         </div>
 
-        <div className="relative text-sm text-white/60">
-          © {new Date().getFullYear()} LIVEMED University. All rights reserved.
+        <div className="relative z-10 text-sm text-white/40">
+          © {new Date().getFullYear()} LIVEMED University
         </div>
       </div>
 
@@ -155,34 +162,38 @@ const Auth = () => {
       <div className="flex-1 flex items-center justify-center p-8 bg-background">
         <div className="w-full max-w-md">
           {/* Mobile logo */}
-          <div className="lg:hidden mb-8 text-center">
+          <div className="lg:hidden mb-10 text-center">
             <Link to="/">
-              <img src={livemedLogo} alt="LIVEMED" className="h-10 w-auto mx-auto" />
+              <img 
+                src={livemedLogoIcon} 
+                alt="LIVEMED" 
+                className="h-12 w-auto mx-auto" 
+              />
             </Link>
           </div>
 
-          <Card className="border-border/50 shadow-livemed">
-            <CardHeader className="text-center">
-              <CardTitle className="text-2xl">
+          <Card className="border-border/30 shadow-sm bg-card/50 backdrop-blur-sm">
+            <CardHeader className="text-center pb-2">
+              <CardTitle className="text-2xl font-semibold">
                 {mode === "signin" ? "Welcome back" : "Create your account"}
               </CardTitle>
-              <CardDescription>
+              <CardDescription className="text-muted-foreground">
                 {mode === "signin"
                   ? "Sign in to continue your medical education"
                   : "Start your journey with LIVEMED University"}
               </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="pt-6">
               <Tabs value={mode} onValueChange={(v) => setMode(v as "signin" | "signup")}>
-                <TabsList className="grid w-full grid-cols-2 mb-6">
-                  <TabsTrigger value="signin">Sign In</TabsTrigger>
-                  <TabsTrigger value="signup">Sign Up</TabsTrigger>
+                <TabsList className="grid w-full grid-cols-2 mb-8 bg-muted/50">
+                  <TabsTrigger value="signin" className="text-sm">Sign In</TabsTrigger>
+                  <TabsTrigger value="signup" className="text-sm">Sign Up</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="signin">
-                  <form onSubmit={handleSignIn} className="space-y-4">
+                  <form onSubmit={handleSignIn} className="space-y-5">
                     <div className="space-y-2">
-                      <Label htmlFor="signin-email">Email</Label>
+                      <Label htmlFor="signin-email" className="text-sm">Email</Label>
                       <Input
                         id="signin-email"
                         type="email"
@@ -190,11 +201,12 @@ const Auth = () => {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         required
+                        className="h-11 bg-background border-border/50"
                       />
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="signin-password">Password</Label>
+                      <Label htmlFor="signin-password" className="text-sm">Password</Label>
                       <div className="relative">
                         <Input
                           id="signin-password"
@@ -203,11 +215,12 @@ const Auth = () => {
                           value={password}
                           onChange={(e) => setPassword(e.target.value)}
                           required
+                          className="h-11 bg-background border-border/50 pr-10"
                         />
                         <button
                           type="button"
                           onClick={() => setShowPassword(!showPassword)}
-                          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                         >
                           {showPassword ? (
                             <EyeOff className="h-4 w-4" />
@@ -220,7 +233,7 @@ const Auth = () => {
 
                     <Button
                       type="submit"
-                      className="w-full gradient-livemed"
+                      className="w-full h-11 gradient-livemed rounded-lg font-medium"
                       disabled={loading}
                     >
                       {loading ? (
@@ -236,32 +249,34 @@ const Auth = () => {
                 </TabsContent>
 
                 <TabsContent value="signup">
-                  <form onSubmit={handleSignUp} className="space-y-4">
+                  <form onSubmit={handleSignUp} className="space-y-5">
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label htmlFor="first-name">First Name</Label>
+                        <Label htmlFor="first-name" className="text-sm">First Name</Label>
                         <Input
                           id="first-name"
                           placeholder="John"
                           value={firstName}
                           onChange={(e) => setFirstName(e.target.value)}
                           required
+                          className="h-11 bg-background border-border/50"
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="last-name">Last Name</Label>
+                        <Label htmlFor="last-name" className="text-sm">Last Name</Label>
                         <Input
                           id="last-name"
                           placeholder="Doe"
                           value={lastName}
                           onChange={(e) => setLastName(e.target.value)}
                           required
+                          className="h-11 bg-background border-border/50"
                         />
                       </div>
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="signup-email">Email</Label>
+                      <Label htmlFor="signup-email" className="text-sm">Email</Label>
                       <Input
                         id="signup-email"
                         type="email"
@@ -269,11 +284,12 @@ const Auth = () => {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         required
+                        className="h-11 bg-background border-border/50"
                       />
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="signup-password">Password</Label>
+                      <Label htmlFor="signup-password" className="text-sm">Password</Label>
                       <div className="relative">
                         <Input
                           id="signup-password"
@@ -283,11 +299,12 @@ const Auth = () => {
                           onChange={(e) => setPassword(e.target.value)}
                           minLength={6}
                           required
+                          className="h-11 bg-background border-border/50 pr-10"
                         />
                         <button
                           type="button"
                           onClick={() => setShowPassword(!showPassword)}
-                          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                         >
                           {showPassword ? (
                             <EyeOff className="h-4 w-4" />
@@ -303,7 +320,7 @@ const Auth = () => {
 
                     <Button
                       type="submit"
-                      className="w-full gradient-livemed"
+                      className="w-full h-11 gradient-livemed rounded-lg font-medium"
                       disabled={loading}
                     >
                       {loading ? (
@@ -318,11 +335,11 @@ const Auth = () => {
 
                     <p className="text-xs text-center text-muted-foreground">
                       By creating an account, you agree to our{" "}
-                      <Link to="/terms" className="text-accent hover:underline">
+                      <Link to="/terms" className="text-foreground hover:underline">
                         Terms of Service
                       </Link>{" "}
                       and{" "}
-                      <Link to="/privacy" className="text-accent hover:underline">
+                      <Link to="/privacy" className="text-foreground hover:underline">
                         Privacy Policy
                       </Link>
                     </p>
@@ -333,10 +350,10 @@ const Auth = () => {
           </Card>
 
           {/* Mobile back link */}
-          <div className="lg:hidden mt-6 text-center">
+          <div className="lg:hidden mt-8 text-center">
             <Link
               to="/"
-              className="text-sm text-muted-foreground hover:text-primary"
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
               ← Back to home
             </Link>

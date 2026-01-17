@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import livemedLogo from "@/assets/livemed-logo.png";
+import livemedLogoFull from "@/assets/livemed-logo-full.png";
 
 const Footer = () => {
   const footerLinks = {
@@ -30,34 +30,35 @@ const Footer = () => {
   };
 
   return (
-    <footer className="border-t border-border bg-muted/30">
-      <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
+    <footer className="border-t border-border/30 bg-background">
+      <div className="container mx-auto px-6 py-16">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-10">
           {/* Brand Column */}
           <div className="col-span-2 md:col-span-1">
-            <Link to="/" className="flex items-center gap-2 mb-4">
-              <img src={livemedLogo} alt="LIVEMED" className="h-8 w-auto" />
+            <Link to="/" className="inline-block mb-6">
+              <img 
+                src={livemedLogoFull} 
+                alt="LIVEMED" 
+                className="h-8 w-auto"
+              />
             </Link>
-            <p className="text-sm text-muted-foreground mb-4">
+            <p className="text-sm text-muted-foreground leading-relaxed">
               The global standard for AI-powered medical education.
-            </p>
-            <p className="text-xs text-muted-foreground">
-              © {new Date().getFullYear()} LIVEMED University
             </p>
           </div>
 
           {/* Link Columns */}
           {Object.entries(footerLinks).map(([category, links]) => (
             <div key={category}>
-              <h4 className="font-semibold text-foreground mb-4 text-sm">
+              <h4 className="font-semibold text-foreground mb-5 text-xs uppercase tracking-wider">
                 {category}
               </h4>
-              <ul className="space-y-2">
+              <ul className="space-y-3">
                 {links.map((link) => (
                   <li key={link.href}>
                     <Link
                       to={link.href}
-                      className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                      className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-300"
                     >
                       {link.label}
                     </Link>
@@ -70,23 +71,23 @@ const Footer = () => {
       </div>
 
       {/* Bottom Bar */}
-      <div className="border-t border-border">
-        <div className="container mx-auto px-4 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+      <div className="border-t border-border/20">
+        <div className="container mx-auto px-6 py-6 flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="text-xs text-muted-foreground">
-            Designed for the future of medical education
+            © {new Date().getFullYear()} LIVEMED University. All rights reserved.
           </p>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-6">
             <Link
               to="/terms"
-              className="text-xs text-muted-foreground hover:text-primary"
+              className="text-xs text-muted-foreground hover:text-foreground transition-colors"
             >
-              Terms of Service
+              Terms
             </Link>
             <Link
               to="/privacy"
-              className="text-xs text-muted-foreground hover:text-primary"
+              className="text-xs text-muted-foreground hover:text-foreground transition-colors"
             >
-              Privacy Policy
+              Privacy
             </Link>
           </div>
         </div>

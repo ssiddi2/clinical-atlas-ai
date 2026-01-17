@@ -151,72 +151,114 @@
   }
 
   .text-gradient-livemed {
-    background: linear-gradient(135deg, hsl(var(--livemed-blue)) 0%, hsl(var(--livemed-navy)) 100%);
+    background: linear-gradient(135deg, hsl(var(--livemed-blue)) 0%, hsl(217 91% 70%) 50%, hsl(var(--livemed-blue)) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
 
-  /* Glassmorphism Effects */
+  /* Apple-style Glassmorphism */
   .glass-effect {
-    backdrop-filter: blur(12px);
-    background: hsl(var(--background) / 0.8);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    background: hsl(var(--background) / 0.72);
   }
 
   .glass-card {
-    backdrop-filter: blur(20px);
-    background: hsl(var(--livemed-navy) / 0.6);
+    backdrop-filter: blur(40px) saturate(150%);
+    -webkit-backdrop-filter: blur(40px) saturate(150%);
+    background: hsl(0 0% 100% / 0.05);
+    border: 1px solid hsl(0 0% 100% / 0.08);
   }
 
-  /* Shadows */
+  .glass-card-light {
+    backdrop-filter: blur(40px) saturate(150%);
+    -webkit-backdrop-filter: blur(40px) saturate(150%);
+    background: hsl(0 0% 100% / 0.7);
+    border: 1px solid hsl(0 0% 100% / 0.5);
+  }
+
+  .glass-subtle {
+    backdrop-filter: blur(60px) saturate(180%);
+    -webkit-backdrop-filter: blur(60px) saturate(180%);
+    background: hsl(var(--livemed-navy) / 0.4);
+  }
+
+  /* Refined Shadows */
   .shadow-livemed {
-    box-shadow: 0 10px 40px -10px hsl(var(--livemed-navy) / 0.25);
+    box-shadow: 
+      0 1px 1px hsl(var(--livemed-navy) / 0.04),
+      0 2px 2px hsl(var(--livemed-navy) / 0.04),
+      0 4px 4px hsl(var(--livemed-navy) / 0.04),
+      0 8px 8px hsl(var(--livemed-navy) / 0.04),
+      0 16px 16px hsl(var(--livemed-navy) / 0.04);
   }
 
   .shadow-glow {
-    box-shadow: 0 0 40px hsl(var(--livemed-blue) / 0.3), 0 0 80px hsl(var(--livemed-blue) / 0.1);
+    box-shadow: 
+      0 0 0 1px hsl(var(--livemed-blue) / 0.1),
+      0 0 40px hsl(var(--livemed-blue) / 0.15),
+      0 0 80px hsl(var(--livemed-blue) / 0.05);
   }
 
-  /* Text Glow Effects */
+  .shadow-glow-lg {
+    box-shadow: 
+      0 0 0 1px hsl(var(--livemed-blue) / 0.15),
+      0 0 60px hsl(var(--livemed-blue) / 0.2),
+      0 0 120px hsl(var(--livemed-blue) / 0.1);
+  }
+
+  /* Subtle Text Glow */
   .text-glow {
-    text-shadow: 0 0 40px hsl(var(--livemed-blue) / 0.3);
+    text-shadow: 0 0 80px hsl(var(--livemed-blue) / 0.2);
   }
 
   .text-glow-strong {
-    text-shadow: 0 0 60px hsl(var(--livemed-blue) / 0.5), 0 0 120px hsl(var(--livemed-blue) / 0.2);
+    text-shadow: 
+      0 0 40px hsl(var(--livemed-blue) / 0.3),
+      0 0 80px hsl(var(--livemed-blue) / 0.15);
   }
 
-  /* Button Glow */
+  /* Apple-style Button Glow */
   .btn-glow {
-    box-shadow: 0 0 30px hsl(var(--livemed-blue) / 0.4), 0 4px 20px hsl(var(--livemed-navy) / 0.3);
-    transition: all 0.3s ease;
+    box-shadow: 
+      0 0 0 1px hsl(var(--livemed-blue) / 0.2),
+      0 1px 2px hsl(var(--livemed-navy) / 0.1),
+      0 4px 12px hsl(var(--livemed-blue) / 0.15);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .btn-glow:hover {
-    box-shadow: 0 0 50px hsl(var(--livemed-blue) / 0.5), 0 8px 30px hsl(var(--livemed-navy) / 0.4);
-    transform: translateY(-2px);
+    box-shadow: 
+      0 0 0 1px hsl(var(--livemed-blue) / 0.3),
+      0 2px 4px hsl(var(--livemed-navy) / 0.1),
+      0 8px 24px hsl(var(--livemed-blue) / 0.25);
+    transform: translateY(-1px);
   }
 
-  /* Pattern Backgrounds */
+  /* Minimal Pattern Backgrounds */
   .bg-grid-pattern {
     background-image: 
-      linear-gradient(to right, hsl(var(--livemed-blue) / 0.1) 1px, transparent 1px),
-      linear-gradient(to bottom, hsl(var(--livemed-blue) / 0.1) 1px, transparent 1px);
-    background-size: 60px 60px;
+      linear-gradient(to right, hsl(var(--livemed-blue) / 0.03) 1px, transparent 1px),
+      linear-gradient(to bottom, hsl(var(--livemed-blue) / 0.03) 1px, transparent 1px);
+    background-size: 80px 80px;
   }
 
   .bg-mesh-gradient {
     background-image: 
-      radial-gradient(at 40% 20%, hsl(var(--livemed-blue) / 0.3) 0px, transparent 50%),
-      radial-gradient(at 80% 0%, hsl(var(--accent) / 0.2) 0px, transparent 50%),
-      radial-gradient(at 0% 50%, hsl(var(--livemed-blue) / 0.2) 0px, transparent 50%),
-      radial-gradient(at 80% 50%, hsl(var(--livemed-navy) / 0.3) 0px, transparent 50%),
-      radial-gradient(at 0% 100%, hsl(var(--livemed-blue) / 0.2) 0px, transparent 50%),
-      radial-gradient(at 80% 100%, hsl(var(--accent) / 0.15) 0px, transparent 50%);
+      radial-gradient(at 0% 0%, hsl(var(--livemed-blue) / 0.08) 0px, transparent 50%),
+      radial-gradient(at 100% 0%, hsl(var(--accent) / 0.06) 0px, transparent 50%),
+      radial-gradient(at 100% 100%, hsl(var(--livemed-blue) / 0.08) 0px, transparent 50%),
+      radial-gradient(at 0% 100%, hsl(var(--accent) / 0.04) 0px, transparent 50%);
   }
 
   .bg-neural-pattern {
-    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%233b82f6' fill-opacity='0.15'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3Ccircle cx='0' cy='0' r='2'/%3E%3Ccircle cx='60' cy='0' r='2'/%3E%3Ccircle cx='0' cy='60' r='2'/%3E%3Ccircle cx='60' cy='60' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%233b82f6' fill-opacity='0.03'%3E%3Ccircle cx='50' cy='50' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+
+  /* LIVEMED Background */
+  .bg-livemed-navy {
+    background-color: hsl(var(--livemed-navy));
   }
 
   /* Animation Delays */
@@ -234,5 +276,34 @@
 
   .animation-delay-2000 {
     animation-delay: 2000ms;
+  }
+
+  /* Apple-style smooth pulse */
+  @keyframes pulse-subtle {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+  }
+
+  .animate-pulse-subtle {
+    animation: pulse-subtle 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% { opacity: 0.4; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(1.05); }
+  }
+
+  .animate-pulse-glow {
+    animation: pulse-glow 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  /* Smooth float */
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
   }
 }
