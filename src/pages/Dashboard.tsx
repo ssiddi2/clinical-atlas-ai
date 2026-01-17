@@ -19,7 +19,7 @@ import {
   Settings,
   Bell,
 } from "lucide-react";
-import livemedLogo from "@/assets/livemed-logo.png";
+import livemedLogo from "@/assets/livemed-logo-full.png";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -62,9 +62,9 @@ const Dashboard = () => {
   const firstName = user?.user_metadata?.first_name || "Student";
 
   const quickActions = [
-    { icon: MessageSquare, label: "Ask ELI™", href: "/eli", color: "bg-accent" },
+    { icon: MessageSquare, label: "Ask ATLAS™", href: "/atlas", color: "bg-accent" },
     { icon: BookOpen, label: "Continue Learning", href: "/curriculum", color: "bg-primary" },
-    { icon: Stethoscope, label: "Virtual Rotation", href: "/rotations", color: "bg-livemed-success" },
+    { icon: Stethoscope, label: "Virtual Rotation", href: "/rotation-experience", color: "bg-livemed-success" },
     { icon: FileText, label: "Take Assessment", href: "/assessments", color: "bg-livemed-warning" },
   ];
 
@@ -94,8 +94,8 @@ const Dashboard = () => {
             <Link to="/curriculum" className="text-sm font-medium text-muted-foreground hover:text-primary">
               Curriculum
             </Link>
-            <Link to="/eli" className="text-sm font-medium text-muted-foreground hover:text-primary">
-              ELI™
+            <Link to="/atlas" className="text-sm font-medium text-muted-foreground hover:text-primary">
+              ATLAS™
             </Link>
             <Link to="/rotations" className="text-sm font-medium text-muted-foreground hover:text-primary">
               Rotations
@@ -201,12 +201,12 @@ const Dashboard = () => {
               </CardContent>
             </Card>
 
-            {/* ELI Chat Preview */}
+            {/* ATLAS Chat Preview */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Brain className="h-5 w-5 text-accent" />
-                  Ask ELI™
+                  Ask ATLAS™
                 </CardTitle>
                 <CardDescription>Your AI Professor is ready to help</CardDescription>
               </CardHeader>
@@ -218,7 +218,7 @@ const Dashboard = () => {
                   </p>
                 </div>
                 <Button variant="outline" className="w-full" asChild>
-                  <Link to="/eli">
+                  <Link to="/atlas">
                     <MessageSquare className="mr-2 h-4 w-4" />
                     Start a Conversation
                   </Link>

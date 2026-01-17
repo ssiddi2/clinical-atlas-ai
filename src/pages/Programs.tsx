@@ -1,6 +1,4 @@
 import { Link } from "react-router-dom";
-import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -126,10 +124,7 @@ const Programs = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <Header />
-
-      <main className="flex-1">
+    <main className="flex-1">
         {/* Hero */}
         <section className="relative py-20 md:py-28 overflow-hidden">
           <div className="absolute inset-0 gradient-livemed-light" />
@@ -229,10 +224,10 @@ const Programs = () => {
                           ))}
                         </div>
 
-                        <div className="mt-8 p-4 bg-muted rounded-lg">
+                      <div className="mt-8 p-4 bg-muted rounded-lg">
                           <div className="flex items-center gap-3 mb-3">
                             <Brain className="h-5 w-5 text-accent" />
-                            <span className="font-medium">ELI™ AI Professor Included</span>
+                            <span className="font-medium">ATLAS™ AI Professor Included</span>
                           </div>
                           <p className="text-sm text-muted-foreground">
                             Get 24/7 access to your personal AI professor for questions, 
@@ -264,12 +259,9 @@ const Programs = () => {
                 <Link to="/contact">Talk to Admissions</Link>
               </Button>
             </div>
-          </div>
-        </section>
-      </main>
-
-      <Footer />
-    </div>
+            </div>
+          </section>
+    </main>
   );
 };
 

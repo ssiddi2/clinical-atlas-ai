@@ -18,6 +18,9 @@ import Institutions from "./pages/Institutions";
 import Curriculum from "./pages/Curriculum";
 import ModuleView from "./pages/ModuleView";
 import Assessments from "./pages/Assessments";
+import Pricing from "./pages/Pricing";
+import Contact from "./pages/Contact";
+import RotationExperience from "./pages/RotationExperience";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -36,6 +39,8 @@ const App = () => (
             <Route path="/programs/:level" element={<Programs />} />
             <Route path="/rotations" element={<Rotations />} />
             <Route path="/institutions" element={<Institutions />} />
+            <Route path="/pricing" element={<Pricing />} />
+            <Route path="/contact" element={<Contact />} />
           </Route>
 
           {/* Auth Route (standalone) */}
@@ -50,6 +55,9 @@ const App = () => (
 
           {/* Assessments (authenticated) */}
           <Route path="/assessments" element={<Assessments />} />
+
+          {/* Virtual Rotation Experience (authenticated) */}
+          <Route path="/rotation-experience" element={<RotationExperience />} />
 
           {/* ATLAS AI Professor (authenticated) */}
           <Route path="/atlas" element={<Atlas />} />
