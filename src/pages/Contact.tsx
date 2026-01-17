@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -21,8 +22,10 @@ import {
   Headphones,
 } from "lucide-react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 const Contact = () => {
+  const [searchParams] = useSearchParams();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [formData, setFormData] = useState({
@@ -34,16 +37,38 @@ const Contact = () => {
     message: "",
   });
 
+  // Pre-fill inquiry type from URL param
+  useEffect(() => {
+    const type = searchParams.get("type");
+    if (type) {
+      setFormData(prev => ({ ...prev, inquiryType: type }));
+    }
+  }, [searchParams]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Simulate form submission
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    try {
+      const { error } = await supabase.from("contact_inquiries").insert({
+        full_name: formData.name,
+        email: formData.email,
+        organization: formData.organization || null,
+        role: formData.role || null,
+        inquiry_type: formData.inquiryType,
+        message: formData.message,
+      });
 
-    setIsSubmitting(false);
-    setIsSubmitted(true);
-    toast.success("Your message has been sent! We'll be in touch within 24 hours.");
+      if (error) throw error;
+
+      setIsSubmitted(true);
+      toast.success("Your message has been sent! We'll be in touch within 24 hours.");
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      toast.error("Something went wrong. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleInputChange = (field: string, value: string) => {

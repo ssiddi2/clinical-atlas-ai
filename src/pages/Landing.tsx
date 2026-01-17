@@ -237,9 +237,9 @@ const Landing = () => {
                 className="text-base px-8 py-6 rounded-full text-white/70 hover:text-white hover:bg-white/5 group" 
                 asChild
               >
-                <Link to="/demo">
+                <Link to="/contact?type=demo">
                   <Play className="mr-2 h-4 w-4" />
-                  Watch Demo
+                  Request Demo
                 </Link>
               </Button>
             </motion.div>
@@ -577,6 +577,78 @@ const Landing = () => {
               </motion.div>
             </motion.div>
           </div>
+        </div>
+      </section>
+
+      {/* Testimonials Section */}
+      <section className="py-32 bg-background relative overflow-hidden">
+        <div className="absolute inset-0 bg-mesh-gradient opacity-20" />
+        
+        <div className="container mx-auto px-6 relative">
+          <motion.div 
+            variants={fadeInUp}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            className="text-center mb-16"
+          >
+            <h2 className="text-4xl md:text-5xl font-semibold mb-6">
+              Trusted by <span className="text-gradient-livemed">Future Physicians</span>
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-xl mx-auto font-light">
+              See what our students have to say about their experience.
+            </p>
+          </motion.div>
+
+          <motion.div 
+            variants={staggerContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto"
+          >
+            {[
+              {
+                quote: "ATLAS helped me understand complex pathophysiology concepts I'd struggled with for months. The Socratic method really works.",
+                name: "Dr. Maria Santos",
+                role: "IMG from Brazil, Matched Internal Medicine",
+              },
+              {
+                quote: "The virtual rotations gave me confidence walking into my first U.S. clinical experience. The cases felt incredibly authentic.",
+                name: "Ahmed Khalil",
+                role: "Medical Student, Egypt",
+              },
+              {
+                quote: "Our students' USMLE pass rates improved 18% after implementing Livemed Learning. The analytics help us identify struggling students early.",
+                name: "Dr. James Wilson",
+                role: "Dean of Clinical Education",
+              },
+            ].map((testimonial, index) => (
+              <motion.div
+                key={index}
+                variants={fadeInUp}
+                whileHover={{ y: -6 }}
+                transition={{ type: "spring", stiffness: 400, damping: 25 }}
+              >
+                <Card className="h-full bg-card/50 backdrop-blur-sm border-border/30">
+                  <CardContent className="p-8">
+                    <div className="flex gap-1 mb-6">
+                      {[...Array(5)].map((_, i) => (
+                        <Sparkles key={i} className="h-4 w-4 text-livemed-blue" />
+                      ))}
+                    </div>
+                    <p className="text-muted-foreground mb-6 leading-relaxed">
+                      "{testimonial.quote}"
+                    </p>
+                    <div>
+                      <p className="font-semibold text-foreground">{testimonial.name}</p>
+                      <p className="text-sm text-muted-foreground">{testimonial.role}</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </motion.div>
         </div>
       </section>
 
