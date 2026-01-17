@@ -9,7 +9,7 @@ const Header = () => {
 
   const navItems = [
     { label: "Programs", href: "/programs" },
-    { label: "AI Faculty", href: "/eli" },
+    { label: "ATLAS™", href: "/atlas" },
     { label: "Rotations", href: "/rotations" },
     { label: "Institutions", href: "/institutions" },
   ];
@@ -21,7 +21,7 @@ const Header = () => {
         <Link to="/" className="flex items-center">
           <img 
             src={livemedLogoFull} 
-            alt="LIVEMED" 
+            alt="Livemed Learning" 
             className="h-8 w-auto" 
           />
         </Link>

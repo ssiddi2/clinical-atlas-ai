@@ -5,7 +5,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const ELI_SYSTEM_PROMPT = `You are ELI™, the AI Professor for LIVEMED University — a faculty-grade medical education AI. 
+const ATLAS_SYSTEM_PROMPT = `You are ATLAS™, the AI Professor for Livemed Learning — a faculty-grade medical education AI. 
 
 YOUR IDENTITY:
 - You are NOT a chatbot or general AI assistant
@@ -60,7 +60,7 @@ serve(async (req) => {
 
     // Build messages array for the AI
     const messages = [
-      { role: "system", content: ELI_SYSTEM_PROMPT },
+      { role: "system", content: ATLAS_SYSTEM_PROMPT },
       ...history.map((msg: { role: string; content: string }) => ({
         role: msg.role,
         content: msg.content,
@@ -92,14 +92,14 @@ serve(async (req) => {
     const data = await response.json();
     const reply = data.choices?.[0]?.message?.content || "I apologize, I couldn't generate a response. Please try again.";
 
-    console.log(`ELI response generated for conversation: ${conversationId}`);
+    console.log(`ATLAS response generated for conversation: ${conversationId}`);
 
     return new Response(
       JSON.stringify({ reply, conversationId }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (error) {
-    console.error("Error in eli-chat function:", error);
+    console.error("Error in atlas-chat function:", error);
     const errorMessage = error instanceof Error ? error.message : "Unknown error";
     return new Response(
       JSON.stringify({ 

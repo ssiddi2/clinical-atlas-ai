@@ -11,7 +11,7 @@ import PublicLayout from "./components/layout/PublicLayout";
 import Landing from "./pages/Landing";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
-import ELI from "./pages/ELI";
+import Atlas from "./pages/Atlas";
 import Programs from "./pages/Programs";
 import Rotations from "./pages/Rotations";
 import Institutions from "./pages/Institutions";
@@ -51,8 +51,8 @@ const App = () => (
           {/* Assessments (authenticated) */}
           <Route path="/assessments" element={<Assessments />} />
 
-          {/* ELI AI Professor (authenticated) */}
-          <Route path="/eli" element={<ELI />} />
+          {/* ATLAS AI Professor (authenticated) */}
+          <Route path="/atlas" element={<Atlas />} />
 
           {/* Catch-all */}
           <Route path="*" element={<NotFound />} />
