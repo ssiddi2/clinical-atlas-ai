@@ -82,7 +82,7 @@ const Landing = () => {
   const features = [
     {
       icon: Brain,
-      title: "ELI™ AI Professor",
+      title: "ATLAS™ AI Professor",
       description:
         "Your personal AI faculty member delivering Socratic teaching, clinical reasoning, and personalized guidance 24/7.",
     },
@@ -411,7 +411,7 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* ELI Section - Clean Design */}
+      {/* ATLAS Section - Clean Design */}
       <section className="py-32 relative overflow-hidden bg-livemed-navy">
         <div className="absolute inset-0 bg-mesh-gradient opacity-30" />
         
@@ -430,7 +430,7 @@ const Landing = () => {
               </div>
 
               <h2 className="text-4xl md:text-5xl font-semibold mb-8 text-white leading-tight">
-                ELI™ — The Most Patient Professor{" "}
+                ATLAS™ — The Most Patient Professor{" "}
                 <span className="text-gradient-livemed">You'll Ever Have</span>
               </h2>
 
@@ -466,14 +466,14 @@ const Landing = () => {
               </motion.ul>
 
               <Button className="btn-glow gradient-livemed px-8 py-6 rounded-full group" asChild>
-                <Link to="/eli">
-                  Learn More About ELI™
+                <Link to="/atlas">
+                  Learn More About ATLAS™
                   <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
                 </Link>
               </Button>
             </motion.div>
 
-            {/* ELI Chat Interface - Minimal Glass */}
+            {/* ATLAS Chat Interface - Minimal Glass */}
             <motion.div 
               variants={slideInRight}
               initial="hidden"
@@ -501,7 +501,7 @@ const Landing = () => {
                       <Brain className="h-4 w-4 text-white" />
                     </div>
                     <div>
-                      <div className="font-medium text-white text-sm">ELI™</div>
+                      <div className="font-medium text-white text-sm">ATLAS™</div>
                       <div className="text-xs text-white/40">
                         Cardiology Module
                       </div>
@@ -516,7 +516,7 @@ const Landing = () => {
                   viewport={{ once: true }}
                   className="space-y-5"
                 >
-                  {/* ELI Message */}
+                  {/* ATLAS Message */}
                   <motion.div 
                     variants={fadeInUp}
                     className="bg-white/[0.03] rounded-2xl p-5 border border-white/5"
@@ -538,7 +538,7 @@ const Landing = () => {
                     </p>
                   </motion.div>
 
-                  {/* ELI Follow-up */}
+                  {/* ATLAS Follow-up */}
                   <motion.div 
                     variants={fadeInUp}
                     className="bg-white/[0.03] rounded-2xl p-5 border border-white/5"
@@ -571,7 +571,7 @@ const Landing = () => {
                         className="w-1.5 h-1.5 bg-white/40 rounded-full" 
                       />
                     </div>
-                    <span>ELI is thinking...</span>
+                    <span>ATLAS is thinking...</span>
                   </motion.div>
                 </motion.div>
               </motion.div>
@@ -630,7 +630,7 @@ const Landing = () => {
             variants={fadeInUp}
             className="text-4xl md:text-5xl font-semibold text-white mb-8"
           >
-            Partner With LIVEMED University
+            Partner With Livemed Learning
           </motion.h2>
 
           <motion.p 

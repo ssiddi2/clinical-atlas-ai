@@ -32,7 +32,7 @@ interface Conversation {
   created_at: string;
 }
 
-const ELI = () => {
+const Atlas = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [user, setUser] = useState<User | null>(null);
@@ -191,8 +191,8 @@ const ELI = () => {
 
       if (userMsgError) throw userMsgError;
 
-      // Call ELI edge function
-      const { data: response, error: fnError } = await supabase.functions.invoke("eli-chat", {
+      // Call ATLAS edge function
+      const { data: response, error: fnError } = await supabase.functions.invoke("atlas-chat", {
         body: {
           message: userMessage,
           conversationId,
@@ -317,12 +317,12 @@ const ELI = () => {
               <Brain className="h-5 w-5 text-white" />
             </div>
             <div>
-              <h1 className="font-semibold">ELI™</h1>
+              <h1 className="font-semibold">ATLAS™</h1>
               <p className="text-xs text-muted-foreground">AI Professor</p>
             </div>
           </div>
           <Link to="/dashboard">
-            <img src={livemedLogo} alt="LIVEMED" className="h-6 w-auto" />
+            <img src={livemedLogo} alt="Livemed Learning" className="h-6 w-auto" />
           </Link>
         </header>
 
@@ -333,7 +333,7 @@ const ELI = () => {
               <div className="w-20 h-20 rounded-full gradient-livemed flex items-center justify-center mb-6">
                 <Sparkles className="h-10 w-10 text-white" />
               </div>
-              <h2 className="text-2xl font-bold mb-2">Meet ELI™</h2>
+              <h2 className="text-2xl font-bold mb-2">Meet ATLAS™</h2>
               <p className="text-muted-foreground mb-8 max-w-md">
                 Your AI Professor is ready to teach. Ask questions about any medical topic, 
                 work through clinical cases, or prepare for your exams.
@@ -402,7 +402,7 @@ const ELI = () => {
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="Ask ELI anything about medicine..."
+                placeholder="Ask ATLAS anything about medicine..."
                 className="min-h-[60px] max-h-[200px] pr-14 resize-none"
                 disabled={sending}
               />
@@ -420,7 +420,7 @@ const ELI = () => {
               </Button>
             </div>
             <p className="text-xs text-muted-foreground mt-2 text-center">
-              ELI uses Socratic teaching methodology. Always verify clinical information with authoritative sources.
+              ATLAS uses Socratic teaching methodology. Always verify clinical information with authoritative sources.
             </p>
           </div>
         </div>
@@ -429,4 +429,4 @@ const ELI = () => {
   );
 };
 
-export default ELI;
+export default Atlas;
