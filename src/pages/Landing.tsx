@@ -1,8 +1,9 @@
+import { useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { useRef } from "react";
+import DemoVideoModal from "@/components/DemoVideoModal";
 import {
   GraduationCap,
   Brain,
@@ -69,6 +70,7 @@ const slideInRight = {
 
 const Landing = () => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [isDemoOpen, setIsDemoOpen] = useState(false);
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end end"]
@@ -141,7 +143,9 @@ const Landing = () => {
   ];
 
   return (
-    <div ref={containerRef} className="flex flex-col bg-livemed-navy">
+    <>
+      <DemoVideoModal isOpen={isDemoOpen} onClose={() => setIsDemoOpen(false)} />
+      <div ref={containerRef} className="flex flex-col bg-livemed-navy">
       {/* Hero Section with Video Background */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-16">
         {/* Video Background */}
@@ -234,13 +238,11 @@ const Landing = () => {
               <Button 
                 size="lg" 
                 variant="ghost" 
-                className="text-base px-8 py-6 rounded-full text-white/70 hover:text-white hover:bg-white/5 group" 
-                asChild
+                className="text-base px-8 py-6 rounded-full text-white/70 hover:text-white hover:bg-white/5 group"
+                onClick={() => setIsDemoOpen(true)}
               >
-                <Link to="/contact?type=demo">
-                  <Play className="mr-2 h-4 w-4" />
-                  Request Demo
-                </Link>
+                <Play className="mr-2 h-4 w-4" />
+                Watch Demo
               </Button>
             </motion.div>
           </div>
@@ -738,7 +740,8 @@ const Landing = () => {
           </motion.div>
         </motion.div>
       </section>
-    </div>
+      </div>
+    </>
   );
 };
 
