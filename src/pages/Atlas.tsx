@@ -322,7 +322,7 @@ const Atlas = () => {
             </div>
           </div>
           <Link to="/dashboard">
-            <img src={livemedLogo} alt="Livemed Learning" className="h-6 w-auto" />
+            <img src={livemedLogo} alt="Livemed Learning" className="h-10 w-auto" />
           </Link>
         </header>
 

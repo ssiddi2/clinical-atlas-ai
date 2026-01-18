@@ -236,7 +236,7 @@ const Assessments = () => {
           )}
           
           <Link to="/dashboard">
-            <img src={livemedLogo} alt="LIVEMED" className="h-6 w-auto" />
+            <img src={livemedLogo} alt="LIVEMED" className="h-10 w-auto" />
           </Link>
         </div>
         {assessmentStarted && !assessmentComplete && (
