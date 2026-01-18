@@ -40,7 +40,7 @@ const Footer = () => {
               <img 
                 src={livemedLogoFull} 
                 alt="Livemed Learning" 
-                className="h-10 w-auto logo-glow transition-all duration-300 group-hover:scale-105"
+                className="h-14 w-auto logo-glow transition-all duration-300 group-hover:scale-105"
               />
             </Link>
             <p className="text-sm text-white/40 leading-relaxed">

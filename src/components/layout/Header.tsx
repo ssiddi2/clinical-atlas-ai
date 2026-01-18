@@ -22,7 +22,7 @@ const Header = () => {
           <img 
             src={livemedLogoFull} 
             alt="Livemed Learning" 
-            className="h-10 w-auto logo-glow transition-all duration-300 group-hover:scale-105" 
+            className="h-16 w-auto logo-glow transition-all duration-300 group-hover:scale-105" 
           />
         </Link>
 
