@@ -28,19 +28,22 @@ const Footer = () => {
   };
 
   return (
-    <footer className="border-t border-border/30 bg-background">
-      <div className="container mx-auto px-6 py-16">
+    <footer className="relative border-t border-white/5 bg-livemed-deep overflow-hidden">
+      {/* Subtle gradient overlay */}
+      <div className="absolute inset-0 bg-mesh-gradient opacity-30" />
+      
+      <div className="container mx-auto px-6 py-16 relative">
         <div className="grid grid-cols-2 md:grid-cols-5 gap-10">
           {/* Brand Column */}
           <div className="col-span-2 md:col-span-1">
-            <Link to="/" className="inline-block mb-6">
+            <Link to="/" className="inline-block mb-6 group">
               <img 
                 src={livemedLogoFull} 
                 alt="Livemed Learning" 
-                className="h-8 w-auto"
+                className="h-10 w-auto logo-glow transition-all duration-300 group-hover:scale-105"
               />
             </Link>
-            <p className="text-sm text-muted-foreground leading-relaxed">
+            <p className="text-sm text-white/40 leading-relaxed">
               The global standard for AI-powered medical education.
             </p>
           </div>
@@ -48,7 +51,7 @@ const Footer = () => {
           {/* Link Columns */}
           {Object.entries(footerLinks).map(([category, links]) => (
             <div key={category}>
-              <h4 className="font-semibold text-foreground mb-5 text-xs uppercase tracking-wider">
+              <h4 className="font-semibold text-white/80 mb-5 text-xs uppercase tracking-wider">
                 {category}
               </h4>
               <ul className="space-y-3">
@@ -56,7 +59,7 @@ const Footer = () => {
                   <li key={link.href}>
                     <Link
                       to={link.href}
-                      className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-300"
+                      className="text-sm text-white/40 hover:text-white transition-colors duration-300"
                     >
                       {link.label}
                     </Link>
@@ -69,21 +72,21 @@ const Footer = () => {
       </div>
 
       {/* Bottom Bar */}
-      <div className="border-t border-border/20">
+      <div className="border-t border-white/5 relative">
         <div className="container mx-auto px-6 py-6 flex flex-col sm:flex-row justify-between items-center gap-4">
-          <p className="text-xs text-muted-foreground">
+          <p className="text-xs text-white/30">
             © {new Date().getFullYear()} Livemed Learning. All rights reserved.
           </p>
           <div className="flex items-center gap-6">
             <Link
               to="/terms"
-              className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+              className="text-xs text-white/30 hover:text-white/60 transition-colors"
             >
               Terms
             </Link>
             <Link
               to="/privacy"
-              className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+              className="text-xs text-white/30 hover:text-white/60 transition-colors"
             >
               Privacy
             </Link>
