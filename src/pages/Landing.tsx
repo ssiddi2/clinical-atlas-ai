@@ -197,7 +197,7 @@ const Landing = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="inline-flex items-center gap-2 glass-card-hover px-5 py-2.5 rounded-full text-sm mb-10 shadow-glow"
+              className="inline-flex items-center gap-2 glass-card-hover px-4 md:px-5 py-2 md:py-2.5 rounded-full text-xs md:text-sm mb-6 md:mb-10 shadow-glow"
             >
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-livemed-success opacity-75"></span>
@@ -273,7 +273,7 @@ const Landing = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1.2, duration: 0.6 }}
-          className="absolute bottom-12 left-1/2 -translate-x-1/2"
+          className="hidden sm:block absolute bottom-8 md:bottom-12 left-1/2 -translate-x-1/2"
         >
           <motion.div 
             animate={{ y: [0, 8, 0] }}
@@ -286,11 +286,11 @@ const Landing = () => {
       </section>
 
       {/* Stats Section - Enhanced Glass Cards */}
-      <section className="relative py-24 overflow-hidden">
+      <section className="relative py-12 md:py-24 overflow-hidden">
         <div className="absolute inset-0 bg-livemed-deep" />
         <div className="absolute inset-0 bg-mesh-gradient opacity-30" />
         
-        <div className="container mx-auto px-6 relative">
+        <div className="container mx-auto px-4 md:px-6 relative">
           <motion.div 
             variants={staggerContainer}
             initial="hidden"
@@ -317,29 +317,29 @@ const Landing = () => {
       </section>
 
       {/* Features Section - Dark Glass Cards */}
-      <section className="py-32 bg-livemed-deep relative overflow-hidden">
+      <section className="py-16 md:py-32 bg-livemed-deep relative overflow-hidden">
         <div className="absolute inset-0 bg-mesh-gradient opacity-20" />
         <div className="absolute inset-0 bg-grid-pattern" />
         
-        <div className="container mx-auto px-6 relative">
+        <div className="container mx-auto px-4 md:px-6 relative">
           <motion.div 
             variants={fadeInUp}
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-100px" }}
-            className="text-center mb-20"
+            className="text-center mb-10 md:mb-20"
           >
             <motion.div 
               variants={fadeInScale}
-              className="inline-flex items-center gap-2 text-livemed-cyan text-sm font-medium mb-6 glass-card px-4 py-2 rounded-full"
+              className="inline-flex items-center gap-2 text-livemed-cyan text-xs md:text-sm font-medium mb-4 md:mb-6 glass-card px-3 md:px-4 py-2 rounded-full"
             >
-              <Sparkles className="h-4 w-4" />
+              <Sparkles className="h-3 w-3 md:h-4 md:w-4" />
               Powered by AI
             </motion.div>
-            <h2 className="text-4xl md:text-5xl font-bold mb-6">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 md:mb-6">
               <span className="text-gradient-livemed text-glow">Complete Medical Education</span>
             </h2>
-            <p className="text-lg text-white/50 max-w-xl mx-auto font-light">
+            <p className="text-base md:text-lg text-white/50 max-w-xl mx-auto font-light px-4">
               Everything you need to become a world-class physician.
             </p>
           </motion.div>
@@ -359,11 +359,11 @@ const Landing = () => {
                 transition={{ type: "spring", stiffness: 400, damping: 25 }}
               >
                 <Card className="group h-full glass-card border-white/5 hover:border-livemed-blue/30 transition-all duration-500 card-glow-hover bg-transparent">
-                  <CardContent className="p-8">
-                    <div className="w-12 h-12 rounded-xl gradient-livemed flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500 shadow-glow">
-                      <feature.icon className="h-6 w-6 text-white" />
+                  <CardContent className="p-5 md:p-8">
+                    <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl gradient-livemed flex items-center justify-center mb-4 md:mb-6 group-hover:scale-110 transition-transform duration-500 shadow-glow">
+                      <feature.icon className="h-5 w-5 md:h-6 md:w-6 text-white" />
                     </div>
-                    <h3 className="font-semibold text-lg mb-3 text-white group-hover:text-livemed-cyan transition-colors">{feature.title}</h3>
+                    <h3 className="font-semibold text-base md:text-lg mb-2 md:mb-3 text-white group-hover:text-livemed-cyan transition-colors">{feature.title}</h3>
                     <p className="text-white/40 text-sm leading-relaxed">
                       {feature.description}
                     </p>
@@ -376,21 +376,21 @@ const Landing = () => {
       </section>
 
       {/* Programs Section */}
-      <section className="py-32 relative overflow-hidden bg-livemed-deep">
+      <section className="py-16 md:py-32 relative overflow-hidden bg-livemed-deep">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-livemed-blue/5 to-transparent" />
         
-        <div className="container mx-auto px-6 relative">
+        <div className="container mx-auto px-4 md:px-6 relative">
           <motion.div 
             variants={fadeInUp}
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-100px" }}
-            className="text-center mb-20"
+            className="text-center mb-10 md:mb-20"
           >
-            <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 md:mb-6 text-white">
               Programs for <span className="text-gradient-livemed">Every Stage</span>
             </h2>
-            <p className="text-lg text-white/50 max-w-xl mx-auto font-light">
+            <p className="text-base md:text-lg text-white/50 max-w-xl mx-auto font-light px-4">
               From foundational sciences to residency preparation.
             </p>
           </motion.div>
@@ -411,15 +411,15 @@ const Landing = () => {
               >
                 <Link to={program.href}>
                   <Card className="h-full group glass-card border-white/5 hover:border-livemed-cyan/40 transition-all duration-500 card-glow-hover bg-transparent">
-                    <CardContent className="p-8">
-                      <div className="inline-flex items-center gap-2 text-xs font-medium text-livemed-cyan uppercase tracking-wider mb-4 px-3 py-1.5 bg-livemed-cyan/10 rounded-full border border-livemed-cyan/20">
+                    <CardContent className="p-5 md:p-8">
+                      <div className="inline-flex items-center gap-2 text-xs font-medium text-livemed-cyan uppercase tracking-wider mb-3 md:mb-4 px-3 py-1.5 bg-livemed-cyan/10 rounded-full border border-livemed-cyan/20">
                         <Activity className="h-3 w-3" />
                         {program.years}
                       </div>
-                      <h3 className="font-semibold text-xl mb-3 text-white group-hover:text-livemed-cyan transition-colors">
+                      <h3 className="font-semibold text-lg md:text-xl mb-2 md:mb-3 text-white group-hover:text-livemed-cyan transition-colors">
                         {program.title}
                       </h3>
-                      <p className="text-white/40 text-sm mb-6">
+                      <p className="text-white/40 text-sm mb-4 md:mb-6">
                         {program.description}
                       </p>
                       <div className="flex items-center text-livemed-cyan text-sm font-medium group-hover:gap-2 gap-1.5 transition-all">
@@ -436,34 +436,34 @@ const Landing = () => {
       </section>
 
       {/* ATLAS Section - Enhanced Dark Design */}
-      <section className="py-32 relative overflow-hidden bg-livemed-deep">
+      <section className="py-16 md:py-32 relative overflow-hidden bg-livemed-deep">
         <div className="absolute inset-0 bg-mesh-gradient opacity-40" />
         <div className="absolute inset-0 bg-neural-pattern" />
         
-        {/* Floating orbs */}
-        <div className="absolute top-20 right-20 w-[300px] h-[300px] bg-livemed-blue/10 rounded-full blur-[80px] animate-pulse-glow" />
-        <div className="absolute bottom-20 left-20 w-[250px] h-[250px] bg-livemed-cyan/8 rounded-full blur-[80px] animate-pulse-glow animation-delay-2000" />
+        {/* Floating orbs - hidden on mobile */}
+        <div className="hidden md:block absolute top-20 right-20 w-[300px] h-[300px] bg-livemed-blue/10 rounded-full blur-[80px] animate-pulse-glow" />
+        <div className="hidden md:block absolute bottom-20 left-20 w-[250px] h-[250px] bg-livemed-cyan/8 rounded-full blur-[80px] animate-pulse-glow animation-delay-2000" />
         
-        <div className="container mx-auto px-6 relative">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
+        <div className="container mx-auto px-4 md:px-6 relative">
+          <div className="grid lg:grid-cols-2 gap-8 md:gap-16 items-center">
             <motion.div 
               variants={slideInLeft}
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true, margin: "-100px" }}
             >
-              <div className="inline-flex items-center gap-2 text-livemed-cyan text-sm font-medium mb-8 glass-card px-4 py-2 rounded-full">
-                <MessageSquare className="h-4 w-4" />
+              <div className="inline-flex items-center gap-2 text-livemed-cyan text-xs md:text-sm font-medium mb-4 md:mb-8 glass-card px-3 md:px-4 py-2 rounded-full">
+                <MessageSquare className="h-3 w-3 md:h-4 md:w-4" />
                 Meet Your AI Professor
                 <div className="w-2 h-2 bg-livemed-success rounded-full animate-pulse" />
               </div>
 
-              <h2 className="text-4xl md:text-5xl font-bold mb-8 text-white leading-tight text-glow">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 md:mb-8 text-white leading-tight text-glow">
                 ATLAS™ — The Most Patient Professor{" "}
                 <span className="text-gradient-livemed">You'll Ever Have</span>
               </h2>
 
-              <p className="text-lg text-white/50 mb-10 leading-relaxed font-light">
+              <p className="text-base md:text-lg text-white/50 mb-6 md:mb-10 leading-relaxed font-light">
                 Faculty-grade AI that teaches using Socratic methodology, 
                 tracks your progress, and grades your clinical reasoning.
               </p>
@@ -473,7 +473,7 @@ const Landing = () => {
                 initial="hidden"
                 whileInView="visible"
                 viewport={{ once: true }}
-                className="space-y-4 mb-10"
+                className="space-y-3 md:space-y-4 mb-6 md:mb-10"
               >
                 {[
                   "Personalized study plans based on your weak areas",
@@ -494,7 +494,7 @@ const Landing = () => {
                 ))}
               </motion.ul>
 
-              <Button className="btn-glow gradient-livemed px-8 py-6 rounded-full group font-semibold" asChild>
+              <Button className="btn-glow gradient-livemed px-6 md:px-8 py-5 md:py-6 rounded-full group font-semibold text-sm md:text-base w-full sm:w-auto" asChild>
                 <Link to="/atlas">
                   Learn More About ATLAS™
                   <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
@@ -510,28 +510,28 @@ const Landing = () => {
               viewport={{ once: true, margin: "-100px" }}
               className="relative"
             >
-              <div className="absolute inset-0 bg-livemed-blue/15 rounded-3xl blur-[40px]" />
+              <div className="absolute inset-0 bg-livemed-blue/15 rounded-2xl md:rounded-3xl blur-[40px]" />
               
               <motion.div 
                 whileHover={{ scale: 1.02 }}
                 transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                className="glass-card rounded-3xl p-8 relative shadow-glow-lg"
+                className="glass-card rounded-2xl md:rounded-3xl p-4 md:p-8 relative shadow-glow-lg"
               >
                 {/* Terminal header */}
-                <div className="flex items-center gap-3 mb-8 pb-6 border-b border-white/5">
-                  <div className="flex gap-1.5">
-                    <div className="w-3 h-3 rounded-full bg-red-500/60" />
-                    <div className="w-3 h-3 rounded-full bg-yellow-500/60" />
-                    <div className="w-3 h-3 rounded-full bg-green-500/60" />
+                <div className="flex items-center gap-2 md:gap-3 mb-4 md:mb-8 pb-4 md:pb-6 border-b border-white/5">
+                  <div className="flex gap-1 md:gap-1.5">
+                    <div className="w-2 h-2 md:w-3 md:h-3 rounded-full bg-red-500/60" />
+                    <div className="w-2 h-2 md:w-3 md:h-3 rounded-full bg-yellow-500/60" />
+                    <div className="w-2 h-2 md:w-3 md:h-3 rounded-full bg-green-500/60" />
                   </div>
                   <div className="flex-1" />
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl gradient-livemed flex items-center justify-center shadow-glow">
-                      <Brain className="h-5 w-5 text-white" />
+                  <div className="flex items-center gap-2 md:gap-3">
+                    <div className="w-8 h-8 md:w-10 md:h-10 rounded-lg md:rounded-xl gradient-livemed flex items-center justify-center shadow-glow">
+                      <Brain className="h-4 w-4 md:h-5 md:w-5 text-white" />
                     </div>
                     <div>
-                      <div className="font-semibold text-white text-sm">ATLAS™</div>
-                      <div className="text-xs text-white/40">
+                      <div className="font-semibold text-white text-xs md:text-sm">ATLAS™</div>
+                      <div className="text-[10px] md:text-xs text-white/40">
                         Cardiology Module
                       </div>
                     </div>
@@ -543,14 +543,14 @@ const Landing = () => {
                   initial="hidden"
                   whileInView="visible"
                   viewport={{ once: true }}
-                  className="space-y-5"
+                  className="space-y-3 md:space-y-5"
                 >
                   {/* ATLAS Message */}
                   <motion.div 
                     variants={fadeInUp}
-                    className="bg-white/[0.03] rounded-2xl p-5 border border-white/5"
+                    className="bg-white/[0.03] rounded-xl md:rounded-2xl p-3 md:p-5 border border-white/5"
                   >
-                    <p className="text-white/80 text-sm leading-relaxed">
+                    <p className="text-white/80 text-xs md:text-sm leading-relaxed">
                       "A 55-year-old male presents with crushing chest pain 
                       radiating to the left arm. What's your initial differential?"
                     </p>
@@ -559,9 +559,9 @@ const Landing = () => {
                   {/* Student Response */}
                   <motion.div 
                     variants={fadeInUp}
-                    className="bg-livemed-cyan/10 rounded-2xl p-5 ml-8 border border-livemed-cyan/20"
+                    className="bg-livemed-cyan/10 rounded-xl md:rounded-2xl p-3 md:p-5 ml-4 md:ml-8 border border-livemed-cyan/20"
                   >
-                    <p className="text-livemed-cyan/90 text-sm leading-relaxed">
+                    <p className="text-livemed-cyan/90 text-xs md:text-sm leading-relaxed">
                       "I would consider acute MI, unstable angina, or aortic 
                       dissection. I'd start with an ECG and troponins..."
                     </p>
@@ -570,9 +570,9 @@ const Landing = () => {
                   {/* ATLAS Follow-up */}
                   <motion.div 
                     variants={fadeInUp}
-                    className="bg-white/[0.03] rounded-2xl p-5 border border-white/5"
+                    className="bg-white/[0.03] rounded-xl md:rounded-2xl p-3 md:p-5 border border-white/5"
                   >
-                    <p className="text-white/80 text-sm leading-relaxed">
+                    <p className="text-white/80 text-xs md:text-sm leading-relaxed">
                       "Good start! What physical exam finding would make you 
                       more suspicious of aortic dissection over MI?"
                     </p>
@@ -610,21 +610,21 @@ const Landing = () => {
       </section>
 
       {/* Testimonials Section - Dark Theme */}
-      <section className="py-32 bg-livemed-deep relative overflow-hidden">
+      <section className="py-16 md:py-32 bg-livemed-deep relative overflow-hidden">
         <div className="absolute inset-0 bg-mesh-gradient opacity-20" />
         
-        <div className="container mx-auto px-6 relative">
+        <div className="container mx-auto px-4 md:px-6 relative">
           <motion.div 
             variants={fadeInUp}
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-100px" }}
-            className="text-center mb-16"
+            className="text-center mb-10 md:mb-16"
           >
-            <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 md:mb-6 text-white">
               Trusted by <span className="text-gradient-livemed">Future Physicians</span>
             </h2>
-            <p className="text-lg text-white/50 max-w-xl mx-auto font-light">
+            <p className="text-base md:text-lg text-white/50 max-w-xl mx-auto font-light px-4">
               See what our students have to say about their experience.
             </p>
           </motion.div>
@@ -634,7 +634,7 @@ const Landing = () => {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-100px" }}
-            className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 max-w-5xl mx-auto"
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8 max-w-5xl mx-auto"
           >
             {[
               {
@@ -660,18 +660,18 @@ const Landing = () => {
                 transition={{ type: "spring", stiffness: 400, damping: 25 }}
               >
                 <Card className="h-full glass-card border-white/5 card-glow-hover bg-transparent">
-                  <CardContent className="p-8">
-                    <div className="flex gap-1 mb-6">
+                  <CardContent className="p-5 md:p-8">
+                    <div className="flex gap-1 mb-4 md:mb-6">
                       {[...Array(5)].map((_, i) => (
-                        <Sparkles key={i} className="h-4 w-4 text-livemed-cyan" />
+                        <Sparkles key={i} className="h-3 w-3 md:h-4 md:w-4 text-livemed-cyan" />
                       ))}
                     </div>
-                    <p className="text-white/60 mb-6 leading-relaxed">
+                    <p className="text-white/60 mb-4 md:mb-6 leading-relaxed text-sm md:text-base">
                       "{testimonial.quote}"
                     </p>
                     <div>
-                      <p className="font-semibold text-white">{testimonial.name}</p>
-                      <p className="text-sm text-white/40">{testimonial.role}</p>
+                      <p className="font-semibold text-white text-sm md:text-base">{testimonial.name}</p>
+                      <p className="text-xs md:text-sm text-white/40">{testimonial.role}</p>
                     </div>
                   </CardContent>
                 </Card>
@@ -682,24 +682,24 @@ const Landing = () => {
       </section>
 
       {/* Institution CTA - Enhanced Gradient */}
-      <section className="py-32 relative overflow-hidden">
+      <section className="py-16 md:py-32 relative overflow-hidden">
         <div className="absolute inset-0 gradient-livemed" />
         <div className="absolute inset-0 bg-mesh-gradient opacity-20" />
         
-        {/* Floating Elements with Glow */}
+        {/* Floating Elements with Glow - hidden on mobile */}
         <motion.div 
           animate={{ y: [0, -15, 0] }}
           transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute top-20 left-20 opacity-20"
+          className="hidden md:block absolute top-20 left-10 md:left-20 opacity-20"
         >
-          <Globe className="h-24 w-24 text-white" />
+          <Globe className="h-12 w-12 md:h-24 md:w-24 text-white" />
         </motion.div>
         <motion.div 
           animate={{ y: [0, 15, 0] }}
           transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-          className="absolute bottom-20 right-20 opacity-20"
+          className="hidden md:block absolute bottom-20 right-10 md:right-20 opacity-20"
         >
-          <GraduationCap className="h-20 w-20 text-white" />
+          <GraduationCap className="h-10 w-10 md:h-20 md:w-20 text-white" />
         </motion.div>
         
         <motion.div 
@@ -707,36 +707,36 @@ const Landing = () => {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-100px" }}
-          className="container mx-auto px-6 text-center relative"
+          className="container mx-auto px-4 md:px-6 text-center relative"
         >
           <motion.div 
             variants={staggerContainer}
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
-            className="flex justify-center gap-4 mb-10"
+            className="flex justify-center gap-3 md:gap-4 mb-6 md:mb-10"
           >
             {[Globe, Users, GraduationCap].map((Icon, index) => (
               <motion.div 
                 key={index}
                 variants={fadeInScale}
-                className="w-14 h-14 rounded-2xl glass-card flex items-center justify-center shadow-glow"
+                className="w-10 h-10 md:w-14 md:h-14 rounded-xl md:rounded-2xl glass-card flex items-center justify-center shadow-glow"
               >
-                <Icon className="h-6 w-6 text-white/80" />
+                <Icon className="h-5 w-5 md:h-6 md:w-6 text-white/80" />
               </motion.div>
             ))}
           </motion.div>
 
           <motion.h2 
             variants={fadeInUp}
-            className="text-4xl md:text-5xl font-bold text-white mb-8 text-glow"
+            className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 md:mb-8 text-glow"
           >
             Partner With Livemed Learning
           </motion.h2>
 
           <motion.p 
             variants={fadeInUp}
-            className="text-xl text-white/60 max-w-2xl mx-auto mb-12 leading-relaxed font-light"
+            className="text-base md:text-xl text-white/60 max-w-2xl mx-auto mb-8 md:mb-12 leading-relaxed font-light px-4"
           >
             We work with medical schools and universities worldwide 
             to bring U.S.-standard medical education to students everywhere.
@@ -744,11 +744,11 @@ const Landing = () => {
 
           <motion.div 
             variants={fadeInUp}
-            className="flex flex-col sm:flex-row gap-4 justify-center"
+            className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center px-4"
           >
             <Button
               size="lg"
-              className="bg-white text-livemed-navy hover:bg-white/90 px-8 py-6 rounded-full font-semibold group shadow-glow-lg"
+              className="bg-white text-livemed-navy hover:bg-white/90 px-6 md:px-8 py-5 md:py-6 rounded-full font-semibold group shadow-glow-lg text-sm md:text-base"
               asChild
             >
               <Link to="/institutions">
@@ -759,7 +759,7 @@ const Landing = () => {
             <Button
               size="lg"
               variant="ghost"
-              className="px-8 py-6 rounded-full text-white/70 hover:text-white glass-card hover:bg-white/10"
+              className="px-6 md:px-8 py-5 md:py-6 rounded-full text-white/70 hover:text-white glass-card hover:bg-white/10 text-sm md:text-base"
               asChild
             >
               <Link to="/contact">Contact Sales</Link>
