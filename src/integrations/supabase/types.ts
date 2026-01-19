@@ -221,44 +221,140 @@ export type Database = {
           },
         ]
       }
+      onboarding_conversations: {
+        Row: {
+          created_at: string
+          current_step: string | null
+          extracted_data: Json | null
+          id: string
+          messages: Json
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          current_step?: string | null
+          extracted_data?: Json | null
+          id?: string
+          messages?: Json
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          current_step?: string | null
+          extracted_data?: Json | null
+          id?: string
+          messages?: Json
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
+          address_line1: string | null
+          address_line2: string | null
           avatar_url: string | null
+          career_goals: string | null
+          city: string | null
           country: string | null
           created_at: string
+          date_of_birth: string | null
+          emergency_contact_name: string | null
+          emergency_contact_phone: string | null
+          expected_graduation: string | null
           first_name: string | null
           id: string
           institution: string | null
           last_name: string | null
+          learning_style: string | null
+          medical_school_type: string | null
+          onboarding_completed: boolean | null
+          phone_number: string | null
+          postal_code: string | null
           program_level: Database["public"]["Enums"]["program_level"] | null
+          state_province: string | null
+          study_hours_per_week: number | null
+          target_specialty: string | null
           updated_at: string
           user_id: string
+          usmle_step1_score: number | null
+          usmle_step1_status: string | null
+          usmle_step2_score: number | null
+          usmle_step2_status: string | null
+          verification_status: string | null
+          weak_areas: string[] | null
           year_of_study: number | null
         }
         Insert: {
+          address_line1?: string | null
+          address_line2?: string | null
           avatar_url?: string | null
+          career_goals?: string | null
+          city?: string | null
           country?: string | null
           created_at?: string
+          date_of_birth?: string | null
+          emergency_contact_name?: string | null
+          emergency_contact_phone?: string | null
+          expected_graduation?: string | null
           first_name?: string | null
           id?: string
           institution?: string | null
           last_name?: string | null
+          learning_style?: string | null
+          medical_school_type?: string | null
+          onboarding_completed?: boolean | null
+          phone_number?: string | null
+          postal_code?: string | null
           program_level?: Database["public"]["Enums"]["program_level"] | null
+          state_province?: string | null
+          study_hours_per_week?: number | null
+          target_specialty?: string | null
           updated_at?: string
           user_id: string
+          usmle_step1_score?: number | null
+          usmle_step1_status?: string | null
+          usmle_step2_score?: number | null
+          usmle_step2_status?: string | null
+          verification_status?: string | null
+          weak_areas?: string[] | null
           year_of_study?: number | null
         }
         Update: {
+          address_line1?: string | null
+          address_line2?: string | null
           avatar_url?: string | null
+          career_goals?: string | null
+          city?: string | null
           country?: string | null
           created_at?: string
+          date_of_birth?: string | null
+          emergency_contact_name?: string | null
+          emergency_contact_phone?: string | null
+          expected_graduation?: string | null
           first_name?: string | null
           id?: string
           institution?: string | null
           last_name?: string | null
+          learning_style?: string | null
+          medical_school_type?: string | null
+          onboarding_completed?: boolean | null
+          phone_number?: string | null
+          postal_code?: string | null
           program_level?: Database["public"]["Enums"]["program_level"] | null
+          state_province?: string | null
+          study_hours_per_week?: number | null
+          target_specialty?: string | null
           updated_at?: string
           user_id?: string
+          usmle_step1_score?: number | null
+          usmle_step1_status?: string | null
+          usmle_step2_score?: number | null
+          usmle_step2_status?: string | null
+          verification_status?: string | null
+          weak_areas?: string[] | null
           year_of_study?: number | null
         }
         Relationships: []
@@ -487,6 +583,45 @@ export type Database = {
           id?: string
           name?: string
           sort_order?: number | null
+        }
+        Relationships: []
+      }
+      student_documents: {
+        Row: {
+          document_type: string
+          file_name: string
+          file_url: string
+          id: string
+          rejection_reason: string | null
+          status: string
+          uploaded_at: string
+          user_id: string
+          verified_at: string | null
+          verified_by: string | null
+        }
+        Insert: {
+          document_type: string
+          file_name: string
+          file_url: string
+          id?: string
+          rejection_reason?: string | null
+          status?: string
+          uploaded_at?: string
+          user_id: string
+          verified_at?: string | null
+          verified_by?: string | null
+        }
+        Update: {
+          document_type?: string
+          file_name?: string
+          file_url?: string
+          id?: string
+          rejection_reason?: string | null
+          status?: string
+          uploaded_at?: string
+          user_id?: string
+          verified_at?: string | null
+          verified_by?: string | null
         }
         Relationships: []
       }

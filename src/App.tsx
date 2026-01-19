@@ -27,6 +27,7 @@ import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
 import Residency from "./pages/Residency";
 import Profile from "./pages/Profile";
+import Onboarding from "./pages/Onboarding";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -54,6 +55,9 @@ const App = () => (
 
           {/* Auth Route (standalone) */}
           <Route path="/auth" element={<Auth />} />
+
+          {/* Onboarding (after signup) */}
+          <Route path="/onboarding" element={<Onboarding />} />
 
           {/* Dashboard (authenticated) */}
           <Route path="/dashboard" element={<Dashboard />} />
