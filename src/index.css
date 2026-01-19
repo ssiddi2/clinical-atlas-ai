@@ -453,4 +453,64 @@
   .bg-radial-vignette {
     background: radial-gradient(ellipse at center, transparent 0%, hsl(230 55% 6%) 70%);
   }
+
+  /* Apple Style Typography */
+  .apple-title {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif;
+    letter-spacing: -0.03em;
+  }
+
+  /* Holographic Grid Floor */
+  .holographic-grid {
+    background-image: 
+      linear-gradient(to right, hsl(190 95% 55% / 0.08) 1px, transparent 1px),
+      linear-gradient(to bottom, hsl(190 95% 55% / 0.08) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: linear-gradient(to bottom, transparent 0%, black 40%, black 60%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 40%, black 60%, transparent 100%);
+    transform: perspective(500px) rotateX(60deg) translateY(100px);
+    transform-origin: center bottom;
+  }
+
+  /* Orb Drift Animation */
+  @keyframes orb-drift {
+    0%, 100% { 
+      transform: translate(0, 0) scale(1);
+      opacity: 0.8;
+    }
+    25% {
+      transform: translate(30px, -20px) scale(1.05);
+    }
+    50% { 
+      transform: translate(-20px, 30px) scale(0.95);
+      opacity: 1;
+    }
+    75% {
+      transform: translate(10px, 10px) scale(1.02);
+    }
+  }
+
+  .animate-orb-drift {
+    animation: orb-drift 20s ease-in-out infinite;
+  }
+
+  /* Enhanced Text Gradient for Apple Style */
+  .text-gradient-hero {
+    background: linear-gradient(135deg, hsl(0 0% 100%) 0%, hsl(190 95% 70%) 50%, hsl(217 91% 70%) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Subtle scan line effect */
+  .scanlines {
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      hsl(0 0% 0% / 0.03) 2px,
+      hsl(0 0% 0% / 0.03) 4px
+    );
+    pointer-events: none;
+  }
 }
