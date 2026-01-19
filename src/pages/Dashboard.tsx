@@ -20,11 +20,18 @@ import {
   Bell,
 } from "lucide-react";
 import livemedLogo from "@/assets/livemed-logo-full.png";
+import VerificationBanner from "@/components/dashboard/VerificationBanner";
+
+interface ProfileData {
+  onboarding_completed: boolean;
+  verification_status: string | null;
+}
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [profile, setProfile] = useState<ProfileData | null>(null);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
@@ -32,6 +39,8 @@ const Dashboard = () => {
       setLoading(false);
       if (!session) {
         navigate("/auth");
+      } else {
+        loadProfile(session.user.id);
       }
     });
 
@@ -40,11 +49,22 @@ const Dashboard = () => {
       setLoading(false);
       if (!session) {
         navigate("/auth");
+      } else {
+        loadProfile(session.user.id);
       }
     });
 
     return () => subscription.unsubscribe();
   }, [navigate]);
+
+  const loadProfile = async (userId: string) => {
+    const { data } = await supabase
+      .from("profiles")
+      .select("onboarding_completed, verification_status")
+      .eq("user_id", userId)
+      .single();
+    setProfile(data);
+  };
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
@@ -121,6 +141,12 @@ const Dashboard = () => {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
+        {/* Verification Banner */}
+        <VerificationBanner 
+          status={profile?.verification_status as 'pending' | 'verified' | 'rejected' | null}
+          onboardingCompleted={profile?.onboarding_completed || false}
+        />
+
         {/* Welcome Section */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2">
