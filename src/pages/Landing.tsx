@@ -211,6 +211,16 @@ const Landing = () => {
               <span className="text-white/70 font-medium">Now enrolling for 2026</span>
             </motion.div>
 
+            {/* Brand Name */}
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.25 }}
+              className="text-2xl md:text-3xl font-semibold text-white/90 mb-4 tracking-wide"
+            >
+              Livemed Learning
+            </motion.div>
+
             {/* Main Headline - Apple Style Bold Typography */}
             <motion.h1 
               initial={{ opacity: 0, y: 30 }}
