@@ -36,7 +36,7 @@ const Header = () => {
         <Link to="/" className="flex items-center group flex-shrink-0">
           <img 
             src={livemedLogoFull} 
-            alt="Livemed" 
+            alt="LIVEMED University" 
             style={{ height: '44px', width: 'auto' }}
             className="transition-all duration-300 group-hover:opacity-80 object-contain" 
           />

@@ -39,13 +39,13 @@ const Footer = () => {
             <Link to="/" className="inline-block mb-6 group">
               <img 
                 src={livemedLogoFull} 
-                alt="Livemed Learning" 
+                alt="LIVEMED University" 
                 style={{ height: '100px', width: 'auto' }}
                 className="logo-glow transition-all duration-300 group-hover:scale-105 object-contain"
               />
             </Link>
             <p className="text-sm text-white/40 leading-relaxed">
-              The global standard for AI-powered medical education.
+              Division of Clinical & Continuing Medical Education
             </p>
           </div>
 
@@ -72,11 +72,21 @@ const Footer = () => {
         </div>
       </div>
 
+      {/* Legal Disclaimer */}
+      <div className="border-t border-white/5 relative">
+        <div className="container mx-auto px-6 py-4">
+          <p className="text-xs text-white/30 text-center max-w-4xl mx-auto leading-relaxed">
+            LIVEMED University is a professional medical education platform offering clinical and continuing medical education. 
+            LIVEMED University is not a degree-granting institution and does not award MD or equivalent medical degrees.
+          </p>
+        </div>
+      </div>
+
       {/* Bottom Bar */}
       <div className="border-t border-white/5 relative">
         <div className="container mx-auto px-6 py-6 flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="text-xs text-white/30">
-            © {new Date().getFullYear()} Livemed Learning. All rights reserved.
+            © {new Date().getFullYear()} LIVEMED University. All rights reserved.
           </p>
           <div className="flex items-center gap-6">
             <Link
