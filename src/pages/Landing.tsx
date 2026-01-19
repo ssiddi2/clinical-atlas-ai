@@ -147,37 +147,37 @@ const Landing = () => {
     <>
       <DemoVideoModal isOpen={isDemoOpen} onClose={() => setIsDemoOpen(false)} />
       <div ref={containerRef} className="flex flex-col bg-livemed-deep">
-      {/* Hero Section with Animated Background */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-16">
-        {/* Deep Dark Base */}
-        <div className="absolute inset-0 bg-[#050810]" />
+      {/* Hero Section - Apple Style Clean */}
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+        {/* Pure Black Base */}
+        <div className="absolute inset-0 bg-black" />
         
-        {/* Animated Gradient Blobs */}
-        <div className="absolute top-0 left-0 w-[1000px] h-[1000px] bg-gradient-to-br from-blue-600/20 via-cyan-500/10 to-transparent rounded-full blur-[150px] animate-blob-morph" />
-        <div className="absolute bottom-0 right-0 w-[800px] h-[800px] bg-gradient-to-tl from-cyan-500/15 via-blue-700/10 to-transparent rounded-full blur-[120px] animate-blob-morph animation-delay-2000" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-blue-500/10 to-purple-500/5 rounded-full blur-[100px] animate-blob-morph animation-delay-400" />
+        {/* Large Gradient Orbs - Cinematic */}
+        <motion.div 
+          style={{ y: orbY1, background: 'radial-gradient(circle, hsl(200 100% 50% / 0.25) 0%, transparent 70%)' }}
+          className="absolute -top-[300px] -left-[200px] w-[900px] h-[900px] rounded-full blur-[180px] animate-orb-drift"
+        />
+        <motion.div 
+          style={{ y: orbY2, background: 'radial-gradient(circle, hsl(190 95% 55% / 0.2) 0%, transparent 70%)' }}
+          className="absolute -bottom-[200px] -right-[100px] w-[700px] h-[700px] rounded-full blur-[150px] animate-orb-drift animation-delay-2000"
+        />
+        <div 
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full blur-[120px] animate-orb-drift animation-delay-400"
+          style={{ background: 'radial-gradient(circle, hsl(260 70% 50% / 0.15) 0%, transparent 70%)' }}
+        />
         
-        {/* Particle Network Animation */}
+        {/* Neural Network Canvas */}
         <ParticleBackground />
         
-        {/* Grid Pattern Overlay */}
-        <div className="absolute inset-0 bg-grid-pattern opacity-30" />
+        {/* Holographic Grid Floor */}
+        <div className="absolute inset-0 holographic-grid opacity-40" />
         
-        {/* Radial Vignette */}
-        <div className="absolute inset-0 bg-radial-vignette" />
+        {/* Light Beam Accents */}
+        <div className="absolute top-0 left-1/4 w-[1px] h-full bg-gradient-to-b from-transparent via-cyan-500/20 to-transparent" />
+        <div className="absolute top-0 right-1/3 w-[1px] h-full bg-gradient-to-b from-transparent via-blue-500/10 to-transparent" />
         
-        {/* Animated Ambient Orbs with Parallax */}
-        <motion.div 
-          style={{ y: orbY1 }}
-          className="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-livemed-blue/15 rounded-full blur-[100px] animate-pulse-glow" 
-        />
-        <motion.div 
-          style={{ y: orbY2 }}
-          className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-livemed-cyan/10 rounded-full blur-[100px] animate-pulse-glow animation-delay-2000" 
-        />
-        
-        {/* Mesh Gradient Overlay */}
-        <div className="absolute inset-0 bg-mesh-gradient opacity-40" />
+        {/* Top fade for seamless header blend */}
+        <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-black to-transparent" />
         
         {/* Hero Content */}
         <motion.div 
@@ -199,26 +199,26 @@ const Landing = () => {
               <span className="text-white/70 font-medium">Now enrolling for 2026</span>
             </motion.div>
 
-            {/* Main Headline - Clean Typography with Glow */}
+            {/* Main Headline - Apple Style Bold Typography */}
             <motion.h1 
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
-              className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-8 leading-[1.1]"
+              className="text-6xl md:text-7xl lg:text-[96px] font-semibold tracking-[-0.03em] mb-6 leading-[1.05]"
+              style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif' }}
             >
-              <span className="text-white text-glow">The Future of</span>
+              <span className="text-white">Where AI</span>
               <br />
-              <span className="text-gradient-livemed text-glow-strong">Medical Education</span>
+              <span className="text-gradient-livemed">Meets Medicine.</span>
             </motion.h1>
 
             <motion.p 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.5 }}
-              className="text-lg md:text-xl text-white/50 mb-12 max-w-2xl mx-auto leading-relaxed font-light"
+              className="text-xl md:text-2xl text-white/40 mb-14 max-w-xl mx-auto leading-relaxed font-light tracking-tight"
             >
-              AI-powered curriculum, virtual clinical rotations, and competency-based 
-              assessments — preparing physicians worldwide.
+              Train smarter. Heal better.
             </motion.p>
 
             {/* CTA Buttons - Enhanced Glow */}
