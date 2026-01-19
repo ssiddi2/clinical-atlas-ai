@@ -6,7 +6,7 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import DemoVideoModal from "@/components/DemoVideoModal";
 import ParticleBackground from "@/components/ParticleBackground";
 import FloatingMedicalIcons from "@/components/FloatingMedicalIcons";
-import heroVideo from "@/assets/hero-background.mov";
+import heroVideo from "@/assets/hero-background.mp4";
 import {
   GraduationCap,
   Brain,
