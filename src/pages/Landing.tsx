@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { motion, useScroll, useTransform } from "framer-motion";
 import DemoVideoModal from "@/components/DemoVideoModal";
 import ParticleBackground from "@/components/ParticleBackground";
+import heroVideo from "@/assets/hero-background.mp4";
 import {
   GraduationCap,
   Brain,
@@ -149,32 +150,30 @@ const Landing = () => {
       <div ref={containerRef} className="flex flex-col bg-livemed-deep">
       {/* Hero Section - Apple Style Clean */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        {/* Pure Black Base */}
-        <div className="absolute inset-0 bg-black" />
+        {/* Video Background */}
+        <div className="absolute inset-0 bg-black">
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="absolute inset-0 w-full h-full object-cover opacity-60"
+          >
+            <source src={heroVideo} type="video/mp4" />
+          </video>
+          {/* Dark overlay for text contrast */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/60" />
+        </div>
         
-        {/* Large Gradient Orbs - Cinematic */}
+        {/* Subtle Gradient Orbs - Layered over video */}
         <motion.div 
-          style={{ y: orbY1, background: 'radial-gradient(circle, hsl(200 100% 50% / 0.25) 0%, transparent 70%)' }}
-          className="absolute -top-[300px] -left-[200px] w-[900px] h-[900px] rounded-full blur-[180px] animate-orb-drift"
+          style={{ y: orbY1, background: 'radial-gradient(circle, hsl(200 100% 50% / 0.15) 0%, transparent 70%)' }}
+          className="absolute -top-[300px] -left-[200px] w-[900px] h-[900px] rounded-full blur-[180px] pointer-events-none"
         />
         <motion.div 
-          style={{ y: orbY2, background: 'radial-gradient(circle, hsl(190 95% 55% / 0.2) 0%, transparent 70%)' }}
-          className="absolute -bottom-[200px] -right-[100px] w-[700px] h-[700px] rounded-full blur-[150px] animate-orb-drift animation-delay-2000"
+          style={{ y: orbY2, background: 'radial-gradient(circle, hsl(190 95% 55% / 0.1) 0%, transparent 70%)' }}
+          className="absolute -bottom-[200px] -right-[100px] w-[700px] h-[700px] rounded-full blur-[150px] pointer-events-none"
         />
-        <div 
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full blur-[120px] animate-orb-drift animation-delay-400"
-          style={{ background: 'radial-gradient(circle, hsl(260 70% 50% / 0.15) 0%, transparent 70%)' }}
-        />
-        
-        {/* Neural Network Canvas */}
-        <ParticleBackground />
-        
-        {/* Holographic Grid Floor */}
-        <div className="absolute inset-0 holographic-grid opacity-40" />
-        
-        {/* Light Beam Accents */}
-        <div className="absolute top-0 left-1/4 w-[1px] h-full bg-gradient-to-b from-transparent via-cyan-500/20 to-transparent" />
-        <div className="absolute top-0 right-1/3 w-[1px] h-full bg-gradient-to-b from-transparent via-blue-500/10 to-transparent" />
         
         {/* Top fade for seamless header blend */}
         <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-black to-transparent" />
