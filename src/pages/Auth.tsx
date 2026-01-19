@@ -139,7 +139,7 @@ const Auth = () => {
           <img 
             src={livemedLogoFull} 
             alt="Livemed Learning" 
-            className="h-16 w-auto logo-glow" 
+            className="h-24 w-auto logo-glow" 
           />
         </div>
 
@@ -167,7 +167,7 @@ const Auth = () => {
               <img 
                 src={livemedLogoIcon} 
                 alt="Livemed Learning" 
-                className="h-20 w-auto mx-auto logo-glow" 
+                className="h-28 w-auto mx-auto logo-glow" 
               />
             </Link>
           </div>

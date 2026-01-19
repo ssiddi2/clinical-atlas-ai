@@ -16,13 +16,13 @@ const Header = () => {
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 glass-dark border-b border-white/5">
-      <div className="container mx-auto flex h-18 items-center justify-between px-6 py-3">
+      <div className="container mx-auto flex h-24 items-center justify-between px-6 py-4">
         {/* Logo with Glow */}
         <Link to="/" className="flex items-center group">
           <img 
             src={livemedLogoFull} 
             alt="Livemed Learning" 
-            className="h-16 w-auto logo-glow transition-all duration-300 group-hover:scale-105" 
+            className="h-20 min-h-[80px] w-auto logo-glow transition-all duration-300 group-hover:scale-105" 
           />
         </Link>
 
