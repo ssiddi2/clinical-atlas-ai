@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { useScorePredictor } from "@/hooks/useScorePredictor";
 import {
   FileText,
   Clock,
@@ -21,6 +22,8 @@ import {
   Loader2,
   Play,
   AlertCircle,
+  TrendingUp,
+  Target,
 } from "lucide-react";
 import livemedLogo from "@/assets/livemed-logo-full.png";
 
@@ -121,6 +124,14 @@ const Assessments = () => {
   const [answers, setAnswers] = useState<{ questionId: number; selected: number; correct: boolean }[]>([]);
   const [assessmentComplete, setAssessmentComplete] = useState(false);
   const [timeRemaining, setTimeRemaining] = useState(60 * 60); // 60 minutes
+  
+  // MATCH Ready score tracking
+  const [previousScore, setPreviousScore] = useState<number | null>(null);
+  const [scoreImpact, setScoreImpact] = useState<number | null>(null);
+  const [savingResults, setSavingResults] = useState(false);
+  const startTimeRef = useRef<number>(0);
+  
+  const { prediction, saveAssessmentResult, refreshPrediction } = useScorePredictor(user?.id ?? null);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
@@ -171,15 +182,97 @@ const Assessments = () => {
     setShowExplanation(true);
   };
 
-  const handleNextQuestion = () => {
+  const handleNextQuestion = async () => {
     if (currentQuestion < usmleSampleQuestions.length - 1) {
       setCurrentQuestion(currentQuestion + 1);
       setSelectedAnswer(null);
       setShowExplanation(false);
     } else {
+      // Assessment complete - save results
       setAssessmentComplete(true);
+      await saveAssessmentResults();
     }
   };
+  
+  const saveAssessmentResults = async () => {
+    if (!user || savingResults) return;
+    
+    setSavingResults(true);
+    
+    // Capture previous score before saving
+    const prevScore = prediction?.predictedStep1Score ?? null;
+    setPreviousScore(prevScore);
+    
+    // Calculate time taken
+    const timeTaken = startTimeRef.current > 0 
+      ? Math.floor((Date.now() - startTimeRef.current) / 1000)
+      : 60 * 60 - timeRemaining;
+    
+    // Build topic performance
+    const topicPerf: Record<string, { correct: number; total: number }> = {};
+    answers.forEach((answer, idx) => {
+      const question = usmleSampleQuestions[idx];
+      if (!topicPerf[question.topic]) {
+        topicPerf[question.topic] = { correct: 0, total: 0 };
+      }
+      topicPerf[question.topic].total++;
+      if (answer.correct) {
+        topicPerf[question.topic].correct++;
+      }
+    });
+    // Add current question to performance
+    const currentQ = usmleSampleQuestions[currentQuestion];
+    const lastAnswer = answers[answers.length - 1];
+    if (lastAnswer && !topicPerf[currentQ.topic]) {
+      topicPerf[currentQ.topic] = { correct: 0, total: 0 };
+    }
+    
+    const correctCount = answers.filter(a => a.correct).length;
+    
+    try {
+      await saveAssessmentResult(
+        'practice',
+        usmleSampleQuestions.length,
+        correctCount,
+        timeTaken,
+        topicPerf
+      );
+      
+      // Refresh prediction to get new score
+      await refreshPrediction();
+      
+      // Calculate score impact after a brief delay to allow state update
+      setTimeout(() => {
+        if (prediction && prevScore) {
+          const newScore = prediction.predictedStep1Score;
+          const impact = newScore - prevScore;
+          setScoreImpact(impact);
+          
+          if (impact !== 0) {
+            toast({
+              title: impact > 0 ? "🎉 Score Increased!" : "📉 Score Update",
+              description: impact > 0 
+                ? `Your predicted USMLE score increased from ${prevScore} to ${newScore} (+${impact} points)`
+                : `Your predicted USMLE score changed from ${prevScore} to ${newScore} (${impact} points)`,
+              duration: 6000,
+            });
+          }
+        }
+      }, 500);
+      
+    } catch (error) {
+      console.error('Error saving assessment results:', error);
+    } finally {
+      setSavingResults(false);
+    }
+  };
+  
+  // Track start time when assessment begins
+  useEffect(() => {
+    if (assessmentStarted && startTimeRef.current === 0) {
+      startTimeRef.current = Date.now();
+    }
+  }, [assessmentStarted]);
 
   const getScore = () => {
     const correct = answers.filter((a) => a.correct).length;
@@ -411,7 +504,66 @@ const Assessments = () => {
 
         {/* Results Screen */}
         {assessmentComplete && (
-          <div className="space-y-8">
+          <div className="space-y-6">
+            {/* Score Impact Banner */}
+            {prediction && (
+              <Card className={`border-2 ${scoreImpact && scoreImpact > 0 ? 'border-livemed-success bg-livemed-success/5' : scoreImpact && scoreImpact < 0 ? 'border-amber-500 bg-amber-500/5' : 'border-accent bg-accent/5'}`}>
+                <CardContent className="p-6">
+                  <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                    <div className="flex items-center gap-4">
+                      <div className={`w-14 h-14 rounded-full flex items-center justify-center ${scoreImpact && scoreImpact > 0 ? 'bg-livemed-success/20' : scoreImpact && scoreImpact < 0 ? 'bg-amber-500/20' : 'bg-accent/20'}`}>
+                        {scoreImpact && scoreImpact > 0 ? (
+                          <TrendingUp className="h-7 w-7 text-livemed-success" />
+                        ) : (
+                          <Target className="h-7 w-7 text-accent" />
+                        )}
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-lg">MATCH Ready™ Score Updated</h3>
+                        {previousScore && scoreImpact !== null ? (
+                          <p className="text-muted-foreground">
+                            {scoreImpact > 0 
+                              ? `Your predicted score increased from ${previousScore} → ${prediction.predictedStep1Score}`
+                              : scoreImpact < 0 
+                              ? `Your predicted score changed from ${previousScore} → ${prediction.predictedStep1Score}`
+                              : `Your predicted score remains at ${prediction.predictedStep1Score}`
+                            }
+                          </p>
+                        ) : (
+                          <p className="text-muted-foreground">
+                            Your assessment has been recorded
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center gap-6">
+                      <div className="text-center">
+                        <div className="text-3xl font-bold text-gradient-livemed">
+                          {prediction.predictedStep1Score}
+                        </div>
+                        <div className="text-xs text-muted-foreground">Predicted Score</div>
+                      </div>
+                      {scoreImpact !== null && scoreImpact !== 0 && (
+                        <div className={`text-center px-3 py-1 rounded-full ${scoreImpact > 0 ? 'bg-livemed-success/20 text-livemed-success' : 'bg-amber-500/20 text-amber-600'}`}>
+                          <div className="font-bold">
+                            {scoreImpact > 0 ? '+' : ''}{scoreImpact}
+                          </div>
+                          <div className="text-xs">points</div>
+                        </div>
+                      )}
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-livemed-success">
+                          {prediction.passProbabilityStep1.toFixed(0)}%
+                        </div>
+                        <div className="text-xs text-muted-foreground">Pass Prob.</div>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+            
             <Card className="text-center">
               <CardHeader>
                 <div className="w-24 h-24 rounded-full gradient-livemed flex items-center justify-center mx-auto mb-4">
@@ -465,16 +617,22 @@ const Assessments = () => {
                     setSelectedAnswer(null);
                     setShowExplanation(false);
                     setTimeRemaining(60 * 60);
+                    setPreviousScore(null);
+                    setScoreImpact(null);
+                    startTimeRef.current = 0;
                   }}>
                     Try Again
                   </Button>
                   <Button variant="outline" asChild>
-                    <Link to="/curriculum">Back to Curriculum</Link>
+                    <Link to="/score-predictor">
+                      <Target className="mr-2 h-4 w-4" />
+                      View Full Score Analysis
+                    </Link>
                   </Button>
                   <Button className="gradient-livemed" asChild>
-                    <Link to="/eli">
+                    <Link to="/atlas">
                       <Brain className="mr-2 h-4 w-4" />
-                      Review with ELI™
+                      Review with ATLAS™
                     </Link>
                   </Button>
                 </div>
