@@ -22,7 +22,7 @@ import {
   Play,
   AlertCircle,
 } from "lucide-react";
-import livemedLogo from "@/assets/livemed-logo.png";
+import livemedLogo from "@/assets/livemed-logo-full.png";
 
 interface QuizQuestion {
   id: number;
@@ -236,7 +236,7 @@ const Assessments = () => {
           )}
           
           <Link to="/dashboard">
-            <img src={livemedLogo} alt="LIVEMED" className="h-10 w-auto" />
+            <img src={livemedLogo} alt="LIVEMED" className="h-14 w-auto" />
           </Link>
         </div>
         {assessmentStarted && !assessmentComplete && (

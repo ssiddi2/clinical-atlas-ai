@@ -20,7 +20,7 @@ import {
   MessageSquare,
   Award,
 } from "lucide-react";
-import livemedLogo from "@/assets/livemed-logo.png";
+import livemedLogo from "@/assets/livemed-logo-full.png";
 
 interface Module {
   id: string;
@@ -318,7 +318,7 @@ const ModuleView = () => {
             </div>
           </div>
           <Link to="/dashboard">
-            <img src={livemedLogo} alt="LIVEMED" className="h-6 w-auto" />
+            <img src={livemedLogo} alt="LIVEMED" className="h-14 w-auto" />
           </Link>
         </div>
         <Progress value={progress} className="h-1" />

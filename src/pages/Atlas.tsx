@@ -17,7 +17,7 @@ import {
   MessageSquare,
   BookOpen,
 } from "lucide-react";
-import livemedLogo from "@/assets/livemed-logo.png";
+import livemedLogo from "@/assets/livemed-logo-full.png";
 
 interface Message {
   id: string;
@@ -322,7 +322,7 @@ const Atlas = () => {
             </div>
           </div>
           <Link to="/dashboard">
-            <img src={livemedLogo} alt="Livemed Learning" className="h-10 w-auto" />
+            <img src={livemedLogo} alt="Livemed Learning" className="h-14 w-auto" />
           </Link>
         </header>
 
