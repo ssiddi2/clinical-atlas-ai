@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { motion, useScroll, useTransform } from "framer-motion";
 import DemoVideoModal from "@/components/DemoVideoModal";
 import ParticleBackground from "@/components/ParticleBackground";
+import FloatingMedicalIcons from "@/components/FloatingMedicalIcons";
 import heroVideo from "@/assets/hero-background.mp4";
 import {
   GraduationCap,
@@ -174,6 +175,9 @@ const Landing = () => {
           style={{ y: orbY2, background: 'radial-gradient(circle, hsl(190 95% 55% / 0.1) 0%, transparent 70%)' }}
           className="absolute -bottom-[200px] -right-[100px] w-[700px] h-[700px] rounded-full blur-[150px] pointer-events-none"
         />
+        
+        {/* Floating Medical Icons */}
+        <FloatingMedicalIcons />
         
         {/* Top fade for seamless header blend */}
         <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-black to-transparent" />
