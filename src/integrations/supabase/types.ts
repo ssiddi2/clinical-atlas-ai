@@ -14,6 +14,89 @@ export type Database = {
   }
   public: {
     Tables: {
+      assessment_attempts: {
+        Row: {
+          assessment_type: string
+          correct_answers: number
+          created_at: string
+          difficulty_distribution: Json | null
+          id: string
+          percentile: number | null
+          predicted_score: number | null
+          specialty_id: string | null
+          time_taken_seconds: number
+          topic_performance: Json | null
+          total_questions: number
+          user_id: string
+        }
+        Insert: {
+          assessment_type?: string
+          correct_answers?: number
+          created_at?: string
+          difficulty_distribution?: Json | null
+          id?: string
+          percentile?: number | null
+          predicted_score?: number | null
+          specialty_id?: string | null
+          time_taken_seconds?: number
+          topic_performance?: Json | null
+          total_questions?: number
+          user_id: string
+        }
+        Update: {
+          assessment_type?: string
+          correct_answers?: number
+          created_at?: string
+          difficulty_distribution?: Json | null
+          id?: string
+          percentile?: number | null
+          predicted_score?: number | null
+          specialty_id?: string | null
+          time_taken_seconds?: number
+          topic_performance?: Json | null
+          total_questions?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assessment_attempts_specialty_id_fkey"
+            columns: ["specialty_id"]
+            isOneToOne: false
+            referencedRelation: "specialties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      competency_scores: {
+        Row: {
+          assessment_count: number
+          competency_type: string
+          created_at: string
+          id: string
+          last_updated: string
+          score: number
+          user_id: string
+        }
+        Insert: {
+          assessment_count?: number
+          competency_type: string
+          created_at?: string
+          id?: string
+          last_updated?: string
+          score?: number
+          user_id: string
+        }
+        Update: {
+          assessment_count?: number
+          competency_type?: string
+          created_at?: string
+          id?: string
+          last_updated?: string
+          score?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       contact_inquiries: {
         Row: {
           created_at: string | null
@@ -683,6 +766,48 @@ export type Database = {
           granted_by?: string | null
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      usmle_score_predictions: {
+        Row: {
+          confidence_interval: Json | null
+          contributing_factors: Json | null
+          created_at: string
+          id: string
+          match_probability: number | null
+          pass_probability_step1: number | null
+          pass_probability_step2: number | null
+          predicted_step1_score: number | null
+          predicted_step2_score: number | null
+          prediction_date: string
+          user_id: string
+        }
+        Insert: {
+          confidence_interval?: Json | null
+          contributing_factors?: Json | null
+          created_at?: string
+          id?: string
+          match_probability?: number | null
+          pass_probability_step1?: number | null
+          pass_probability_step2?: number | null
+          predicted_step1_score?: number | null
+          predicted_step2_score?: number | null
+          prediction_date?: string
+          user_id: string
+        }
+        Update: {
+          confidence_interval?: Json | null
+          contributing_factors?: Json | null
+          created_at?: string
+          id?: string
+          match_probability?: number | null
+          pass_probability_step1?: number | null
+          pass_probability_step2?: number | null
+          predicted_step1_score?: number | null
+          predicted_step2_score?: number | null
+          prediction_date?: string
           user_id?: string
         }
         Relationships: []
