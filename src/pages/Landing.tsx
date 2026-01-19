@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { motion, useScroll, useTransform } from "framer-motion";
 import DemoVideoModal from "@/components/DemoVideoModal";
+import ParticleBackground from "@/components/ParticleBackground";
 import {
   GraduationCap,
   Brain,
@@ -146,38 +147,37 @@ const Landing = () => {
     <>
       <DemoVideoModal isOpen={isDemoOpen} onClose={() => setIsDemoOpen(false)} />
       <div ref={containerRef} className="flex flex-col bg-livemed-deep">
-      {/* Hero Section with Video Background */}
+      {/* Hero Section with Animated Background */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-16">
-        {/* Video Background */}
-        <video
-          autoPlay
-          muted
-          loop
-          playsInline
-          className="absolute inset-0 w-full h-full object-cover opacity-40"
-          poster="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1920&q=80"
-        >
-          <source
-            src="https://videos.pexels.com/video-files/6129507/6129507-uhd_2560_1440_25fps.mp4"
-            type="video/mp4"
-          />
-        </video>
-
-        {/* Dark Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-b from-livemed-deep via-livemed-deep/90 to-livemed-deep" />
+        {/* Deep Dark Base */}
+        <div className="absolute inset-0 bg-[#050810]" />
         
-        {/* Animated Ambient Orbs */}
+        {/* Animated Gradient Blobs */}
+        <div className="absolute top-0 left-0 w-[1000px] h-[1000px] bg-gradient-to-br from-blue-600/20 via-cyan-500/10 to-transparent rounded-full blur-[150px] animate-blob-morph" />
+        <div className="absolute bottom-0 right-0 w-[800px] h-[800px] bg-gradient-to-tl from-cyan-500/15 via-blue-700/10 to-transparent rounded-full blur-[120px] animate-blob-morph animation-delay-2000" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-blue-500/10 to-purple-500/5 rounded-full blur-[100px] animate-blob-morph animation-delay-400" />
+        
+        {/* Particle Network Animation */}
+        <ParticleBackground />
+        
+        {/* Grid Pattern Overlay */}
+        <div className="absolute inset-0 bg-grid-pattern opacity-30" />
+        
+        {/* Radial Vignette */}
+        <div className="absolute inset-0 bg-radial-vignette" />
+        
+        {/* Animated Ambient Orbs with Parallax */}
         <motion.div 
           style={{ y: orbY1 }}
-          className="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-livemed-blue/10 rounded-full blur-[100px] animate-pulse-glow" 
+          className="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-livemed-blue/15 rounded-full blur-[100px] animate-pulse-glow" 
         />
         <motion.div 
           style={{ y: orbY2 }}
-          className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-livemed-cyan/8 rounded-full blur-[100px] animate-pulse-glow animation-delay-2000" 
+          className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-livemed-cyan/10 rounded-full blur-[100px] animate-pulse-glow animation-delay-2000" 
         />
         
         {/* Mesh Gradient Overlay */}
-        <div className="absolute inset-0 bg-mesh-gradient opacity-50" />
+        <div className="absolute inset-0 bg-mesh-gradient opacity-40" />
         
         {/* Hero Content */}
         <motion.div 
