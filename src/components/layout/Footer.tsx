@@ -1,7 +1,8 @@
+import React, { forwardRef } from "react";
 import { Link } from "react-router-dom";
 import livemedLogoFull from "@/assets/livemed-logo-full.png";
 
-const Footer = () => {
+const Footer = forwardRef<HTMLElement>((props, ref) => {
   const footerLinks = {
     Programs: [
       { label: "Pre-Clinical", href: "/programs/pre-clinical" },
@@ -28,7 +29,7 @@ const Footer = () => {
   };
 
   return (
-    <footer className="relative border-t border-white/5 bg-livemed-deep overflow-hidden">
+    <footer ref={ref} className="relative border-t border-white/5 bg-livemed-deep overflow-hidden">
       {/* Subtle gradient overlay */}
       <div className="absolute inset-0 bg-mesh-gradient opacity-30" />
       
@@ -105,6 +106,8 @@ const Footer = () => {
       </div>
     </footer>
   );
-};
+});
+
+Footer.displayName = "Footer";
 
 export default Footer;
