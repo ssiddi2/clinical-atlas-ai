@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -73,7 +73,15 @@ const slideInRight = {
 
 const Landing = () => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const [isDemoOpen, setIsDemoOpen] = useState(false);
+
+  // Slow down video to 50% speed
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.playbackRate = 0.5;
+    }
+  }, []);
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end end"]
@@ -154,6 +162,7 @@ const Landing = () => {
         {/* Video Background */}
         <div className="absolute inset-0 bg-black">
           <video
+            ref={videoRef}
             autoPlay
             loop
             muted
