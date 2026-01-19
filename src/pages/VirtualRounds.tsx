@@ -190,35 +190,35 @@ const VirtualRounds = () => {
             </div>
           </div>
           <Link to="/dashboard">
-            <img src={livemedLogo} alt="LIVEMED" style={{ height: '80px', width: 'auto' }} className="object-contain" />
+            <img src={livemedLogo} alt="LIVEMED" className="h-10 md:h-16 object-contain" />
           </Link>
         </div>
       </header>
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-6 md:py-8">
         {/* Hero Banner */}
-        <div className="mb-8 p-6 rounded-2xl gradient-livemed text-white">
-          <div className="flex items-start gap-4">
-            <div className="w-14 h-14 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0">
-              <Video className="h-7 w-7" />
+        <div className="mb-6 md:mb-8 p-4 md:p-6 rounded-2xl gradient-livemed text-white">
+          <div className="flex flex-col md:flex-row items-start gap-4">
+            <div className="w-12 h-12 md:w-14 md:h-14 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0">
+              <Video className="h-6 w-6 md:h-7 md:w-7" />
             </div>
             <div className="flex-1">
-              <h2 className="text-2xl font-bold mb-2">Live Telemedicine Rounds</h2>
-              <p className="text-white/80 mb-4">
+              <h2 className="text-xl md:text-2xl font-bold mb-2">Live Telemedicine Rounds</h2>
+              <p className="text-white/80 mb-4 text-sm md:text-base">
                 Join US physicians as they round on real patients via telemedicine at major academic hospitals. 
                 Experience authentic clinical decision-making, participate in case discussions, and receive 
                 evaluations that count toward your clinical portfolio.
               </p>
-              <div className="flex flex-wrap gap-4">
-                <div className="flex items-center gap-2 text-sm">
+              <div className="flex flex-wrap gap-3 md:gap-4">
+                <div className="flex items-center gap-2 text-xs md:text-sm">
                   <MapPin className="h-4 w-4" />
                   <span>US Academic Hospitals</span>
                 </div>
-                <div className="flex items-center gap-2 text-sm">
+                <div className="flex items-center gap-2 text-xs md:text-sm">
                   <GraduationCap className="h-4 w-4" />
                   <span>Faculty-Led Sessions</span>
                 </div>
-                <div className="flex items-center gap-2 text-sm">
+                <div className="flex items-center gap-2 text-xs md:text-sm">
                   <Award className="h-4 w-4" />
                   <span>Earn Clinical Hours</span>
                 </div>

@@ -170,14 +170,14 @@ const Landing = () => {
           <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/60" />
         </div>
         
-        {/* Subtle Gradient Orbs - Layered over video */}
+        {/* Subtle Gradient Orbs - Layered over video (hidden on mobile) */}
         <motion.div 
           style={{ y: orbY1, background: 'radial-gradient(circle, hsl(200 100% 50% / 0.15) 0%, transparent 70%)' }}
-          className="absolute -top-[300px] -left-[200px] w-[900px] h-[900px] rounded-full blur-[180px] pointer-events-none"
+          className="hidden md:block absolute -top-[300px] -left-[200px] w-[900px] h-[900px] rounded-full blur-[180px] pointer-events-none"
         />
         <motion.div 
           style={{ y: orbY2, background: 'radial-gradient(circle, hsl(190 95% 55% / 0.1) 0%, transparent 70%)' }}
-          className="absolute -bottom-[200px] -right-[100px] w-[700px] h-[700px] rounded-full blur-[150px] pointer-events-none"
+          className="hidden md:block absolute -bottom-[200px] -right-[100px] w-[700px] h-[700px] rounded-full blur-[150px] pointer-events-none"
         />
         
         {/* Floating Medical Icons */}
@@ -189,7 +189,7 @@ const Landing = () => {
         {/* Hero Content */}
         <motion.div 
           style={{ y: heroY }}
-          className="container mx-auto px-6 relative z-10"
+          className="container mx-auto px-4 md:px-6 relative z-10"
         >
           <div className="max-w-4xl mx-auto text-center">
             {/* Badge with Glow */}
@@ -211,7 +211,7 @@ const Landing = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.25 }}
-              className="text-2xl md:text-3xl font-semibold text-gradient-livemed text-glow mb-4 tracking-wide"
+              className="text-xl sm:text-2xl md:text-3xl font-semibold text-gradient-livemed text-glow mb-4 tracking-wide"
             >
               LIVEMED University
             </motion.div>
@@ -221,7 +221,7 @@ const Landing = () => {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
-              className="text-6xl md:text-7xl lg:text-[96px] font-semibold tracking-[-0.03em] mb-6 leading-[1.05]"
+              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-[96px] font-semibold tracking-[-0.03em] mb-4 md:mb-6 leading-[1.05]"
               style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif' }}
             >
               <span className="text-white">Where AI</span>
@@ -233,7 +233,7 @@ const Landing = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.5 }}
-              className="text-xl md:text-2xl text-white/40 mb-14 max-w-xl mx-auto leading-relaxed font-light tracking-tight"
+              className="text-lg md:text-xl lg:text-2xl text-white/40 mb-8 md:mb-14 max-w-xl mx-auto leading-relaxed font-light tracking-tight"
             >
               Train smarter. Heal better.
             </motion.p>
@@ -296,7 +296,7 @@ const Landing = () => {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-100px" }}
-            className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6"
+            className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 lg:gap-6"
           >
             {stats.map((stat) => (
               <motion.div 
@@ -304,12 +304,12 @@ const Landing = () => {
                 variants={fadeInScale}
                 whileHover={{ y: -6, scale: 1.02 }}
                 transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                className="glass-card-hover rounded-2xl p-6 md:p-8 text-center shadow-glow"
+                className="glass-card-hover rounded-xl md:rounded-2xl p-4 md:p-6 lg:p-8 text-center shadow-glow"
               >
-                <div className="text-3xl md:text-4xl font-bold text-gradient-livemed mb-2 text-glow">
+                <div className="text-2xl sm:text-3xl md:text-4xl font-bold text-gradient-livemed mb-1 md:mb-2 text-glow">
                   {stat.value}
                 </div>
-                <div className="text-xs md:text-sm text-white/40 uppercase tracking-wider font-medium">{stat.label}</div>
+                <div className="text-[10px] sm:text-xs md:text-sm text-white/40 uppercase tracking-wider font-medium">{stat.label}</div>
               </motion.div>
             ))}
           </motion.div>
@@ -349,7 +349,7 @@ const Landing = () => {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-100px" }}
-            className="grid md:grid-cols-2 lg:grid-cols-4 gap-6"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6"
           >
             {features.map((feature) => (
               <motion.div
@@ -400,7 +400,7 @@ const Landing = () => {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-100px" }}
-            className="grid md:grid-cols-2 lg:grid-cols-4 gap-5"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5"
           >
             {programs.map((program) => (
               <motion.div
@@ -634,7 +634,7 @@ const Landing = () => {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-100px" }}
-            className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto"
+            className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 max-w-5xl mx-auto"
           >
             {[
               {

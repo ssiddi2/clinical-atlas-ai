@@ -236,7 +236,7 @@ const Assessments = () => {
           )}
           
           <Link to="/dashboard">
-            <img src={livemedLogo} alt="LIVEMED" style={{ height: '80px', width: 'auto' }} className="object-contain" />
+            <img src={livemedLogo} alt="LIVEMED" className="h-10 md:h-16 object-contain" />
           </Link>
         </div>
         {assessmentStarted && !assessmentComplete && (
@@ -244,13 +244,13 @@ const Assessments = () => {
         )}
       </header>
 
-      <div className="container mx-auto px-4 py-8 max-w-4xl">
+      <div className="container mx-auto px-4 py-6 md:py-8 max-w-4xl">
         {/* Start Screen */}
         {!assessmentStarted && !assessmentComplete && (
-          <div className="space-y-8">
+          <div className="space-y-6 md:space-y-8">
             <div className="text-center">
-              <h1 className="text-3xl font-bold mb-4">USMLE-Style Practice Assessment</h1>
-              <p className="text-muted-foreground max-w-2xl mx-auto">
+              <h1 className="text-2xl md:text-3xl font-bold mb-4">USMLE-Style Practice Assessment</h1>
+              <p className="text-muted-foreground max-w-2xl mx-auto text-sm md:text-base">
                 Test your clinical knowledge with high-yield USMLE-style questions across multiple specialties.
               </p>
             </div>

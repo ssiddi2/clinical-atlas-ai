@@ -137,13 +137,13 @@ const RotationExperience = () => {
             {/* Vitals */}
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <Activity className="h-5 w-5 text-accent" />
+                <CardTitle className="text-base md:text-lg flex items-center gap-2">
+                  <Activity className="h-4 w-4 md:h-5 md:w-5 text-accent" />
                   Vital Signs
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                <div className="grid grid-cols-3 md:grid-cols-5 gap-2 md:gap-4">
                   {Object.entries(patientCase.vitals).map(([key, value]) => (
                     <div key={key} className="text-center p-3 bg-muted/50 rounded-lg">
                       <p className="text-xs text-muted-foreground uppercase">{key}</p>
