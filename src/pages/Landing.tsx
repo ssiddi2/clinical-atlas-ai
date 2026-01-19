@@ -7,7 +7,7 @@ import DemoVideoModal from "@/components/DemoVideoModal";
 import ParticleBackground from "@/components/ParticleBackground";
 import FloatingMedicalIcons from "@/components/FloatingMedicalIcons";
 import heroVideo from "@/assets/hero-background.mp4";
-import jointCommissionBadge from "@/assets/joint-commission-badge.jpeg";
+import jointCommissionBadge from "@/assets/joint-commission-badge.png";
 import {
   GraduationCap,
   Brain,
@@ -321,17 +321,13 @@ const Landing = () => {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
             viewport={{ once: true }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-12 glass-card rounded-xl md:rounded-2xl p-4 md:p-6 max-w-xl mx-auto"
+            className="flex items-center justify-center mt-12"
           >
             <img 
               src={jointCommissionBadge} 
-              alt="The Joint Commission Accreditation" 
-              className="h-16 md:h-20 w-auto object-contain bg-white rounded-lg p-2"
+              alt="The Joint Commission - National Quality Approval" 
+              className="h-20 md:h-24 w-auto object-contain rounded-xl"
             />
-            <div className="text-center sm:text-left">
-              <p className="text-white font-semibold text-sm md:text-base">Joint Commission Accredited</p>
-              <p className="text-white/50 text-xs md:text-sm">Meeting the highest standards in healthcare education</p>
-            </div>
           </motion.div>
         </div>
       </section>
