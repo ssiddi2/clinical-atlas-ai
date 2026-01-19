@@ -32,19 +32,18 @@ const Footer = () => {
       {/* Subtle gradient overlay */}
       <div className="absolute inset-0 bg-mesh-gradient opacity-30" />
       
-      <div className="container mx-auto px-6 py-16 relative">
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-10">
+      <div className="container mx-auto px-4 md:px-6 py-12 md:py-16 relative">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-8 md:gap-10">
           {/* Brand Column */}
           <div className="col-span-2 md:col-span-1">
-            <Link to="/" className="inline-block mb-6 group">
+            <Link to="/" className="inline-block mb-4 md:mb-6 group">
               <img 
                 src={livemedLogoFull} 
                 alt="LIVEMED University" 
-                style={{ height: '100px', width: 'auto' }}
-                className="logo-glow transition-all duration-300 group-hover:scale-105 object-contain"
+                className="h-16 md:h-24 object-contain logo-glow transition-all duration-300 group-hover:scale-105"
               />
             </Link>
-            <p className="text-sm text-white/40 leading-relaxed">
+            <p className="text-xs md:text-sm text-white/40 leading-relaxed">
               Division of Clinical & Continuing Medical Education
             </p>
           </div>
@@ -74,8 +73,8 @@ const Footer = () => {
 
       {/* Legal Disclaimer */}
       <div className="border-t border-white/5 relative">
-        <div className="container mx-auto px-6 py-4">
-          <p className="text-xs text-white/30 text-center max-w-4xl mx-auto leading-relaxed">
+        <div className="container mx-auto px-4 md:px-6 py-4">
+          <p className="text-[10px] md:text-xs text-white/30 text-center max-w-4xl mx-auto leading-relaxed">
             LIVEMED University is a professional medical education platform offering clinical and continuing medical education. 
             LIVEMED University is not a degree-granting institution and does not award MD or equivalent medical degrees.
           </p>
@@ -84,7 +83,7 @@ const Footer = () => {
 
       {/* Bottom Bar */}
       <div className="border-t border-white/5 relative">
-        <div className="container mx-auto px-6 py-6 flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div className="container mx-auto px-4 md:px-6 py-4 md:py-6 flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="text-xs text-white/30">
             © {new Date().getFullYear()} LIVEMED University. All rights reserved.
           </p>

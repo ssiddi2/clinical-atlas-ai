@@ -122,7 +122,7 @@ const Dashboard = () => {
       <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur">
         <div className="container mx-auto px-4 flex h-16 items-center justify-between">
           <Link to="/dashboard" className="flex items-center gap-2">
-            <img src={livemedLogo} alt="LIVEMED" style={{ height: '80px', width: 'auto' }} className="object-contain" />
+            <img src={livemedLogo} alt="LIVEMED" className="h-10 md:h-16 object-contain" />
           </Link>
 
           <nav className="hidden md:flex items-center gap-6">
@@ -179,24 +179,24 @@ const Dashboard = () => {
         </div>
 
         {/* Quick Actions */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-8">
           {quickActions.map((action) => (
             <Link key={action.label} to={action.href}>
               <Card className="hover:shadow-livemed transition-all duration-300 hover:-translate-y-1 cursor-pointer h-full">
-                <CardContent className="p-4 flex items-center gap-3">
-                  <div className={`w-10 h-10 rounded-lg ${action.color} flex items-center justify-center`}>
-                    <action.icon className="h-5 w-5 text-white" />
+                <CardContent className="p-3 md:p-4 flex items-center gap-2 md:gap-3">
+                  <div className={`w-8 h-8 md:w-10 md:h-10 rounded-lg ${action.color} flex items-center justify-center flex-shrink-0`}>
+                    <action.icon className="h-4 w-4 md:h-5 md:w-5 text-white" />
                   </div>
-                  <span className="font-medium text-sm">{action.label}</span>
+                  <span className="font-medium text-xs md:text-sm">{action.label}</span>
                 </CardContent>
               </Card>
             </Link>
           ))}
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
           {/* Main Content Area */}
-          <div className="lg:col-span-2 space-y-8">
+          <div className="lg:col-span-2 space-y-6 md:space-y-8">
             {/* Continue Learning Card */}
             <Card>
               <CardHeader>

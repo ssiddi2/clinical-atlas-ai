@@ -31,14 +31,13 @@ const Header = () => {
           : "bg-transparent"
       }`}
     >
-      <div className="container mx-auto flex h-16 items-center justify-between px-6">
+      <div className="container mx-auto flex h-14 md:h-16 items-center justify-between px-4 md:px-6">
         {/* Logo - Apple style compact */}
         <Link to="/" className="flex items-center group flex-shrink-0">
           <img 
             src={livemedLogoFull} 
             alt="LIVEMED University" 
-            style={{ height: '44px', width: 'auto' }}
-            className="transition-all duration-300 group-hover:opacity-80 object-contain" 
+            className="h-8 md:h-11 transition-all duration-300 group-hover:opacity-80 object-contain" 
           />
         </Link>
 
@@ -88,12 +87,12 @@ const Header = () => {
       {/* Mobile Menu */}
       {mobileMenuOpen && (
         <div className="md:hidden bg-[#030508]/95 backdrop-blur-2xl border-t border-white/10">
-          <nav className="container mx-auto px-6 py-6 flex flex-col gap-1">
+          <nav className="container mx-auto px-4 py-4 flex flex-col gap-1">
             {navItems.map((item) => (
               <Link
                 key={item.href}
                 to={item.href}
-                className="text-sm font-normal text-white/70 hover:text-white transition-colors py-3"
+                className="text-base font-normal text-white/70 hover:text-white active:bg-white/10 transition-colors py-4 border-b border-white/5"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 {item.label}

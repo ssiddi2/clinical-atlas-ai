@@ -272,8 +272,8 @@ const Atlas = () => {
   ];
 
   return (
-    <div className="min-h-screen flex bg-background">
-      {/* Sidebar - Conversations */}
+    <div className="min-h-screen flex flex-col md:flex-row bg-background">
+      {/* Sidebar - Conversations (hidden on mobile) */}
       <aside className="hidden md:flex w-72 border-r border-border flex-col bg-muted/30">
         <div className="p-4 border-b border-border">
           <Link to="/dashboard" className="flex items-center gap-2 text-muted-foreground hover:text-foreground mb-4">
@@ -309,37 +309,40 @@ const Atlas = () => {
       </aside>
 
       {/* Main Chat Area */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col min-w-0">
         {/* Header */}
-        <header className="border-b border-border px-4 py-3 flex items-center justify-between bg-background">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full gradient-livemed flex items-center justify-center">
-              <Brain className="h-5 w-5 text-white" />
+        <header className="border-b border-border px-3 md:px-4 py-3 flex items-center justify-between bg-background">
+          <div className="flex items-center gap-2 md:gap-3">
+            <Link to="/dashboard" className="md:hidden text-muted-foreground">
+              <ArrowLeft className="h-5 w-5" />
+            </Link>
+            <div className="w-8 h-8 md:w-10 md:h-10 rounded-full gradient-livemed flex items-center justify-center">
+              <Brain className="h-4 w-4 md:h-5 md:w-5 text-white" />
             </div>
             <div>
-              <h1 className="font-semibold">ATLAS™</h1>
-              <p className="text-xs text-muted-foreground">AI Professor</p>
+              <h1 className="font-semibold text-sm md:text-base">ATLAS™</h1>
+              <p className="text-xs text-muted-foreground hidden sm:block">AI Professor</p>
             </div>
           </div>
-          <Link to="/dashboard">
-            <img src={livemedLogo} alt="LIVEMED University" style={{ height: '80px', width: 'auto' }} className="object-contain" />
+          <Link to="/dashboard" className="hidden md:block">
+            <img src={livemedLogo} alt="LIVEMED University" className="h-10 md:h-16 object-contain" />
           </Link>
         </header>
 
         {/* Messages Area */}
-        <ScrollArea className="flex-1 p-4">
+        <ScrollArea className="flex-1 p-3 md:p-4">
           {messages.length === 0 ? (
-            <div className="h-full flex flex-col items-center justify-center text-center p-8">
-              <div className="w-20 h-20 rounded-full gradient-livemed flex items-center justify-center mb-6">
-                <Sparkles className="h-10 w-10 text-white" />
+            <div className="h-full flex flex-col items-center justify-center text-center p-4 md:p-8">
+              <div className="w-16 h-16 md:w-20 md:h-20 rounded-full gradient-livemed flex items-center justify-center mb-4 md:mb-6">
+                <Sparkles className="h-8 w-8 md:h-10 md:w-10 text-white" />
               </div>
-              <h2 className="text-2xl font-bold mb-2">Meet ATLAS™</h2>
-              <p className="text-muted-foreground mb-8 max-w-md">
+              <h2 className="text-xl md:text-2xl font-bold mb-2">Meet ATLAS™</h2>
+              <p className="text-muted-foreground mb-6 md:mb-8 max-w-md text-sm md:text-base">
                 Your AI Professor is ready to teach. Ask questions about any medical topic, 
                 work through clinical cases, or prepare for your exams.
               </p>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-lg w-full">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 md:gap-3 max-w-lg w-full">
                 {suggestedPrompts.map((prompt) => (
                   <button
                     key={prompt}
@@ -347,7 +350,7 @@ const Atlas = () => {
                       setMessage(prompt);
                       textareaRef.current?.focus();
                     }}
-                    className="p-3 text-left text-sm rounded-lg border border-border hover:bg-muted transition-colors"
+                    className="p-3 text-left text-xs md:text-sm rounded-lg border border-border hover:bg-muted transition-colors"
                   >
                     <BookOpen className="h-4 w-4 text-accent mb-2" />
                     {prompt}
@@ -356,25 +359,25 @@ const Atlas = () => {
               </div>
             </div>
           ) : (
-            <div className="max-w-3xl mx-auto space-y-6">
+            <div className="max-w-3xl mx-auto space-y-4 md:space-y-6">
               {messages.map((msg) => (
                 <div
                   key={msg.id}
-                  className={`flex gap-3 ${msg.role === "user" ? "justify-end" : ""}`}
+                  className={`flex gap-2 md:gap-3 ${msg.role === "user" ? "justify-end" : ""}`}
                 >
                   {msg.role === "assistant" && (
-                    <div className="w-8 h-8 rounded-full gradient-livemed flex items-center justify-center flex-shrink-0">
-                      <Brain className="h-4 w-4 text-white" />
+                    <div className="w-6 h-6 md:w-8 md:h-8 rounded-full gradient-livemed flex items-center justify-center flex-shrink-0">
+                      <Brain className="h-3 w-3 md:h-4 md:w-4 text-white" />
                     </div>
                   )}
                   <div
-                    className={`max-w-[80%] rounded-2xl px-4 py-3 ${
+                    className={`max-w-[85%] md:max-w-[80%] rounded-2xl px-3 py-2 md:px-4 md:py-3 ${
                       msg.role === "user"
                         ? "bg-accent text-accent-foreground"
                         : "bg-muted"
                     }`}
                   >
-                    <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
+                    <p className="text-xs md:text-sm whitespace-pre-wrap">{msg.content}</p>
                   </div>
                 </div>
               ))}

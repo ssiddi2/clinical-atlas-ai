@@ -184,15 +184,36 @@ const Curriculum = () => {
             </div>
           </div>
           <Link to="/dashboard">
-            <img src={livemedLogo} alt="LIVEMED" style={{ height: '80px', width: 'auto' }} className="object-contain" />
+            <img src={livemedLogo} alt="LIVEMED" className="h-10 md:h-16 object-contain" />
           </Link>
         </div>
       </header>
 
-      <div className="container mx-auto px-4 py-8">
-        <div className="grid lg:grid-cols-4 gap-8">
-          {/* Sidebar - Specialties */}
-          <aside className="lg:col-span-1">
+      <div className="container mx-auto px-4 py-6 md:py-8">
+        {/* Mobile Specialty Selector */}
+        <div className="lg:hidden overflow-x-auto pb-4 mb-6 -mx-4 px-4">
+          <div className="flex gap-2 min-w-max">
+            {specialties.map((specialty) => {
+              const Icon = iconMap[specialty.icon] || BookOpen;
+              return (
+                <Button
+                  key={specialty.id}
+                  variant={selectedSpecialty === specialty.id ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setSelectedSpecialty(specialty.id)}
+                  className="flex items-center gap-2 whitespace-nowrap"
+                >
+                  <Icon className="h-4 w-4" />
+                  {specialty.name}
+                </Button>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="grid lg:grid-cols-4 gap-6 md:gap-8">
+          {/* Sidebar - Specialties (hidden on mobile) */}
+          <aside className="hidden lg:block lg:col-span-1">
             <Card className="sticky top-24">
               <CardHeader className="pb-3">
                 <CardTitle className="text-lg">Specialties</CardTitle>
