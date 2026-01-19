@@ -97,7 +97,7 @@ const Dashboard = () => {
             <Link to="/atlas" className="text-sm font-medium text-muted-foreground hover:text-primary">
               ATLAS™
             </Link>
-            <Link to="/rotations" className="text-sm font-medium text-muted-foreground hover:text-primary">
+            <Link to="/rotation-experience" className="text-sm font-medium text-muted-foreground hover:text-primary">
               Rotations
             </Link>
             <Link to="/assessments" className="text-sm font-medium text-muted-foreground hover:text-primary">
@@ -109,7 +109,7 @@ const Dashboard = () => {
             <Button variant="ghost" size="icon">
               <Bell className="h-5 w-5" />
             </Button>
-            <Button variant="ghost" size="icon">
+            <Button variant="ghost" size="icon" onClick={() => navigate("/profile")}>
               <Settings className="h-5 w-5" />
             </Button>
             <Button variant="ghost" size="icon" onClick={handleSignOut}>
@@ -302,7 +302,7 @@ const Dashboard = () => {
                   Experience U.S. clinical training with real case discussions and faculty evaluations.
                 </p>
                 <Button variant="secondary" className="w-full" asChild>
-                  <Link to="/rotations">Browse Rotations</Link>
+                  <Link to="/rotation-experience">Start Rotation</Link>
                 </Button>
               </CardContent>
             </Card>
