@@ -32,18 +32,18 @@ const Footer = () => {
       {/* Subtle gradient overlay */}
       <div className="absolute inset-0 bg-mesh-gradient opacity-30" />
       
-      <div className="container mx-auto px-4 md:px-6 py-12 md:py-16 relative">
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-8 md:gap-10">
+      <div className="container mx-auto px-4 md:px-6 py-10 md:py-16 relative">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-6 md:gap-10">
           {/* Brand Column */}
-          <div className="col-span-2 md:col-span-1">
+          <div className="col-span-2 sm:col-span-3 md:col-span-1 mb-4 md:mb-0">
             <Link to="/" className="inline-block mb-4 md:mb-6 group">
               <img 
                 src={livemedLogoFull} 
                 alt="LIVEMED University" 
-                className="h-16 md:h-24 object-contain logo-glow transition-all duration-300 group-hover:scale-105"
+                className="h-12 md:h-24 object-contain logo-glow transition-all duration-300 group-hover:scale-105"
               />
             </Link>
-            <p className="text-xs md:text-sm text-white/40 leading-relaxed">
+            <p className="text-xs md:text-sm text-white/40 leading-relaxed max-w-[200px]">
               Division of Clinical & Continuing Medical Education
             </p>
           </div>
