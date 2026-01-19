@@ -13,6 +13,8 @@ import {
   Award,
   FileText,
   ArrowRight,
+  Video,
+  Globe,
 } from "lucide-react";
 
 const Rotations = () => {
@@ -75,14 +77,14 @@ const Rotations = () => {
 
   const features = [
     {
-      icon: FileText,
-      title: "De-identified U.S. Cases",
-      description: "Real patient presentations from U.S. academic medical centers",
+      icon: Video,
+      title: "Live Telemedicine Rounds",
+      description: "Join US physicians rounding on real patients via telemedicine",
     },
     {
       icon: Users,
       title: "Faculty Evaluations",
-      description: "Written assessments by U.S. physician faculty members",
+      description: "Written assessments by US attending physicians",
     },
     {
       icon: Award,
@@ -92,7 +94,7 @@ const Rotations = () => {
     {
       icon: Clock,
       title: "Flexible Scheduling",
-      description: "Complete rotations on your own schedule, 24/7 access",
+      description: "Sessions across multiple time zones to fit your schedule",
     },
   ];
 
@@ -104,21 +106,25 @@ const Rotations = () => {
           <div className="container mx-auto px-4 relative">
             <div className="max-w-3xl">
               <div className="inline-flex items-center gap-2 bg-accent/10 text-accent px-4 py-2 rounded-full text-sm font-medium mb-6">
-                <Stethoscope className="h-4 w-4" />
-                Virtual Clinical Training
+                <Video className="h-4 w-4" />
+                Live Telemedicine Rotations
               </div>
               <h1 className="text-4xl md:text-5xl font-bold mb-6">
-                Virtual U.S. Clinical Rotations
+                Virtual Rounds with US Physicians
               </h1>
-              <p className="text-lg text-muted-foreground mb-8">
-                Experience authentic U.S. clinical training without leaving your country. 
-                Work through real case discussions, participate in attending rounds, 
-                and receive faculty evaluations that matter for residency.
+              <p className="text-lg text-muted-foreground mb-4">
+                Join live telemedicine rounds with attending physicians at US academic hospitals. 
+                Observe real patient encounters, participate in clinical discussions, 
+                and receive faculty evaluations that strengthen your residency applications.
               </p>
+              <div className="flex items-center gap-2 text-sm text-muted-foreground mb-8">
+                <Globe className="h-4 w-4" />
+                <span>Sessions available across multiple time zones</span>
+              </div>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button size="lg" className="gradient-livemed" asChild>
                   <Link to="/auth?mode=signup">
-                    Start Your Rotation
+                    Join Live Rounds
                     <ArrowRight className="ml-2 h-5 w-5" />
                   </Link>
                 </Button>
