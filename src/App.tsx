@@ -28,6 +28,7 @@ import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
 import Residency from "./pages/Residency";
 import Profile from "./pages/Profile";
+import CaseStudies from "./pages/CaseStudies";
 import Onboarding from "./pages/Onboarding";
 import Admin from "./pages/Admin";
 import ScorePredictor from "./pages/ScorePredictor";
@@ -54,6 +55,7 @@ const App = () => (
             <Route path="/about" element={<About />} />
             <Route path="/terms" element={<Terms />} />
             <Route path="/privacy" element={<Privacy />} />
+            <Route path="/case-studies" element={<CaseStudies />} />
           </Route>
 
           {/* Auth Route (standalone) */}
