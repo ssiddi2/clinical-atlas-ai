@@ -24,6 +24,8 @@ import RotationExperience from "./pages/RotationExperience";
 import About from "./pages/About";
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
+import Residency from "./pages/Residency";
+import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -67,6 +69,12 @@ const App = () => (
 
           {/* ATLAS AI Professor (authenticated) */}
           <Route path="/atlas" element={<Atlas />} />
+
+          {/* Residency Readiness (authenticated) */}
+          <Route path="/residency" element={<Residency />} />
+
+          {/* Profile Settings (authenticated) */}
+          <Route path="/profile" element={<Profile />} />
 
           {/* Catch-all */}
           <Route path="*" element={<NotFound />} />
