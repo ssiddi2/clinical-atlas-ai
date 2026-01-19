@@ -124,6 +124,53 @@ export type Database = {
           },
         ]
       }
+      lesson_content: {
+        Row: {
+          content_text: string | null
+          content_type: string
+          created_at: string
+          id: string
+          media_caption: string | null
+          media_url: string | null
+          module_id: string
+          section_order: number
+          section_title: string
+          updated_at: string
+        }
+        Insert: {
+          content_text?: string | null
+          content_type: string
+          created_at?: string
+          id?: string
+          media_caption?: string | null
+          media_url?: string | null
+          module_id: string
+          section_order?: number
+          section_title: string
+          updated_at?: string
+        }
+        Update: {
+          content_text?: string | null
+          content_type?: string
+          created_at?: string
+          id?: string
+          media_caption?: string | null
+          media_url?: string | null
+          module_id?: string
+          section_order?: number
+          section_title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lesson_content_module_id_fkey"
+            columns: ["module_id"]
+            isOneToOne: false
+            referencedRelation: "modules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       modules: {
         Row: {
           content_type: string | null
@@ -215,6 +262,203 @@ export type Database = {
           year_of_study?: number | null
         }
         Relationships: []
+      }
+      quiz_questions: {
+        Row: {
+          correct_answer_index: number
+          created_at: string
+          difficulty: string
+          explanation: string
+          id: string
+          module_id: string
+          options: Json
+          question_image_url: string | null
+          question_text: string
+          sort_order: number
+        }
+        Insert: {
+          correct_answer_index: number
+          created_at?: string
+          difficulty?: string
+          explanation: string
+          id?: string
+          module_id: string
+          options?: Json
+          question_image_url?: string | null
+          question_text: string
+          sort_order?: number
+        }
+        Update: {
+          correct_answer_index?: number
+          created_at?: string
+          difficulty?: string
+          explanation?: string
+          id?: string
+          module_id?: string
+          options?: Json
+          question_image_url?: string | null
+          question_text?: string
+          sort_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quiz_questions_module_id_fkey"
+            columns: ["module_id"]
+            isOneToOne: false
+            referencedRelation: "modules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      rotation_case_notes: {
+        Row: {
+          assessment: string | null
+          chief_complaint: string | null
+          created_at: string
+          id: string
+          learning_points: string | null
+          plan: string | null
+          session_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          assessment?: string | null
+          chief_complaint?: string | null
+          created_at?: string
+          id?: string
+          learning_points?: string | null
+          plan?: string | null
+          session_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          assessment?: string | null
+          chief_complaint?: string | null
+          created_at?: string
+          id?: string
+          learning_points?: string | null
+          plan?: string | null
+          session_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rotation_case_notes_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "rotation_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      rotation_enrollments: {
+        Row: {
+          attendance_minutes: number | null
+          attended: boolean | null
+          enrolled_at: string
+          evaluation_score: number | null
+          feedback: string | null
+          id: string
+          physician_comments: string | null
+          session_id: string
+          user_id: string
+        }
+        Insert: {
+          attendance_minutes?: number | null
+          attended?: boolean | null
+          enrolled_at?: string
+          evaluation_score?: number | null
+          feedback?: string | null
+          id?: string
+          physician_comments?: string | null
+          session_id: string
+          user_id: string
+        }
+        Update: {
+          attendance_minutes?: number | null
+          attended?: boolean | null
+          enrolled_at?: string
+          evaluation_score?: number | null
+          feedback?: string | null
+          id?: string
+          physician_comments?: string | null
+          session_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rotation_enrollments_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "rotation_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      rotation_sessions: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          max_participants: number | null
+          meeting_url: string | null
+          physician_avatar_url: string | null
+          physician_credentials: string | null
+          physician_institution: string | null
+          physician_name: string
+          scheduled_end: string
+          scheduled_start: string
+          specialty_id: string | null
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          max_participants?: number | null
+          meeting_url?: string | null
+          physician_avatar_url?: string | null
+          physician_credentials?: string | null
+          physician_institution?: string | null
+          physician_name: string
+          scheduled_end: string
+          scheduled_start: string
+          specialty_id?: string | null
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          max_participants?: number | null
+          meeting_url?: string | null
+          physician_avatar_url?: string | null
+          physician_credentials?: string | null
+          physician_institution?: string | null
+          physician_name?: string
+          scheduled_end?: string
+          scheduled_start?: string
+          specialty_id?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rotation_sessions_specialty_id_fkey"
+            columns: ["specialty_id"]
+            isOneToOne: false
+            referencedRelation: "specialties"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       specialties: {
         Row: {

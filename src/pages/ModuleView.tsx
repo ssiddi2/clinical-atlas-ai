@@ -8,6 +8,7 @@ import { Progress } from "@/components/ui/progress";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import LessonContentRenderer from "@/components/lesson/LessonContentRenderer";
 import {
   BookOpen,
   Brain,
@@ -31,108 +32,114 @@ interface Module {
   specialty_id: string;
 }
 
-interface QuizQuestion {
-  id: number;
-  question: string;
-  options: string[];
-  correctIndex: number;
-  explanation: string;
+interface LessonSection {
+  id: string;
+  section_order: number;
+  section_title: string;
+  content_type: string;
+  content_text: string | null;
+  media_url: string | null;
+  media_caption: string | null;
 }
 
-// Sample lesson content (in production, this would come from the database or be AI-generated)
-const getLessonContent = (title: string) => {
-  return {
-    sections: [
-      {
-        title: "Overview",
-        content: `This module covers the essential concepts of ${title}. Understanding these fundamentals is critical for clinical practice and USMLE success.`,
-      },
-      {
-        title: "Pathophysiology",
-        content: `The underlying mechanisms involve complex interactions between cellular, molecular, and systemic factors. Key pathways include inflammatory cascades, hemodynamic changes, and compensatory mechanisms that ultimately determine disease progression and clinical presentation.`,
-      },
-      {
-        title: "Clinical Presentation",
-        content: `Patients typically present with a constellation of symptoms that reflect the underlying pathology. A thorough history and physical examination are essential for accurate diagnosis and risk stratification.`,
-      },
-      {
-        title: "Diagnostic Approach",
-        content: `The diagnostic workup should be guided by clinical suspicion and pre-test probability. Laboratory studies, imaging, and specialized testing each play important roles in confirming the diagnosis and assessing severity.`,
-      },
-      {
-        title: "Management",
-        content: `Treatment strategies are guided by evidence-based guidelines and tailored to individual patient factors. Both pharmacologic and non-pharmacologic interventions are important components of comprehensive management.`,
-      },
-      {
-        title: "Key Points",
-        content: `• Always consider the differential diagnosis\n• Risk stratification guides management intensity\n• Monitor for complications and treatment response\n• Patient education improves outcomes\n• Follow guideline-directed medical therapy when applicable`,
-      },
-    ],
-  };
-};
+interface QuizQuestion {
+  id: string;
+  question_text: string;
+  question_image_url: string | null;
+  options: string[];
+  correct_answer_index: number;
+  explanation: string;
+  difficulty: string;
+  sort_order: number;
+}
 
-// Sample quiz questions (in production, these would be AI-generated or from a question bank)
-const getQuizQuestions = (title: string): QuizQuestion[] => {
+// Fallback lesson content when database content is empty
+const getFallbackLessonContent = (title: string): LessonSection[] => {
   return [
     {
-      id: 1,
-      question: `A 65-year-old patient presents with progressive symptoms. Physical examination reveals key findings consistent with the pathology covered in "${title}". What is the most appropriate initial diagnostic test?`,
-      options: [
-        "Complete blood count",
-        "Electrocardiogram",
-        "Chest X-ray",
-        "Basic metabolic panel",
-      ],
-      correctIndex: 1,
-      explanation: "An ECG is often the first-line diagnostic test as it provides rapid, non-invasive information about cardiac function and rhythm. It can reveal ischemia, arrhythmias, and conduction abnormalities that inform immediate management decisions.",
+      id: "1",
+      section_order: 0,
+      section_title: "Overview",
+      content_type: "text",
+      content_text: `This module covers the essential concepts of ${title}. Understanding these fundamentals is critical for clinical practice and USMLE success.`,
+      media_url: null,
+      media_caption: null,
     },
     {
-      id: 2,
-      question: "Which of the following mechanisms is most directly involved in the pathophysiology of this condition?",
-      options: [
-        "Increased systemic vascular resistance",
-        "Decreased cardiac output",
-        "Impaired oxygen delivery",
-        "All of the above",
-      ],
-      correctIndex: 3,
-      explanation: "The pathophysiology is multifactorial and involves complex interactions between hemodynamic changes, tissue perfusion, and compensatory mechanisms. Understanding these interconnected pathways is essential for targeted therapeutic interventions.",
+      id: "2",
+      section_order: 1,
+      section_title: "Pathophysiology",
+      content_type: "text",
+      content_text: `The underlying mechanisms involve complex interactions between cellular, molecular, and systemic factors. Key pathways include inflammatory cascades, hemodynamic changes, and compensatory mechanisms that ultimately determine disease progression and clinical presentation.`,
+      media_url: null,
+      media_caption: null,
     },
     {
-      id: 3,
-      question: "A patient with this condition is started on first-line therapy. Which parameter should be monitored most closely during treatment initiation?",
-      options: [
-        "Blood pressure",
-        "Heart rate",
-        "Renal function",
-        "All of the above",
-      ],
-      correctIndex: 3,
-      explanation: "Careful monitoring of multiple parameters is essential when initiating therapy. Blood pressure, heart rate, and renal function can all be affected by treatment, and close follow-up helps optimize dosing while minimizing adverse effects.",
+      id: "3",
+      section_order: 2,
+      section_title: "Clinical Presentation",
+      content_type: "text",
+      content_text: `Patients typically present with a constellation of symptoms that reflect the underlying pathology. A thorough history and physical examination are essential for accurate diagnosis and risk stratification.`,
+      media_url: null,
+      media_caption: null,
     },
     {
-      id: 4,
-      question: "Which of the following is a recognized complication of long-term disease progression?",
-      options: [
-        "End-organ damage",
-        "Increased morbidity",
-        "Decreased quality of life",
-        "All of the above",
-      ],
-      correctIndex: 3,
-      explanation: "Without appropriate management, progressive disease leads to end-organ damage, increased morbidity and mortality, and significantly impaired quality of life. This underscores the importance of early diagnosis and aggressive treatment.",
+      id: "4",
+      section_order: 3,
+      section_title: "Remember This",
+      content_type: "clinical_pearl",
+      content_text: `Always consider the differential diagnosis and risk stratify early. The clinical presentation may be subtle, especially in elderly or immunocompromised patients.`,
+      media_url: null,
+      media_caption: null,
     },
     {
-      id: 5,
-      question: "According to current guidelines, which approach represents the standard of care for management?",
-      options: [
-        "Lifestyle modification alone",
-        "Pharmacotherapy alone",
-        "Combination of lifestyle and pharmacotherapy",
-        "Watchful waiting",
-      ],
-      correctIndex: 2,
-      explanation: "Current guidelines emphasize a comprehensive approach combining lifestyle modifications with guideline-directed pharmacotherapy. This multi-modal strategy addresses both modifiable risk factors and underlying pathophysiology for optimal outcomes.",
+      id: "5",
+      section_order: 4,
+      section_title: "Key Takeaways",
+      content_type: "key_points",
+      content_text: `Always consider the differential diagnosis
+Risk stratification guides management intensity
+Monitor for complications and treatment response
+Patient education improves outcomes
+Follow guideline-directed medical therapy when applicable`,
+      media_url: null,
+      media_caption: null,
+    },
+  ];
+};
+
+// Fallback quiz questions when database content is empty
+const getFallbackQuizQuestions = (title: string): QuizQuestion[] => {
+  return [
+    {
+      id: "1",
+      question_text: `A 65-year-old patient presents with progressive symptoms. Physical examination reveals key findings consistent with the pathology covered in "${title}". What is the most appropriate initial diagnostic test?`,
+      question_image_url: null,
+      options: ["Complete blood count", "Electrocardiogram", "Chest X-ray", "Basic metabolic panel"],
+      correct_answer_index: 1,
+      explanation: "An ECG is often the first-line diagnostic test as it provides rapid, non-invasive information about cardiac function and rhythm.",
+      difficulty: "medium",
+      sort_order: 0,
+    },
+    {
+      id: "2",
+      question_text: "Which of the following mechanisms is most directly involved in the pathophysiology of this condition?",
+      question_image_url: null,
+      options: ["Increased systemic vascular resistance", "Decreased cardiac output", "Impaired oxygen delivery", "All of the above"],
+      correct_answer_index: 3,
+      explanation: "The pathophysiology is multifactorial and involves complex interactions between hemodynamic changes, tissue perfusion, and compensatory mechanisms.",
+      difficulty: "medium",
+      sort_order: 1,
+    },
+    {
+      id: "3",
+      question_text: "Which parameter should be monitored most closely during treatment initiation?",
+      question_image_url: null,
+      options: ["Blood pressure", "Heart rate", "Renal function", "All of the above"],
+      correct_answer_index: 3,
+      explanation: "Careful monitoring of multiple parameters is essential when initiating therapy.",
+      difficulty: "easy",
+      sort_order: 2,
     },
   ];
 };
@@ -144,6 +151,8 @@ const ModuleView = () => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [module, setModule] = useState<Module | null>(null);
+  const [lessonSections, setLessonSections] = useState<LessonSection[]>([]);
+  const [quizQuestions, setQuizQuestions] = useState<QuizQuestion[]>([]);
   const [currentSection, setCurrentSection] = useState(0);
   const [progress, setProgress] = useState(0);
   
@@ -152,11 +161,9 @@ const ModuleView = () => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
   const [showExplanation, setShowExplanation] = useState(false);
-  const [answers, setAnswers] = useState<{ questionId: number; selected: number; correct: boolean }[]>([]);
+  const [answers, setAnswers] = useState<{ questionId: string; selected: number; correct: boolean }[]>([]);
   const [quizComplete, setQuizComplete] = useState(false);
 
-  const lessonContent = module ? getLessonContent(module.title) : null;
-  const quizQuestions = module ? getQuizQuestions(module.title) : [];
   const isQuiz = module?.content_type === "quiz";
 
   useEffect(() => {
@@ -204,6 +211,39 @@ const ModuleView = () => {
 
     setModule(moduleData);
 
+    // Load lesson content from database
+    const { data: lessonData } = await supabase
+      .from("lesson_content")
+      .select("*")
+      .eq("module_id", moduleId)
+      .order("section_order", { ascending: true });
+
+    if (lessonData && lessonData.length > 0) {
+      setLessonSections(lessonData);
+    } else {
+      // Use fallback content if no database content exists
+      setLessonSections(getFallbackLessonContent(moduleData.title));
+    }
+
+    // Load quiz questions from database
+    const { data: quizData } = await supabase
+      .from("quiz_questions")
+      .select("*")
+      .eq("module_id", moduleId)
+      .order("sort_order", { ascending: true });
+
+    if (quizData && quizData.length > 0) {
+      // Parse the JSONB options field
+      const parsedQuestions = quizData.map(q => ({
+        ...q,
+        options: Array.isArray(q.options) ? q.options : JSON.parse(q.options as string),
+      }));
+      setQuizQuestions(parsedQuestions as QuizQuestion[]);
+    } else {
+      // Use fallback questions if no database content exists
+      setQuizQuestions(getFallbackQuizQuestions(moduleData.title));
+    }
+
     // Load existing progress
     const { data: progressData } = await supabase
       .from("user_module_progress")
@@ -238,10 +278,10 @@ const ModuleView = () => {
   };
 
   const handleNextSection = () => {
-    if (lessonContent && currentSection < lessonContent.sections.length - 1) {
+    if (lessonSections.length > 0 && currentSection < lessonSections.length - 1) {
       const nextSection = currentSection + 1;
       setCurrentSection(nextSection);
-      const newProgress = Math.round(((nextSection + 1) / lessonContent.sections.length) * 100);
+      const newProgress = Math.round(((nextSection + 1) / lessonSections.length) * 100);
       updateProgress(newProgress);
     } else {
       updateProgress(100);
@@ -262,7 +302,7 @@ const ModuleView = () => {
     if (selectedAnswer === null) return;
 
     const question = quizQuestions[currentQuestion];
-    const isCorrect = selectedAnswer === question.correctIndex;
+    const isCorrect = selectedAnswer === question.correct_answer_index;
 
     setAnswers([
       ...answers,
@@ -326,26 +366,14 @@ const ModuleView = () => {
 
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         {/* Lesson Content */}
-        {!isQuiz && lessonContent && (
+        {!isQuiz && lessonSections.length > 0 && (
           <div className="space-y-8">
-            <Card>
-              <CardHeader>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
-                  <BookOpen className="h-4 w-4" />
-                  <span>Section {currentSection + 1} of {lessonContent.sections.length}</span>
-                </div>
-                <CardTitle className="text-2xl">
-                  {lessonContent.sections[currentSection].title}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="prose prose-slate max-w-none">
-                  <p className="text-lg leading-relaxed whitespace-pre-line">
-                    {lessonContent.sections[currentSection].content}
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
+            <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
+              <BookOpen className="h-4 w-4" />
+              <span>Section {currentSection + 1} of {lessonSections.length}</span>
+            </div>
+
+            <LessonContentRenderer section={lessonSections[currentSection]} />
 
             {/* Navigation */}
             <div className="flex items-center justify-between">
@@ -359,7 +387,7 @@ const ModuleView = () => {
               </Button>
 
               <div className="flex items-center gap-2">
-                {lessonContent.sections.map((_, idx) => (
+                {lessonSections.map((_, idx) => (
                   <div
                     key={idx}
                     className={`w-2 h-2 rounded-full transition-colors ${
@@ -374,7 +402,7 @@ const ModuleView = () => {
               </div>
 
               <Button onClick={handleNextSection} className="gradient-livemed">
-                {currentSection < lessonContent.sections.length - 1 ? (
+                {currentSection < lessonSections.length - 1 ? (
                   <>
                     Next
                     <ArrowRight className="ml-2 h-4 w-4" />
@@ -450,7 +478,7 @@ const ModuleView = () => {
                   </span>
                 </div>
                 <CardTitle className="text-xl leading-relaxed">
-                  {quizQuestions[currentQuestion].question}
+                  {quizQuestions[currentQuestion].question_text}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -464,7 +492,7 @@ const ModuleView = () => {
                       key={idx}
                       className={`flex items-center space-x-3 p-4 rounded-lg border transition-colors ${
                         showExplanation
-                          ? idx === quizQuestions[currentQuestion].correctIndex
+                          ? idx === quizQuestions[currentQuestion].correct_answer_index
                             ? "border-livemed-success bg-livemed-success/10"
                             : idx === selectedAnswer
                             ? "border-destructive bg-destructive/10"
@@ -478,10 +506,10 @@ const ModuleView = () => {
                       <Label htmlFor={`option-${idx}`} className="flex-1 cursor-pointer">
                         {option}
                       </Label>
-                      {showExplanation && idx === quizQuestions[currentQuestion].correctIndex && (
+                      {showExplanation && idx === quizQuestions[currentQuestion].correct_answer_index && (
                         <CheckCircle className="h-5 w-5 text-livemed-success" />
                       )}
-                      {showExplanation && idx === selectedAnswer && idx !== quizQuestions[currentQuestion].correctIndex && (
+                      {showExplanation && idx === selectedAnswer && idx !== quizQuestions[currentQuestion].correct_answer_index && (
                         <XCircle className="h-5 w-5 text-destructive" />
                       )}
                     </div>
