@@ -18,6 +18,7 @@ import {
   LogOut,
   Settings,
   Bell,
+  ShieldCheck,
 } from "lucide-react";
 import livemedLogo from "@/assets/livemed-logo-full.png";
 import VerificationBanner from "@/components/dashboard/VerificationBanner";
@@ -27,11 +28,17 @@ interface ProfileData {
   verification_status: string | null;
 }
 
+interface DashboardState {
+  profile: ProfileData | null;
+  isAdmin: boolean;
+}
+
 const Dashboard = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<ProfileData | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
@@ -40,7 +47,7 @@ const Dashboard = () => {
       if (!session) {
         navigate("/auth");
       } else {
-        loadProfile(session.user.id);
+        loadProfileAndCheckAdmin(session.user.id);
       }
     });
 
@@ -50,20 +57,28 @@ const Dashboard = () => {
       if (!session) {
         navigate("/auth");
       } else {
-        loadProfile(session.user.id);
+        loadProfileAndCheckAdmin(session.user.id);
       }
     });
 
     return () => subscription.unsubscribe();
   }, [navigate]);
 
-  const loadProfile = async (userId: string) => {
+  const loadProfileAndCheckAdmin = async (userId: string) => {
+    // Load profile
     const { data } = await supabase
       .from("profiles")
       .select("onboarding_completed, verification_status")
       .eq("user_id", userId)
       .single();
     setProfile(data);
+
+    // Check admin role
+    const { data: hasRole } = await supabase.rpc("has_role", {
+      _user_id: userId,
+      _role: "platform_admin",
+    });
+    setIsAdmin(!!hasRole);
   };
 
   const handleSignOut = async () => {
@@ -126,6 +141,12 @@ const Dashboard = () => {
           </nav>
 
           <div className="flex items-center gap-3">
+            {isAdmin && (
+              <Button variant="ghost" size="sm" onClick={() => navigate("/admin")} className="text-primary">
+                <ShieldCheck className="h-5 w-5 mr-1" />
+                <span className="hidden sm:inline">Admin</span>
+              </Button>
+            )}
             <Button variant="ghost" size="icon">
               <Bell className="h-5 w-5" />
             </Button>
