@@ -64,14 +64,14 @@ const Dashboard = () => {
   const quickActions = [
     { icon: MessageSquare, label: "Ask ATLAS™", href: "/atlas", color: "bg-accent" },
     { icon: BookOpen, label: "Continue Learning", href: "/curriculum", color: "bg-primary" },
-    { icon: Stethoscope, label: "Virtual Rotation", href: "/rotation-experience", color: "bg-livemed-success" },
+    { icon: Stethoscope, label: "Live Rounds", href: "/virtual-rounds", color: "bg-livemed-success" },
     { icon: FileText, label: "Take Assessment", href: "/assessments", color: "bg-livemed-warning" },
   ];
 
   const upcomingItems = [
-    { title: "Cardiology Module Review", time: "Today, 2:00 PM", type: "Study" },
-    { title: "Internal Medicine Rotation", time: "Tomorrow, 9:00 AM", type: "Rotation" },
-    { title: "Live Case Conference", time: "Thu, 4:00 PM", type: "Live" },
+    { title: "Cardiology Module Review", time: "Today, 2:00 PM", type: "Study", href: "/curriculum" },
+    { title: "Live Rounds: Internal Medicine", time: "Tomorrow, 9:00 AM", type: "Live", href: "/virtual-rounds" },
+    { title: "Live Case Conference", time: "Thu, 4:00 PM", type: "Live", href: "/virtual-rounds" },
   ];
 
   const progressData = [
@@ -97,8 +97,8 @@ const Dashboard = () => {
             <Link to="/atlas" className="text-sm font-medium text-muted-foreground hover:text-primary">
               ATLAS™
             </Link>
-            <Link to="/rotation-experience" className="text-sm font-medium text-muted-foreground hover:text-primary">
-              Rotations
+            <Link to="/virtual-rounds" className="text-sm font-medium text-muted-foreground hover:text-primary">
+              Live Rounds
             </Link>
             <Link to="/assessments" className="text-sm font-medium text-muted-foreground hover:text-primary">
               Assessments
@@ -240,19 +240,20 @@ const Dashboard = () => {
               <CardContent>
                 <div className="space-y-4">
                   {upcomingItems.map((item, idx) => (
-                    <div
+                    <Link
                       key={idx}
-                      className="flex items-start gap-3 pb-4 border-b border-border last:border-0 last:pb-0"
+                      to={item.href}
+                      className="flex items-start gap-3 pb-4 border-b border-border last:border-0 last:pb-0 hover:bg-muted/50 rounded-lg p-2 -mx-2 transition-colors"
                     >
-                      <div className="w-2 h-2 rounded-full bg-accent mt-2 flex-shrink-0" />
+                      <div className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${item.type === 'Live' ? 'bg-livemed-success animate-pulse' : 'bg-accent'}`} />
                       <div>
                         <p className="font-medium text-sm">{item.title}</p>
                         <p className="text-xs text-muted-foreground">{item.time}</p>
-                        <span className="inline-block mt-1 text-xs bg-muted px-2 py-0.5 rounded">
+                        <span className={`inline-block mt-1 text-xs px-2 py-0.5 rounded ${item.type === 'Live' ? 'bg-livemed-success/20 text-livemed-success' : 'bg-muted'}`}>
                           {item.type}
                         </span>
                       </div>
-                    </div>
+                    </Link>
                   ))}
                 </div>
               </CardContent>
@@ -291,18 +292,21 @@ const Dashboard = () => {
               </CardContent>
             </Card>
 
-            {/* Virtual Rotations */}
+            {/* Live Virtual Rounds */}
             <Card className="gradient-livemed text-white">
               <CardContent className="p-6">
                 <Stethoscope className="h-8 w-8 mb-4 opacity-80" />
                 <h3 className="font-semibold text-lg mb-2">
-                  Start a Virtual Rotation
+                  Join Live Rounds
                 </h3>
                 <p className="text-sm text-white/80 mb-4">
-                  Experience U.S. clinical training with real case discussions and faculty evaluations.
+                  Shadow US physicians during real telemedicine rounds at hospitals.
                 </p>
                 <Button variant="secondary" className="w-full" asChild>
-                  <Link to="/rotation-experience">Start Rotation</Link>
+                  <Link to="/virtual-rounds">View Sessions</Link>
+                </Button>
+                <Button variant="ghost" className="w-full mt-2 text-white/80 hover:text-white hover:bg-white/10" asChild>
+                  <Link to="/rotation-experience">Practice Cases</Link>
                 </Button>
               </CardContent>
             </Card>

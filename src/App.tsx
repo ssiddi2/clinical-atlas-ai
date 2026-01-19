@@ -14,6 +14,7 @@ import Dashboard from "./pages/Dashboard";
 import Atlas from "./pages/Atlas";
 import Programs from "./pages/Programs";
 import Rotations from "./pages/Rotations";
+import VirtualRounds from "./pages/VirtualRounds";
 import Institutions from "./pages/Institutions";
 import Curriculum from "./pages/Curriculum";
 import ModuleView from "./pages/ModuleView";
@@ -66,6 +67,9 @@ const App = () => (
 
           {/* Virtual Rotation Experience (authenticated) */}
           <Route path="/rotation-experience" element={<RotationExperience />} />
+
+          {/* Live Virtual Rounds with US Physicians (authenticated) */}
+          <Route path="/virtual-rounds" element={<VirtualRounds />} />
 
           {/* ATLAS AI Professor (authenticated) */}
           <Route path="/atlas" element={<Atlas />} />
