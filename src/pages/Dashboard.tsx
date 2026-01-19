@@ -22,6 +22,8 @@ import {
 } from "lucide-react";
 import livemedLogo from "@/assets/livemed-logo-full.png";
 import VerificationBanner from "@/components/dashboard/VerificationBanner";
+import { MatchReadyWidget } from "@/components/score/MatchReadyWidget";
+import { useScorePredictor } from "@/hooks/useScorePredictor";
 
 interface ProfileData {
   onboarding_completed: boolean;
@@ -306,38 +308,8 @@ const Dashboard = () => {
               </CardContent>
             </Card>
 
-            {/* Residency Readiness */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Award className="h-5 w-5 text-accent" />
-                  Residency Readiness
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center mb-4">
-                  <div className="text-4xl font-bold text-gradient-livemed mb-1">72%</div>
-                  <p className="text-sm text-muted-foreground">Overall Score</p>
-                </div>
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Clinical Knowledge</span>
-                    <span className="font-medium">78%</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Clinical Reasoning</span>
-                    <span className="font-medium">70%</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Communication</span>
-                    <span className="font-medium">68%</span>
-                  </div>
-                </div>
-                <Button variant="outline" className="w-full mt-4" asChild>
-                  <Link to="/residency">View Full Report</Link>
-                </Button>
-              </CardContent>
-            </Card>
+            {/* MATCH Ready Score Predictor */}
+            <MatchReadyWidgetWrapper userId={user?.id || null} />
 
             {/* Live Virtual Rounds */}
             <Card className="gradient-livemed text-white">
@@ -361,6 +333,22 @@ const Dashboard = () => {
         </div>
       </main>
     </div>
+  );
+};
+
+// Wrapper component for MATCH Ready widget
+const MatchReadyWidgetWrapper = ({ userId }: { userId: string | null }) => {
+  const { prediction, loading } = useScorePredictor(userId);
+  
+  return (
+    <MatchReadyWidget
+      score={prediction?.predictedStep1Score || 225}
+      passProbability={prediction?.passProbabilityStep1 || 85}
+      percentile={prediction?.percentile || 68}
+      trend={prediction?.trend || 'stable'}
+      trendValue={prediction?.trendValue || 0}
+      loading={loading}
+    />
   );
 };
 

@@ -29,6 +29,7 @@ import Residency from "./pages/Residency";
 import Profile from "./pages/Profile";
 import Onboarding from "./pages/Onboarding";
 import Admin from "./pages/Admin";
+import ScorePredictor from "./pages/ScorePredictor";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -81,6 +82,9 @@ const App = () => (
 
           {/* Residency Readiness (authenticated) */}
           <Route path="/residency" element={<Residency />} />
+
+          {/* MATCH Ready Score Predictor (authenticated) */}
+          <Route path="/score-predictor" element={<ScorePredictor />} />
 
           {/* Profile Settings (authenticated) */}
           <Route path="/profile" element={<Profile />} />
