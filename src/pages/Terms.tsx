@@ -9,22 +9,31 @@ const Terms = () => {
 
             <h2 className="text-2xl font-semibold mt-8 mb-4">1. Acceptance of Terms</h2>
             <p className="text-muted-foreground mb-4">
-              By accessing and using Livemed Learning ("the Platform"), you accept and agree to be 
+              By accessing and using LIVEMED University ("the Platform"), you accept and agree to be 
               bound by the terms and provisions of this agreement. If you do not agree to abide by 
               these terms, please do not use this service.
             </p>
 
             <h2 className="text-2xl font-semibold mt-8 mb-4">2. Description of Service</h2>
             <p className="text-muted-foreground mb-4">
-              Livemed Learning provides an AI-powered medical education platform designed for medical 
-              students and healthcare professionals. Our services include but are not limited to:
+              LIVEMED University provides an AI-powered professional medical education platform designed for medical 
+              students, physicians, and healthcare professionals. Our services include but are not limited to:
             </p>
             <ul className="list-disc pl-6 text-muted-foreground mb-4">
-              <li>Virtual clinical rotations and case-based learning</li>
+              <li>Virtual clinical observerships and case-based learning</li>
               <li>AI-assisted tutoring through ATLAS™</li>
               <li>USMLE preparation resources</li>
+              <li>Continuing medical education (CME)</li>
               <li>Progress tracking and competency assessments</li>
+              <li>Professional certificates and credentials</li>
             </ul>
+
+            <h2 className="text-2xl font-semibold mt-8 mb-4">2a. Educational Disclaimer</h2>
+            <p className="text-muted-foreground mb-4">
+              LIVEMED University is a professional education platform offering clinical training, 
+              continuing medical education, and competency-based credentials. LIVEMED University 
+              is not a degree-granting institution and does not award MD or equivalent medical degrees.
+            </p>
 
             <h2 className="text-2xl font-semibold mt-8 mb-4">3. User Accounts</h2>
             <p className="text-muted-foreground mb-4">
@@ -35,14 +44,14 @@ const Terms = () => {
 
             <h2 className="text-2xl font-semibold mt-8 mb-4">4. Educational Content Disclaimer</h2>
             <p className="text-muted-foreground mb-4">
-              The content provided on Livemed Learning is for educational purposes only and should not 
+              The content provided on LIVEMED University is for educational purposes only and should not 
               be considered medical advice. Users should always consult with qualified healthcare 
-              professionals for medical decisions.
+              professionals for medical decisions. All clinical decisions require real attending physician oversight.
             </p>
 
             <h2 className="text-2xl font-semibold mt-8 mb-4">5. Intellectual Property</h2>
             <p className="text-muted-foreground mb-4">
-              All content, features, and functionality of the Platform are owned by Livemed Learning 
+              All content, features, and functionality of the Platform are owned by LIVEMED University 
               and are protected by international copyright, trademark, and other intellectual property laws.
             </p>
 
