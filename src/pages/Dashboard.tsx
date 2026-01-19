@@ -19,6 +19,9 @@ import {
   Settings,
   Bell,
   ShieldCheck,
+  Target,
+  ClipboardCheck,
+  Sparkles,
 } from "lucide-react";
 import livemedLogo from "@/assets/livemed-logo-full.png";
 import VerificationBanner from "@/components/dashboard/VerificationBanner";
@@ -28,6 +31,7 @@ import { useScorePredictor } from "@/hooks/useScorePredictor";
 interface ProfileData {
   onboarding_completed: boolean;
   verification_status: string | null;
+  weak_areas: string[] | null;
 }
 
 interface DashboardState {
@@ -70,9 +74,9 @@ const Dashboard = () => {
     // Load profile
     const { data } = await supabase
       .from("profiles")
-      .select("onboarding_completed, verification_status")
+      .select("onboarding_completed, verification_status, weak_areas")
       .eq("user_id", userId)
-      .single();
+      .maybeSingle();
     setProfile(data);
 
     // Check admin role
@@ -97,6 +101,8 @@ const Dashboard = () => {
   }
 
   const firstName = user?.user_metadata?.first_name || "Student";
+
+  const hasTakenDiagnostic = profile?.weak_areas && profile.weak_areas.length > 0;
 
   const quickActions = [
     { icon: MessageSquare, label: "Ask ATLAS™", href: "/atlas", color: "bg-accent" },
@@ -199,6 +205,51 @@ const Dashboard = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
           {/* Main Content Area */}
           <div className="lg:col-span-2 space-y-6 md:space-y-8">
+            {/* Diagnostic Assessment Promotion */}
+            {!hasTakenDiagnostic && (
+              <Card className="border-accent/30 bg-gradient-to-br from-accent/5 to-primary/5 overflow-hidden relative">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-accent/10 to-transparent rounded-bl-full" />
+                <CardHeader className="pb-2">
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="w-10 h-10 rounded-lg gradient-livemed flex items-center justify-center">
+                      <Target className="h-5 w-5 text-white" />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <CardTitle className="text-lg">Take Your Diagnostic Assessment</CardTitle>
+                        <span className="px-2 py-0.5 text-xs font-medium bg-accent text-accent-foreground rounded-full">Recommended</span>
+                      </div>
+                      <CardDescription>Personalize your learning journey</CardDescription>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Complete a 20-question diagnostic to identify your strengths and weaknesses. 
+                    We'll create a personalized study plan to maximize your USMLE preparation efficiency.
+                  </p>
+                  <div className="flex flex-wrap items-center gap-3">
+                    <Button className="gradient-livemed" asChild>
+                      <Link to="/diagnostic">
+                        <ClipboardCheck className="mr-2 h-4 w-4" />
+                        Start Diagnostic
+                      </Link>
+                    </Button>
+                    <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                      <span className="flex items-center gap-1">
+                        <Sparkles className="h-3 w-3" />
+                        ~40 minutes
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <Target className="h-3 w-3" />
+                        Personalized plan
+                      </span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
             {/* Continue Learning Card */}
             <Card>
               <CardHeader>
