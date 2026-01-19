@@ -76,12 +76,7 @@ const Landing = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isDemoOpen, setIsDemoOpen] = useState(false);
 
-  // Slow down video to 50% speed
-  useEffect(() => {
-    if (videoRef.current) {
-      videoRef.current.playbackRate = 0.5;
-    }
-  }, []);
+  // Video plays at normal speed
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end end"]
@@ -216,7 +211,7 @@ const Landing = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.25 }}
-              className="text-2xl md:text-3xl font-semibold text-white/90 mb-4 tracking-wide"
+              className="text-2xl md:text-3xl font-semibold text-gradient-livemed text-glow mb-4 tracking-wide"
             >
               Livemed Learning
             </motion.div>
