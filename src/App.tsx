@@ -19,6 +19,7 @@ import Institutions from "./pages/Institutions";
 import Curriculum from "./pages/Curriculum";
 import ModuleView from "./pages/ModuleView";
 import Assessments from "./pages/Assessments";
+import DiagnosticAssessment from "./pages/DiagnosticAssessment";
 import Pricing from "./pages/Pricing";
 import Contact from "./pages/Contact";
 import RotationExperience from "./pages/RotationExperience";
@@ -70,6 +71,7 @@ const App = () => (
 
           {/* Assessments (authenticated) */}
           <Route path="/assessments" element={<Assessments />} />
+          <Route path="/diagnostic" element={<DiagnosticAssessment />} />
 
           {/* Virtual Rotation Experience (authenticated) */}
           <Route path="/rotation-experience" element={<RotationExperience />} />
