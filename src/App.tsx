@@ -28,6 +28,7 @@ import Privacy from "./pages/Privacy";
 import Residency from "./pages/Residency";
 import Profile from "./pages/Profile";
 import Onboarding from "./pages/Onboarding";
+import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -83,6 +84,9 @@ const App = () => (
 
           {/* Profile Settings (authenticated) */}
           <Route path="/profile" element={<Profile />} />
+
+          {/* Admin Dashboard (platform_admin only) */}
+          <Route path="/admin" element={<Admin />} />
 
           {/* Catch-all */}
           <Route path="*" element={<NotFound />} />
