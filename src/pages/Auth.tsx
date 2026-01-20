@@ -29,41 +29,54 @@ const Auth = () => {
 
   // Check if user is already authenticated
   useEffect(() => {
+    const handleAuthRedirect = async (session: any) => {
+      if (!session) return;
+      
+      // Check profile for account_status and onboarding status
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("onboarding_completed, account_status")
+        .eq("user_id", session.user.id)
+        .single();
+
+      // Check account approval status first
+      if (profile?.account_status === "pending_approval") {
+        navigate("/pending-approval");
+        return;
+      }
+
+      if (profile?.account_status === "suspended") {
+        toast({
+          title: "Account Suspended",
+          description: "Your account has been suspended. Please contact support.",
+          variant: "destructive",
+        });
+        await supabase.auth.signOut();
+        return;
+      }
+
+      // Account is approved - check onboarding
+      if (profile?.onboarding_completed) {
+        navigate("/dashboard");
+      } else {
+        navigate("/onboarding");
+      }
+    };
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (session) {
-        // Check if onboarding is completed
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("onboarding_completed")
-          .eq("user_id", session.user.id)
-          .single();
-        
-        if (profile?.onboarding_completed) {
-          navigate("/dashboard");
-        } else {
-          navigate("/onboarding");
-        }
+        await handleAuthRedirect(session);
       }
     });
 
     supabase.auth.getSession().then(async ({ data: { session } }) => {
       if (session) {
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("onboarding_completed")
-          .eq("user_id", session.user.id)
-          .single();
-        
-        if (profile?.onboarding_completed) {
-          navigate("/dashboard");
-        } else {
-          navigate("/onboarding");
-        }
+        await handleAuthRedirect(session);
       }
     });
 
     return () => subscription.unsubscribe();
-  }, [navigate]);
+  }, [navigate, toast]);
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();

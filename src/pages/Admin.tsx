@@ -7,6 +7,7 @@ import { ArrowLeft, Loader2, ShieldCheck } from "lucide-react";
 import livemedLogo from "@/assets/livemed-logo-full.png";
 import AdminStats from "@/components/admin/AdminStats";
 import PendingVerifications from "@/components/admin/PendingVerifications";
+import PendingApprovals from "@/components/admin/PendingApprovals";
 import { Database } from "@/integrations/supabase/types";
 
 type Profile = Database["public"]["Tables"]["profiles"]["Row"];
@@ -23,6 +24,10 @@ const Admin = () => {
     verified: 0,
     rejected: 0,
     total: 0,
+    // Account approval stats
+    pendingApproval: 0,
+    approved: 0,
+    suspended: 0,
   });
 
   useEffect(() => {
@@ -86,16 +91,24 @@ const Admin = () => {
 
     setProfiles(profilesWithDocs);
 
-    // Calculate stats
+    // Calculate verification stats
     const pending = profilesWithDocs.filter((p) => p.verification_status === "pending").length;
     const verified = profilesWithDocs.filter((p) => p.verification_status === "verified").length;
     const rejected = profilesWithDocs.filter((p) => p.verification_status === "rejected").length;
+
+    // Calculate account approval stats
+    const pendingApproval = profilesWithDocs.filter((p) => p.account_status === "pending_approval").length;
+    const approved = profilesWithDocs.filter((p) => p.account_status === "approved").length;
+    const suspended = profilesWithDocs.filter((p) => p.account_status === "suspended").length;
 
     setStats({
       pending,
       verified,
       rejected,
       total: profilesWithDocs.length,
+      pendingApproval,
+      approved,
+      suspended,
     });
   };
 
@@ -148,9 +161,9 @@ const Admin = () => {
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Student Verification</h1>
+          <h1 className="text-3xl font-bold mb-2">Admin Dashboard</h1>
           <p className="text-muted-foreground">
-            Review and manage student verification requests
+            Manage account approvals and student verification
           </p>
         </div>
 
@@ -159,9 +172,21 @@ const Admin = () => {
           <AdminStats {...stats} />
         </div>
 
+        {/* Account Approvals Section */}
+        <div className="bg-card rounded-lg border p-6 mb-6">
+          <h2 className="text-xl font-semibold mb-4">Account Approvals</h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            New signups require approval before they can access the platform.
+          </p>
+          <PendingApprovals 
+            profiles={profiles.filter(p => p.account_status === "pending_approval")} 
+            onRefresh={loadData} 
+          />
+        </div>
+
         {/* Verification Queue */}
         <div className="bg-card rounded-lg border p-6">
-          <h2 className="text-xl font-semibold mb-4">Verification Queue</h2>
+          <h2 className="text-xl font-semibold mb-4">Document Verification Queue</h2>
           <PendingVerifications profiles={profiles} onRefresh={loadData} />
         </div>
       </main>

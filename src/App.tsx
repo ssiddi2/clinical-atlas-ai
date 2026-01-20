@@ -32,6 +32,7 @@ import CaseStudies from "./pages/CaseStudies";
 import Onboarding from "./pages/Onboarding";
 import Admin from "./pages/Admin";
 import ScorePredictor from "./pages/ScorePredictor";
+import PendingApproval from "./pages/PendingApproval";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -63,6 +64,9 @@ const App = () => (
 
           {/* Onboarding (after signup) */}
           <Route path="/onboarding" element={<Onboarding />} />
+
+          {/* Pending Approval (awaiting admin approval) */}
+          <Route path="/pending-approval" element={<PendingApproval />} />
 
           {/* Dashboard (authenticated) */}
           <Route path="/dashboard" element={<Dashboard />} />

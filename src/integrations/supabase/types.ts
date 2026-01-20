@@ -336,6 +336,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          account_status: string | null
           address_line1: string | null
           address_line2: string | null
           avatar_url: string | null
@@ -371,6 +372,7 @@ export type Database = {
           year_of_study: number | null
         }
         Insert: {
+          account_status?: string | null
           address_line1?: string | null
           address_line2?: string | null
           avatar_url?: string | null
@@ -406,6 +408,7 @@ export type Database = {
           year_of_study?: number | null
         }
         Update: {
+          account_status?: string | null
           address_line1?: string | null
           address_line2?: string | null
           avatar_url?: string | null
