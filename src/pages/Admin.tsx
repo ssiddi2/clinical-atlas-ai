@@ -8,6 +8,7 @@ import livemedLogo from "@/assets/livemed-logo-full.png";
 import AdminStats from "@/components/admin/AdminStats";
 import PendingVerifications from "@/components/admin/PendingVerifications";
 import PendingApprovals from "@/components/admin/PendingApprovals";
+import CreateUserModal from "@/components/admin/CreateUserModal";
 import { Database } from "@/integrations/supabase/types";
 
 type Profile = Database["public"]["Tables"]["profiles"]["Row"];
@@ -174,10 +175,15 @@ const Admin = () => {
 
         {/* Account Approvals Section */}
         <div className="bg-card rounded-lg border p-6 mb-6">
-          <h2 className="text-xl font-semibold mb-4">Account Approvals</h2>
-          <p className="text-sm text-muted-foreground mb-4">
-            New signups require approval before they can access the platform.
-          </p>
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h2 className="text-xl font-semibold">Account Approvals</h2>
+              <p className="text-sm text-muted-foreground">
+                New signups require approval before they can access the platform.
+              </p>
+            </div>
+            <CreateUserModal onUserCreated={loadData} />
+          </div>
           <PendingApprovals 
             profiles={profiles.filter(p => p.account_status === "pending_approval")} 
             onRefresh={loadData} 
