@@ -321,13 +321,28 @@ const Landing = () => {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
             viewport={{ once: true }}
-            className="flex items-center justify-center mt-12"
+            className="flex flex-col items-center justify-center mt-12 glass-card rounded-xl md:rounded-2xl p-6 md:p-8 max-w-2xl mx-auto text-center"
           >
             <img 
               src={jointCommissionBadge} 
               alt="The Joint Commission - National Quality Approval" 
-              className="h-20 md:h-24 w-auto object-contain rounded-xl"
+              className="h-20 md:h-24 w-auto object-contain rounded-xl mb-4"
             />
+            <p className="text-white font-semibold text-base md:text-lg mb-2">
+              Accredited by The Joint Commission
+            </p>
+            <p className="text-white/70 text-sm md:text-base mb-3">
+              Enrollments starting soon
+            </p>
+            <p className="text-white/60 text-xs md:text-sm">
+              Interested medical students can reach out to{" "}
+              <a 
+                href="mailto:info@livemedhealth.com" 
+                className="text-primary hover:text-primary/80 underline transition-colors"
+              >
+                info@livemedhealth.com
+              </a>
+            </p>
           </motion.div>
         </div>
       </section>
