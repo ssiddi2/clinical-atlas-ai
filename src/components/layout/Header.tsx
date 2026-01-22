@@ -20,7 +20,7 @@ const Header = () => {
     { label: "Programs", href: "/programs" },
     { label: "Rotations", href: "/rotations" },
     { label: "Institutions", href: "/institutions" },
-    { label: "Pricing", href: "/pricing" },
+    { label: "Contact", href: "/contact" },
   ];
 
   return (
@@ -67,7 +67,7 @@ const Header = () => {
             className="bg-white text-black hover:bg-white/90 rounded-full px-5 h-8 text-[13px] font-medium" 
             asChild
           >
-            <Link to="/auth?mode=signup">Get Started</Link>
+            <Link to="/apply">Apply Now</Link>
           </Button>
         </div>
 
@@ -103,7 +103,7 @@ const Header = () => {
                 <Link to="/auth">Sign In</Link>
               </Button>
               <Button className="bg-white text-black hover:bg-white/90 rounded-full font-medium" asChild>
-                <Link to="/auth?mode=signup">Get Started</Link>
+                <Link to="/apply">Apply Now</Link>
               </Button>
             </div>
           </nav>

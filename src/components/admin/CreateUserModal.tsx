@@ -38,6 +38,7 @@ const CreateUserModal = ({ onUserCreated }: CreateUserModalProps) => {
     firstName: "",
     lastName: "",
     role: "student",
+    membershipTier: "learner",
     autoApprove: true,
   });
 
@@ -74,6 +75,7 @@ const CreateUserModal = ({ onUserCreated }: CreateUserModalProps) => {
           firstName: formData.firstName.trim(),
           lastName: formData.lastName.trim(),
           role: formData.role,
+          membershipTier: formData.membershipTier,
           autoApprove: formData.autoApprove,
         },
       });
@@ -98,6 +100,7 @@ const CreateUserModal = ({ onUserCreated }: CreateUserModalProps) => {
         firstName: "",
         lastName: "",
         role: "student",
+        membershipTier: "learner",
         autoApprove: true,
       });
       
@@ -228,6 +231,25 @@ const CreateUserModal = ({ onUserCreated }: CreateUserModalProps) => {
                 <SelectItem value="platform_admin">Platform Admin</SelectItem>
               </SelectContent>
             </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="membershipTier">Membership Tier</Label>
+            <Select
+              value={formData.membershipTier}
+              onValueChange={(value) => setFormData({ ...formData, membershipTier: value })}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select tier" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="learner">Learner (Basic access)</SelectItem>
+                <SelectItem value="clinical">Clinical (Full access)</SelectItem>
+              </SelectContent>
+            </Select>
+            <p className="text-xs text-muted-foreground">
+              Clinical tier unlocks Virtual Rounds, LOR support, and residency prep.
+            </p>
           </div>
 
           <div className="flex items-center space-x-2">

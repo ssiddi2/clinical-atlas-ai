@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
+import { useFeatureAccess } from "@/hooks/useFeatureAccess";
+import { UpgradePrompt } from "@/components/dashboard/UpgradePrompt";
 import {
   Video,
   Calendar,
@@ -79,6 +81,9 @@ const VirtualRounds = () => {
 
     return () => subscription.unsubscribe();
   }, [navigate]);
+
+  // Feature access control - must be before any conditional returns
+  const featureAccess = useFeatureAccess(user?.id || null);
 
   useEffect(() => {
     if (user) {
@@ -167,10 +172,39 @@ const VirtualRounds = () => {
     return specialties.find((s) => s.id === id)?.name || "General";
   };
 
-  if (loading) {
+  if (loading || featureAccess.loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-accent" />
+      </div>
+    );
+  }
+
+  // Show upgrade prompt if user doesn't have clinical access
+  if (!featureAccess.canAccessVirtualRounds) {
+    return (
+      <div className="min-h-screen bg-background">
+        {/* Header */}
+        <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur">
+          <div className="container mx-auto px-4 flex h-16 items-center justify-between">
+            <div className="flex items-center gap-4">
+              <Link to="/dashboard" className="text-muted-foreground hover:text-foreground">
+                <ArrowLeft className="h-5 w-5" />
+              </Link>
+              <div>
+                <h1 className="font-semibold">Live Virtual Rounds</h1>
+                <p className="text-xs text-muted-foreground">Clinical Access Required</p>
+              </div>
+            </div>
+            <Link to="/dashboard">
+              <img src={livemedLogo} alt="LIVEMED" className="h-10 md:h-16 object-contain" />
+            </Link>
+          </div>
+        </header>
+        
+        <div className="container mx-auto px-4 py-8">
+          <UpgradePrompt feature="virtualRounds" />
+        </div>
       </div>
     );
   }

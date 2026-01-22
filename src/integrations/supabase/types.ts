@@ -354,6 +354,7 @@ export type Database = {
           last_name: string | null
           learning_style: string | null
           medical_school_type: string | null
+          membership_tier: string
           onboarding_completed: boolean | null
           phone_number: string | null
           postal_code: string | null
@@ -390,6 +391,7 @@ export type Database = {
           last_name?: string | null
           learning_style?: string | null
           medical_school_type?: string | null
+          membership_tier?: string
           onboarding_completed?: boolean | null
           phone_number?: string | null
           postal_code?: string | null
@@ -426,6 +428,7 @@ export type Database = {
           last_name?: string | null
           learning_style?: string | null
           medical_school_type?: string | null
+          membership_tier?: string
           onboarding_completed?: boolean | null
           phone_number?: string | null
           postal_code?: string | null
