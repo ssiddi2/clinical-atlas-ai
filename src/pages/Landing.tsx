@@ -251,8 +251,8 @@ const Landing = () => {
                 className="btn-glow gradient-livemed text-base px-8 py-6 rounded-full group font-semibold" 
                 asChild
               >
-                <Link to="/auth?mode=signup">
-                  Start Your Journey
+                <Link to="/apply">
+                  Apply Now
                   <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                 </Link>
               </Button>

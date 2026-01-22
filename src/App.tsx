@@ -20,7 +20,7 @@ import Curriculum from "./pages/Curriculum";
 import ModuleView from "./pages/ModuleView";
 import Assessments from "./pages/Assessments";
 import DiagnosticAssessment from "./pages/DiagnosticAssessment";
-import Pricing from "./pages/Pricing";
+import Apply from "./pages/Apply";
 import Contact from "./pages/Contact";
 import RotationExperience from "./pages/RotationExperience";
 import About from "./pages/About";
@@ -51,7 +51,7 @@ const App = () => (
             <Route path="/programs/:level" element={<Programs />} />
             <Route path="/rotations" element={<Rotations />} />
             <Route path="/institutions" element={<Institutions />} />
-            <Route path="/pricing" element={<Pricing />} />
+            <Route path="/apply" element={<Apply />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/about" element={<About />} />
             <Route path="/terms" element={<Terms />} />

@@ -51,7 +51,7 @@ serve(async (req) => {
     }
 
     // Parse request body
-    const { email, password, firstName, lastName, role, autoApprove } = await req.json();
+    const { email, password, firstName, lastName, role, membershipTier, autoApprove } = await req.json();
 
     if (!email || !password) {
       return new Response(JSON.stringify({ error: "Email and password are required" }), {
@@ -105,6 +105,7 @@ serve(async (req) => {
         last_name: lastName || null,
         account_status: autoApprove ? "approved" : "pending_approval",
         verification_status: "pending",
+        membership_tier: membershipTier || "learner",
       });
 
     if (profileError) {
@@ -134,6 +135,7 @@ serve(async (req) => {
         firstName,
         lastName,
         role: userRole,
+        membershipTier: membershipTier || "learner",
         accountStatus: autoApprove ? "approved" : "pending_approval",
       },
     }), {

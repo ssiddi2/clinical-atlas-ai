@@ -22,7 +22,7 @@ const Footer = forwardRef<HTMLElement>((props, ref) => {
       { label: "Contact", href: "/contact" },
     ],
     Resources: [
-      { label: "Pricing", href: "/pricing" },
+      { label: "Apply Now", href: "/apply" },
       { label: "Privacy Policy", href: "/privacy" },
       { label: "Terms of Service", href: "/terms" },
     ],

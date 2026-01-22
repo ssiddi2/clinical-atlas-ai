@@ -14,7 +14,6 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { supabase } from '@/integrations/supabase/client';
 import { useScorePredictor } from '@/hooks/useScorePredictor';
-import { ScoreGauge } from '@/components/score/ScoreGauge';
 import { TopicHeatmap } from '@/components/score/TopicHeatmap';
 import { ScoreHistory } from '@/components/score/ScoreHistory';
 import { ContributingFactors } from '@/components/score/ContributingFactors';
@@ -160,74 +159,76 @@ const ScorePredictor = () => {
             </div>
             <h1 className="text-lg sm:text-xl font-semibold text-foreground flex items-center gap-2">
               <Sparkles className="w-5 h-5 text-primary" />
-              MATCH Ready™
+              MATCH Ready™ Performance Tracker
             </h1>
           </div>
         </div>
       </header>
 
+      {/* Educational Disclaimer Banner */}
+      <div className="pt-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        <div className="p-3 rounded-lg bg-amber-500/10 border border-amber-500/20 text-center">
+          <p className="text-xs sm:text-sm text-amber-200/80">
+            <strong>Educational Tool:</strong> These performance insights are based on your platform activity and are not predictive of actual USMLE outcomes. 
+            Consult official NBME resources for exam preparation guidance.
+          </p>
+        </div>
+      </div>
+
       {/* Main Content */}
-      <main className="pt-24 pb-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-        {/* Hero Section with Score Gauge */}
+      <main className="pt-8 pb-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        {/* Hero Section with Pass Probability (Step 1 is Pass/Fail now) */}
         <motion.section
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-12"
         >
           <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-2">
-            Your USMLE Score Prediction
+            Your USMLE Performance Insights
           </h2>
           <p className="text-muted-foreground mb-8">
             Based on your assessments, curriculum progress, and clinical reasoning
           </p>
 
-          <div className="flex justify-center mb-8">
-            <ScoreGauge
-              score={currentPrediction.predictedStep1Score}
-              label="Predicted Step 1"
-              passProbability={currentPrediction.passProbabilityStep1}
-              percentile={currentPrediction.percentile}
-              trend={currentPrediction.trend}
-              trendValue={currentPrediction.trendValue}
-              size="lg"
-            />
+          {/* Step 1 Pass Probability (since Step 1 is now Pass/Fail) */}
+          <div className="grid md:grid-cols-2 gap-6 mb-8 max-w-2xl mx-auto">
+            <Card className="p-6 bg-gradient-to-br from-green-500/10 to-transparent border-green-500/20">
+              <h3 className="text-sm font-medium text-muted-foreground mb-2">Step 1 (Pass/Fail)</h3>
+              <div className="text-4xl font-bold text-green-400 mb-1">
+                {currentPrediction.passProbabilityStep1}%
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Estimated Pass Probability
+              </p>
+              <p className="text-xs text-muted-foreground mt-2 opacity-60">
+                Step 1 transitioned to Pass/Fail in January 2022
+              </p>
+            </Card>
+
+            <Card className="p-6 bg-gradient-to-br from-accent/10 to-transparent border-accent/20">
+              <h3 className="text-sm font-medium text-muted-foreground mb-2">Step 2 CK Projection</h3>
+              <div className="text-4xl font-bold text-accent mb-1">
+                {currentPrediction.confidenceInterval.low}-{currentPrediction.confidenceInterval.high}
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Estimated Score Range
+              </p>
+              <p className="text-xs text-muted-foreground mt-2 opacity-60">
+                {currentPrediction.passProbabilityStep2}% pass probability
+              </p>
+            </Card>
           </div>
 
-          {/* Confidence Interval */}
+          {/* Peer Percentile */}
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-muted/20 border border-border text-sm">
-            <span className="text-muted-foreground">Confidence Interval:</span>
+            <span className="text-muted-foreground">Platform Percentile:</span>
             <span className="font-medium text-foreground">
-              {currentPrediction.confidenceInterval.low} - {currentPrediction.confidenceInterval.high}
+              {currentPrediction.percentile}th among LIVEMED students
             </span>
           </div>
         </motion.section>
 
-        {/* Step 2 CK Preview */}
-        <motion.section
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="mb-12"
-        >
-          <Card className="p-6 bg-gradient-to-br from-accent/10 to-transparent border-accent/20">
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-              <div>
-                <h3 className="text-lg font-semibold text-foreground mb-1">Step 2 CK Projection</h3>
-                <p className="text-sm text-muted-foreground">Based on your Step 1 trajectory</p>
-              </div>
-              <div className="flex items-center gap-6">
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-accent">{currentPrediction.predictedStep2Score}</div>
-                  <div className="text-xs text-muted-foreground">Predicted Score</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-green-400">{currentPrediction.passProbabilityStep2}%</div>
-                  <div className="text-xs text-muted-foreground">Pass Probability</div>
-                </div>
-              </div>
-            </div>
-          </Card>
-        </motion.section>
+        {/* Removed old Step 2 CK Preview section - now integrated above */}
 
         {/* Main Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
