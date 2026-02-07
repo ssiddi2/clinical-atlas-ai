@@ -448,6 +448,238 @@ export type Database = {
         }
         Relationships: []
       }
+      qbank_flagged_questions: {
+        Row: {
+          created_at: string
+          flag_type: Database["public"]["Enums"]["qbank_flag_type"]
+          id: string
+          notes: string | null
+          question_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          flag_type?: Database["public"]["Enums"]["qbank_flag_type"]
+          id?: string
+          notes?: string | null
+          question_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          flag_type?: Database["public"]["Enums"]["qbank_flag_type"]
+          id?: string
+          notes?: string | null
+          question_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "qbank_flagged_questions_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "qbank_questions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      qbank_questions: {
+        Row: {
+          board_yield: Database["public"]["Enums"]["qbank_board_yield"]
+          correct_answer_index: number
+          created_at: string
+          difficulty: Database["public"]["Enums"]["qbank_difficulty"]
+          explanation: string
+          explanation_image_url: string | null
+          first_aid_reference: string | null
+          id: string
+          is_active: boolean
+          keywords: string[] | null
+          options: Json
+          question_id: string
+          question_image_url: string | null
+          question_type: string
+          specialty_id: string | null
+          stem: string
+          subject: string
+          system: string
+          topic: string | null
+          updated_at: string
+        }
+        Insert: {
+          board_yield?: Database["public"]["Enums"]["qbank_board_yield"]
+          correct_answer_index: number
+          created_at?: string
+          difficulty?: Database["public"]["Enums"]["qbank_difficulty"]
+          explanation: string
+          explanation_image_url?: string | null
+          first_aid_reference?: string | null
+          id?: string
+          is_active?: boolean
+          keywords?: string[] | null
+          options?: Json
+          question_id: string
+          question_image_url?: string | null
+          question_type?: string
+          specialty_id?: string | null
+          stem: string
+          subject: string
+          system: string
+          topic?: string | null
+          updated_at?: string
+        }
+        Update: {
+          board_yield?: Database["public"]["Enums"]["qbank_board_yield"]
+          correct_answer_index?: number
+          created_at?: string
+          difficulty?: Database["public"]["Enums"]["qbank_difficulty"]
+          explanation?: string
+          explanation_image_url?: string | null
+          first_aid_reference?: string | null
+          id?: string
+          is_active?: boolean
+          keywords?: string[] | null
+          options?: Json
+          question_id?: string
+          question_image_url?: string | null
+          question_type?: string
+          specialty_id?: string | null
+          stem?: string
+          subject?: string
+          system?: string
+          topic?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "qbank_questions_specialty_id_fkey"
+            columns: ["specialty_id"]
+            isOneToOne: false
+            referencedRelation: "specialties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      qbank_test_sessions: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          current_question_index: number | null
+          filters_applied: Json | null
+          id: string
+          mode: Database["public"]["Enums"]["qbank_mode"]
+          question_count: number
+          question_order: string[] | null
+          score_percent: number | null
+          started_at: string
+          status: Database["public"]["Enums"]["qbank_session_status"]
+          time_limit_minutes: number | null
+          time_remaining_seconds: number | null
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          current_question_index?: number | null
+          filters_applied?: Json | null
+          id?: string
+          mode?: Database["public"]["Enums"]["qbank_mode"]
+          question_count?: number
+          question_order?: string[] | null
+          score_percent?: number | null
+          started_at?: string
+          status?: Database["public"]["Enums"]["qbank_session_status"]
+          time_limit_minutes?: number | null
+          time_remaining_seconds?: number | null
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          current_question_index?: number | null
+          filters_applied?: Json | null
+          id?: string
+          mode?: Database["public"]["Enums"]["qbank_mode"]
+          question_count?: number
+          question_order?: string[] | null
+          score_percent?: number | null
+          started_at?: string
+          status?: Database["public"]["Enums"]["qbank_session_status"]
+          time_limit_minutes?: number | null
+          time_remaining_seconds?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      qbank_user_progress: {
+        Row: {
+          attempt_number: number
+          confidence_level:
+            | Database["public"]["Enums"]["qbank_confidence_level"]
+            | null
+          created_at: string
+          highlights: Json | null
+          id: string
+          is_correct: boolean | null
+          question_id: string
+          selected_answer: number | null
+          session_id: string | null
+          strikethroughs: number[] | null
+          time_spent_seconds: number | null
+          user_id: string
+          was_flagged: boolean | null
+        }
+        Insert: {
+          attempt_number?: number
+          confidence_level?:
+            | Database["public"]["Enums"]["qbank_confidence_level"]
+            | null
+          created_at?: string
+          highlights?: Json | null
+          id?: string
+          is_correct?: boolean | null
+          question_id: string
+          selected_answer?: number | null
+          session_id?: string | null
+          strikethroughs?: number[] | null
+          time_spent_seconds?: number | null
+          user_id: string
+          was_flagged?: boolean | null
+        }
+        Update: {
+          attempt_number?: number
+          confidence_level?:
+            | Database["public"]["Enums"]["qbank_confidence_level"]
+            | null
+          created_at?: string
+          highlights?: Json | null
+          id?: string
+          is_correct?: boolean | null
+          question_id?: string
+          selected_answer?: number | null
+          session_id?: string | null
+          strikethroughs?: number[] | null
+          time_spent_seconds?: number | null
+          user_id?: string
+          was_flagged?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "qbank_user_progress_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "qbank_questions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "qbank_user_progress_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "qbank_test_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       quiz_questions: {
         Row: {
           correct_answer_index: number
@@ -839,6 +1071,12 @@ export type Database = {
         | "institutional_admin"
         | "platform_admin"
       program_level: "pre_clinical" | "clinical" | "residency_prep" | "cme"
+      qbank_board_yield: "low" | "medium" | "high"
+      qbank_confidence_level: "guessing" | "unsure" | "confident"
+      qbank_difficulty: "easy" | "medium" | "hard"
+      qbank_flag_type: "review_later" | "difficult" | "bookmark"
+      qbank_mode: "tutor" | "timed"
+      qbank_session_status: "in_progress" | "completed" | "abandoned"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -974,6 +1212,12 @@ export const Constants = {
         "platform_admin",
       ],
       program_level: ["pre_clinical", "clinical", "residency_prep", "cme"],
+      qbank_board_yield: ["low", "medium", "high"],
+      qbank_confidence_level: ["guessing", "unsure", "confident"],
+      qbank_difficulty: ["easy", "medium", "hard"],
+      qbank_flag_type: ["review_later", "difficult", "bookmark"],
+      qbank_mode: ["tutor", "timed"],
+      qbank_session_status: ["in_progress", "completed", "abandoned"],
     },
   },
 } as const
