@@ -34,6 +34,11 @@ import Admin from "./pages/Admin";
 import ScorePredictor from "./pages/ScorePredictor";
 import PendingApproval from "./pages/PendingApproval";
 import NotFound from "./pages/NotFound";
+import QBank from "./pages/QBank";
+import QBankCreate from "./pages/QBankCreate";
+import QBankSession from "./pages/QBankSession";
+import QBankReview from "./pages/QBankReview";
+import QBankPerformance from "./pages/QBankPerformance";
 
 const queryClient = new QueryClient();
 
@@ -96,6 +101,13 @@ const App = () => (
 
           {/* Profile Settings (authenticated) */}
           <Route path="/profile" element={<Profile />} />
+
+          {/* QBank - Question Bank (authenticated) */}
+          <Route path="/qbank" element={<QBank />} />
+          <Route path="/qbank/create" element={<QBankCreate />} />
+          <Route path="/qbank/session/:id" element={<QBankSession />} />
+          <Route path="/qbank/review/:id" element={<QBankReview />} />
+          <Route path="/qbank/performance" element={<QBankPerformance />} />
 
           {/* Admin Dashboard (platform_admin only) */}
           <Route path="/admin" element={<Admin />} />
