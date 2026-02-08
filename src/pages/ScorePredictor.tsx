@@ -152,7 +152,7 @@ const ScorePredictor = () => {
               </Button>
               <img 
                 src={livemedLogo} 
-                alt="LIVEMED" 
+                alt="Livemed" 
                 className="h-6 sm:h-8 w-auto logo-glow cursor-pointer" 
                 onClick={() => navigate('/dashboard')}
               />
@@ -223,7 +223,7 @@ const ScorePredictor = () => {
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-muted/20 border border-border text-sm">
             <span className="text-muted-foreground">Platform Percentile:</span>
             <span className="font-medium text-foreground">
-              {currentPrediction.percentile}th among LIVEMED students
+              {currentPrediction.percentile}th among Livemed students
             </span>
           </div>
         </motion.section>

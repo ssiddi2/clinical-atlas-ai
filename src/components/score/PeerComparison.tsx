@@ -43,7 +43,7 @@ export function PeerComparison({ percentile, totalStudents = 1000 }: PeerCompari
           <span className="text-sm text-muted-foreground">Percentile</span>
         </motion.div>
         <p className="text-sm text-muted-foreground mt-2">
-          You're performing better than <span className="text-foreground font-medium">{percentile}%</span> of LIVEMED students
+          You're performing better than <span className="text-foreground font-medium">{percentile}%</span> of Livemed students
         </p>
       </div>
 
@@ -109,7 +109,7 @@ export function PeerComparison({ percentile, totalStudents = 1000 }: PeerCompari
       </div>
 
       <div className="mt-4 text-center text-xs text-muted-foreground">
-        Based on anonymized data from {totalStudents.toLocaleString()}+ LIVEMED students
+        Based on anonymized data from {totalStudents.toLocaleString()}+ Livemed students
       </div>
     </div>
   );

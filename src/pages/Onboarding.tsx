@@ -224,8 +224,8 @@ const Onboarding = () => {
       <header className="border-b border-border/40 bg-background/80 backdrop-blur-sm">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
-            <img src={livemedLogoIcon} alt="LIVEMED Academy" className="h-10" />
-            <span className="font-semibold text-lg">LIVEMED Academy</span>
+            <img src={livemedLogoIcon} alt="Livemed Academy" className="h-10" />
+            <span className="font-semibold text-lg">Livemed Academy</span>
           </Link>
           <div className="text-sm text-muted-foreground">
             Complete your profile

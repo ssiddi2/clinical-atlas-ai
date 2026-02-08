@@ -130,7 +130,7 @@ const Dashboard = () => {
       <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur">
         <div className="container mx-auto px-4 flex h-16 items-center justify-between">
           <Link to="/dashboard" className="flex items-center gap-2">
-            <img src={livemedLogo} alt="LIVEMED" className="h-10 md:h-16 object-contain" />
+            <img src={livemedLogo} alt="Livemed" className="h-10 md:h-16 object-contain" />
           </Link>
 
           <nav className="hidden md:flex items-center gap-6">

@@ -197,7 +197,7 @@ const VirtualRounds = () => {
               </div>
             </div>
             <Link to="/dashboard">
-              <img src={livemedLogo} alt="LIVEMED" className="h-10 md:h-16 object-contain" />
+              <img src={livemedLogo} alt="Livemed" className="h-10 md:h-16 object-contain" />
             </Link>
           </div>
         </header>
@@ -224,7 +224,7 @@ const VirtualRounds = () => {
             </div>
           </div>
           <Link to="/dashboard">
-            <img src={livemedLogo} alt="LIVEMED" className="h-10 md:h-16 object-contain" />
+            <img src={livemedLogo} alt="Livemed" className="h-10 md:h-16 object-contain" />
           </Link>
         </div>
       </header>

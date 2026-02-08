@@ -80,7 +80,7 @@ const Apply = () => {
         role: formData.yearOfStudy ? `Year ${formData.yearOfStudy} Student` : "Prospective Student",
         inquiry_type: "application",
         message: `
-Application for LIVEMED Academy
+Application for Livemed Academy
 
 Country: ${formData.country || "Not specified"}
 Institution: ${formData.institution || "Not specified"}
@@ -141,7 +141,7 @@ ${formData.message || "No additional message provided."}
               </div>
               <h1 className="text-2xl font-bold text-white mb-3">Application Received!</h1>
               <p className="text-white/60 mb-8">
-                Thank you for your interest in LIVEMED Academy. Our admissions team will review 
+                Thank you for your interest in Livemed Academy. Our admissions team will review 
                 your application and contact you within 2-3 business days.
               </p>
               <div className="flex flex-col gap-3">
@@ -165,7 +165,7 @@ ${formData.message || "No additional message provided."}
       <header className="fixed top-0 left-0 right-0 z-50 bg-livemed-deep/80 backdrop-blur-xl border-b border-white/10">
         <div className="container mx-auto px-4 flex h-16 items-center justify-between">
           <Link to="/">
-            <img src={livemedLogo} alt="LIVEMED" className="h-10 object-contain" />
+            <img src={livemedLogo} alt="Livemed" className="h-10 object-contain" />
           </Link>
           <Button variant="ghost" className="text-white/60 hover:text-white" asChild>
             <Link to="/auth">Already have an account? Sign In</Link>
@@ -182,7 +182,7 @@ ${formData.message || "No additional message provided."}
             className="text-center mb-12"
           >
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4">
-              Apply to <span className="text-gradient-livemed">LIVEMED Academy</span>
+              Apply to <span className="text-gradient-livemed">Livemed Academy</span>
             </h1>
             <p className="text-lg text-white/50 max-w-2xl mx-auto">
               Join thousands of medical students training with AI-powered education and 
@@ -389,13 +389,13 @@ ${formData.message || "No additional message provided."}
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="message" className="text-white/70">Why do you want to join LIVEMED?</Label>
+                      <Label htmlFor="message" className="text-white/70">Why do you want to join Livemed?</Label>
                       <Textarea
                         id="message"
                         name="message"
                         value={formData.message}
                         onChange={handleInputChange}
-                        placeholder="Tell us about your goals and how LIVEMED can help..."
+                        placeholder="Tell us about your goals and how Livemed can help..."
                         rows={4}
                         className="bg-white/5 border-white/10 text-white placeholder:text-white/30 resize-none"
                       />
