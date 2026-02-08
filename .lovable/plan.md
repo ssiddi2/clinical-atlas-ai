@@ -1,219 +1,70 @@
 
-# Plan: Build UWorld-Comparable QBank System
+
+# Plan: Apple-Style Elegant Hero Animation
 
 ## Overview
-Transform the current hardcoded question system into a robust, database-driven QBank with features that match or exceed UWorld's functionality. This will significantly enhance platform credibility and user experience.
+Replace the current video background with a sophisticated, Apple-inspired animated hero section. Think of the elegance of Apple's product pages - clean, minimal, with subtle motion that feels premium and futuristic without being overwhelming.
 
 ---
 
-## Phase 1: Database Schema for Question Bank
+## Design Philosophy
 
-### 1.1 Create `qbank_questions` Table
-Store comprehensive question data with USMLE metadata:
+**Apple's Hero Aesthetic:**
+- **Minimal yet impactful** - fewer elements, more impact
+- **Soft gradient orbs** - morphing, breathing shapes
+- **Subtle particle systems** - neural network / constellation effect
+- **Smooth, slow animations** - nothing jarring or flashy
+- **Glass depth layers** - multiple translucent planes creating depth
+- **Focus on typography** - let the message shine
+
+---
+
+## What We'll Create
+
+### 1. Animated Gradient Orb System
+Large, soft gradient orbs that slowly morph, drift, and pulse. These create a sense of living, breathing technology without being distracting.
 
 ```text
 ┌─────────────────────────────────────────────────────────────────┐
-│                       qbank_questions                           │
-├─────────────────────────────────────────────────────────────────┤
-│ id (uuid, PK)                                                   │
-│ question_id (text, unique) - e.g., "Q1234" for reference        │
-│ stem (text) - Full clinical vignette                            │
-│ options (jsonb) - Array of answer choices                       │
-│ correct_answer_index (int)                                      │
-│ explanation (text) - Detailed explanation with rationale        │
-│ explanation_image_url (text, nullable)                          │
-│ question_image_url (text, nullable)                             │
-│ specialty_id (uuid, FK → specialties)                           │
-│ subject (text) - e.g., "Pathophysiology", "Pharmacology"        │
-│ system (text) - e.g., "Cardiovascular", "Respiratory"           │
-│ topic (text) - Specific topic within system                     │
-│ difficulty (enum: easy, medium, hard)                           │
-│ question_type (text) - "single_best", "extended_matching"       │
-│ first_aid_reference (text, nullable)                            │
-│ board_yield (enum: low, medium, high)                           │
-│ keywords (text[]) - For search/filtering                        │
-│ is_active (boolean, default true)                               │
-│ created_at, updated_at                                          │
+│                          ○ orb-1                                │
+│           ◐                    (morphing, drifting)             │
+│     orb-2 ◑                                                     │
+│                                      ○ orb-3                    │
+│                    [  LIVEMED University  ]                     │
+│                    [   Where AI Meets     ]                     │
+│                    [     Medicine.        ]                     │
+│                                                                 │
+│                 ◐ orb-4                     ◑                   │
+│                                         orb-5                   │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-### 1.2 Create `qbank_user_progress` Table
-Track individual question attempts and performance:
+**Orb Properties:**
+- 4-6 large gradient orbs (300-800px diameter)
+- Colors: cyan, blue, purple gradients matching brand
+- Motion: slow drift (20-30s cycles), morphing border-radius
+- Blur: 100-200px for soft glow effect
+- Opacity: 15-30% for subtlety
 
-```text
-┌─────────────────────────────────────────────────────────────────┐
-│                     qbank_user_progress                         │
-├─────────────────────────────────────────────────────────────────┤
-│ id (uuid, PK)                                                   │
-│ user_id (uuid, FK)                                              │
-│ question_id (uuid, FK → qbank_questions)                        │
-│ attempt_number (int)                                            │
-│ selected_answer (int)                                           │
-│ is_correct (boolean)                                            │
-│ time_spent_seconds (int)                                        │
-│ was_flagged (boolean)                                           │
-│ confidence_level (enum: guessing, unsure, confident)            │
-│ session_id (uuid) - Groups questions in same test               │
-│ created_at                                                      │
-└─────────────────────────────────────────────────────────────────┘
-```
+### 2. Enhanced Particle/Constellation Background
+Upgrade the existing ParticleBackground to be more minimal and elegant:
+- Fewer particles, more spread out
+- Thinner connection lines
+- Slower, more graceful movement
+- Subtle pulse on particles
+- Mouse interaction creates gentle ripple effect
 
-### 1.3 Create `qbank_test_sessions` Table
-Track test blocks and settings:
+### 3. Floating Glow Rings
+Subtle concentric rings that pulse outward from center, creating a "tech radar" effect:
+- 2-3 rings emanating from center
+- Very low opacity (5-10%)
+- Slow expansion animation (4-6s cycles)
 
-```text
-┌─────────────────────────────────────────────────────────────────┐
-│                     qbank_test_sessions                         │
-├─────────────────────────────────────────────────────────────────┤
-│ id (uuid, PK)                                                   │
-│ user_id (uuid, FK)                                              │
-│ mode (enum: tutor, timed)                                       │
-│ question_count (int)                                            │
-│ time_limit_minutes (int, nullable)                              │
-│ filters_applied (jsonb) - subjects, systems, difficulty, etc.   │
-│ status (enum: in_progress, completed, abandoned)                │
-│ started_at, completed_at                                        │
-│ score_percent (decimal, nullable)                               │
-│ created_at                                                      │
-└─────────────────────────────────────────────────────────────────┘
-```
-
-### 1.4 Create `qbank_flagged_questions` Table
-Track user-flagged questions for review:
-
-```text
-┌─────────────────────────────────────────────────────────────────┐
-│                   qbank_flagged_questions                       │
-├─────────────────────────────────────────────────────────────────┤
-│ id (uuid, PK)                                                   │
-│ user_id (uuid, FK)                                              │
-│ question_id (uuid, FK → qbank_questions)                        │
-│ flag_type (enum: review_later, difficult, bookmark)             │
-│ notes (text, nullable)                                          │
-│ created_at                                                      │
-└─────────────────────────────────────────────────────────────────┘
-```
-
----
-
-## Phase 2: QBank Interface Components
-
-### 2.1 Create Test Configuration Page (`/qbank/create`)
-Features:
-- Select mode: **Tutor** (immediate feedback) or **Timed** (exam simulation)
-- Filter by: Subject, System, Specialty, Difficulty
-- Select question status: Unused, Incorrect, Flagged, All
-- Set number of questions (10, 20, 40, or custom)
-- Time limit options for timed mode
-
-### 2.2 Create Question Interface (`/qbank/session/:id`)
-UWorld-style features:
-- **Clean, distraction-free interface** with dark/light mode
-- **Question navigation panel** (side or bottom)
-- **Timer** with pause option (tutor mode)
-- **Flag/Bookmark** button for each question
-- **Highlight text** in question stem (yellow highlighter)
-- **Strikethrough** on answer options
-- **Lab Values** quick-reference panel (collapsible)
-- **Notes panel** (split-screen option)
-- **Calculator** for calculations
-- **Font size adjustment**
-
-### 2.3 Create Explanation View Component
-After answering (or at end for timed mode):
-- Show correct answer with explanation
-- Visual indicator for why each wrong answer is incorrect
-- Educational content with diagrams/images
-- "First Aid" reference links
-- Report question button
-
-### 2.4 Create Performance Analytics Dashboard (`/qbank/performance`)
-Displays:
-- Overall accuracy by subject/system
-- Question usage statistics (used, unused, correct, incorrect)
-- Time per question trends
-- Weakness areas with recommendations
-- Score prediction correlation
-- Comparison to peer average (anonymized)
-
----
-
-## Phase 3: Core Features Implementation
-
-### 3.1 Tutor Mode Flow
-```text
-Start Test → Answer Question → Submit → 
-Show Explanation Immediately → Next Question → 
-Repeat → Session Complete → Show Summary
-```
-
-### 3.2 Timed Mode Flow (USMLE-Realistic)
-```text
-Start Test → Answer Questions (no feedback) → 
-Navigate freely → Flag uncertain questions →
-Time expires or Submit → 
-Review All Answers with Explanations → 
-Session Complete → Show Summary
-```
-
-### 3.3 Question Filtering Logic
-- Filter unused questions (never attempted by user)
-- Filter incorrect (previously wrong)
-- Filter flagged/bookmarked
-- Combine filters (e.g., unused + hard + cardiology)
-
-### 3.4 Highlight & Strikethrough System
-- Store user highlights/strikethroughs per question in session
-- Persist during session, cleared on complete
-- Visual feedback for cognitive processing
-
----
-
-## Phase 4: Initial Question Content
-
-### 4.1 Seed Questions Strategy
-Start with 200+ high-quality questions across core subjects:
-
-| Subject | Target Count |
-|---------|--------------|
-| Cardiology | 30 |
-| Pulmonology | 25 |
-| Gastroenterology | 25 |
-| Neurology | 25 |
-| Endocrinology | 25 |
-| Nephrology | 20 |
-| Hematology | 20 |
-| Infectious Disease | 20 |
-| Pharmacology | 30 |
-| Pathophysiology | 30 |
-
-### 4.2 Question Quality Standards
-Each question includes:
-- Clinical vignette (100-200 words)
-- 5 answer options (A-E)
-- Comprehensive explanation (why correct + why each is wrong)
-- Difficulty rating
-- High-yield tags
-- Subject/System/Topic classification
-
----
-
-## Phase 5: Integration with Existing Systems
-
-### 5.1 MATCH Ready Tracker Integration
-- QBank performance feeds into score prediction
-- Weight recent QBank accuracy higher than older data
-- Track improvement over time
-
-### 5.2 ATLAS AI Integration
-- Allow "Ask ATLAS" button on any question
-- ATLAS can provide additional context/teaching
-- Socratic questioning for deeper understanding
-
-### 5.3 Curriculum Integration
-- Link questions to relevant modules
-- Suggest modules for weak areas
-- "Practice Questions" tab within module view
+### 4. Grid Floor Effect (Optional)
+A subtle perspective grid at the bottom that fades up, similar to Tron/Apple AR visuals:
+- Horizontal lines creating depth
+- Fades to transparent at top
+- Very subtle (5% opacity)
 
 ---
 
@@ -221,82 +72,154 @@ Each question includes:
 
 | File | Purpose |
 |------|---------|
-| `src/pages/QBank.tsx` | Main QBank dashboard/home |
-| `src/pages/QBankCreate.tsx` | Test configuration page |
-| `src/pages/QBankSession.tsx` | Active question-taking interface |
-| `src/pages/QBankReview.tsx` | Post-test review with explanations |
-| `src/pages/QBankPerformance.tsx` | Analytics dashboard |
-| `src/components/qbank/QuestionCard.tsx` | Question display component |
-| `src/components/qbank/AnswerOption.tsx` | Selectable answer with strikethrough |
-| `src/components/qbank/QuestionNav.tsx` | Navigation sidebar |
-| `src/components/qbank/ExplanationPanel.tsx` | Explanation display |
-| `src/components/qbank/LabValuesPanel.tsx` | Reference lab values |
-| `src/components/qbank/TestModeSelector.tsx` | Tutor vs Timed selector |
-| `src/components/qbank/FilterPanel.tsx` | Subject/system/difficulty filters |
-| `src/components/qbank/HighlightableText.tsx` | Text with highlight support |
-| `src/components/qbank/PerformanceCharts.tsx` | Analytics visualizations |
-| `src/hooks/useQBankSession.ts` | Session state management |
-| `src/hooks/useQBankFilters.ts` | Filter logic |
-| `supabase/functions/seed-qbank-questions/index.ts` | Initial question seeding |
-
----
+| `src/components/HeroBackground.tsx` | Main Apple-style animated background |
+| `src/components/GradientOrbs.tsx` | Morphing gradient orb system |
+| `src/components/GlowRings.tsx` | Pulsing concentric rings |
 
 ## Files to Modify
 
 | File | Changes |
 |------|---------|
-| `src/App.tsx` | Add QBank routes |
-| `src/pages/Dashboard.tsx` | Add QBank quick access card |
-| `src/pages/Assessments.tsx` | Link to new QBank, possibly deprecate |
-| `src/hooks/useScorePredictor.ts` | Integrate QBank performance data |
-| `src/components/layout/Header.tsx` | Add QBank to navigation (if needed) |
+| `src/pages/Landing.tsx` | Remove video, add new HeroBackground component |
+| `src/components/ParticleBackground.tsx` | Refine for more elegant, minimal feel |
+| `src/index.css` | Add new animation keyframes if needed |
 
 ---
 
-## Database Migration Summary
+## Component Architecture
 
-```sql
--- Create ENUM types
-CREATE TYPE qbank_difficulty AS ENUM ('easy', 'medium', 'hard');
-CREATE TYPE qbank_mode AS ENUM ('tutor', 'timed');
-CREATE TYPE qbank_session_status AS ENUM ('in_progress', 'completed', 'abandoned');
-CREATE TYPE confidence_level AS ENUM ('guessing', 'unsure', 'confident');
-CREATE TYPE flag_type AS ENUM ('review_later', 'difficult', 'bookmark');
+### HeroBackground.tsx
+Main wrapper that layers all effects:
 
--- Create tables with proper RLS
--- qbank_questions, qbank_user_progress, qbank_test_sessions, qbank_flagged_questions
+```text
+┌── HeroBackground ──────────────────────────────────────────────┐
+│                                                                │
+│   ┌── Base Layer ────────────────────────────────────────────┐ │
+│   │  Deep navy/black radial gradient background              │ │
+│   └──────────────────────────────────────────────────────────┘ │
+│                                                                │
+│   ┌── GradientOrbs Layer ────────────────────────────────────┐ │
+│   │  4-6 floating, morphing gradient orbs                    │ │
+│   └──────────────────────────────────────────────────────────┘ │
+│                                                                │
+│   ┌── ParticleBackground Layer (refined) ────────────────────┐ │
+│   │  Minimal constellation network                           │ │
+│   └──────────────────────────────────────────────────────────┘ │
+│                                                                │
+│   ┌── GlowRings Layer ───────────────────────────────────────┐ │
+│   │  Subtle pulsing rings from center                        │ │
+│   └──────────────────────────────────────────────────────────┘ │
+│                                                                │
+│   ┌── Noise/Grain Overlay ───────────────────────────────────┐ │
+│   │  Very subtle grain for depth (optional)                  │ │
+│   └──────────────────────────────────────────────────────────┘ │
+│                                                                │
+└────────────────────────────────────────────────────────────────┘
+```
 
--- Enable RLS with policies for:
--- - Users can read all questions
--- - Users can only CRUD their own progress/sessions/flags
+### GradientOrbs.tsx
+Framer Motion powered morphing orbs:
+
+- Each orb has unique:
+  - Position (randomized but balanced)
+  - Size (300-700px)
+  - Color gradient (cyan/blue/purple variations)
+  - Animation speed (15-30s cycles)
+  - Blur amount (100-200px)
+
+- Animations:
+  - `blob-morph`: Border-radius changes create organic shape
+  - `drift`: Slow x/y movement
+  - `breathe`: Scale pulsing (0.95 to 1.05)
+  - `opacity-shift`: Subtle opacity changes
+
+### GlowRings.tsx
+CSS-animated concentric rings:
+
+- 3 rings at different stages of expansion
+- Staggered timing for continuous pulse effect
+- Centered on hero area
+- Very low opacity (5-10%)
+
+---
+
+## Animation Specifications
+
+### Orb Morphing
+```css
+@keyframes blob-morph {
+  0%, 100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
+  25% { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; }
+  50% { border-radius: 40% 60% 60% 40% / 70% 30% 70% 40%; }
+  75% { border-radius: 60% 40% 40% 60% / 40% 70% 40% 60%; }
+}
+```
+
+### Orb Drift
+```css
+@keyframes orb-drift {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  25% { transform: translate(30px, -20px) scale(1.02); }
+  50% { transform: translate(-20px, 30px) scale(0.98); }
+  75% { transform: translate(10px, 10px) scale(1.01); }
+}
+```
+
+### Ring Pulse
+```css
+@keyframes ring-pulse {
+  0% { transform: scale(0.8); opacity: 0.1; }
+  100% { transform: scale(2.5); opacity: 0; }
+}
 ```
 
 ---
 
-## Summary: UWorld Feature Comparison
+## Color Palette for Orbs
 
-| Feature | UWorld | Current | After Implementation |
-|---------|--------|---------|---------------------|
-| Question Count | 3,600+ | ~25 | 200+ (scalable) |
-| Database-driven | Yes | No | Yes |
-| Tutor/Timed Modes | Yes | No | Yes |
-| Question Flagging | Yes | No | Yes |
-| Highlighting | Yes | No | Yes |
-| Strikethrough | Yes | No | Yes |
-| Lab Values Panel | Yes | No | Yes |
-| Performance Analytics | Yes | Basic | Yes |
-| Subject/System Filters | Yes | No | Yes |
-| Split-screen Notes | Yes | No | Yes |
-| Study Planner | Yes | No | Phase 2 |
-| Score Correlation | Yes | Partial | Yes |
+| Orb | Primary Color | Secondary Color |
+|-----|---------------|-----------------|
+| 1 | hsl(190, 100%, 50%) cyan | hsl(210, 100%, 60%) blue |
+| 2 | hsl(217, 91%, 60%) brand blue | hsl(240, 60%, 45%) purple |
+| 3 | hsl(200, 100%, 50%) light cyan | hsl(190, 95%, 55%) teal |
+| 4 | hsl(230, 60%, 35%) deep blue | hsl(217, 91%, 60%) brand blue |
+| 5 | hsl(180, 80%, 45%) teal | hsl(200, 100%, 50%) cyan |
 
 ---
 
-## Technical Notes
+## Performance Considerations
 
-- All question data stored in database, not hardcoded
-- RLS policies ensure users only see their own progress
-- Session state persisted to allow resuming incomplete tests
-- Mobile-responsive design for studying on-the-go
-- Performance optimized with pagination for large question sets
-- Question IDs visible (e.g., "QCARD-0042") for reference and reporting
+- Use `transform` and `opacity` only (GPU accelerated)
+- Limit particle count for smooth 60fps
+- Use `will-change` sparingly
+- Blur effects rendered at lower resolution
+- Animations paused when off-screen (Intersection Observer)
+
+---
+
+## Before vs After
+
+| Aspect | Before (Video) | After (Animated) |
+|--------|----------------|------------------|
+| File size | ~5-10MB video | ~10KB JS |
+| Load time | Slower | Instant |
+| Mobile perf | Heavy | Optimized |
+| Customizable | No | Fully |
+| Brand alignment | Generic | Perfect match |
+| Apple feel | ❌ | ✅ |
+| Interactive | ❌ | ✅ (mouse effects) |
+
+---
+
+## Summary
+
+This approach creates a premium, Apple-inspired hero that:
+- Loads instantly (no video download)
+- Performs smoothly on all devices
+- Matches brand colors perfectly
+- Feels futuristic and medical/tech
+- Is fully interactive with mouse
+- Scales beautifully on all screens
+
+The result will be a sophisticated, breathing background that makes the hero typography and CTAs shine while communicating innovation and trust.
+
