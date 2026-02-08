@@ -1,6 +1,9 @@
 import GradientOrbs from "./GradientOrbs";
 import GlowRings from "./GlowRings";
 import ParticleBackground from "./ParticleBackground";
+import DNAHelix from "./DNAHelix";
+import ECGLine from "./ECGLine";
+import FloatingMedicalIcons from "./FloatingMedicalIcons";
 
 const HeroBackground = () => {
   return (
@@ -18,14 +21,23 @@ const HeroBackground = () => {
         }}
       />
       
+      {/* DNA Helix Layer - Medical identity */}
+      <DNAHelix />
+      
       {/* Gradient Orbs Layer */}
       <GradientOrbs />
       
-      {/* Particle Constellation Layer */}
+      {/* Particle Constellation Layer - Molecular network */}
       <ParticleBackground />
       
       {/* Glow Rings Layer */}
       <GlowRings />
+      
+      {/* ECG Heartbeat Line Layer */}
+      <ECGLine />
+      
+      {/* Floating Medical Icons */}
+      <FloatingMedicalIcons />
       
       {/* Subtle noise/grain overlay for depth */}
       <div 
