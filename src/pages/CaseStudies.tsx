@@ -15,7 +15,7 @@ const caseStudies = [
     step1Score: 248,
     step2Score: 259,
     matchYear: 2024,
-    quote: "LIVEMED's virtual rotations gave me the U.S. clinical exposure I needed. The ATLAS AI helped me understand complex cases in ways textbooks never could.",
+    quote: "Livemed's virtual rotations gave me the U.S. clinical exposure I needed. The ATLAS AI helped me understand complex cases in ways textbooks never could.",
     highlights: [
       "Completed 6 virtual rotations across specialties",
       "200+ hours with U.S. attending physicians",
@@ -37,7 +37,7 @@ const caseStudies = [
     highlights: [
       "Improved Step 1 score from 218 to 252",
       "Strong letters from virtual rotation preceptors",
-      "Published research with LIVEMED faculty"
+      "Published research with Livemed faculty"
     ],
     programUsed: ["Clinical Program", "Research Track", "USMLE Prep"]
   },
@@ -51,11 +51,11 @@ const caseStudies = [
     step1Score: 245,
     step2Score: 256,
     matchYear: 2023,
-    quote: "As an IMG, I was worried about getting meaningful U.S. clinical experience. LIVEMED connected me with incredible mentors who guided my entire journey.",
+    quote: "As an IMG, I was worried about getting meaningful U.S. clinical experience. Livemed connected me with incredible mentors who guided my entire journey.",
     highlights: [
       "4 strong Letters of Recommendation",
       "Matched in competitive pediatrics program",
-      "Now mentoring other LIVEMED students"
+      "Now mentoring other Livemed students"
     ],
     programUsed: ["Virtual Rotations", "Mentorship Program", "Residency Prep"]
   },
@@ -109,7 +109,7 @@ const CaseStudies = () => {
             </h1>
             <p className="text-xl text-muted-foreground mb-8">
               Real stories from international medical graduates who transformed their careers 
-              with LIVEMED Academy's comprehensive training programs.
+              with Livemed Academy's comprehensive training programs.
             </p>
           </motion.div>
 
@@ -230,7 +230,7 @@ const CaseStudies = () => {
               Ready to Write Your Success Story?
             </h2>
             <p className="text-xl text-white/80 mb-8">
-              Join hundreds of IMGs who have transformed their medical careers with LIVEMED Academy.
+              Join hundreds of IMGs who have transformed their medical careers with Livemed Academy.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" variant="secondary" className="text-primary" asChild>

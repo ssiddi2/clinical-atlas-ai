@@ -144,7 +144,7 @@ const Admin = () => {
         <div className="container mx-auto px-4 flex h-16 items-center justify-between">
           <div className="flex items-center gap-4">
             <Link to="/dashboard">
-              <img src={livemedLogo} alt="LIVEMED" style={{ height: '80px', width: 'auto' }} className="object-contain" />
+              <img src={livemedLogo} alt="Livemed" style={{ height: '80px', width: 'auto' }} className="object-contain" />
             </Link>
             <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary">
               <ShieldCheck className="h-4 w-4" />

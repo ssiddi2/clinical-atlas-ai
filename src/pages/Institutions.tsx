@@ -91,7 +91,7 @@ const Institutions = () => {
                 Transform Medical Education at Scale
               </h1>
               <p className="text-lg text-white/80 mb-8">
-                Partner with LIVEMED Academy to bring AI-powered, U.S.-standard 
+                Partner with Livemed Academy to bring AI-powered, U.S.-standard 
                 medical education to your students, residents, and physicians — 
                 without the infrastructure overhead.
               </p>
@@ -131,7 +131,7 @@ const Institutions = () => {
           <div className="container mx-auto px-4">
           <div className="text-center mb-16">
               <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                Why Institutions Choose LIVEMED Academy
+                Why Institutions Choose Livemed Academy
               </h2>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
                 We provide the technology, curriculum, and support to modernize 
@@ -197,7 +197,7 @@ const Institutions = () => {
                 </h2>
                 <p className="text-lg text-muted-foreground mb-8">
                   Our team works closely with your institution to ensure successful 
-                  deployment and ongoing optimization of the LIVEMED Academy platform.
+                  deployment and ongoing optimization of the Livemed Academy platform.
                 </p>
 
                 <div className="space-y-6">
@@ -229,7 +229,7 @@ const Institutions = () => {
                   </h3>
                   <p className="text-white/80 mb-6">
                     Schedule a consultation with our partnerships team to discuss 
-                    how LIVEMED Academy can support your medical education goals.
+                    how Livemed Academy can support your medical education goals.
                   </p>
                   <Button size="lg" variant="secondary" className="w-full" asChild>
                     <Link to="/contact">

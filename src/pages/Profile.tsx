@@ -159,7 +159,7 @@ const Profile = () => {
               <ArrowLeft className="h-5 w-5" />
             </Button>
             <Link to="/dashboard">
-              <img src={livemedLogo} alt="LIVEMED" style={{ height: '80px', width: 'auto' }} className="object-contain" />
+              <img src={livemedLogo} alt="Livemed" style={{ height: '80px', width: 'auto' }} className="object-contain" />
             </Link>
           </div>
           <h1 className="text-lg font-semibold">Profile Settings</h1>

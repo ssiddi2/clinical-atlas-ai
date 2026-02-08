@@ -37,7 +37,7 @@ const ONBOARDING_STEPS = [
   'complete'
 ] as const;
 
-const SYSTEM_PROMPT = `You are a friendly onboarding assistant for LIVEMED Academy — Division of Clinical & Continuing Medical Education, a professional medical education platform for medical students and physicians worldwide. Your role is to guide new students through completing their profile in a conversational, warm manner.
+const SYSTEM_PROMPT = `You are a friendly onboarding assistant for Livemed Academy — Division of Clinical & Continuing Medical Education, a professional medical education platform for medical students and physicians worldwide. Your role is to guide new students through completing their profile in a conversational, warm manner.
 
 You are currently helping a medical student complete their profile. Ask questions naturally and conversationally, one topic at a time. Be encouraging and professional.
 
@@ -142,7 +142,7 @@ serve(async (req) => {
 
       const welcomeMessage = {
         role: "assistant",
-        content: `Hi ${profile?.first_name || 'there'}! 👋 Welcome to LIVEMED Academy! I'm here to help you complete your student profile so we can personalize your learning experience.\n\nThis will only take a few minutes, and everything you share helps us tailor your curriculum and connect you with the right opportunities.\n\nLet's start with your academic background. **Which medical school are you currently attending?**`
+        content: `Hi ${profile?.first_name || 'there'}! 👋 Welcome to Livemed Academy! I'm here to help you complete your student profile so we can personalize your learning experience.\n\nThis will only take a few minutes, and everything you share helps us tailor your curriculum and connect you with the right opportunities.\n\nLet's start with your academic background. **Which medical school are you currently attending?**`
       };
 
       const { data, error } = await supabase

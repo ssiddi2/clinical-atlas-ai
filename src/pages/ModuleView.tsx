@@ -358,7 +358,7 @@ const ModuleView = () => {
             </div>
           </div>
           <Link to="/dashboard">
-            <img src={livemedLogo} alt="LIVEMED" style={{ height: '80px', width: 'auto' }} className="object-contain" />
+            <img src={livemedLogo} alt="Livemed" style={{ height: '80px', width: 'auto' }} className="object-contain" />
           </Link>
         </div>
         <Progress value={progress} className="h-1" />
