@@ -40,7 +40,7 @@ const Footer = forwardRef<HTMLElement>((props, ref) => {
             <Link to="/" className="inline-block mb-4 md:mb-6 group">
               <img 
                 src={livemedLogoFull} 
-                alt="LIVEMED University" 
+                alt="LIVEMED Academy" 
                 className="h-12 md:h-24 object-contain logo-glow transition-all duration-300 group-hover:scale-105"
               />
             </Link>
@@ -76,8 +76,8 @@ const Footer = forwardRef<HTMLElement>((props, ref) => {
       <div className="border-t border-white/5 relative">
         <div className="container mx-auto px-4 md:px-6 py-4">
           <p className="text-[10px] md:text-xs text-white/30 text-center max-w-4xl mx-auto leading-relaxed">
-            LIVEMED University is a professional medical education platform offering clinical and continuing medical education. 
-            LIVEMED University is not a degree-granting institution and does not award MD or equivalent medical degrees.
+            LIVEMED Academy is a professional medical education platform offering clinical and continuing medical education. 
+            LIVEMED Academy is not a degree-granting institution and does not award MD or equivalent medical degrees.
           </p>
         </div>
       </div>
@@ -86,7 +86,7 @@ const Footer = forwardRef<HTMLElement>((props, ref) => {
       <div className="border-t border-white/5 relative">
         <div className="container mx-auto px-4 md:px-6 py-4 md:py-6 flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="text-xs text-white/30">
-            © {new Date().getFullYear()} LIVEMED University. All rights reserved.
+            © {new Date().getFullYear()} LIVEMED Academy. All rights reserved.
           </p>
           <div className="flex items-center gap-6">
             <Link

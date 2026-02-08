@@ -109,7 +109,7 @@ const CaseStudies = () => {
             </h1>
             <p className="text-xl text-muted-foreground mb-8">
               Real stories from international medical graduates who transformed their careers 
-              with LIVEMED University's comprehensive training programs.
+              with LIVEMED Academy's comprehensive training programs.
             </p>
           </motion.div>
 
@@ -230,7 +230,7 @@ const CaseStudies = () => {
               Ready to Write Your Success Story?
             </h2>
             <p className="text-xl text-white/80 mb-8">
-              Join hundreds of IMGs who have transformed their medical careers with LIVEMED University.
+              Join hundreds of IMGs who have transformed their medical careers with LIVEMED Academy.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" variant="secondary" className="text-primary" asChild>

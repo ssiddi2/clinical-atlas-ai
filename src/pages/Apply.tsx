@@ -80,7 +80,7 @@ const Apply = () => {
         role: formData.yearOfStudy ? `Year ${formData.yearOfStudy} Student` : "Prospective Student",
         inquiry_type: "application",
         message: `
-Application for LIVEMED University
+Application for LIVEMED Academy
 
 Country: ${formData.country || "Not specified"}
 Institution: ${formData.institution || "Not specified"}
@@ -141,7 +141,7 @@ ${formData.message || "No additional message provided."}
               </div>
               <h1 className="text-2xl font-bold text-white mb-3">Application Received!</h1>
               <p className="text-white/60 mb-8">
-                Thank you for your interest in LIVEMED University. Our admissions team will review 
+                Thank you for your interest in LIVEMED Academy. Our admissions team will review 
                 your application and contact you within 2-3 business days.
               </p>
               <div className="flex flex-col gap-3">
@@ -182,7 +182,7 @@ ${formData.message || "No additional message provided."}
             className="text-center mb-12"
           >
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4">
-              Apply to <span className="text-gradient-livemed">LIVEMED University</span>
+              Apply to <span className="text-gradient-livemed">LIVEMED Academy</span>
             </h1>
             <p className="text-lg text-white/50 max-w-2xl mx-auto">
               Join thousands of medical students training with AI-powered education and 
