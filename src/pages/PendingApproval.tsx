@@ -91,7 +91,7 @@ const PendingApproval = () => {
           <Link to="/">
             <img 
               src={livemedLogoFull} 
-              alt="LIVEMED University" 
+              alt="LIVEMED Academy" 
               style={{ height: '60px', width: 'auto' }}
               className="object-contain" 
             />
@@ -119,7 +119,7 @@ const PendingApproval = () => {
           </CardHeader>
           <CardContent className="space-y-6">
             <p className="text-muted-foreground">
-              Thank you for registering with LIVEMED University. Our team is reviewing your 
+              Thank you for registering with LIVEMED Academy. Our team is reviewing your 
               application and will approve your account shortly.
             </p>
 
@@ -149,7 +149,7 @@ const PendingApproval = () => {
       {/* Footer */}
       <footer className="border-t border-border py-4">
         <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
-          © {new Date().getFullYear()} LIVEMED University. All rights reserved.
+          © {new Date().getFullYear()} LIVEMED Academy. All rights reserved.
         </div>
       </footer>
     </div>

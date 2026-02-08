@@ -325,7 +325,7 @@ const Atlas = () => {
             </div>
           </div>
           <Link to="/dashboard" className="hidden md:block">
-            <img src={livemedLogo} alt="LIVEMED University" className="h-10 md:h-16 object-contain" />
+            <img src={livemedLogo} alt="LIVEMED Academy" className="h-10 md:h-16 object-contain" />
           </Link>
         </header>
 

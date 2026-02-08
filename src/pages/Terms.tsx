@@ -9,14 +9,14 @@ const Terms = () => {
 
             <h2 className="text-2xl font-semibold mt-8 mb-4">1. Acceptance of Terms</h2>
             <p className="text-muted-foreground mb-4">
-              By accessing and using LIVEMED University ("the Platform"), you accept and agree to be 
+              By accessing and using LIVEMED Academy ("the Platform"), you accept and agree to be 
               bound by the terms and provisions of this agreement. If you do not agree to abide by 
               these terms, please do not use this service.
             </p>
 
             <h2 className="text-2xl font-semibold mt-8 mb-4">2. Description of Service</h2>
             <p className="text-muted-foreground mb-4">
-              LIVEMED University provides an AI-powered professional medical education platform designed for medical 
+              LIVEMED Academy provides an AI-powered professional medical education platform designed for medical 
               students, physicians, and healthcare professionals. Our services include but are not limited to:
             </p>
             <ul className="list-disc pl-6 text-muted-foreground mb-4">
@@ -30,8 +30,8 @@ const Terms = () => {
 
             <h2 className="text-2xl font-semibold mt-8 mb-4">2a. Educational Disclaimer</h2>
             <p className="text-muted-foreground mb-4">
-              LIVEMED University is a professional education platform offering clinical training, 
-              continuing medical education, and competency-based credentials. LIVEMED University 
+              LIVEMED Academy is a professional education platform offering clinical training, 
+              continuing medical education, and competency-based credentials. LIVEMED Academy 
               is not a degree-granting institution and does not award MD or equivalent medical degrees.
             </p>
 
@@ -44,14 +44,14 @@ const Terms = () => {
 
             <h2 className="text-2xl font-semibold mt-8 mb-4">4. Educational Content Disclaimer</h2>
             <p className="text-muted-foreground mb-4">
-              The content provided on LIVEMED University is for educational purposes only and should not 
+              The content provided on LIVEMED Academy is for educational purposes only and should not 
               be considered medical advice. Users should always consult with qualified healthcare 
               professionals for medical decisions. All clinical decisions require real attending physician oversight.
             </p>
 
             <h2 className="text-2xl font-semibold mt-8 mb-4">5. Intellectual Property</h2>
             <p className="text-muted-foreground mb-4">
-              All content, features, and functionality of the Platform are owned by LIVEMED University 
+              All content, features, and functionality of the Platform are owned by LIVEMED Academy 
               and are protected by international copyright, trademark, and other intellectual property laws.
             </p>
 

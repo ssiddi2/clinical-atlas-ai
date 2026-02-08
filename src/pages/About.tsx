@@ -92,7 +92,7 @@ const About = () => {
               About Our Institution
             </div>
             <h1 className="text-4xl md:text-5xl font-bold mb-4">
-              LIVEMED University
+              LIVEMED Academy
             </h1>
             <p className="text-xl text-muted-foreground mb-2">
               Division of Clinical & Continuing Medical Education
@@ -113,7 +113,7 @@ const About = () => {
               <div>
                 <h2 className="text-3xl font-bold mb-6">Our Mission</h2>
                 <p className="text-muted-foreground mb-4">
-                  LIVEMED University was established by a team of physician educators who recognized 
+                  LIVEMED Academy was established by a team of physician educators who recognized 
                   the need for accessible, high-quality clinical training for international medical 
                   graduates and healthcare professionals worldwide.
                 </p>
@@ -284,9 +284,9 @@ const About = () => {
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center">
             <p className="text-sm text-muted-foreground">
-              <strong>Educational Disclaimer:</strong> LIVEMED University is a professional medical education platform 
+              <strong>Educational Disclaimer:</strong> LIVEMED Academy is a professional medical education platform 
               offering clinical training, continuing medical education, and competency-based credentials. 
-              LIVEMED University is not a degree-granting institution and does not award MD or equivalent medical degrees.
+              LIVEMED Academy is not a degree-granting institution and does not award MD or equivalent medical degrees.
             </p>
           </div>
         </div>
@@ -299,7 +299,7 @@ const About = () => {
             Ready to Advance Your Medical Career?
           </h2>
           <p className="text-lg text-white/80 max-w-2xl mx-auto mb-8">
-            Join thousands of medical professionals worldwide who trust LIVEMED University 
+            Join thousands of medical professionals worldwide who trust LIVEMED Academy 
             for their clinical education and professional development.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">

@@ -183,7 +183,7 @@ const Landing = () => {
               transition={{ duration: 0.6, delay: 0.25 }}
               className="text-xl sm:text-2xl md:text-3xl font-semibold text-gradient-livemed text-glow mb-4 tracking-wide"
             >
-              LIVEMED University
+              LIVEMED Academy
             </motion.div>
 
             {/* Main Headline - Apple Style Bold Typography */}

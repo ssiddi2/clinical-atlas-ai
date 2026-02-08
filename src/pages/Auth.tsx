@@ -142,7 +142,7 @@ const Auth = () => {
         }
       } else {
         toast({
-          title: "Welcome to LIVEMED University!",
+          title: "Welcome to LIVEMED Academy!",
           description: "Your account has been created. Please check your email to confirm.",
         });
       }
@@ -172,7 +172,7 @@ const Auth = () => {
           </Link>
           <img 
             src={livemedLogoFull} 
-            alt="LIVEMED University" 
+            alt="LIVEMED Academy" 
             style={{ height: '140px', width: 'auto' }}
             className="logo-glow object-contain" 
           />
@@ -189,7 +189,7 @@ const Auth = () => {
         </div>
 
         <div className="relative z-10 text-sm text-white/40">
-          © {new Date().getFullYear()} LIVEMED University
+          © {new Date().getFullYear()} LIVEMED Academy
         </div>
       </div>
 
@@ -201,7 +201,7 @@ const Auth = () => {
             <Link to="/">
               <img 
                 src={livemedLogoIcon} 
-                alt="LIVEMED University" 
+                alt="LIVEMED Academy" 
                 style={{ height: '140px', width: 'auto' }}
                 className="mx-auto logo-glow object-contain" 
               />
@@ -216,7 +216,7 @@ const Auth = () => {
               <CardDescription className="text-muted-foreground">
                 {mode === "signin"
                   ? "Sign in to continue your medical education"
-                  : "Start your journey with LIVEMED University"}
+                  : "Start your journey with LIVEMED Academy"}
               </CardDescription>
             </CardHeader>
             <CardContent className="pt-6">
