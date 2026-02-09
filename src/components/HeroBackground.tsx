@@ -58,7 +58,7 @@ const HeroBackground = () => {
       />
       
       {/* Top fade for seamless header blend */}
-      <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-black/60 to-transparent" />
+      <div className="hidden md:block absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-black/60 to-transparent" />
       
       {/* Bottom fade for content transition */}
       <div className="absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-[hsl(230,55%,6%)] via-[hsl(230,55%,6%)/0.8] to-transparent" />

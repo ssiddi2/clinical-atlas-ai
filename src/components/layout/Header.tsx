@@ -30,7 +30,7 @@ const Header = () => {
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
         scrolled 
           ? "bg-[#030508]/80 backdrop-blur-2xl border-b border-white/10 shadow-lg shadow-black/20" 
-          : "bg-transparent"
+          : "bg-[#030508]/60 backdrop-blur-xl md:bg-transparent md:backdrop-blur-none"
       }`}
     >
       <div className="container mx-auto flex h-14 md:h-16 items-center justify-between px-4 md:px-6">
@@ -79,7 +79,7 @@ const Header = () => {
 
         {/* Mobile Menu Toggle */}
         <button
-          className="md:hidden p-2 text-white/70 hover:text-white transition-colors"
+          className="md:hidden p-2 text-white hover:text-white transition-colors"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
         >
