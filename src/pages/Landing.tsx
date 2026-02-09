@@ -1,11 +1,10 @@
-import { useState, useRef, lazy, Suspense } from "react";
+import { useRef, lazy, Suspense } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useIsMobile } from "@/hooks/use-mobile";
-import DemoVideoModal from "@/components/DemoVideoModal";
-import DemoPreviewCard from "@/components/DemoPreviewCard";
+import InlineDemoPlayer from "@/components/InlineDemoPlayer";
 import HeroBackground from "@/components/HeroBackground";
 import jointCommissionBadge from "@/assets/joint-commission-badge.png";
 
@@ -77,8 +76,7 @@ const slideInRight = {
 
 const Landing = () => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const demoPreviewRef = useRef<HTMLDivElement>(null);
-  const [isDemoOpen, setIsDemoOpen] = useState(false);
+  const demoPlayerRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
 
   // On mobile: skip hero entrance animations so text paints instantly as LCP
@@ -157,7 +155,6 @@ const Landing = () => {
 
   return (
     <>
-      <DemoVideoModal isOpen={isDemoOpen} onClose={() => setIsDemoOpen(false)} />
       <div ref={containerRef} className="flex flex-col bg-livemed-deep">
       {/* Hero Section - Apple Style Clean */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden lcp-priority">
@@ -232,7 +229,7 @@ const Landing = () => {
                 size="lg" 
                 variant="ghost" 
                 className="text-base px-8 py-6 rounded-full text-white/50 hover:text-white/70 hover:bg-white/5 group"
-                onClick={() => demoPreviewRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })}
+                onClick={() => demoPlayerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })}
               >
                 <Play className="mr-2 h-4 w-4" />
                 Watch Demo
@@ -241,16 +238,18 @@ const Landing = () => {
           </div>
         </motion.div>
 
-        {/* Inline Demo Preview Card - straddles hero and stats */}
-        <div className="absolute bottom-0 left-0 right-0 translate-y-1/2 z-20 pointer-events-none">
-          <div className="pointer-events-auto">
-            <DemoPreviewCard ref={demoPreviewRef} onPlayDemo={() => setIsDemoOpen(true)} />
-          </div>
+      </section>
+
+      {/* Inline Demo Player */}
+      <section className="relative py-12 md:py-20 bg-livemed-deep overflow-hidden">
+        <div className="absolute inset-0 bg-mesh-gradient opacity-20" />
+        <div className="relative">
+          <InlineDemoPlayer ref={demoPlayerRef} />
         </div>
       </section>
 
       {/* Stats Section - Enhanced Glass Cards */}
-      <section className="relative pt-40 md:pt-56 pb-12 md:pb-24 overflow-hidden">
+      <section className="relative pt-12 md:pt-20 pb-12 md:pb-24 overflow-hidden">
         <div className="absolute inset-0 bg-livemed-deep" />
         <div className="absolute inset-0 bg-mesh-gradient opacity-30" />
         
