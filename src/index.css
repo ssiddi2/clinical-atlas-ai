@@ -207,6 +207,12 @@
       scroll-behavior: auto !important;
     }
   }
+
+  /* Below-fold sections: skip rendering until scrolled into view */
+  .below-fold-section {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 600px;
+  }
 }
 
 @layer utilities {

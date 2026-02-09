@@ -260,38 +260,55 @@ const Landing = () => {
         <div className="absolute inset-0 bg-livemed-deep" />
         
         <div className="container mx-auto px-4 md:px-6 relative">
-          <motion.div 
-            variants={staggerContainer}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
-            className="grid grid-cols-2 lg:grid-cols-4 gap-px bg-white/[0.06] rounded-2xl overflow-hidden"
-          >
-            {stats.map((stat, index) => {
-              const isHighlighted = stat.label === "USMLE Pass Rate";
-              return (
-                <motion.div 
-                  key={stat.label} 
-                  variants={fadeInScale}
-                  className={`p-6 md:p-10 lg:p-12 text-center ${isHighlighted ? "bg-white/[0.04]" : "bg-white/[0.015]"}`}
-                >
-                  <div className={`font-bold mb-2 md:mb-3 ${isHighlighted ? "text-4xl sm:text-5xl md:text-6xl text-gradient-livemed" : "text-2xl sm:text-3xl md:text-4xl text-white/60"}`}>
-                    {stat.value}
+          {noAnim ? (
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-px bg-white/[0.06] rounded-2xl overflow-hidden">
+              {stats.map((stat) => {
+                const isHighlighted = stat.label === "USMLE Pass Rate";
+                return (
+                  <div 
+                    key={stat.label} 
+                    className={`p-6 md:p-10 lg:p-12 text-center ${isHighlighted ? "bg-white/[0.04]" : "bg-white/[0.015]"}`}
+                  >
+                    <div className={`font-bold mb-2 md:mb-3 ${isHighlighted ? "text-4xl sm:text-5xl md:text-6xl text-gradient-livemed" : "text-2xl sm:text-3xl md:text-4xl text-white/60"}`}>
+                      {stat.value}
+                    </div>
+                    <div className={`uppercase tracking-[0.15em] font-medium ${isHighlighted ? "text-xs md:text-sm text-white/50" : "text-[10px] md:text-xs text-white/30"}`}>
+                      {stat.label}
+                    </div>
                   </div>
-                  <div className={`uppercase tracking-[0.15em] font-medium ${isHighlighted ? "text-xs md:text-sm text-white/50" : "text-[10px] md:text-xs text-white/30"}`}>
-                    {stat.label}
-                  </div>
-                </motion.div>
-              );
-            })}
-          </motion.div>
+                );
+              })}
+            </div>
+          ) : (
+            <motion.div 
+              variants={staggerContainer}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-100px" }}
+              className="grid grid-cols-2 lg:grid-cols-4 gap-px bg-white/[0.06] rounded-2xl overflow-hidden"
+            >
+              {stats.map((stat) => {
+                const isHighlighted = stat.label === "USMLE Pass Rate";
+                return (
+                  <motion.div 
+                    key={stat.label} 
+                    variants={fadeInScale}
+                    className={`p-6 md:p-10 lg:p-12 text-center ${isHighlighted ? "bg-white/[0.04]" : "bg-white/[0.015]"}`}
+                  >
+                    <div className={`font-bold mb-2 md:mb-3 ${isHighlighted ? "text-4xl sm:text-5xl md:text-6xl text-gradient-livemed" : "text-2xl sm:text-3xl md:text-4xl text-white/60"}`}>
+                      {stat.value}
+                    </div>
+                    <div className={`uppercase tracking-[0.15em] font-medium ${isHighlighted ? "text-xs md:text-sm text-white/50" : "text-[10px] md:text-xs text-white/30"}`}>
+                      {stat.label}
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </motion.div>
+          )}
 
           {/* Joint Commission Accreditation Badge */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            viewport={{ once: true }}
+          <div
             className="mt-16 md:mt-24 max-w-2xl mx-auto"
           >
             <div className="border-t border-white/[0.06] pt-12 md:pt-16 flex flex-col items-center text-center">
@@ -320,46 +337,30 @@ const Landing = () => {
                 </a>
               </p>
             </div>
-          </motion.div>
+          </div>
         </div>
       </section>
 
       {/* Features Section */}
       <section className="py-24 md:py-32 bg-livemed-deep relative overflow-hidden">
         <div className="container mx-auto px-4 md:px-6 relative">
-          <motion.div 
-            variants={fadeInUp}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
-            className="text-center mb-12 md:mb-20"
-          >
-            <motion.div 
-              variants={fadeInScale}
-              className="inline-flex items-center gap-2 text-white/40 text-xs md:text-sm font-medium mb-5 md:mb-6 border border-white/[0.06] px-4 py-2 rounded-full"
-            >
+          <div className="text-center mb-12 md:mb-20">
+            <div className="inline-flex items-center gap-2 text-white/40 text-xs md:text-sm font-medium mb-5 md:mb-6 border border-white/[0.06] px-4 py-2 rounded-full">
               <Sparkles className="h-3.5 w-3.5" />
               Powered by AI
-            </motion.div>
+            </div>
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-semibold mb-4 md:mb-6">
               <span className="text-gradient-livemed">Complete Medical Education</span>
             </h2>
             <p className="text-base md:text-lg text-white/40 max-w-xl mx-auto font-light px-4">
               Everything you need to become a world-class physician.
             </p>
-          </motion.div>
+          </div>
 
-          <motion.div 
-            variants={staggerContainer}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-px bg-white/[0.06] rounded-2xl overflow-hidden"
-          >
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-px bg-white/[0.06] rounded-2xl overflow-hidden">
             {features.map((feature) => (
-              <motion.div
+              <div
                 key={feature.title}
-                variants={fadeInUp}
                 className="bg-[hsl(230,50%,7%)] p-7 md:p-10"
               >
                 <div className="w-10 h-10 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center mb-5">
@@ -369,24 +370,18 @@ const Landing = () => {
                 <p className="text-white/35 text-sm leading-relaxed line-clamp-2">
                   {feature.description}
                 </p>
-              </motion.div>
+              </div>
             ))}
-          </motion.div>
+          </div>
         </div>
       </section>
 
       {/* Programs Section */}
-      <section className="py-24 md:py-32 relative overflow-hidden bg-livemed-deep">
+      <section className="py-24 md:py-32 relative overflow-hidden bg-livemed-deep below-fold-section">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/[0.01] to-transparent" />
         
         <div className="container mx-auto px-4 md:px-6 relative">
-          <motion.div 
-            variants={fadeInUp}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
-            className="text-center mb-12 md:mb-20"
-          >
+          <div className="text-center mb-12 md:mb-20">
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-semibold mb-4 md:mb-6 text-white">
               Programs for <span className="text-gradient-livemed">Every Stage</span>
             </h2>
@@ -394,20 +389,11 @@ const Landing = () => {
               From foundational sciences to residency preparation.
             </p>
             <p className="text-sm text-white/30 max-w-md mx-auto">Choose based on your current training level</p>
-          </motion.div>
+          </div>
 
-          <motion.div 
-            variants={staggerContainer}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5"
-          >
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
             {programs.map((program) => (
-              <motion.div
-                key={program.title}
-                variants={fadeInUp}
-              >
+              <div key={program.title}>
                 <Link to={program.href}>
                   <Card className="h-full group bg-white/[0.02] border-white/[0.06] hover:border-white/[0.12] transition-colors duration-300 relative overflow-hidden rounded-2xl">
                     {program.title === "Clinical" && (
@@ -434,23 +420,17 @@ const Landing = () => {
                     </CardContent>
                   </Card>
                 </Link>
-              </motion.div>
+              </div>
             ))}
-          </motion.div>
+          </div>
         </div>
       </section>
 
       {/* ATLAS Section */}
-      <section className="py-24 md:py-32 relative overflow-hidden bg-livemed-deep">
+      <section className="py-24 md:py-32 relative overflow-hidden bg-livemed-deep below-fold-section">
         <div className="container mx-auto px-4 md:px-6 relative">
           <div className="grid lg:grid-cols-2 gap-12 md:gap-20 items-center">
-            <motion.div 
-              variants={slideInLeft}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, margin: "-100px" }}
-              className="max-w-lg"
-            >
+            <div className="max-w-lg">
               <div className="inline-flex items-center gap-2 text-white/40 text-xs md:text-sm font-medium mb-6 md:mb-8 border border-white/[0.06] px-4 py-2 rounded-full">
                 <MessageSquare className="h-3.5 w-3.5" />
                 Meet Your AI Professor
@@ -491,16 +471,10 @@ const Landing = () => {
                   <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                 </Link>
               </Button>
-            </motion.div>
+            </div>
 
             {/* ATLAS Chat Interface */}
-            <motion.div 
-              variants={slideInRight}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, margin: "-100px" }}
-              className="relative lg:scale-105 origin-center"
-            >
+            <div className="relative lg:scale-105 origin-center">
               <div 
                 className="rounded-2xl md:rounded-3xl p-5 md:p-8 relative bg-white/[0.02] border border-white/[0.06]"
               >
@@ -573,36 +547,24 @@ const Landing = () => {
                   </div>
                 </div>
               </div>
-            </motion.div>
+            </div>
           </div>
         </div>
       </section>
 
       {/* Testimonials Section */}
-      <section className="py-24 md:py-32 bg-livemed-deep relative overflow-hidden">
+      <section className="py-24 md:py-32 bg-livemed-deep relative overflow-hidden below-fold-section">
         <div className="container mx-auto px-4 md:px-6 relative">
-          <motion.div 
-            variants={fadeInUp}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
-            className="text-center mb-12 md:mb-20"
-          >
+          <div className="text-center mb-12 md:mb-20">
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-semibold mb-4 md:mb-6 text-white">
               Trusted by <span className="text-gradient-livemed">Future Physicians</span>
             </h2>
             <p className="text-base md:text-lg text-white/40 max-w-xl mx-auto font-light px-4">
               See what our students have to say about their experience.
             </p>
-          </motion.div>
+          </div>
 
-          <motion.div 
-            variants={staggerContainer}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-white/[0.06] rounded-2xl overflow-hidden max-w-5xl mx-auto"
-          >
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-white/[0.06] rounded-2xl overflow-hidden max-w-5xl mx-auto">
             {[
               {
                 quote: "ATLAS helped me master pathophysiology I'd struggled with for months. Scored 248 on Step 1.",
@@ -620,9 +582,8 @@ const Landing = () => {
                 role: "Dean of Clinical Education",
               },
             ].map((testimonial, index) => (
-              <motion.div
+              <div
                 key={index}
-                variants={fadeInUp}
                 className="bg-[hsl(230,50%,7%)] p-7 md:p-10"
               >
                 <div className="text-2xl text-white/15 mb-3 font-serif">"</div>
@@ -638,60 +599,38 @@ const Landing = () => {
                     <p className="text-xs md:text-sm text-white/30">{testimonial.role}</p>
                   </div>
                 </div>
-              </motion.div>
+              </div>
             ))}
-          </motion.div>
+          </div>
         </div>
       </section>
 
       {/* Institution CTA */}
-      <section className="py-24 md:py-32 relative overflow-hidden bg-livemed-deep">
+      <section className="py-24 md:py-32 relative overflow-hidden bg-livemed-deep below-fold-section">
         <div className="absolute top-0 left-0 right-0 h-px bg-white/[0.04]" />
         
-        <motion.div 
-          variants={fadeInUp}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
-          className="container mx-auto px-4 md:px-6 text-center relative"
-        >
-          <motion.div 
-            variants={staggerContainer}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            className="flex justify-center gap-3 md:gap-4 mb-8 md:mb-12"
-          >
+        <div className="container mx-auto px-4 md:px-6 text-center relative">
+          <div className="flex justify-center gap-3 md:gap-4 mb-8 md:mb-12">
             {[Globe, Users, GraduationCap].map((Icon, index) => (
-              <motion.div 
+              <div 
                 key={index}
-                variants={fadeInScale}
-                className="w-10 h-10 md:w-14 md:h-14 rounded-2xl bg-white/[0.03] border border-white/[0.06] flex items-center justify-center"
+                className="w-8 h-8 md:w-14 md:h-14 rounded-2xl bg-white/[0.03] border border-white/[0.06] flex items-center justify-center"
               >
-                <Icon className="h-5 w-5 md:h-6 md:w-6 text-white/50" />
-              </motion.div>
+                <Icon className="h-4 w-4 md:h-6 md:w-6 text-white/50" />
+              </div>
             ))}
-          </motion.div>
+          </div>
 
-          <motion.h2 
-            variants={fadeInUp}
-            className="text-3xl md:text-4xl lg:text-5xl font-semibold text-white mb-5 md:mb-8"
-          >
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-semibold text-white mb-5 md:mb-8">
             Partner With Livemed Learning
-          </motion.h2>
+          </h2>
 
-          <motion.p 
-            variants={fadeInUp}
-            className="text-base md:text-xl text-white/40 max-w-2xl mx-auto mb-10 md:mb-14 leading-relaxed font-light px-4"
-          >
+          <p className="text-base md:text-xl text-white/40 max-w-2xl mx-auto mb-10 md:mb-14 leading-relaxed font-light px-4">
             We work with medical schools and universities worldwide 
             to bring U.S.-standard medical education to students everywhere.
-          </motion.p>
+          </p>
 
-          <motion.div 
-            variants={fadeInUp}
-            className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center px-4"
-          >
+          <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center px-4">
             <Button
               size="lg"
               className="bg-white text-[hsl(230,50%,8%)] hover:bg-white/90 px-8 py-6 rounded-full font-semibold group text-sm md:text-base"
@@ -710,8 +649,8 @@ const Landing = () => {
             >
               <Link to="/contact">Contact Sales</Link>
             </Button>
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
       </section>
       </div>
     </>
