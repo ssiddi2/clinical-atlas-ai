@@ -67,7 +67,13 @@ const InlineDemoPlayer = forwardRef<HTMLDivElement>((_, ref) => {
 
   return (
     <div ref={ref} className="w-full max-w-5xl mx-auto px-4 md:px-6">
-      <div className="rounded-2xl border border-white/10 bg-white/[0.03] backdrop-blur-sm overflow-hidden shadow-2xl shadow-black/30">
+      {/* Label */}
+      <div className="flex justify-center mb-4">
+        <span className="text-[10px] md:text-xs uppercase tracking-[0.2em] text-white/30 font-medium">
+          Live Clinical Simulation
+        </span>
+      </div>
+      <div className="rounded-2xl border border-white/[0.08] bg-white/[0.025] backdrop-blur-sm overflow-hidden shadow-[0_8px_40px_-12px_hsl(230,60%,5%/0.6)]">
         {/* Scene Content */}
         <div className="relative h-[420px] md:h-[520px] overflow-hidden">
           <AnimatePresence mode="wait">
@@ -100,7 +106,7 @@ const InlineDemoPlayer = forwardRef<HTMLDivElement>((_, ref) => {
         </div>
 
         {/* Controls */}
-        <div className="border-t border-white/5 bg-white/[0.02] px-4 md:px-6 py-3 md:py-4">
+        <div className="border-t border-white/[0.06] bg-white/[0.015] px-4 md:px-6 py-3 md:py-4">
           {/* Tabs */}
           <div className="flex items-center gap-2 mb-3">
             <button
