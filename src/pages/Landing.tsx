@@ -149,7 +149,7 @@ const Landing = () => {
       <DemoVideoModal isOpen={isDemoOpen} onClose={() => setIsDemoOpen(false)} />
       <div ref={containerRef} className="flex flex-col bg-livemed-deep">
       {/* Hero Section - Apple Style Clean */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden lcp-priority">
         {/* New Apple-style animated background */}
         <HeroBackground />
         
@@ -292,13 +292,15 @@ const Landing = () => {
             viewport={{ once: true }}
             className="flex flex-col items-center justify-center mt-12 glass-card rounded-xl md:rounded-2xl p-6 md:p-8 max-w-2xl mx-auto text-center"
           >
-            <img 
-              src={jointCommissionBadge} 
-              alt="The Joint Commission - National Quality Approval" 
-              className="h-20 md:h-24 w-auto object-contain rounded-xl mb-4"
-              loading="lazy"
-              decoding="async"
-            />
+             <img 
+               src={jointCommissionBadge} 
+               alt="The Joint Commission - National Quality Approval" 
+               className="h-20 md:h-24 w-auto object-contain rounded-xl mb-4"
+               width="96"
+               height="96"
+               loading="lazy"
+               decoding="async"
+             />
             <p className="text-white font-semibold text-base md:text-lg mb-2">
               Accredited by The Joint Commission
             </p>
