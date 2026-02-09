@@ -18,7 +18,7 @@ const GlowRings = memo(() => {
       {rings.map((ring, index) => (
         <motion.div
           key={index}
-          className="absolute rounded-full border border-livemed-cyan/10"
+          className="absolute rounded-full border border-livemed-cyan/5"
           style={{
             width: "40vw",
             height: "40vw",
@@ -26,10 +26,10 @@ const GlowRings = memo(() => {
             maxHeight: "600px",
             willChange: "transform, opacity",
           }}
-          initial={{ scale: 0.8, opacity: 0.1 }}
+          initial={{ scale: 0.8, opacity: 0.05 }}
           animate={{
             scale: [0.8, 2.5],
-            opacity: [0.08, 0],
+            opacity: [0.04, 0],
           }}
           transition={{
             duration: ring.duration,
@@ -44,8 +44,8 @@ const GlowRings = memo(() => {
       <div 
         className="absolute w-2 h-2 rounded-full"
         style={{
-          background: "radial-gradient(circle, hsl(190 95% 55% / 0.6) 0%, transparent 70%)",
-          boxShadow: "0 0 60px 30px hsl(190 95% 55% / 0.15)",
+          background: "radial-gradient(circle, hsl(190 95% 55% / 0.3) 0%, transparent 70%)",
+          boxShadow: "0 0 40px 20px hsl(190 95% 55% / 0.08)",
         }}
       />
     </div>

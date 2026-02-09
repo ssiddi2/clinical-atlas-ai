@@ -24,7 +24,7 @@ const orbs: Orb[] = [
     duration: 25,
     colors: ["hsl(190, 100%, 50%)", "hsl(210, 100%, 60%)"],
     blur: 180,
-    opacity: 0.2,
+    opacity: 0.12,
   },
   {
     id: 2,
@@ -35,7 +35,7 @@ const orbs: Orb[] = [
     duration: 30,
     colors: ["hsl(217, 91%, 60%)", "hsl(240, 60%, 45%)"],
     blur: 150,
-    opacity: 0.15,
+    opacity: 0.09,
   },
   {
     id: 3,
@@ -46,7 +46,7 @@ const orbs: Orb[] = [
     duration: 28,
     colors: ["hsl(200, 100%, 50%)", "hsl(190, 95%, 55%)"],
     blur: 160,
-    opacity: 0.18,
+    opacity: 0.11,
   },
   {
     id: 4,
@@ -57,7 +57,7 @@ const orbs: Orb[] = [
     duration: 22,
     colors: ["hsl(230, 60%, 35%)", "hsl(217, 91%, 60%)"],
     blur: 140,
-    opacity: 0.15,
+    opacity: 0.09,
   },
   {
     id: 5,
@@ -68,7 +68,7 @@ const orbs: Orb[] = [
     duration: 26,
     colors: ["hsl(180, 80%, 45%)", "hsl(200, 100%, 50%)"],
     blur: 120,
-    opacity: 0.12,
+    opacity: 0.07,
   },
 ];
 

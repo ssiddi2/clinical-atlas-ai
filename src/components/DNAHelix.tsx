@@ -43,9 +43,9 @@ const DNAHelix = () => {
 
     // Multiple helix configurations at different positions and scales
     const helixes: HelixConfig[] = [
-      { x: 0.15, y: 0.3, scale: 1, rotation: 0, speed: 0.0003, opacity: 0.08 },
-      { x: 0.85, y: 0.6, scale: 0.7, rotation: Math.PI / 4, speed: 0.0004, opacity: 0.06 },
-      { x: 0.5, y: 0.8, scale: 0.5, rotation: -Math.PI / 6, speed: 0.0005, opacity: 0.05 },
+      { x: 0.15, y: 0.3, scale: 1, rotation: 0, speed: 0.0003, opacity: 0.05 },
+      { x: 0.85, y: 0.6, scale: 0.7, rotation: Math.PI / 4, speed: 0.0004, opacity: 0.035 },
+      { x: 0.5, y: 0.8, scale: 0.5, rotation: -Math.PI / 6, speed: 0.0005, opacity: 0.03 },
     ];
 
     const logicalWidth = () => window.innerWidth;
