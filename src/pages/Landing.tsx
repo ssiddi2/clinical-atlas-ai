@@ -167,84 +167,129 @@ const Landing = () => {
         </Suspense>
         
         {/* Hero Content */}
-        <motion.div 
-          style={{ y: heroY }}
-          className="container mx-auto px-4 md:px-6 relative z-10"
-        >
-          <div className="max-w-4xl mx-auto text-center">
-            {/* Badge with Glow */}
-            <motion.div 
-              {...(noAnim ? {} : { initial: { opacity: 0, y: 20 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.6, delay: 0.2 } })}
-              className="inline-flex items-center gap-2 glass-card-hover px-4 md:px-5 py-2 md:py-2.5 rounded-full text-xs md:text-sm mb-6 md:mb-10"
-            >
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-livemed-success opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-livemed-success"></span>
-              </span>
-              <span className="text-white/70 font-medium">Now enrolling for 2026</span>
-            </motion.div>
+        {isMobile ? (
+          <div className="container mx-auto px-4 relative z-10">
+            <div className="max-w-4xl mx-auto text-center">
+              <div className="inline-flex items-center gap-2 glass-card-hover px-4 py-2 rounded-full text-xs mb-6">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-livemed-success opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-livemed-success"></span>
+                </span>
+                <span className="text-white/70 font-medium">Now enrolling for 2026</span>
+              </div>
 
-            {/* Brand Name */}
-            <motion.div 
-              {...(noAnim ? {} : { initial: { opacity: 0, y: 20 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.6, delay: 0.25 } })}
-              className="text-xl sm:text-2xl md:text-3xl font-semibold text-gradient-livemed mb-4 tracking-wide"
-            >
-              Livemed Academy
-            </motion.div>
+              <div className="text-xl sm:text-2xl font-semibold text-gradient-livemed mb-4 tracking-wide">
+                Livemed Academy
+              </div>
 
-            {/* Radial glow behind headline */}
-            <div 
-              className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] md:w-[900px] md:h-[500px] pointer-events-none"
-              style={{
-                background: "radial-gradient(ellipse 70% 60% at 50% 50%, hsl(217 91% 60% / 0.08) 0%, hsl(190 95% 55% / 0.03) 40%, transparent 70%)",
-              }}
-              aria-hidden="true"
-            />
+              <h1 className="relative text-4xl sm:text-5xl font-semibold tracking-[-0.025em] mb-4 leading-[1.1]">
+                <span className="text-white/90">Where AI</span>
+                <br />
+                <span className="text-gradient-livemed">Meets Medicine.</span>
+              </h1>
 
-            {/* Main Headline - Apple Style Bold Typography */}
-            <motion.h1 
-              {...(noAnim ? {} : { initial: { opacity: 0, y: 30 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.8, delay: 0.3, ease: [0.25, 0.46, 0.45, 0.94] } })}
-              className="relative text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-[96px] font-semibold tracking-[-0.025em] mb-4 md:mb-6 leading-[1.1]"
-            >
-              <span className="text-white/90">Where AI</span>
-              <br />
-              <span className="text-gradient-livemed">Meets Medicine.</span>
-            </motion.h1>
+              <p className="text-lg text-white/45 mb-8 max-w-xl mx-auto leading-relaxed font-light tracking-tight">
+                Train smarter. Heal better.
+              </p>
 
-            <motion.p 
-              {...(noAnim ? {} : { initial: { opacity: 0, y: 20 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.6, delay: 0.5 } })}
-              className="text-lg md:text-xl lg:text-2xl text-white/45 mb-8 md:mb-14 max-w-xl mx-auto leading-relaxed font-light tracking-tight"
-            >
-              Train smarter. Heal better.
-            </motion.p>
-
-            {/* CTA Buttons */}
-            <motion.div 
-              {...(noAnim ? {} : { initial: { opacity: 0, y: 20 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.6, delay: 0.7 } })}
-              className="flex flex-col sm:flex-row gap-4 justify-center items-center"
-            >
-              <Button 
-                size="lg" 
-                className="btn-glow gradient-livemed text-lg px-12 py-7 rounded-full group font-semibold shadow-xl" 
-                asChild
-              >
-                <Link to="/apply">
-                  Apply Now
-                  <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                </Link>
-              </Button>
-              <Button 
-                size="lg" 
-                variant="ghost" 
-                className="text-sm px-6 py-5 rounded-full text-white/35 hover:text-white/50 hover:bg-white/[0.03] group font-normal"
-                onClick={() => demoPlayerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })}
-              >
-                <Play className="mr-2 h-3.5 w-3.5" />
-                Watch Demo
-              </Button>
-            </motion.div>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                <Button 
+                  size="lg" 
+                  className="btn-glow gradient-livemed text-lg px-12 py-7 rounded-full group font-semibold shadow-xl" 
+                  asChild
+                >
+                  <Link to="/apply">
+                    Apply Now
+                    <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                  </Link>
+                </Button>
+                <Button 
+                  size="lg" 
+                  variant="ghost" 
+                  className="text-sm px-6 py-5 rounded-full text-white/35 hover:text-white/50 hover:bg-white/[0.03] group font-normal"
+                  onClick={() => demoPlayerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })}
+                >
+                  <Play className="mr-2 h-3.5 w-3.5" />
+                  Watch Demo
+                </Button>
+              </div>
+            </div>
           </div>
-        </motion.div>
+        ) : (
+          <motion.div 
+            style={{ y: heroY }}
+            className="container mx-auto px-4 md:px-6 relative z-10"
+          >
+            <div className="max-w-4xl mx-auto text-center">
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.2 }}
+                className="inline-flex items-center gap-2 glass-card-hover px-5 py-2.5 rounded-full text-sm mb-10"
+              >
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-livemed-success opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-livemed-success"></span>
+                </span>
+                <span className="text-white/70 font-medium">Now enrolling for 2026</span>
+              </motion.div>
+
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.25 }}
+                className="text-2xl md:text-3xl font-semibold text-gradient-livemed mb-4 tracking-wide"
+              >
+                Livemed Academy
+              </motion.div>
+
+              <div 
+                className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[500px] pointer-events-none"
+                style={{
+                  background: "radial-gradient(ellipse 70% 60% at 50% 50%, hsl(217 91% 60% / 0.08) 0%, hsl(190 95% 55% / 0.03) 40%, transparent 70%)",
+                }}
+                aria-hidden="true"
+              />
+
+              <motion.h1 
+                initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
+                className="relative text-5xl md:text-6xl lg:text-7xl xl:text-[96px] font-semibold tracking-[-0.025em] mb-6 leading-[1.1]"
+              >
+                <span className="text-white/90">Where AI</span>
+                <br />
+                <span className="text-gradient-livemed">Meets Medicine.</span>
+              </motion.h1>
+
+              <motion.p 
+                initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.5 }}
+                className="text-xl lg:text-2xl text-white/45 mb-14 max-w-xl mx-auto leading-relaxed font-light tracking-tight"
+              >
+                Train smarter. Heal better.
+              </motion.p>
+
+              <motion.div 
+                initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.7 }}
+                className="flex flex-col sm:flex-row gap-4 justify-center items-center"
+              >
+                <Button 
+                  size="lg" 
+                  className="btn-glow gradient-livemed text-lg px-12 py-7 rounded-full group font-semibold shadow-xl" 
+                  asChild
+                >
+                  <Link to="/apply">
+                    Apply Now
+                    <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                  </Link>
+                </Button>
+                <Button 
+                  size="lg" 
+                  variant="ghost" 
+                  className="text-sm px-6 py-5 rounded-full text-white/35 hover:text-white/50 hover:bg-white/[0.03] group font-normal"
+                  onClick={() => demoPlayerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })}
+                >
+                  <Play className="mr-2 h-3.5 w-3.5" />
+                  Watch Demo
+                </Button>
+              </motion.div>
+            </div>
+          </motion.div>
+        )}
 
       </section>
 
