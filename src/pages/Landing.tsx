@@ -195,8 +195,7 @@ const Landing = () => {
             {/* Main Headline - Apple Style Bold Typography */}
             <motion.h1 
               {...(noAnim ? {} : { initial: { opacity: 0, y: 30 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.8, delay: 0.3, ease: [0.25, 0.46, 0.45, 0.94] } })}
-              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-[96px] font-semibold tracking-[-0.03em] mb-4 md:mb-6 leading-[1.12]"
-              style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif' }}
+              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-[96px] font-semibold tracking-[-0.03em] mb-4 md:mb-6 leading-[1.08]"
             >
               <span className="text-white">Where AI</span>
               <br />
