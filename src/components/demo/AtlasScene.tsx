@@ -12,7 +12,7 @@ const AtlasScene = ({ isActive }: AtlasSceneProps) => {
   ];
 
   return (
-    <div className="h-full flex flex-col items-center justify-center p-4 md:p-8">
+    <div className="h-full flex flex-col items-center justify-start overflow-y-auto p-3 md:p-8 pt-4">
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}

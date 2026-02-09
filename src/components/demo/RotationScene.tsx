@@ -21,7 +21,7 @@ const RotationScene = ({ isActive }: RotationSceneProps) => {
   ];
 
   return (
-    <div className="h-full flex flex-col items-center justify-center p-4 md:p-8">
+    <div className="h-full flex flex-col items-center justify-start overflow-y-auto p-3 md:p-8 pt-4">
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
@@ -61,7 +61,7 @@ const RotationScene = ({ isActive }: RotationSceneProps) => {
           initial={{ opacity: 0 }}
           animate={isActive ? { opacity: 1 } : { opacity: 0 }}
           transition={{ duration: 0.4, delay: 0.8 }}
-          className="grid grid-cols-4 gap-1.5 md:gap-3 mb-3 md:mb-4"
+          className="grid grid-cols-2 min-[380px]:grid-cols-4 gap-1.5 md:gap-3 mb-3 md:mb-4"
         >
           {vitals.map((vital, idx) => (
             <motion.div

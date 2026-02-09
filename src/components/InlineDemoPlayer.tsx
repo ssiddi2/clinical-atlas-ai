@@ -77,7 +77,7 @@ const InlineDemoPlayer = forwardRef<HTMLDivElement>((_, ref) => {
       </div>
       <div className="rounded-2xl border border-white/[0.08] bg-white/[0.025] backdrop-blur-sm overflow-hidden shadow-[0_8px_40px_-12px_hsl(230,60%,5%/0.6)]">
         {/* Scene Content — responsive height */}
-        <div className="relative h-[320px] min-[380px]:h-[380px] md:h-[520px] overflow-hidden">
+        <div className="relative h-[400px] min-[380px]:h-[420px] md:h-[520px] overflow-hidden">
           <AnimatePresence mode="wait">
             <motion.div
               key={currentScene}
@@ -116,10 +116,10 @@ const InlineDemoPlayer = forwardRef<HTMLDivElement>((_, ref) => {
         {/* Controls */}
         <div className="border-t border-white/[0.06] bg-white/[0.015] px-3 md:px-6 py-2.5 md:py-4">
           {/* Tabs */}
-          <div className="flex items-center gap-1.5 md:gap-2 mb-2.5 md:mb-3">
+          <div className="flex items-center gap-1 md:gap-2 mb-2.5 md:mb-3 overflow-x-auto flex-nowrap scrollbar-hide">
             <button
               onClick={togglePause}
-              className="p-1.5 rounded-full bg-white/10 hover:bg-white/20 transition-colors mr-1 md:mr-2 flex-shrink-0"
+              className="p-1.5 rounded-full bg-white/10 hover:bg-white/20 transition-colors mr-0.5 md:mr-2 flex-shrink-0"
             >
               {isPaused ? (
                 <Play className="h-3 w-3 md:h-3.5 md:w-3.5 text-white" />
@@ -131,7 +131,7 @@ const InlineDemoPlayer = forwardRef<HTMLDivElement>((_, ref) => {
               <button
                 key={scene.id}
                 onClick={() => handleTabClick(idx)}
-                className={`text-[11px] md:text-sm font-medium px-2 md:px-3 py-1 md:py-1.5 rounded-full transition-all ${
+                className={`text-[10px] md:text-sm font-medium px-2 md:px-3 py-1 md:py-1.5 rounded-full transition-all whitespace-nowrap flex-shrink-0 ${
                   idx === currentScene
                     ? "bg-white/10 text-white"
                     : "text-white/40 hover:text-white/60 hover:bg-white/5"
