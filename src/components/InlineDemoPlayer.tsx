@@ -1,11 +1,10 @@
-import { useState, useEffect, useCallback, useRef, forwardRef, lazy, Suspense } from "react";
+import { useState, useEffect, useCallback, useRef, forwardRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Pause, Play } from "lucide-react";
-
-const AtlasScene = lazy(() => import("./demo/AtlasScene"));
-const RotationScene = lazy(() => import("./demo/RotationScene"));
-const DashboardScene = lazy(() => import("./demo/DashboardScene"));
-const InstitutionalScene = lazy(() => import("./demo/InstitutionalScene"));
+import AtlasScene from "./demo/AtlasScene";
+import RotationScene from "./demo/RotationScene";
+import DashboardScene from "./demo/DashboardScene";
+import InstitutionalScene from "./demo/InstitutionalScene";
 
 const SCENES = [
   { id: "atlas", title: "ATLAS AI", duration: 8000, Component: AtlasScene },
@@ -80,15 +79,7 @@ const InlineDemoPlayer = forwardRef<HTMLDivElement>((_, ref) => {
               transition={{ duration: 0.4 }}
               className="absolute inset-0"
             >
-              <Suspense
-                fallback={
-                  <div className="h-full flex items-center justify-center">
-                    <div className="w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
-                  </div>
-                }
-              >
-                <CurrentSceneComponent isActive={!isPaused} />
-              </Suspense>
+              <CurrentSceneComponent isActive={!isPaused} />
             </motion.div>
           </AnimatePresence>
 
