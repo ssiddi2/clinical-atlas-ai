@@ -1,212 +1,135 @@
 
 
-# Plan: Medical Education Themed Hero Background
+# Plan: Branded Loading Screen with Logo Animation and Progress Bar
 
 ## Overview
-Enhance the current Apple-style animated background to be distinctly medical education focused, while maintaining the elegant, premium aesthetic. We'll add medical-themed visual elements that subtly reinforce LIVEMED's identity as a clinical education platform.
+Add a premium loading splash screen that displays immediately when the page loads, featuring the Livemed logo icon with a subtle animation and a sleek progress bar. This gives users instant visual feedback while the React app, JavaScript bundles, and heavy animation components initialize.
 
 ---
 
-## Design Philosophy
+## How It Works
 
-**Medical + Tech Fusion:**
-- Abstract medical symbols integrated into the particle network
-- DNA helix-inspired flowing lines
-- ECG/heartbeat rhythm waveforms
-- Molecular structure node patterns
-- Neural network → Clinical reasoning connection visual
+The loading screen has two layers:
 
-**Key Constraints:**
-- Keep it subtle and sophisticated (not literal/clipart-y)
-- Maintain performance (GPU-accelerated only)
-- Must feel futuristic, not dated medical imagery
-- Complement, don't overpower, the text content
+1. **HTML-based splash** (in `index.html`) -- renders instantly before any JavaScript loads
+2. **React-managed fade-out** (in `App.tsx`) -- smoothly dismisses the splash once the app is ready
+
+This means users see the branded loading screen within milliseconds of navigating to the site, not after React boots up.
 
 ---
 
-## What We'll Add
-
-### 1. DNA Helix Strand Animation
-A subtle, flowing double helix rendered on canvas that drifts slowly across the background. This immediately signals "medical/biotech" while staying elegant.
+## What The User Will See
 
 ```text
-     ◦──◦       ◦──◦       ◦──◦
-    /    \     /    \     /    \
-   ◦      ◦───◦      ◦───◦      ◦
-    \    /     \    /     \    /
-     ◦──◦       ◦──◦       ◦──◦
+┌─────────────────────────────────────────────────────────────────┐
+│                                                                 │
+│                     (dark background)                           │
+│                                                                 │
+│                                                                 │
+│                       ┌─────────┐                              │
+│                       │  Logo   │  <- subtle pulse glow        │
+│                       │  Icon   │                              │
+│                       └─────────┘                              │
+│                                                                 │
+│                     Livemed Academy                             │
+│                                                                 │
+│                  ═══════════░░░░░░░░░  <- progress bar          │
+│                                                                 │
+│                                                                 │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
 ```
 
-**Properties:**
-- Very low opacity (10-15%)
-- Slow rotation and drift
-- Rendered on canvas for performance
-- Multiple helixes at different depths
-
-### 2. ECG Heartbeat Line
-A subtle, animated electrocardiogram line that pulses across sections of the background. This creates immediate medical recognition.
-
-```text
-           _____      _____
-    ______/     \____/     \______  →
-          ∧           ∧
-      QRS peak    QRS peak
-```
-
-**Properties:**
-- Single line with authentic ECG shape (P-QRS-T complex)
-- Fades in and out as it travels
-- Very subtle glow effect
-- Positioned toward bottom of hero
-
-### 3. Molecular Node Network (Enhanced Particles)
-Transform the existing particle constellation into a more molecular/neural structure by:
-- Adding different node sizes (like atoms in a molecule)
-- Some particles as larger "hub" nodes
-- Connection lines suggest molecular bonds or synapses
-
-### 4. Medical Icon Silhouettes in Orbs
-Integrate very faint, abstract medical symbols into the gradient orbs:
-- Brain outline in one orb
-- Heartbeat line through another
-- DNA pattern in a third
-
-### 5. Floating Cross/Caduceus Pattern (Very Subtle)
-Extremely faint, abstract geometric patterns suggesting medical symbols without being literal.
+**Sequence:**
+1. Page loads -> splash screen appears instantly (pure HTML/CSS, no JS needed)
+2. Logo pulses with a soft blue glow
+3. Progress bar animates from 0% to ~90% over 2 seconds
+4. React app finishes mounting -> progress jumps to 100%
+5. Splash screen fades out smoothly (0.5s transition)
+6. Full website is revealed
 
 ---
 
-## Files to Create
+## Technical Details
 
-| File | Purpose |
-|------|---------|
-| `src/components/DNAHelix.tsx` | Animated double helix on canvas |
-| `src/components/ECGLine.tsx` | Pulsing heartbeat line animation |
+### File: `index.html`
+Add inline HTML and CSS inside the `#root` div so it renders before any JavaScript:
+
+- A centered container with the Livemed logo icon (`/favicon.png` which is already available)
+- "Livemed Academy" text below the logo
+- A thin progress bar with a gradient animation
+- All styles inlined (no external CSS dependency)
+- CSS keyframes for the logo pulse glow and progress bar fill
+- The background color matches the site exactly: `hsl(230, 55%, 6%)` / `#0d1220`
+
+### File: `src/App.tsx`
+Add a small effect that:
+
+- On mount, finds the splash screen element by ID
+- Adds a CSS class to trigger fade-out
+- Removes the element from DOM after the transition completes
+- This ensures the splash is removed cleanly once React is ready
+
+### File: `src/index.css`
+Add a utility class for the splash fade-out transition.
+
+---
+
+## Design Specifications
+
+**Logo Animation:**
+- Uses the existing Livemed icon (`/favicon.png`)
+- Size: 64px on mobile, 80px on desktop
+- Soft blue glow pulse animation (2s cycle)
+- Glow color matches brand: `hsl(217, 91%, 60%)`
+
+**Text:**
+- "Livemed Academy" in white, 14px, letter-spacing 0.15em
+- Appears below the logo with subtle opacity
+
+**Progress Bar:**
+- Width: 200px (centered)
+- Height: 3px (thin and elegant)
+- Background track: `rgba(255,255,255,0.08)`
+- Fill gradient: cyan to blue (brand colors)
+- Animates from 0% to 90% over 2.5s with ease-out
+- Jumps to 100% when app is ready
+
+**Fade Out:**
+- 0.5s opacity transition
+- Element removed from DOM after transition
+
+**Colors:**
+- Background: `#0d1220` (matches `--livemed-navy-deep`)
+- Logo glow: `hsl(217, 91%, 60%)` with 40% opacity
+- Progress fill: gradient from `#00d4ff` (cyan) to `#3b82f6` (blue)
+
+---
 
 ## Files to Modify
 
 | File | Changes |
 |------|---------|
-| `src/components/HeroBackground.tsx` | Add DNA and ECG layers |
-| `src/components/ParticleBackground.tsx` | Make particles more molecular/neural |
-| `src/components/FloatingMedicalIcons.tsx` | Enhance visibility and variety |
+| `index.html` | Add splash screen HTML/CSS inside `#root` div |
+| `src/App.tsx` | Add useEffect to fade out and remove splash on mount |
+| `src/index.css` | Add splash fade-out transition class |
 
 ---
 
-## Component Details
+## Performance Impact
 
-### DNAHelix.tsx
-Canvas-based double helix animation:
-
-- Two intertwining sine waves with connected "rungs"
-- Slow horizontal drift across screen
-- 3D rotation effect (scaling amplitude)
-- Multiple helixes at different scales/positions
-- Very low opacity (8-12%)
-- Cyan/blue color palette
-
-### ECGLine.tsx
-SVG-based heartbeat line:
-
-- Authentic P-QRS-T waveform shape
-- Animates from left to right
-- Subtle glow trail effect
-- Positioned in lower portion of hero
-- Loops continuously with fade in/out
-- Optional: Syncs pulse to the glow rings
-
-### Enhanced ParticleBackground.tsx
-Transform to molecular network:
-
-- Add "hub" particles (larger, brighter nodes)
-- Vary connection line thickness based on "bond strength"
-- Some particles grouped in hexagonal/molecular patterns
-- Keep the mouse interaction but add "activation" effect
-- Different particle types: neurons, molecules, data nodes
-
-### Enhanced FloatingMedicalIcons.tsx
-Make medical icons more visible:
-
-- Increase opacity slightly (15% → 25%)
-- Add more icons: microscope, atom, molecule, clipboard
-- Stagger animations more naturally
-- Add subtle glow halos
-- Position along edges so they don't conflict with text
+- **Zero JS overhead** -- the splash is pure HTML/CSS, renders before React loads
+- **No additional network requests** -- uses `/favicon.png` already cached
+- **Tiny footprint** -- approximately 1KB of inline HTML/CSS
+- **Clean removal** -- element removed from DOM after fade-out, no memory leak
 
 ---
 
-## Visual Hierarchy
+## Why This Approach
 
-```text
-┌─────────────────────────────────────────────────────────────────┐
-│                                                                 │
-│   [DNAHelix - very subtle, left side]                          │
-│                                                                 │
-│            [Gradient Orbs - breathing, colored]                │
-│                                                                 │
-│                    LIVEMED University                          │
-│                    Where AI Meets Medicine.                    │
-│                                                                 │
-│         [Molecular Particles - constellation network]         │
-│                                                                 │
-│                    [Apply Now]  [Watch Demo]                   │
-│                                                                 │
-│   [ECG Line - subtle pulse across bottom area]                 │
-│                                                                 │
-│           [Medical Icons floating at edges]                     │
-│                                                                 │
-└─────────────────────────────────────────────────────────────────┘
-```
-
----
-
-## Animation Timing
-
-| Element | Duration | Speed | Opacity |
-|---------|----------|-------|---------|
-| DNA Helix | 30s loop | Very slow | 8-12% |
-| ECG Line | 8s cycle | Medium | 15-20% |
-| Gradient Orbs | 20-30s | Slow | 15-25% |
-| Molecular Particles | Continuous | Very slow | 50% (canvas) |
-| Medical Icons | 6-8s | Slow bob | 20-30% |
-
----
-
-## Color Palette (Medical Theme)
-
-| Element | Primary Color | Secondary Color |
-|---------|--------------|-----------------|
-| DNA Helix | `hsl(190, 95%, 55%)` cyan | `hsl(200, 100%, 60%)` blue |
-| ECG Line | `hsl(160, 84%, 45%)` medical green | `hsl(190, 95%, 55%)` cyan |
-| Molecular nodes | `hsl(200, 100%, 70%)` light blue | `hsl(0, 0%, 90%)` white |
-| Hub nodes | `hsl(190, 95%, 55%)` cyan | `hsl(217, 91%, 60%)` brand blue |
-
----
-
-## Technical Considerations
-
-### Performance
-- DNA helix uses canvas for smooth rendering
-- ECG line uses SVG with CSS animation (GPU accelerated)
-- Particle system already optimized
-- All new elements use transform/opacity only
-- Mobile: reduce complexity or disable some layers
-
-### Accessibility
-- All animations are decorative (no information conveyed)
-- Respects `prefers-reduced-motion`
-- Pure background - doesn't affect content readability
-
----
-
-## Summary
-
-This enhancement transforms the generic tech background into a distinctly **medical education** themed experience by adding:
-
-1. **DNA Helix** - Immediately signals biomedical/life sciences
-2. **ECG Line** - Universal medical symbol, suggests "life" and clinical monitoring  
-3. **Molecular Particles** - Evolves constellation into neural/molecular network
-4. **Enhanced Medical Icons** - More visible floating symbols around edges
-
-The result will feel like a **premium medical tech platform** rather than a generic SaaS product, perfectly aligned with LIVEMED University's clinical education brand.
+| Alternative | Downside |
+|-------------|----------|
+| React-based loader | Requires React to load first, defeating the purpose |
+| External CSS file | Additional network request, delays render |
+| This approach (inline HTML) | Renders instantly, zero dependencies, branded experience |
 
