@@ -1,4 +1,4 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -59,7 +59,27 @@ const PageLoader = () => (
   </div>
 );
 
-const App = () => (
+const App = () => {
+  useEffect(() => {
+    const splash = document.getElementById('splash-screen');
+    if (!splash) return;
+    // Jump progress to 100%
+    const bar = document.getElementById('splash-progress');
+    if (bar) {
+      bar.style.animation = 'none';
+      bar.style.width = '100%';
+    }
+    // Short delay so user sees 100%, then fade out
+    const t1 = setTimeout(() => {
+      splash.classList.add('splash-fade-out');
+    }, 200);
+    const t2 = setTimeout(() => {
+      splash.remove();
+    }, 700);
+    return () => { clearTimeout(t1); clearTimeout(t2); };
+  }, []);
+
+  return (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
@@ -137,6 +157,7 @@ const App = () => (
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
-);
+  );
+};
 
 export default App;
