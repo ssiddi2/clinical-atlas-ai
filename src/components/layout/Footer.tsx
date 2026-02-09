@@ -42,6 +42,8 @@ const Footer = forwardRef<HTMLElement>((props, ref) => {
                 src={livemedLogoFull} 
                 alt="Livemed Academy" 
                 className="h-12 md:h-24 object-contain logo-glow transition-all duration-300 group-hover:scale-105"
+                loading="lazy"
+                decoding="async"
               />
             </Link>
             <p className="text-xs md:text-sm text-white/40 leading-relaxed max-w-[200px]">

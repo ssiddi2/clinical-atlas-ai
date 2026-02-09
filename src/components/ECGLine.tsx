@@ -1,8 +1,13 @@
+import { memo } from "react";
 import { motion } from "framer-motion";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 
-const ECGLine = () => {
+const ECGLine = memo(() => {
+  const prefersReducedMotion = useReducedMotion();
+
+  if (prefersReducedMotion) return null;
+
   // Authentic P-QRS-T complex ECG waveform path
-  // Normalized to fit in a viewBox, repeated pattern
   const ecgPath = `
     M 0 50
     L 20 50
@@ -23,15 +28,14 @@ const ECGLine = () => {
     L 150 50
   `;
 
-  // Create multiple ECG lines at different positions
+  // Fewer ECG lines for performance
   const ecgLines = [
     { y: "70%", delay: 0, opacity: 0.12, scale: 1 },
     { y: "85%", delay: 2, opacity: 0.08, scale: 0.8 },
-    { y: "75%", delay: 4, opacity: 0.06, scale: 0.6 },
   ];
 
   return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+    <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
       {ecgLines.map((line, index) => (
         <motion.div
           key={index}
@@ -68,8 +72,8 @@ const ECGLine = () => {
             </defs>
             
             <g filter={`url(#ecgGlow-${index})`}>
-              {/* Create repeating pattern across screen */}
-              {[0, 1, 2, 3, 4, 5, 6, 7].map((repeat) => (
+              {/* Reduced repeats from 8 to 5 */}
+              {[0, 1, 2, 3, 4].map((repeat) => (
                 <motion.path
                   key={repeat}
                   d={ecgPath}
@@ -128,6 +132,8 @@ const ECGLine = () => {
       </motion.div>
     </div>
   );
-};
+});
+
+ECGLine.displayName = "ECGLine";
 
 export default ECGLine;

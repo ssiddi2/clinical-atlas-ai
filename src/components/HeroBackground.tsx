@@ -1,14 +1,17 @@
+import { lazy, Suspense } from "react";
 import GradientOrbs from "./GradientOrbs";
-import GlowRings from "./GlowRings";
-import ParticleBackground from "./ParticleBackground";
-import DNAHelix from "./DNAHelix";
-import ECGLine from "./ECGLine";
-import FloatingMedicalIcons from "./FloatingMedicalIcons";
+
+// Lazy load heavy animation components - they're not needed for first paint
+const GlowRings = lazy(() => import("./GlowRings"));
+const ParticleBackground = lazy(() => import("./ParticleBackground"));
+const DNAHelix = lazy(() => import("./DNAHelix"));
+const ECGLine = lazy(() => import("./ECGLine"));
+const FloatingMedicalIcons = lazy(() => import("./FloatingMedicalIcons"));
 
 const HeroBackground = () => {
   return (
-    <div className="absolute inset-0 overflow-hidden">
-      {/* Base Layer - Deep radial gradient */}
+    <div className="absolute inset-0 overflow-hidden" aria-hidden="true">
+      {/* Base Layer - Deep radial gradient (CSS only, renders instantly) */}
       <div 
         className="absolute inset-0"
         style={{
@@ -21,23 +24,17 @@ const HeroBackground = () => {
         }}
       />
       
-      {/* DNA Helix Layer - Medical identity */}
-      <DNAHelix />
-      
-      {/* Gradient Orbs Layer */}
+      {/* Gradient Orbs - loaded eagerly (lightweight framer-motion) */}
       <GradientOrbs />
       
-      {/* Particle Constellation Layer - Molecular network */}
-      <ParticleBackground />
-      
-      {/* Glow Rings Layer */}
-      <GlowRings />
-      
-      {/* ECG Heartbeat Line Layer */}
-      <ECGLine />
-      
-      {/* Floating Medical Icons */}
-      <FloatingMedicalIcons />
+      {/* Heavy animation layers loaded lazily */}
+      <Suspense fallback={null}>
+        <DNAHelix />
+        <ParticleBackground />
+        <GlowRings />
+        <ECGLine />
+        <FloatingMedicalIcons />
+      </Suspense>
       
       {/* Subtle noise/grain overlay for depth */}
       <div 

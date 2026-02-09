@@ -1,14 +1,20 @@
+import { memo } from "react";
 import { motion } from "framer-motion";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 
-const GlowRings = () => {
-  const rings = [
-    { delay: 0, duration: 4 },
-    { delay: 1.3, duration: 4 },
-    { delay: 2.6, duration: 4 },
-  ];
+const rings = [
+  { delay: 0, duration: 4 },
+  { delay: 1.3, duration: 4 },
+  { delay: 2.6, duration: 4 },
+];
+
+const GlowRings = memo(() => {
+  const prefersReducedMotion = useReducedMotion();
+
+  if (prefersReducedMotion) return null;
 
   return (
-    <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden">
+    <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden" aria-hidden="true">
       {rings.map((ring, index) => (
         <motion.div
           key={index}
@@ -18,6 +24,7 @@ const GlowRings = () => {
             height: "40vw",
             maxWidth: "600px",
             maxHeight: "600px",
+            willChange: "transform, opacity",
           }}
           initial={{ scale: 0.8, opacity: 0.1 }}
           animate={{
@@ -43,6 +50,8 @@ const GlowRings = () => {
       />
     </div>
   );
-};
+});
+
+GlowRings.displayName = "GlowRings";
 
 export default GlowRings;
