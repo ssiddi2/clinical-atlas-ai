@@ -1,12 +1,14 @@
-import { useState, useRef } from "react";
+import { useState, useRef, lazy, Suspense } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { motion, useScroll, useTransform } from "framer-motion";
 import DemoVideoModal from "@/components/DemoVideoModal";
 import HeroBackground from "@/components/HeroBackground";
-import FloatingMedicalIcons from "@/components/FloatingMedicalIcons";
 import jointCommissionBadge from "@/assets/joint-commission-badge.png";
+
+// Defer decorative floating icons — not needed for LCP
+const FloatingMedicalIcons = lazy(() => import("@/components/FloatingMedicalIcons"));
 import {
   GraduationCap,
   Brain,
@@ -153,8 +155,10 @@ const Landing = () => {
         {/* New Apple-style animated background */}
         <HeroBackground />
         
-        {/* Floating Medical Icons */}
-        <FloatingMedicalIcons />
+        {/* Floating Medical Icons - deferred to not block LCP */}
+        <Suspense fallback={null}>
+          <FloatingMedicalIcons />
+        </Suspense>
         
         {/* Hero Content */}
         <motion.div 

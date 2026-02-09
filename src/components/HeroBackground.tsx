@@ -1,7 +1,7 @@
-import { lazy, Suspense } from "react";
-import GradientOrbs from "./GradientOrbs";
+import { lazy, Suspense, useState, useEffect } from "react";
 
-// Lazy load heavy animation components - they're not needed for first paint
+// ALL animation components are lazy-loaded and deferred until after LCP
+const GradientOrbs = lazy(() => import("./GradientOrbs"));
 const GlowRings = lazy(() => import("./GlowRings"));
 const ParticleBackground = lazy(() => import("./ParticleBackground"));
 const DNAHelix = lazy(() => import("./DNAHelix"));
@@ -9,6 +9,19 @@ const ECGLine = lazy(() => import("./ECGLine"));
 const FloatingMedicalIcons = lazy(() => import("./FloatingMedicalIcons"));
 
 const HeroBackground = () => {
+  // Defer all animated layers until after LCP is painted
+  const [showAnimations, setShowAnimations] = useState(false);
+
+  useEffect(() => {
+    // Use requestIdleCallback (or fallback) to load animations only after
+    // the browser is idle — ensuring hero text paints first as LCP
+    const schedule = window.requestIdleCallback || ((cb: () => void) => setTimeout(cb, 50));
+    const id = schedule(() => setShowAnimations(true));
+    return () => {
+      if (window.cancelIdleCallback) window.cancelIdleCallback(id as number);
+    };
+  }, []);
+
   return (
     <div className="absolute inset-0 overflow-hidden" aria-hidden="true">
       {/* Base Layer - Deep radial gradient (CSS only, renders instantly) */}
@@ -24,17 +37,17 @@ const HeroBackground = () => {
         }}
       />
       
-      {/* Gradient Orbs - loaded eagerly (lightweight framer-motion) */}
-      <GradientOrbs />
-      
-      {/* Heavy animation layers loaded lazily */}
-      <Suspense fallback={null}>
-        <DNAHelix />
-        <ParticleBackground />
-        <GlowRings />
-        <ECGLine />
-        <FloatingMedicalIcons />
-      </Suspense>
+      {/* All animation layers deferred until after LCP */}
+      {showAnimations && (
+        <Suspense fallback={null}>
+          <GradientOrbs />
+          <DNAHelix />
+          <ParticleBackground />
+          <GlowRings />
+          <ECGLine />
+          <FloatingMedicalIcons />
+        </Suspense>
+      )}
       
       {/* Subtle noise/grain overlay for depth */}
       <div 
