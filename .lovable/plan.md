@@ -1,114 +1,96 @@
 
 
-# Google Sans Typography + Mobile Optimization
+# Mobile Performance & Responsiveness Optimization
 
-## Overview
-Replace the current system font stack with **Google Sans (Product Sans alternative: Inter or DM Sans)** across the entire application and apply best-practice typography scaling for mobile, tablet, and desktop. Google Sans itself is not publicly available on Google Fonts, so **Inter** is the closest match -- it's Google's recommended open-source alternative with the same geometric, clean aesthetic used across Google products.
+## Goal
+Achieve 2-5 second load time on mobile and ensure full responsiveness across all screen sizes.
 
-> Note: "Google Sans" is a proprietary font not available on Google Fonts. **Inter** is the industry-standard substitute with nearly identical proportions, used by Vercel, Linear, and many premium products. If you specifically want Google's aesthetic, Inter is the best path.
+## Root Causes of Slow Mobile Loading
 
----
+1. **6 heavy animation components** (ParticleBackground canvas, DNAHelix canvas, GradientOrbs, GlowRings, ECGLine SVGs, FloatingMedicalIcons) all load on mobile despite being barely visible
+2. **framer-motion** runs dozens of concurrent animations on the landing page (every section uses motion.div with whileInView)
+3. **Google Fonts (Inter)** loaded as render-blocking external resource
+4. **Unused video file** (`hero-background.mp4`) sitting in assets (increases build size)
+5. **InlineDemoPlayer** imports 4 scene components eagerly -- heavy for mobile
+6. **Demo player height** is fixed at 420px/520px regardless of screen size -- clips on small phones
 
-## Changes
+## Plan
 
-### 1. Load Inter from Google Fonts
-**File: `index.html`**
+### 1. Disable All Canvas/SVG Animations on Mobile
 
-- Add preconnect to `fonts.gstatic.com`
-- Add a `<link>` tag to load Inter with weights 300 (light), 400 (regular), 500 (medium), 600 (semibold), 700 (bold)
-- Use `display=swap` for optimal loading performance
+Modify `HeroBackground.tsx` to skip ALL animation layers on mobile (< 768px). Mobile users see only the CSS gradient background -- instant paint, zero JS overhead.
 
-### 2. Configure Tailwind Font Family
-**File: `tailwind.config.ts`**
+- Check `window.innerWidth < 768` before scheduling animations
+- On mobile: render only the static CSS radial gradient (already there)
+- On desktop: keep current deferred lazy-load behavior
 
-- Add `fontFamily` to `theme.extend`:
-  - `sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif']` -- this makes Inter the default for all text
-  - `display: ['Inter', 'system-ui', '-apple-system', 'sans-serif']` -- for headings
+### 2. Simplify Landing Page Animations on Mobile
 
-### 3. Global CSS Typography System
-**File: `src/index.css`**
+In `Landing.tsx`, extend the existing `noAnim` pattern (currently only hero) to ALL sections on mobile:
 
-- Set `body` font to Inter via the Tailwind `font-sans` class
-- Replace the `.apple-title` class font-family with Inter
-- Add a responsive typography scale using CSS custom properties:
+- Skip `whileInView` animations for stats, features, programs, ATLAS, testimonials, and CTA sections
+- Replace motion.div with plain div on mobile for below-fold content
+- Keep desktop animations unchanged
 
-```text
-Mobile (< 640px):
-  - Body: 15px / 1.6 line-height
-  - H1: 32px / 1.1
-  - H2: 24px / 1.15
-  - H3: 18px / 1.25
-  - Small: 13px
+### 3. Lazy-Load Demo Player Scenes
 
-Tablet (640-1024px):
-  - Body: 16px / 1.6
-  - H1: 48px / 1.1
-  - H2: 32px / 1.15
+In `InlineDemoPlayer.tsx`:
 
-Desktop (1024px+):
-  - Body: 16px / 1.55
-  - H1: 64-96px / 1.08
-  - H2: 36-40px / 1.15
-```
+- Lazy-import all 4 scene components (AtlasScene, RotationScene, DashboardScene, InstitutionalScene) instead of eager imports
+- Only load the current scene, not all 4 upfront
+- Make the player height responsive: reduce to `h-[320px]` on small phones (< 380px width) and `h-[380px]` on standard mobile
 
-- Optimize text rendering: add `-webkit-font-smoothing: antialiased` (already present via `antialiased` class)
-- Set `font-feature-settings: "cv11", "ss01"` for Inter's stylistic alternates (cleaner characters)
+### 4. Optimize Font Loading
 
-### 4. Landing Page Typography Cleanup
-**File: `src/pages/Landing.tsx`**
+In `index.html`:
 
-- Remove the inline `style={{ fontFamily: ... }}` on the hero H1 (line 199) -- Inter will apply globally
-- Ensure all heading sizes use the responsive scale properly:
-  - Hero H1: keep `text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-[96px]` with `font-semibold tracking-[-0.03em]`
-  - Section headings: use `text-2xl sm:text-3xl md:text-4xl font-semibold tracking-tight`
-  - Card titles: use `text-base md:text-lg font-medium`
-  - Body text: use `text-sm md:text-base` with appropriate `leading-relaxed`
-- Audit mobile padding: ensure `px-4` minimum on all containers for proper mobile margins
-- Ensure touch targets are at least 44px on mobile (buttons, links)
+- Add `font-display=swap` to the Google Fonts URL (already present but verify)
+- Add `<link rel="preload">` for the font CSS to eliminate render-blocking
 
-### 5. Header Mobile Optimization
-**File: `src/components/layout/Header.tsx`**
+### 5. Remove Unused Video Asset
 
-- Ensure nav link text uses Inter automatically (no changes needed beyond global font)
-- Verify mobile menu touch targets are 44px+ (currently `py-4` on links -- already good)
+Delete `src/assets/hero-background.mp4` -- it's not imported anywhere and adds unnecessary weight to the build.
 
-### 6. InlineDemoPlayer Typography
-**File: `src/components/InlineDemoPlayer.tsx`**
+### 6. Responsive Fixes Across the Page
 
-- Ensure tab labels and scene text inherit the global Inter font
-- No structural changes needed -- just inherits the new global font
+- **Demo player**: Scale down scene padding from `p-8` to `p-4` on mobile; reduce text sizes inside scenes
+- **Stats grid**: Already 2-col on mobile -- verify no overflow on 320px
+- **ATLAS chat mockup**: Reduce `ml-6 md:ml-10` indentation; ensure text doesn't clip
+- **Institution CTA icons**: Reduce from `w-10 h-10` to `w-8 h-8` on small screens
+- **Feature cards**: Ensure single-column on phones with proper padding
+
+### 7. Add CSS `content-visibility: auto` for Below-Fold Sections
+
+Add `content-visibility: auto` and `contain-intrinsic-size` to below-fold sections in `index.css`. This tells the browser to skip rendering off-screen content until scrolled into view -- significant paint savings on mobile.
 
 ---
 
-## Mobile Optimization Checklist (applied across Landing.tsx)
+## Technical Details
 
-| Area | Current | Change |
-|------|---------|--------|
-| Hero heading | `text-4xl` on mobile | Keep -- already good with Inter's tighter metrics |
-| Section padding | `px-4` | Verify consistent across all sections |
-| Button touch targets | `py-6`/`py-7` | Already meets 44px minimum |
-| Card text | Various sizes | Standardize: title `text-base`, body `text-sm` on mobile |
-| Stat numbers | `text-3xl md:text-5xl` | Keep -- scales well |
-| Line height | Mixed | Standardize body to `leading-relaxed`, headings to `leading-tight` |
-| Letter spacing | `-0.03em` on titles | Keep for headings, use `tracking-normal` for body |
+### Files Modified
 
----
+| File | Changes |
+|------|---------|
+| `src/components/HeroBackground.tsx` | Skip all animation layers on mobile |
+| `src/pages/Landing.tsx` | Extend `noAnim` to all sections; add responsive tweaks |
+| `src/components/InlineDemoPlayer.tsx` | Lazy-load scenes; responsive height |
+| `src/components/demo/AtlasScene.tsx` | Reduce padding/text for mobile |
+| `src/components/demo/RotationScene.tsx` | Reduce padding/text for mobile |
+| `src/components/demo/DashboardScene.tsx` | Reduce padding/text for mobile |
+| `src/components/demo/InstitutionalScene.tsx` | Reduce padding/text for mobile |
+| `index.html` | Optimize font loading |
+| `src/index.css` | Add `content-visibility` for below-fold optimization |
 
-## Files Modified
+### File Deleted
 
-| File | Change |
+| File | Reason |
 |------|--------|
-| `index.html` | Add Inter font loading from Google Fonts with preconnect |
-| `tailwind.config.ts` | Add `fontFamily` configuration for Inter |
-| `src/index.css` | Update `.apple-title`, add font-feature-settings, remove old font-family references |
-| `src/pages/Landing.tsx` | Remove inline fontFamily style, standardize heading/body text sizes for mobile |
+| `src/assets/hero-background.mp4` | Unused -- not imported anywhere |
 
----
+### Expected Impact
 
-## What Will NOT Change
-- Brand colors, layout structure, or spacing system
-- Component architecture
-- Animation system
-- Backend functionality
-- No new npm dependencies (font loaded via CDN)
+- **Mobile LCP**: Under 2 seconds (hero text renders instantly, no animation JS blocking)
+- **Total Interactive**: 2-4 seconds (deferred non-critical content)
+- **Bundle reduction**: Removing video asset + lazy scene loading reduces initial payload significantly
+- **No visual regression on desktop**: All changes are mobile-conditional
 
