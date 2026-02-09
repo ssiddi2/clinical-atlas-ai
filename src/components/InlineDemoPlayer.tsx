@@ -77,7 +77,7 @@ const InlineDemoPlayer = forwardRef<HTMLDivElement>((_, ref) => {
       </div>
       <div className="rounded-2xl border border-white/[0.08] bg-white/[0.025] backdrop-blur-sm overflow-hidden shadow-[0_8px_40px_-12px_hsl(230,60%,5%/0.6)]">
         {/* Scene Content — responsive height */}
-        <div className="relative h-[400px] min-[380px]:h-[420px] md:h-[520px] overflow-hidden">
+        <div className="relative h-[480px] min-[380px]:h-[500px] md:h-[520px] overflow-hidden">
           <AnimatePresence mode="wait">
             <motion.div
               key={currentScene}
