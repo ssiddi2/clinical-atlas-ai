@@ -325,30 +325,27 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* Features Section - Dark Glass Cards */}
-      <section className="py-16 md:py-32 bg-livemed-deep relative overflow-hidden">
-        <div className="absolute inset-0 bg-mesh-gradient opacity-20" />
-        <div className="absolute inset-0 bg-grid-pattern" />
-        
+      {/* Features Section */}
+      <section className="py-20 md:py-36 bg-livemed-deep relative overflow-hidden">
         <div className="container mx-auto px-4 md:px-6 relative">
           <motion.div 
             variants={fadeInUp}
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-100px" }}
-            className="text-center mb-10 md:mb-20"
+            className="text-center mb-12 md:mb-20"
           >
             <motion.div 
               variants={fadeInScale}
-              className="inline-flex items-center gap-2 text-livemed-cyan text-xs md:text-sm font-medium mb-4 md:mb-6 glass-card px-3 md:px-4 py-2 rounded-full"
+              className="inline-flex items-center gap-2 text-white/40 text-xs md:text-sm font-medium mb-5 md:mb-6 border border-white/[0.06] px-4 py-2 rounded-full"
             >
-              <Sparkles className="h-3 w-3 md:h-4 md:w-4" />
+              <Sparkles className="h-3.5 w-3.5" />
               Powered by AI
             </motion.div>
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 md:mb-6">
-              <span className="text-gradient-livemed text-glow">Complete Medical Education</span>
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-semibold mb-4 md:mb-6">
+              <span className="text-gradient-livemed">Complete Medical Education</span>
             </h2>
-            <p className="text-base md:text-lg text-white/50 max-w-xl mx-auto font-light px-4">
+            <p className="text-base md:text-lg text-white/40 max-w-xl mx-auto font-light px-4">
               Everything you need to become a world-class physician.
             </p>
           </motion.div>
@@ -358,24 +355,21 @@ const Landing = () => {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-100px" }}
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-px bg-white/[0.06] rounded-2xl overflow-hidden"
           >
             {features.map((feature) => (
               <motion.div
                 key={feature.title}
                 variants={fadeInUp}
+                className="bg-[hsl(230,50%,7%)] p-7 md:p-10"
               >
-                <Card className="group h-full glass-card border-white/5 hover:border-livemed-blue/30 transition-all duration-500 bg-transparent">
-                  <CardContent className="p-5 md:p-8">
-                    <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl gradient-livemed flex items-center justify-center mb-4 md:mb-6">
-                      <feature.icon className="h-5 w-5 md:h-6 md:w-6 text-white" />
-                    </div>
-                    <h3 className="font-semibold text-base md:text-lg mb-2 md:mb-3 text-white">{feature.title}</h3>
-                    <p className="text-white/40 text-sm leading-relaxed">
-                      {feature.description}
-                    </p>
-                  </CardContent>
-                </Card>
+                <div className="w-10 h-10 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center mb-5">
+                  <feature.icon className="h-[18px] w-[18px] text-white/50" strokeWidth={1.5} />
+                </div>
+                <h3 className="font-medium text-base md:text-lg mb-2 text-white/90 tracking-tight">{feature.title}</h3>
+                <p className="text-white/35 text-sm leading-relaxed line-clamp-2">
+                  {feature.description}
+                </p>
               </motion.div>
             ))}
           </motion.div>
