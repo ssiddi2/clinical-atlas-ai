@@ -249,14 +249,14 @@ const Landing = () => {
       </section>
 
       {/* Inline Demo Player */}
-      <section className="relative py-16 md:py-24 bg-livemed-deep overflow-hidden">
+      <section className="relative py-12 md:py-20 bg-livemed-deep overflow-hidden">
         <div className="relative">
           <InlineDemoPlayer ref={demoPlayerRef} />
         </div>
       </section>
 
       {/* Stats Section */}
-      <section className="relative pt-20 md:pt-32 pb-20 md:pb-32 overflow-hidden">
+      <section className="relative pt-24 md:pt-32 pb-24 md:pb-32 overflow-hidden">
         <div className="absolute inset-0 bg-livemed-deep" />
         
         <div className="container mx-auto px-4 md:px-6 relative">
@@ -325,7 +325,7 @@ const Landing = () => {
       </section>
 
       {/* Features Section */}
-      <section className="py-20 md:py-36 bg-livemed-deep relative overflow-hidden">
+      <section className="py-24 md:py-32 bg-livemed-deep relative overflow-hidden">
         <div className="container mx-auto px-4 md:px-6 relative">
           <motion.div 
             variants={fadeInUp}
@@ -376,7 +376,7 @@ const Landing = () => {
       </section>
 
       {/* Programs Section */}
-      <section className="py-24 md:py-40 relative overflow-hidden bg-livemed-deep">
+      <section className="py-24 md:py-32 relative overflow-hidden bg-livemed-deep">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/[0.01] to-transparent" />
         
         <div className="container mx-auto px-4 md:px-6 relative">
@@ -441,7 +441,7 @@ const Landing = () => {
       </section>
 
       {/* ATLAS Section */}
-      <section className="py-24 md:py-40 relative overflow-hidden bg-livemed-deep">
+      <section className="py-24 md:py-32 relative overflow-hidden bg-livemed-deep">
         <div className="container mx-auto px-4 md:px-6 relative">
           <div className="grid lg:grid-cols-2 gap-12 md:gap-20 items-center">
             <motion.div 
@@ -579,7 +579,7 @@ const Landing = () => {
       </section>
 
       {/* Testimonials Section */}
-      <section className="py-24 md:py-40 bg-livemed-deep relative overflow-hidden">
+      <section className="py-24 md:py-32 bg-livemed-deep relative overflow-hidden">
         <div className="container mx-auto px-4 md:px-6 relative">
           <motion.div 
             variants={fadeInUp}
@@ -645,7 +645,7 @@ const Landing = () => {
       </section>
 
       {/* Institution CTA */}
-      <section className="py-24 md:py-40 relative overflow-hidden bg-livemed-deep">
+      <section className="py-24 md:py-32 relative overflow-hidden bg-livemed-deep">
         <div className="absolute top-0 left-0 right-0 h-px bg-white/[0.04]" />
         
         <motion.div 
