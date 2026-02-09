@@ -256,10 +256,9 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* Stats Section - Enhanced Glass Cards */}
-      <section className="relative pt-12 md:pt-20 pb-12 md:pb-24 overflow-hidden">
+      {/* Stats Section */}
+      <section className="relative pt-16 md:pt-28 pb-16 md:pb-28 overflow-hidden">
         <div className="absolute inset-0 bg-livemed-deep" />
-        <div className="absolute inset-0 bg-mesh-gradient opacity-30" />
         
         <div className="container mx-auto px-4 md:px-6 relative">
           <motion.div 
@@ -267,20 +266,25 @@ const Landing = () => {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-100px" }}
-            className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 lg:gap-6"
+            className="grid grid-cols-2 lg:grid-cols-4 gap-px bg-white/[0.06] rounded-2xl overflow-hidden"
           >
-            {stats.map((stat) => (
-              <motion.div 
-                key={stat.label} 
-                variants={fadeInScale}
-                className="border border-white/5 bg-white/[0.02] rounded-xl md:rounded-2xl p-4 md:p-6 lg:p-8 text-center"
-              >
-                <div className={`font-bold text-gradient-livemed mb-1 md:mb-2 ${stat.label === "USMLE Pass Rate" ? "text-3xl sm:text-4xl md:text-5xl" : "text-2xl sm:text-3xl md:text-4xl"}`}>
-                  {stat.value}
-                </div>
-                <div className="text-[10px] sm:text-xs md:text-sm text-white/40 uppercase tracking-wider font-medium">{stat.label}</div>
-              </motion.div>
-            ))}
+            {stats.map((stat, index) => {
+              const isHighlighted = stat.label === "USMLE Pass Rate";
+              return (
+                <motion.div 
+                  key={stat.label} 
+                  variants={fadeInScale}
+                  className={`p-6 md:p-10 lg:p-12 text-center ${isHighlighted ? "bg-white/[0.04]" : "bg-white/[0.015]"}`}
+                >
+                  <div className={`font-bold mb-2 md:mb-3 ${isHighlighted ? "text-4xl sm:text-5xl md:text-6xl text-gradient-livemed" : "text-2xl sm:text-3xl md:text-4xl text-white/60"}`}>
+                    {stat.value}
+                  </div>
+                  <div className={`uppercase tracking-[0.15em] font-medium ${isHighlighted ? "text-xs md:text-sm text-white/50" : "text-[10px] md:text-xs text-white/30"}`}>
+                    {stat.label}
+                  </div>
+                </motion.div>
+              );
+            })}
           </motion.div>
 
           {/* Joint Commission Accreditation Badge */}
@@ -289,32 +293,34 @@ const Landing = () => {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
             viewport={{ once: true }}
-            className="flex flex-col items-center justify-center mt-12 bg-white/[0.04] border border-white/[0.08] rounded-xl md:rounded-2xl p-8 md:p-12 max-w-2xl mx-auto text-center"
+            className="mt-16 md:mt-24 max-w-2xl mx-auto"
           >
-             <img 
-               src={jointCommissionBadge} 
-               alt="The Joint Commission - National Quality Approval" 
-               className="h-24 md:h-32 w-auto object-contain rounded-xl mb-6"
-               width="128"
-               height="128"
-               loading="lazy"
-               decoding="async"
-             />
-            <p className="text-white font-semibold text-lg md:text-xl mb-2">
-              Accredited by The Joint Commission
-            </p>
-            <p className="text-white/70 text-sm md:text-base mb-3">
-              Enrollments starting soon
-            </p>
-            <p className="text-white/60 text-xs md:text-sm">
-              Interested medical students can reach out to{" "}
-              <a 
-                href="mailto:info@livemedhealth.com" 
-                className="text-primary hover:text-primary/80 underline transition-colors"
-              >
-                info@livemedhealth.com
-              </a>
-            </p>
+            <div className="border-t border-white/[0.06] pt-12 md:pt-16 flex flex-col items-center text-center">
+               <img 
+                 src={jointCommissionBadge} 
+                 alt="The Joint Commission - National Quality Approval" 
+                 className="h-20 md:h-28 w-auto object-contain mb-8"
+                 width="128"
+                 height="128"
+                 loading="lazy"
+                 decoding="async"
+               />
+              <p className="text-white/90 font-semibold text-lg md:text-xl tracking-tight mb-2">
+                Accredited by The Joint Commission
+              </p>
+              <p className="text-white/40 text-sm md:text-base mb-4">
+                Enrollments starting soon
+              </p>
+              <p className="text-white/30 text-xs md:text-sm">
+                Interested medical students can reach out to{" "}
+                <a 
+                  href="mailto:info@livemedhealth.com" 
+                  className="text-white/50 hover:text-white/70 underline underline-offset-2 transition-colors"
+                >
+                  info@livemedhealth.com
+                </a>
+              </p>
+            </div>
           </motion.div>
         </div>
       </section>
