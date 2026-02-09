@@ -1,27 +1,29 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import livemedLogoFull from "@/assets/livemed-logo-full.png";
+
+const navItems = [
+  { label: "Programs", href: "/programs" },
+  { label: "Rotations", href: "/rotations" },
+  { label: "Institutions", href: "/institutions" },
+  { label: "Contact", href: "/contact" },
+];
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+  const handleScroll = useCallback(() => {
+    setScrolled(window.scrollY > 20);
   }, []);
 
-  const navItems = [
-    { label: "Programs", href: "/programs" },
-    { label: "Rotations", href: "/rotations" },
-    { label: "Institutions", href: "/institutions" },
-    { label: "Contact", href: "/contact" },
-  ];
+  useEffect(() => {
+    // Use passive listener for better scroll performance
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [handleScroll]);
 
   return (
     <header 
@@ -32,16 +34,18 @@ const Header = () => {
       }`}
     >
       <div className="container mx-auto flex h-14 md:h-16 items-center justify-between px-4 md:px-6">
-        {/* Logo - Apple style compact */}
+        {/* Logo */}
         <Link to="/" className="flex items-center group flex-shrink-0">
           <img 
             src={livemedLogoFull} 
             alt="Livemed Academy" 
-            className="h-8 md:h-11 transition-all duration-300 group-hover:opacity-80 object-contain" 
+            className="h-8 md:h-11 transition-all duration-300 group-hover:opacity-80 object-contain"
+            width="176"
+            height="44"
           />
         </Link>
 
-        {/* Desktop Navigation - Apple style */}
+        {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-8">
           {navItems.map((item) => (
             <Link
@@ -54,7 +58,7 @@ const Header = () => {
           ))}
         </nav>
 
-        {/* Auth Buttons - Minimal */}
+        {/* Auth Buttons */}
         <div className="hidden md:flex items-center gap-4">
           <Button 
             variant="ghost" 
@@ -75,6 +79,7 @@ const Header = () => {
         <button
           className="md:hidden p-2 text-white/70 hover:text-white transition-colors"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
         >
           {mobileMenuOpen ? (
             <X className="h-5 w-5" />

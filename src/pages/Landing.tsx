@@ -296,6 +296,8 @@ const Landing = () => {
               src={jointCommissionBadge} 
               alt="The Joint Commission - National Quality Approval" 
               className="h-20 md:h-24 w-auto object-contain rounded-xl mb-4"
+              loading="lazy"
+              decoding="async"
             />
             <p className="text-white font-semibold text-base md:text-lg mb-2">
               Accredited by The Joint Commission

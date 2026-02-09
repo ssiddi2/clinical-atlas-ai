@@ -1,4 +1,6 @@
+import { memo } from "react";
 import { motion } from "framer-motion";
+import { useReducedMotion } from "@/hooks/useReducedMotion";
 
 interface Orb {
   id: number;
@@ -70,44 +72,66 @@ const orbs: Orb[] = [
   },
 ];
 
-const GradientOrbs = () => {
+const GradientOrbs = memo(() => {
+  const prefersReducedMotion = useReducedMotion();
+
   return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+    <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
       {orbs.map((orb) => (
-        <motion.div
-          key={orb.id}
-          className="absolute rounded-full"
-          style={{
-            width: orb.size,
-            height: orb.size,
-            left: orb.x,
-            top: orb.y,
-            background: `radial-gradient(circle at 30% 30%, ${orb.colors[0]}, ${orb.colors[1]})`,
-            filter: `blur(${orb.blur}px)`,
-            opacity: orb.opacity,
-          }}
-          animate={{
-            x: [0, 30, -20, 10, 0],
-            y: [0, -20, 30, 10, 0],
-            scale: [1, 1.05, 0.95, 1.02, 1],
-            borderRadius: [
-              "60% 40% 30% 70% / 60% 30% 70% 40%",
-              "30% 60% 70% 40% / 50% 60% 30% 60%",
-              "40% 60% 60% 40% / 70% 30% 70% 40%",
-              "60% 40% 40% 60% / 40% 70% 40% 60%",
-              "60% 40% 30% 70% / 60% 30% 70% 40%",
-            ],
-          }}
-          transition={{
-            duration: orb.duration,
-            delay: orb.delay,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        />
+        prefersReducedMotion ? (
+          <div
+            key={orb.id}
+            className="absolute rounded-full"
+            style={{
+              width: orb.size,
+              height: orb.size,
+              left: orb.x,
+              top: orb.y,
+              background: `radial-gradient(circle at 30% 30%, ${orb.colors[0]}, ${orb.colors[1]})`,
+              filter: `blur(${orb.blur}px)`,
+              opacity: orb.opacity,
+              willChange: "auto",
+            }}
+          />
+        ) : (
+          <motion.div
+            key={orb.id}
+            className="absolute rounded-full"
+            style={{
+              width: orb.size,
+              height: orb.size,
+              left: orb.x,
+              top: orb.y,
+              background: `radial-gradient(circle at 30% 30%, ${orb.colors[0]}, ${orb.colors[1]})`,
+              filter: `blur(${orb.blur}px)`,
+              opacity: orb.opacity,
+              willChange: "transform",
+            }}
+            animate={{
+              x: [0, 30, -20, 10, 0],
+              y: [0, -20, 30, 10, 0],
+              scale: [1, 1.05, 0.95, 1.02, 1],
+              borderRadius: [
+                "60% 40% 30% 70% / 60% 30% 70% 40%",
+                "30% 60% 70% 40% / 50% 60% 30% 60%",
+                "40% 60% 60% 40% / 70% 30% 70% 40%",
+                "60% 40% 40% 60% / 40% 70% 40% 60%",
+                "60% 40% 30% 70% / 60% 30% 70% 40%",
+              ],
+            }}
+            transition={{
+              duration: orb.duration,
+              delay: orb.delay,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+          />
+        )
       ))}
     </div>
   );
-};
+});
+
+GradientOrbs.displayName = "GradientOrbs";
 
 export default GradientOrbs;
