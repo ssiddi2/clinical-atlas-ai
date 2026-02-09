@@ -246,7 +246,7 @@ const ParticleBackground = () => {
     <canvas
       ref={canvasRef}
       className="absolute inset-0 pointer-events-none"
-      style={{ opacity: 0.35 }}
+      style={{ opacity: 0.18 }}
       aria-hidden="true"
     />
   );

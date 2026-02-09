@@ -158,7 +158,7 @@ const DNAHelix = () => {
     <canvas
       ref={canvasRef}
       className="absolute inset-0 pointer-events-none"
-      style={{ opacity: 0.8 }}
+      style={{ opacity: 0.4 }}
       aria-hidden="true"
     />
   );
