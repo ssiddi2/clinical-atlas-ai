@@ -249,15 +249,14 @@ const Landing = () => {
       </section>
 
       {/* Inline Demo Player */}
-      <section className="relative py-12 md:py-20 bg-livemed-deep overflow-hidden">
-        <div className="absolute inset-0 bg-mesh-gradient opacity-20" />
+      <section className="relative py-16 md:py-24 bg-livemed-deep overflow-hidden">
         <div className="relative">
           <InlineDemoPlayer ref={demoPlayerRef} />
         </div>
       </section>
 
       {/* Stats Section */}
-      <section className="relative pt-16 md:pt-28 pb-16 md:pb-28 overflow-hidden">
+      <section className="relative pt-20 md:pt-32 pb-20 md:pb-32 overflow-hidden">
         <div className="absolute inset-0 bg-livemed-deep" />
         
         <div className="container mx-auto px-4 md:px-6 relative">
@@ -377,8 +376,8 @@ const Landing = () => {
       </section>
 
       {/* Programs Section */}
-      <section className="py-16 md:py-32 relative overflow-hidden bg-livemed-deep">
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-livemed-blue/5 to-transparent" />
+      <section className="py-24 md:py-40 relative overflow-hidden bg-livemed-deep">
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/[0.01] to-transparent" />
         
         <div className="container mx-auto px-4 md:px-6 relative">
           <motion.div 
@@ -386,15 +385,15 @@ const Landing = () => {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-100px" }}
-            className="text-center mb-10 md:mb-20"
+            className="text-center mb-12 md:mb-20"
           >
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 md:mb-6 text-white">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-semibold mb-4 md:mb-6 text-white">
               Programs for <span className="text-gradient-livemed">Every Stage</span>
             </h2>
-            <p className="text-base md:text-lg text-white/50 max-w-xl mx-auto font-light px-4 mb-2">
+            <p className="text-base md:text-lg text-white/45 max-w-xl mx-auto font-light px-4 mb-2">
               From foundational sciences to residency preparation.
             </p>
-            <p className="text-sm text-white/35 max-w-md mx-auto">Choose based on your current training level</p>
+            <p className="text-sm text-white/30 max-w-md mx-auto">Choose based on your current training level</p>
           </motion.div>
 
           <motion.div 
@@ -410,27 +409,27 @@ const Landing = () => {
                 variants={fadeInUp}
               >
                 <Link to={program.href}>
-                  <Card className="h-full group glass-card border-white/5 hover:border-livemed-cyan/40 transition-all duration-500 bg-transparent relative overflow-hidden">
+                  <Card className="h-full group bg-white/[0.02] border-white/[0.06] hover:border-white/[0.12] transition-colors duration-300 relative overflow-hidden rounded-2xl">
                     {program.title === "Clinical" && (
-                      <div className="absolute top-3 right-3 text-[10px] font-semibold uppercase tracking-wider bg-livemed-cyan/15 text-livemed-cyan border border-livemed-cyan/20 px-2 py-0.5 rounded-full">Most Popular</div>
+                      <div className="absolute top-3.5 right-3.5 text-[10px] font-medium uppercase tracking-wider bg-white/[0.04] text-white/50 border border-white/[0.06] px-2.5 py-1 rounded-full">Most Popular</div>
                     )}
                     {program.title === "Residency Prep" && (
-                      <div className="absolute top-3 right-3 text-[10px] font-semibold uppercase tracking-wider bg-livemed-blue/15 text-livemed-blue border border-livemed-blue/20 px-2 py-0.5 rounded-full">Recommended</div>
+                      <div className="absolute top-3.5 right-3.5 text-[10px] font-medium uppercase tracking-wider bg-white/[0.04] text-white/50 border border-white/[0.06] px-2.5 py-1 rounded-full">Recommended</div>
                     )}
-                    <CardContent className="p-5 md:p-8">
-                      <div className="inline-flex items-center gap-2 text-xs font-medium text-livemed-cyan uppercase tracking-wider mb-3 md:mb-4 px-3 py-1.5 bg-livemed-cyan/10 rounded-full border border-livemed-cyan/20">
+                    <CardContent className="p-6 md:p-8">
+                      <div className="inline-flex items-center gap-2 text-xs font-medium text-white/40 uppercase tracking-wider mb-4 px-3 py-1.5 bg-white/[0.03] rounded-full border border-white/[0.06]">
                         <Activity className="h-3 w-3" />
                         {program.years}
                       </div>
-                      <h3 className="font-semibold text-lg md:text-xl mb-2 md:mb-3 text-white group-hover:text-livemed-cyan transition-colors">
+                      <h3 className="font-medium text-lg md:text-xl mb-2 md:mb-3 text-white/90 group-hover:text-white transition-colors tracking-tight">
                         {program.title}
                       </h3>
-                      <p className="text-white/40 text-sm mb-4 md:mb-6">
+                      <p className="text-white/35 text-sm mb-5 md:mb-6 leading-relaxed">
                         {program.description}
                       </p>
-                      <div className="flex items-center text-livemed-cyan text-sm font-semibold group-hover:gap-2 gap-1.5 transition-all">
+                      <div className="flex items-center text-white/40 text-sm font-medium group-hover:text-white/60 group-hover:gap-2 gap-1.5 transition-all">
                         <span>Explore</span>
-                        <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                        <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-1 transition-transform" />
                       </div>
                     </CardContent>
                   </Card>
@@ -579,22 +578,20 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* Testimonials Section - Dark Theme */}
-      <section className="py-16 md:py-32 bg-livemed-deep relative overflow-hidden">
-        <div className="absolute inset-0 bg-mesh-gradient opacity-20" />
-        
+      {/* Testimonials Section */}
+      <section className="py-24 md:py-40 bg-livemed-deep relative overflow-hidden">
         <div className="container mx-auto px-4 md:px-6 relative">
           <motion.div 
             variants={fadeInUp}
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-100px" }}
-            className="text-center mb-10 md:mb-16"
+            className="text-center mb-12 md:mb-20"
           >
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 md:mb-6 text-white">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-semibold mb-4 md:mb-6 text-white">
               Trusted by <span className="text-gradient-livemed">Future Physicians</span>
             </h2>
-            <p className="text-base md:text-lg text-white/50 max-w-xl mx-auto font-light px-4">
+            <p className="text-base md:text-lg text-white/40 max-w-xl mx-auto font-light px-4">
               See what our students have to say about their experience.
             </p>
           </motion.div>
@@ -604,7 +601,7 @@ const Landing = () => {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-100px" }}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8 max-w-5xl mx-auto"
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-white/[0.06] rounded-2xl overflow-hidden max-w-5xl mx-auto"
           >
             {[
               {
@@ -626,24 +623,21 @@ const Landing = () => {
               <motion.div
                 key={index}
                 variants={fadeInUp}
+                className="bg-[hsl(230,50%,7%)] p-7 md:p-10"
               >
-                <Card className="h-full glass-card border-white/5 bg-transparent">
-                  <CardContent className="p-5 md:p-8">
-                    <div className="text-2xl text-white/20 mb-3 font-serif">"</div>
-                    <p className="text-white/60 mb-4 md:mb-6 leading-relaxed text-sm md:text-base">
-                      {testimonial.quote}
-                    </p>
-                    <div className="border-t border-white/5 pt-4 flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-livemed-blue/20 border border-livemed-blue/30 flex items-center justify-center text-xs font-semibold text-livemed-cyan">
-                        {testimonial.name.charAt(0)}
-                      </div>
-                      <div>
-                        <p className="font-semibold text-white text-sm md:text-base">{testimonial.name}</p>
-                        <p className="text-xs md:text-sm text-white/40">{testimonial.role}</p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                <div className="text-2xl text-white/15 mb-3 font-serif">"</div>
+                <p className="text-white/50 mb-5 md:mb-7 leading-relaxed text-sm md:text-base">
+                  {testimonial.quote}
+                </p>
+                <div className="border-t border-white/[0.04] pt-5 flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-xs font-medium text-white/40">
+                    {testimonial.name.charAt(0)}
+                  </div>
+                  <div>
+                    <p className="font-medium text-white/80 text-sm md:text-base">{testimonial.name}</p>
+                    <p className="text-xs md:text-sm text-white/30">{testimonial.role}</p>
+                  </div>
+                </div>
               </motion.div>
             ))}
           </motion.div>
@@ -651,8 +645,8 @@ const Landing = () => {
       </section>
 
       {/* Institution CTA */}
-      <section className="py-16 md:py-32 relative overflow-hidden bg-livemed-deep border-t border-white/5">
-        <div className="absolute inset-0 bg-mesh-gradient opacity-20" />
+      <section className="py-24 md:py-40 relative overflow-hidden bg-livemed-deep">
+        <div className="absolute top-0 left-0 right-0 h-px bg-white/[0.04]" />
         
         <motion.div 
           variants={fadeInUp}
@@ -666,29 +660,29 @@ const Landing = () => {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
-            className="flex justify-center gap-3 md:gap-4 mb-6 md:mb-10"
+            className="flex justify-center gap-3 md:gap-4 mb-8 md:mb-12"
           >
             {[Globe, Users, GraduationCap].map((Icon, index) => (
               <motion.div 
                 key={index}
                 variants={fadeInScale}
-                className="w-10 h-10 md:w-14 md:h-14 rounded-xl md:rounded-2xl glass-card flex items-center justify-center"
+                className="w-10 h-10 md:w-14 md:h-14 rounded-2xl bg-white/[0.03] border border-white/[0.06] flex items-center justify-center"
               >
-                <Icon className="h-5 w-5 md:h-6 md:w-6 text-white/80" />
+                <Icon className="h-5 w-5 md:h-6 md:w-6 text-white/50" />
               </motion.div>
             ))}
           </motion.div>
 
           <motion.h2 
             variants={fadeInUp}
-            className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 md:mb-8"
+            className="text-3xl md:text-4xl lg:text-5xl font-semibold text-white mb-5 md:mb-8"
           >
             Partner With Livemed Learning
           </motion.h2>
 
           <motion.p 
             variants={fadeInUp}
-            className="text-base md:text-xl text-white/60 max-w-2xl mx-auto mb-8 md:mb-12 leading-relaxed font-light px-4"
+            className="text-base md:text-xl text-white/40 max-w-2xl mx-auto mb-10 md:mb-14 leading-relaxed font-light px-4"
           >
             We work with medical schools and universities worldwide 
             to bring U.S.-standard medical education to students everywhere.
@@ -700,7 +694,7 @@ const Landing = () => {
           >
             <Button
               size="lg"
-              className="bg-white text-livemed-navy hover:bg-white/90 px-6 md:px-8 py-5 md:py-6 rounded-full font-semibold group text-sm md:text-base"
+              className="bg-white text-[hsl(230,50%,8%)] hover:bg-white/90 px-8 py-6 rounded-full font-semibold group text-sm md:text-base"
               asChild
             >
               <Link to="/institutions">
@@ -711,7 +705,7 @@ const Landing = () => {
             <Button
               size="lg"
               variant="ghost"
-              className="px-6 md:px-8 py-5 md:py-6 rounded-full text-white/70 hover:text-white border border-white/10 hover:bg-white/5 text-sm md:text-base"
+              className="px-6 py-5 rounded-full text-white/35 hover:text-white/50 hover:bg-white/[0.03] border border-white/[0.06] text-sm md:text-base font-normal"
               asChild
             >
               <Link to="/contact">Contact Sales</Link>
