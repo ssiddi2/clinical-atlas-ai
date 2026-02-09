@@ -1,43 +1,55 @@
 
-
-# Fix: Invisible Mobile Header + Further Mobile Performance
+# Fix: LIVE CLINICAL SIMULATION Mobile Layout
 
 ## Problem
-The header is invisible on mobile because:
-1. The header uses `bg-transparent` when not scrolled
-2. The hero background applies a `from-black/60` gradient overlay at the top (in `HeroBackground.tsx`), making the area extremely dark
-3. The hamburger menu icon is only `text-white/70` (70% opacity white) -- nearly invisible against the dark overlay
-4. The logo image may also lack contrast against the dark gradient
+On a 375px mobile viewport, the demo player scenes have overlapping and clipped content:
+- Scene content overflows the fixed 320px height container
+- Tab buttons ("ATLAS AI", "Virtual Rotations", "Dashboard", "Get Started") are cramped and hard to tap
+- Vitals grid in RotationScene and stats in other scenes overflow horizontally
+- Text sizes are still too large for the available space
 
-## Fix 1: Make Header Always Visible on Mobile
-**File: `src/components/layout/Header.tsx`**
+## Changes
 
-- On mobile, always apply a semi-transparent dark background with blur so the header has its own surface -- never fully transparent
-- Increase hamburger icon contrast to `text-white` (full opacity) on mobile
-- Keep desktop behavior unchanged (transparent until scrolled)
+### 1. InlineDemoPlayer.tsx -- Increase mobile height and fix controls
+- Increase mobile container height from `h-[320px]` to `h-[400px]` so scenes have room to breathe
+- Make tab buttons scroll horizontally on small screens (add `overflow-x-auto` and `flex-nowrap`)
+- Reduce tab font size further on very small screens
 
-## Fix 2: Remove Top Fade Overlay on Mobile
-**File: `src/components/HeroBackground.tsx`**
+### 2. RotationScene.tsx -- Simplify for mobile
+- Reduce header and patient case card spacing
+- Make vitals grid use 2x2 layout on very small screens instead of 4 columns
+- Reduce differential diagnosis text sizes
+- Add `overflow-y-auto` to prevent clipping
 
-- Hide the top `h-32 from-black/60` gradient overlay on mobile (`hidden md:block`) since the header now has its own background
-- This prevents double-darkening that kills visibility
+### 3. AtlasScene.tsx -- Tighten spacing
+- Reduce margins between header, chat, and tags
+- Make chat bubble text smaller on mobile
+- Ensure feature tags wrap properly
 
-## Fix 3: Additional Mobile Performance Gains
-**File: `src/pages/Landing.tsx`**
+### 4. DashboardScene.tsx -- Fix overflow
+- Stack progress and achievements cards vertically on phones under 380px
+- Reduce stat row text sizes
+- Add overflow protection
 
-- Remove framer-motion `useScroll`/`useTransform` parallax on mobile (unnecessary JS overhead)
-- Ensure all `motion.div` wrappers on mobile render as plain `div` with no animation props
+### 5. InstitutionalScene.tsx -- Compact layout
+- Reduce stats card padding and icon sizes on small screens
+- Shrink CTA button padding
+- Tighten vertical spacing
 
-## Files Modified
+## Technical Details
 
-| File | Change |
-|------|--------|
-| `src/components/layout/Header.tsx` | Always show background on mobile; boost icon contrast |
-| `src/components/HeroBackground.tsx` | Hide top fade overlay on mobile |
-| `src/pages/Landing.tsx` | Skip parallax scroll tracking on mobile |
+### Files Modified
 
-## Expected Result
-- Header immediately visible on all mobile devices
-- Faster mobile load with less JS execution
-- No visual changes on desktop
+| File | Changes |
+|------|---------|
+| `src/components/InlineDemoPlayer.tsx` | Taller mobile container (400px), scrollable tabs |
+| `src/components/demo/RotationScene.tsx` | 2x2 vitals grid on small screens, tighter spacing, overflow-y-auto |
+| `src/components/demo/AtlasScene.tsx` | Reduced margins and text sizes |
+| `src/components/demo/DashboardScene.tsx` | Stack cards on small phones, reduce sizes |
+| `src/components/demo/InstitutionalScene.tsx` | Compact padding and spacing |
 
+### Approach
+- All scenes get `overflow-y-auto` on the root container to prevent clipping
+- Use Tailwind responsive breakpoints (`min-[380px]:`) for fine-grained control
+- Reduce padding, margins, and font sizes specifically for sub-380px screens
+- Keep desktop layout completely unchanged
