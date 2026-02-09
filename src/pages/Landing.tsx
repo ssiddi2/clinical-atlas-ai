@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { motion, useScroll, useTransform } from "framer-motion";
+import { useIsMobile } from "@/hooks/use-mobile";
 import DemoVideoModal from "@/components/DemoVideoModal";
 import HeroBackground from "@/components/HeroBackground";
 import jointCommissionBadge from "@/assets/joint-commission-badge.png";
@@ -76,6 +77,12 @@ const slideInRight = {
 const Landing = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isDemoOpen, setIsDemoOpen] = useState(false);
+  const isMobile = useIsMobile();
+
+  // On mobile: skip hero entrance animations so text paints instantly as LCP
+  // On desktop: keep the staggered fade-in animations
+  const noAnim = isMobile;
+
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -168,9 +175,7 @@ const Landing = () => {
           <div className="max-w-4xl mx-auto text-center">
             {/* Badge with Glow */}
             <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
+              {...(noAnim ? {} : { initial: { opacity: 0, y: 20 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.6, delay: 0.2 } })}
               className="inline-flex items-center gap-2 glass-card-hover px-4 md:px-5 py-2 md:py-2.5 rounded-full text-xs md:text-sm mb-6 md:mb-10 shadow-glow"
             >
               <span className="relative flex h-2 w-2">
@@ -182,9 +187,7 @@ const Landing = () => {
 
             {/* Brand Name */}
             <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.25 }}
+              {...(noAnim ? {} : { initial: { opacity: 0, y: 20 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.6, delay: 0.25 } })}
               className="text-xl sm:text-2xl md:text-3xl font-semibold text-gradient-livemed text-glow mb-4 tracking-wide"
             >
               Livemed Academy
@@ -192,9 +195,7 @@ const Landing = () => {
 
             {/* Main Headline - Apple Style Bold Typography */}
             <motion.h1 
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
+              {...(noAnim ? {} : { initial: { opacity: 0, y: 30 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.8, delay: 0.3, ease: [0.25, 0.46, 0.45, 0.94] } })}
               className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-[96px] font-semibold tracking-[-0.03em] mb-4 md:mb-6 leading-[1.05]"
               style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif' }}
             >
@@ -204,9 +205,7 @@ const Landing = () => {
             </motion.h1>
 
             <motion.p 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.5 }}
+              {...(noAnim ? {} : { initial: { opacity: 0, y: 20 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.6, delay: 0.5 } })}
               className="text-lg md:text-xl lg:text-2xl text-white/40 mb-8 md:mb-14 max-w-xl mx-auto leading-relaxed font-light tracking-tight"
             >
               Train smarter. Heal better.
@@ -214,9 +213,7 @@ const Landing = () => {
 
             {/* CTA Buttons - Enhanced Glow */}
             <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.7 }}
+              {...(noAnim ? {} : { initial: { opacity: 0, y: 20 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.6, delay: 0.7 } })}
               className="flex flex-col sm:flex-row gap-4 justify-center"
             >
               <Button 
