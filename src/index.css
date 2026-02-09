@@ -119,9 +119,59 @@
   }
 
   body {
-    @apply bg-background text-foreground antialiased;
-    font-feature-settings: "rlig" 1, "calt" 1;
-    text-rendering: optimizeSpeed;
+    @apply bg-background text-foreground antialiased font-sans;
+    font-feature-settings: "cv11", "ss01", "rlig" 1, "calt" 1;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  @media (min-width: 640px) {
+    body {
+      font-size: 16px;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    body {
+      line-height: 1.55;
+    }
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display;
+    letter-spacing: -0.025em;
+  }
+
+  h1 {
+    font-size: 2rem;
+    line-height: 1.1;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+    line-height: 1.15;
+  }
+
+  h3 {
+    font-size: 1.125rem;
+    line-height: 1.25;
+  }
+
+  small {
+    font-size: 0.8125rem;
+  }
+
+  @media (min-width: 640px) {
+    h1 { font-size: 3rem; }
+    h2 { font-size: 2rem; }
+  }
+
+  @media (min-width: 1024px) {
+    h1 { font-size: 4rem; line-height: 1.08; }
+    h2 { font-size: 2.5rem; }
   }
 
   /* Optimize images globally */
@@ -470,9 +520,9 @@
     background: radial-gradient(ellipse at center, transparent 0%, hsl(230 55% 6%) 70%);
   }
 
-  /* Apple Style Typography */
+  /* Display Typography */
   .apple-title {
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
     letter-spacing: -0.03em;
   }
 
