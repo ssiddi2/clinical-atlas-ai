@@ -441,61 +441,52 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* ATLAS Section - Enhanced Dark Design */}
-      <section className="py-16 md:py-32 relative overflow-hidden bg-livemed-deep">
-        <div className="absolute inset-0 bg-mesh-gradient opacity-20" />
-        <div className="absolute inset-0 bg-neural-pattern" />
-        
+      {/* ATLAS Section */}
+      <section className="py-24 md:py-40 relative overflow-hidden bg-livemed-deep">
         <div className="container mx-auto px-4 md:px-6 relative">
-          <div className="grid lg:grid-cols-2 gap-8 md:gap-16 items-center">
+          <div className="grid lg:grid-cols-2 gap-12 md:gap-20 items-center">
             <motion.div 
               variants={slideInLeft}
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true, margin: "-100px" }}
+              className="max-w-lg"
             >
-              <div className="inline-flex items-center gap-2 text-livemed-cyan text-xs md:text-sm font-medium mb-4 md:mb-8 glass-card px-3 md:px-4 py-2 rounded-full">
-                <MessageSquare className="h-3 w-3 md:h-4 md:w-4" />
+              <div className="inline-flex items-center gap-2 text-white/40 text-xs md:text-sm font-medium mb-6 md:mb-8 border border-white/[0.06] px-4 py-2 rounded-full">
+                <MessageSquare className="h-3.5 w-3.5" />
                 Meet Your AI Professor
-                <div className="w-2 h-2 bg-livemed-success rounded-full animate-pulse" />
+                <div className="w-1.5 h-1.5 bg-livemed-success rounded-full animate-pulse" />
               </div>
 
-              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 md:mb-8 text-white leading-tight">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold mb-5 md:mb-8 text-white leading-[1.1] tracking-tight">
                 ATLAS™ — The Most Patient Professor{" "}
                 <span className="text-gradient-livemed">You'll Ever Have</span>
               </h2>
 
-              <p className="text-base md:text-lg text-white/50 mb-6 md:mb-10 leading-relaxed font-light">
+              <p className="text-base md:text-lg text-white/40 mb-8 md:mb-12 leading-relaxed font-light max-w-md">
                 Faculty-grade AI that teaches using Socratic methodology, 
                 tracks your progress, and grades your clinical reasoning.
               </p>
 
-              <motion.ul 
-                variants={staggerContainer}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
-                className="space-y-3 md:space-y-4 mb-6 md:mb-10"
-              >
+              <ul className="space-y-5 md:space-y-6 mb-8 md:mb-12">
                 {[
                   "Personalized study plans that adapt to your weak areas",
-                  "Clinical case simulations with real-time faculty-grade feedback",
+                  "Clinical case simulations with real-time feedback",
                   "24/7 availability in any timezone",
                 ].map((item) => (
-                  <motion.li 
+                  <li 
                     key={item} 
-                    variants={fadeInUp}
-                    className="flex items-start gap-3"
+                    className="flex items-start gap-3.5"
                   >
-                    <div className="w-5 h-5 rounded-full gradient-livemed flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <CheckCircle className="h-3 w-3 text-white" />
+                    <div className="w-5 h-5 rounded-full bg-white/[0.04] border border-white/[0.08] flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <CheckCircle className="h-3 w-3 text-white/40" />
                     </div>
-                    <span className="text-white/60 text-sm">{item}</span>
-                  </motion.li>
+                    <span className="text-white/50 text-sm leading-relaxed">{item}</span>
+                  </li>
                 ))}
-              </motion.ul>
+              </ul>
 
-              <Button className="btn-glow gradient-livemed px-6 md:px-8 py-5 md:py-6 rounded-full group font-semibold text-sm md:text-base w-full sm:w-auto" asChild>
+              <Button className="gradient-livemed px-8 py-6 rounded-full group font-semibold text-sm md:text-base w-full sm:w-auto" asChild>
                 <Link to="/atlas">
                   Learn More About ATLAS™
                   <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
@@ -503,105 +494,85 @@ const Landing = () => {
               </Button>
             </motion.div>
 
-            {/* ATLAS Chat Interface - Enhanced Glass */}
+            {/* ATLAS Chat Interface */}
             <motion.div 
               variants={slideInRight}
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true, margin: "-100px" }}
-              className="relative"
+              className="relative lg:scale-105 origin-center"
             >
-              <div className="absolute inset-0 bg-livemed-blue/15 rounded-2xl md:rounded-3xl blur-[40px]" />
-              
               <div 
-                className="glass-card rounded-2xl md:rounded-3xl p-4 md:p-8 relative border border-white/[0.08]"
+                className="rounded-2xl md:rounded-3xl p-5 md:p-8 relative bg-white/[0.02] border border-white/[0.06]"
               >
                 {/* Terminal header */}
-                <div className="flex items-center gap-2 md:gap-3 mb-4 md:mb-8 pb-4 md:pb-6 border-b border-white/5">
-                  <div className="flex gap-1 md:gap-1.5">
-                    <div className="w-2 h-2 md:w-3 md:h-3 rounded-full bg-red-500/60" />
-                    <div className="w-2 h-2 md:w-3 md:h-3 rounded-full bg-yellow-500/60" />
-                    <div className="w-2 h-2 md:w-3 md:h-3 rounded-full bg-green-500/60" />
+                <div className="flex items-center gap-2 md:gap-3 mb-5 md:mb-8 pb-5 md:pb-6 border-b border-white/[0.04]">
+                  <div className="flex gap-1.5">
+                    <div className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-white/10" />
+                    <div className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-white/10" />
+                    <div className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-white/10" />
                   </div>
                   <div className="flex-1" />
-                  <div className="flex items-center gap-2 md:gap-3">
-                    <div className="w-8 h-8 md:w-10 md:h-10 rounded-lg md:rounded-xl gradient-livemed flex items-center justify-center">
-                      <Brain className="h-4 w-4 md:h-5 md:w-5 text-white" />
+                  <div className="flex items-center gap-2.5 md:gap-3">
+                    <div className="w-8 h-8 md:w-10 md:h-10 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center">
+                      <Brain className="h-4 w-4 md:h-5 md:w-5 text-white/50" />
                     </div>
                     <div>
-                      <div className="font-semibold text-white text-xs md:text-sm">ATLAS™</div>
-                      <div className="text-[10px] md:text-xs text-white/40">
+                      <div className="font-medium text-white/80 text-xs md:text-sm">ATLAS™</div>
+                      <div className="text-[10px] md:text-xs text-white/30">
                         Cardiology Module
                       </div>
                     </div>
                   </div>
                 </div>
 
-                <motion.div 
-                  variants={staggerContainer}
-                  initial="hidden"
-                  whileInView="visible"
-                  viewport={{ once: true }}
-                  className="space-y-3 md:space-y-5"
-                >
+                <div className="space-y-4 md:space-y-5">
                   {/* ATLAS Message */}
-                  <motion.div 
-                    variants={fadeInUp}
-                    className="bg-white/[0.03] rounded-xl md:rounded-2xl p-3 md:p-5 border border-white/5"
-                  >
-                    <p className="text-white/80 text-xs md:text-sm leading-relaxed">
+                  <div className="bg-white/[0.02] rounded-xl md:rounded-2xl p-4 md:p-5 border border-white/[0.04]">
+                    <p className="text-white/70 text-xs md:text-sm leading-relaxed">
                       "A 55-year-old male presents with crushing chest pain 
                       radiating to the left arm. What's your initial differential?"
                     </p>
-                  </motion.div>
+                  </div>
 
                   {/* Student Response */}
-                  <motion.div 
-                    variants={fadeInUp}
-                    className="bg-livemed-cyan/10 rounded-xl md:rounded-2xl p-3 md:p-5 ml-4 md:ml-8 border border-livemed-cyan/20"
-                  >
-                    <p className="text-livemed-cyan/90 text-xs md:text-sm leading-relaxed">
+                  <div className="bg-white/[0.02] rounded-xl md:rounded-2xl p-4 md:p-5 ml-6 md:ml-10 border border-white/[0.06]">
+                    <p className="text-white/60 text-xs md:text-sm leading-relaxed">
                       "I would consider acute MI, unstable angina, or aortic 
                       dissection. I'd start with an ECG and troponins..."
                     </p>
-                  </motion.div>
+                  </div>
 
                   {/* ATLAS Follow-up */}
-                  <motion.div 
-                    variants={fadeInUp}
-                    className="bg-white/[0.03] rounded-xl md:rounded-2xl p-3 md:p-5 border border-white/5"
-                  >
-                    <p className="text-white/80 text-xs md:text-sm leading-relaxed">
+                  <div className="bg-white/[0.02] rounded-xl md:rounded-2xl p-4 md:p-5 border border-white/[0.04]">
+                    <p className="text-white/70 text-xs md:text-sm leading-relaxed">
                       "Good start! What physical exam finding would make you 
                       more suspicious of aortic dissection over MI?"
                     </p>
-                  </motion.div>
+                  </div>
 
                   {/* Typing indicator */}
-                  <motion.div 
-                    variants={fadeInUp}
-                    className="flex items-center gap-2 text-white/30 text-xs pl-2"
-                  >
+                  <div className="flex items-center gap-2 text-white/25 text-xs pl-2">
                     <div className="flex gap-1">
                       <motion.span 
-                        animate={{ opacity: [0.3, 1, 0.3] }}
+                        animate={{ opacity: [0.2, 0.8, 0.2] }}
                         transition={{ duration: 1.5, repeat: Infinity, delay: 0 }}
-                        className="w-1.5 h-1.5 bg-livemed-cyan/60 rounded-full" 
+                        className="w-1.5 h-1.5 bg-white/30 rounded-full" 
                       />
                       <motion.span 
-                        animate={{ opacity: [0.3, 1, 0.3] }}
+                        animate={{ opacity: [0.2, 0.8, 0.2] }}
                         transition={{ duration: 1.5, repeat: Infinity, delay: 0.2 }}
-                        className="w-1.5 h-1.5 bg-livemed-cyan/60 rounded-full" 
+                        className="w-1.5 h-1.5 bg-white/30 rounded-full" 
                       />
                       <motion.span 
-                        animate={{ opacity: [0.3, 1, 0.3] }}
+                        animate={{ opacity: [0.2, 0.8, 0.2] }}
                         transition={{ duration: 1.5, repeat: Infinity, delay: 0.4 }}
-                        className="w-1.5 h-1.5 bg-livemed-cyan/60 rounded-full" 
+                        className="w-1.5 h-1.5 bg-white/30 rounded-full" 
                       />
                     </div>
                     <span>ATLAS is thinking...</span>
-                  </motion.div>
-                </motion.div>
+                  </div>
+                </div>
               </div>
             </motion.div>
           </div>
