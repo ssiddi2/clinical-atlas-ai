@@ -15,6 +15,15 @@
     <!-- Preconnect to Supabase -->
     <link rel="preconnect" href="https://sljalqmlkpjtvtzjwfgx.supabase.co" />
 
+    <!-- Preload LCP-critical assets: the logo used in header (above the fold) -->
+    <link rel="preload" as="image" href="/favicon.png" />
+
+    <!-- Hint the browser to prioritize text rendering for LCP -->
+    <style>
+      /* Ensure hero text renders immediately with system font stack while keeping design identical */
+      .lcp-priority { content-visibility: auto; }
+    </style>
+
     <meta property="og:title" content="Livemed Academy | AI-Powered Medical Education for IMGs" />
     <meta property="og:description" content="The global standard for AI-powered medical education. Virtual U.S. clinical rotations, USMLE-aligned curriculum, and ATLAS™ AI Professor." />
     <meta property="og:type" content="website" />

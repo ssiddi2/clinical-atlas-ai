@@ -42,6 +42,8 @@ const Header = () => {
             className="h-8 md:h-11 transition-all duration-300 group-hover:opacity-80 object-contain"
             width="176"
             height="44"
+            fetchPriority="high"
+            decoding="sync"
           />
         </Link>
 
