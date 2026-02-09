@@ -52,7 +52,7 @@ const FloatingMedicalIcons = memo(() => {
         style={position}
         initial={{ opacity: 0, scale: 0.5 }}
         animate={{ 
-          opacity: [0, 0.25, 0.25, 0],
+          opacity: [0, 0.12, 0.12, 0],
           scale: [0.8, 1, 1, 0.8],
           y: [0, -25, -50, -75],
         }}
@@ -79,12 +79,12 @@ const FloatingMedicalIcons = memo(() => {
           <div 
             className="absolute inset-0 rounded-full blur-xl"
             style={{
-              background: "radial-gradient(circle, hsl(190 95% 55% / 0.15) 0%, transparent 70%)",
+              background: "radial-gradient(circle, hsl(190 95% 55% / 0.06) 0%, transparent 70%)",
               transform: "scale(2)",
             }}
           />
           <Icon 
-            className="text-livemed-cyan/30 relative z-10" 
+            className="text-livemed-cyan/15 relative z-10" 
             size={size} 
             strokeWidth={1}
           />

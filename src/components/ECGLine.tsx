@@ -30,8 +30,8 @@ const ECGLine = memo(() => {
 
   // Fewer ECG lines for performance
   const ecgLines = [
-    { y: "70%", delay: 0, opacity: 0.07, scale: 1 },
-    { y: "85%", delay: 2, opacity: 0.05, scale: 0.8 },
+    { y: "70%", delay: 0, opacity: 0.04, scale: 1 },
+    { y: "85%", delay: 2, opacity: 0.03, scale: 0.8 },
   ];
 
   return (
