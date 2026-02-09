@@ -1,164 +1,122 @@
 
 
-# UI Refinement: Calmer, More Authoritative Medical Institution Feel
+# Plan: Inline Demo Preview Straddling Hero and Below-the-Fold
 
 ## Overview
-Refine the existing Livemed Academy landing page to reduce visual noise (glow, gradients, background effects) by ~40-50%, improve content hierarchy, and shift the tone from "tech demo" to "trusted medical institution" -- without changing layout, brand colors, content, or structure.
+Replace the modal-based "Watch Demo" button with an inline demo preview card embedded directly in the landing page. The preview will be positioned so its top half sits within the hero section and its bottom half extends below the fold -- exactly like the reference image pattern where a large product mockup bridges the hero and the next section.
+
+The "Watch Demo" button in the hero will remain but will scroll the user down to this preview. Clicking the preview itself will open the existing demo modal for the full interactive experience.
 
 ---
 
-## Section-by-Section Changes
+## What The User Will See
 
-### 1. Hero Section
-**File: `src/pages/Landing.tsx` (lines ~160-257)**
+```text
+┌─────────────────────────────────────────────────────────────────┐
+│                         HERO SECTION                           │
+│                                                                 │
+│                     Livemed Academy                             │
+│                   Where AI Meets Medicine.                      │
+│                   Train smarter. Heal better.                   │
+│                                                                 │
+│                  [Apply Now]  [Watch Demo]                      │
+│                                                                 │
+│            ┌─────────────────────────────────────┐              │
+│            │      ┌───┐ ┌───┐ ┌───┐             │              │
+│            │      │ ● │ │ ● │ │ ● │  ATLAS(TM)  │              │
+│            │      └───┘ └───┘ └───┘             │              │
+│            │                                     │              │
+│            │   "A 55-year-old male presents..."  │              │
+│ ─ ─ ─ ─ ─│─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─│─ ─ ─ FOLD ─ │
+│            │   Student: "I would consider..."    │              │
+│            │                                     │              │
+│            │   "Good start! What physical..."    │              │
+│            │                                     │              │
+│            │          ▶ Play Full Demo            │              │
+│            └─────────────────────────────────────┘              │
+│                                                                 │
+│                      STATS SECTION                              │
+│                   50+  |  10,000+  |  95%  | 500+              │
+└─────────────────────────────────────────────────────────────────┘
+```
 
-- Increase headline `leading` from `leading-[1.05]` to `leading-[1.12]` for better readability
-- Increase subtitle opacity from `text-white/40` to `text-white/50` for better contrast
-- Make "Apply Now" CTA larger and more dominant: add `text-lg` and slightly more padding
-- Make "Watch Demo" CTA more subdued: reduce to `text-white/50` and remove `glass-card` class
-- Remove `shadow-glow` from the enrollment badge to reduce noise
-- Remove `text-glow` from the brand name "Livemed Academy"
-
-### 2. Hero Background Animations
-**File: `src/components/HeroBackground.tsx`**
-
-- Reduce the opacity of the noise/grain overlay (already low, keep as-is)
-- No structural changes needed here -- opacity reductions happen in child components
-
-**File: `src/components/GradientOrbs.tsx`**
-
-- Reduce all orb `opacity` values by ~40% (e.g., 0.2 -> 0.12, 0.15 -> 0.09, 0.18 -> 0.11)
-
-**File: `src/components/GlowRings.tsx`**
-
-- Reduce ring border opacity from `livemed-cyan/10` to `livemed-cyan/5`
-- Reduce initial opacity from `0.08` to `0.04`
-- Reduce central glow point opacity
-
-**File: `src/components/ECGLine.tsx`** and **`src/components/DNAHelix.tsx`** and **`src/components/ParticleBackground.tsx`**
-
-- Reduce stroke/fill opacity by ~40% across all three to make them more subtle background texture
-
-### 3. Stats Section
-**File: `src/pages/Landing.tsx` (lines ~259-321)**
-
-- Remove `shadow-glow` from stat cards to reduce heaviness
-- Remove `whileHover` scale/translate effect from stat cards for a calmer feel
-- Make the "95% USMLE Pass Rate" stat visually larger: conditionally apply `text-4xl md:text-5xl` to that specific stat
-- Remove `text-glow` from stat values
-- Replace `glass-card-hover` with lighter styling: `border border-white/5 bg-white/[0.02]`
-
-### 4. Accreditation Section
-**File: `src/pages/Landing.tsx` (lines ~288-321)**
-
-- Increase badge image size from `h-20 md:h-24` to `h-24 md:h-32`
-- Add a subtle neutral background panel: `bg-white/[0.04]` with `border border-white/8`
-- Increase padding and spacing for a more official, spacious feel
-- Make "Accredited by The Joint Commission" text larger: `text-lg md:text-xl`
-
-### 5. Feature Cards (Complete Medical Education)
-**File: `src/pages/Landing.tsx` (lines ~324-381)**
-
-- Shorten feature descriptions to max 2 lines (trim text in the data array)
-- Remove `card-glow-hover` class from feature cards
-- Remove `shadow-glow` from icon containers
-- Remove `whileHover` y-translate from cards
-- Remove `group-hover:text-livemed-cyan` color change on title hover
-- Remove `group-hover:scale-110` from icon containers
-- Keep clean elevation via existing border transitions only
-
-### 6. Programs Section
-**File: `src/pages/Landing.tsx` (lines ~383-441)**
-
-- Add "Most Popular" badge to the "Clinical" program card
-- Add "Recommended" badge to the "Residency Prep" program card
-- Add a helper line below the section subtitle: "Choose based on your current training level"
-- Make the "Explore" CTA text slightly more prominent with `font-semibold`
-- Remove `card-glow-hover` from program cards
-
-### 7. ATLAS Section
-**File: `src/pages/Landing.tsx` (lines ~443-615)**
-
-- Remove floating orb elements (the hidden md:block blurred circles)
-- Reduce `bg-mesh-gradient` opacity from `opacity-40` to `opacity-20`
-- Remove `text-glow` from the ATLAS heading
-- Trim the ATLAS bullet list from 4 items to 3, focusing on outcomes:
-  - "Personalized study plans that adapt to your weak areas"
-  - "Clinical case simulations with real-time faculty-grade feedback"
-  - "24/7 availability in any timezone"
-- Increase the chat mockup card size: remove `max-w` constraints, let it fill the column
-- Remove `shadow-glow-lg` from the chat card, replace with `border border-white/8`
-- Remove `whileHover` scale effect from the chat card
-
-### 8. Testimonials Section
-**File: `src/pages/Landing.tsx` (lines ~617-687)**
-
-- Shorten testimonial quotes to focus on measurable outcomes
-- Add avatar initials circle before each name (colored circle with first letter)
-- Remove `card-glow-hover` from testimonial cards
-- Remove `whileHover` y-translate
-- Add `border-b border-white/5` divider between quote and attribution for cleaner separation
-- Replace sparkle icons with a simpler quotation mark or remove entirely
-
-### 9. Partner/Institution CTA Section
-**File: `src/pages/Landing.tsx` (lines ~689-774)**
-
-- Replace `gradient-livemed` background with dark theme continuation: `bg-livemed-deep`
-- Add a subtle top border: `border-t border-white/5`
-- Remove floating icon animations (Globe, GraduationCap)
-- Adjust button styling: white button stays, secondary gets `border border-white/10`
-- Remove `shadow-glow-lg` from the primary button
-- Remove `text-glow` from the heading
-
-### 10. Global CSS Refinements
-**File: `src/index.css`**
-
-- Reduce `shadow-glow` intensity by ~50%: halve the blur radius and opacity values
-- Reduce `shadow-glow-lg` intensity similarly
-- Reduce `btn-glow` shadow spread by ~40%
-- Reduce `btn-glow:hover` transform from `translateY(-2px)` to `translateY(-1px)`
-- Reduce `card-glow-hover:hover` box-shadow intensity by ~40%
-- Reduce `glass-card-hover:hover` box-shadow from `40px` to `20px` blur
-- Reduce `text-glow` text-shadow opacity from `0.3` to `0.15`
-- Reduce `text-glow-strong` values proportionally
+**Behavior:**
+- The demo preview card appears at the bottom of the hero section, positioned with negative margin so it overlaps into the stats section below
+- It shows a static mockup of the ATLAS chat interface (reusing the existing chat mockup already in the ATLAS section)
+- A centered "Play Full Demo" button overlays the card -- clicking it opens the existing DemoVideoModal
+- The hero "Watch Demo" button scrolls smoothly to this preview card
+- On mobile, the card is slightly smaller but maintains the same straddling effect
 
 ---
 
-## Files Modified
+## Technical Details
 
-| File | Type of Change |
-|------|---------------|
-| `src/pages/Landing.tsx` | Hero, stats, features, programs, ATLAS, testimonials, partner sections |
-| `src/index.css` | Global glow/shadow intensity reductions |
-| `src/components/GradientOrbs.tsx` | Reduce orb opacity ~40% |
-| `src/components/GlowRings.tsx` | Reduce ring opacity ~50% |
-| `src/components/ECGLine.tsx` | Reduce stroke opacity ~40% |
-| `src/components/DNAHelix.tsx` | Reduce helix opacity ~40% |
-| `src/components/ParticleBackground.tsx` | Reduce particle opacity ~40% |
+### File: `src/pages/Landing.tsx`
+
+**Hero section changes (lines 161-257):**
+- Add a `ref` to the demo preview section for smooth scroll targeting
+- Change the "Watch Demo" button `onClick` from opening the modal to scrolling to the preview card
+- After the hero content `motion.div` and before the scroll indicator, insert a new demo preview block
+
+**New demo preview block (inserted between hero content and scroll indicator):**
+- A container with `relative z-20` positioned at the bottom of the hero
+- Uses negative bottom margin (`-mb-32 md:-mb-48`) to overlap into the stats section
+- Contains a glass-card styled mockup showing the ATLAS chat interface (a simplified, static version)
+- Has a semi-transparent overlay with a centered play button that triggers `setIsDemoOpen(true)`
+- The card has a subtle border glow and rounded corners matching the site's design language
+- Max width constrained to `max-w-4xl` and centered
+
+**Stats section changes (lines 259-320):**
+- Add top padding (`pt-40 md:pt-56`) to accommodate the overlapping demo preview card
+
+**Chat mockup content inside the preview:**
+- Reuses the same visual pattern as the ATLAS section chat mockup (terminal header with dots, message bubbles)
+- Shows 2-3 static chat messages -- no animation needed
+- A frosted overlay at the bottom with a play icon and "Watch Full Demo" text
+
+### File: `src/components/DemoVideoModal.tsx`
+- No changes needed -- modal continues to work as before
+
+---
+
+## Detailed Implementation
+
+### Demo Preview Card Structure
+
+The card will contain:
+
+1. **Browser chrome header** -- three colored dots (red, yellow, green) and an "ATLAS(TM)" label, identical to the existing ATLAS section mockup
+2. **Static chat messages** -- 2-3 message bubbles showing the ATLAS conversation preview
+3. **Play overlay** -- a centered play button circle with "Watch Full Demo" text, triggered on click to open the modal
+4. **Gradient fade** -- bottom portion of the card fades to transparent, creating a clean visual edge
+
+### Positioning Strategy
+
+The card will be placed inside the hero `section` but after the main hero content. It uses:
+- `mt-12 md:mt-16` for spacing from the CTA buttons
+- `-mb-32 md:-mb-48` negative margin to extend below the hero section boundary into the stats section
+- The stats section gets compensating `pt-40 md:pt-56` top padding
+- `relative z-20` to sit above background layers
+
+### Scroll Behavior
+
+The "Watch Demo" button scrolls to the preview card using `scrollIntoView({ behavior: 'smooth', block: 'center' })`, centering the card in the viewport.
+
+---
+
+## Files to Modify
+
+| File | Changes |
+|------|---------|
+| `src/pages/Landing.tsx` | Add inline demo preview card in hero, adjust stats section padding, update Watch Demo button behavior |
 
 ---
 
 ## What Will NOT Change
 
-- Brand colors (navy, cyan, blue palette)
-- Page layout and grid structure
-- Typography font families
-- Component structure and routing
-- Mobile responsiveness
-- Any backend or data functionality
-- Header and Footer components
-- No new sections added
-
----
-
-## Design Rationale
-
-The current site leans heavily into tech-startup aesthetics (glowing cards, pulsing orbs, hover animations). For a medical education institution, the tone should convey:
-
-- **Authority** -- clean hierarchy, generous whitespace, minimal animation
-- **Trust** -- prominent accreditation, outcome-focused testimonials
-- **Clarity** -- readable typography, reduced visual competition between elements
-- **Professionalism** -- subtle elevation over flashy glow effects
-
-By reducing glow/animation intensity by 40-50% and tightening content hierarchy, the site will feel more like Johns Hopkins or Mayo Clinic's digital presence while retaining the modern, AI-forward identity.
-
+- The DemoVideoModal component and its scenes remain untouched
+- Brand colors, typography, and spacing system unchanged
+- No new dependencies or assets required
+- All other sections remain pixel-perfect
+- Mobile responsiveness preserved
+- The demo modal still works when triggered from the preview card
