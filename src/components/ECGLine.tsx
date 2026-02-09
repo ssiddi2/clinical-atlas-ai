@@ -30,8 +30,8 @@ const ECGLine = memo(() => {
 
   // Fewer ECG lines for performance
   const ecgLines = [
-    { y: "70%", delay: 0, opacity: 0.12, scale: 1 },
-    { y: "85%", delay: 2, opacity: 0.08, scale: 0.8 },
+    { y: "70%", delay: 0, opacity: 0.07, scale: 1 },
+    { y: "85%", delay: 2, opacity: 0.05, scale: 0.8 },
   ];
 
   return (
@@ -125,8 +125,8 @@ const ECGLine = memo(() => {
         <div 
           className="w-3 h-3 rounded-full"
           style={{
-            background: "radial-gradient(circle, hsl(160 84% 45% / 0.4) 0%, transparent 70%)",
-            boxShadow: "0 0 20px 10px hsl(160 84% 45% / 0.1)",
+          background: "radial-gradient(circle, hsl(160 84% 45% / 0.25) 0%, transparent 70%)",
+            boxShadow: "0 0 15px 8px hsl(160 84% 45% / 0.06)",
           }}
         />
       </motion.div>
