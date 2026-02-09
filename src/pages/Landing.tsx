@@ -89,8 +89,8 @@ const Landing = () => {
     offset: ["start start", "end end"]
   });
 
-  // Subtle parallax for hero content
-  const heroY = useTransform(scrollYProgress, [0, 0.3], [0, -80]);
+  // Subtle parallax for hero content — skip on mobile for performance
+  const heroY = useTransform(scrollYProgress, [0, 0.3], isMobile ? [0, 0] : [0, -80]);
 
   const features = [
     {
