@@ -1,10 +1,12 @@
-import { useState, useEffect, useCallback, useRef, forwardRef } from "react";
+import { useState, useEffect, useCallback, useRef, forwardRef, lazy, Suspense } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Pause, Play } from "lucide-react";
-import AtlasScene from "./demo/AtlasScene";
-import RotationScene from "./demo/RotationScene";
-import DashboardScene from "./demo/DashboardScene";
-import InstitutionalScene from "./demo/InstitutionalScene";
+
+// Lazy-load all scene components — only current scene loads
+const AtlasScene = lazy(() => import("./demo/AtlasScene"));
+const RotationScene = lazy(() => import("./demo/RotationScene"));
+const DashboardScene = lazy(() => import("./demo/DashboardScene"));
+const InstitutionalScene = lazy(() => import("./demo/InstitutionalScene"));
 
 const SCENES = [
   { id: "atlas", title: "ATLAS AI", duration: 8000, Component: AtlasScene },
@@ -74,8 +76,8 @@ const InlineDemoPlayer = forwardRef<HTMLDivElement>((_, ref) => {
         </span>
       </div>
       <div className="rounded-2xl border border-white/[0.08] bg-white/[0.025] backdrop-blur-sm overflow-hidden shadow-[0_8px_40px_-12px_hsl(230,60%,5%/0.6)]">
-        {/* Scene Content */}
-        <div className="relative h-[420px] md:h-[520px] overflow-hidden">
+        {/* Scene Content — responsive height */}
+        <div className="relative h-[320px] min-[380px]:h-[380px] md:h-[520px] overflow-hidden">
           <AnimatePresence mode="wait">
             <motion.div
               key={currentScene}
@@ -85,7 +87,13 @@ const InlineDemoPlayer = forwardRef<HTMLDivElement>((_, ref) => {
               transition={{ duration: 0.4 }}
               className="absolute inset-0"
             >
-              <CurrentSceneComponent isActive={!isPaused} />
+              <Suspense fallback={
+                <div className="h-full flex items-center justify-center">
+                  <div className="w-6 h-6 border-2 border-white/20 border-t-white/60 rounded-full animate-spin" />
+                </div>
+              }>
+                <CurrentSceneComponent isActive={!isPaused} />
+              </Suspense>
             </motion.div>
           </AnimatePresence>
 
@@ -106,24 +114,24 @@ const InlineDemoPlayer = forwardRef<HTMLDivElement>((_, ref) => {
         </div>
 
         {/* Controls */}
-        <div className="border-t border-white/[0.06] bg-white/[0.015] px-4 md:px-6 py-3 md:py-4">
+        <div className="border-t border-white/[0.06] bg-white/[0.015] px-3 md:px-6 py-2.5 md:py-4">
           {/* Tabs */}
-          <div className="flex items-center gap-2 mb-3">
+          <div className="flex items-center gap-1.5 md:gap-2 mb-2.5 md:mb-3">
             <button
               onClick={togglePause}
-              className="p-1.5 rounded-full bg-white/10 hover:bg-white/20 transition-colors mr-2 flex-shrink-0"
+              className="p-1.5 rounded-full bg-white/10 hover:bg-white/20 transition-colors mr-1 md:mr-2 flex-shrink-0"
             >
               {isPaused ? (
-                <Play className="h-3.5 w-3.5 text-white" />
+                <Play className="h-3 w-3 md:h-3.5 md:w-3.5 text-white" />
               ) : (
-                <Pause className="h-3.5 w-3.5 text-white" />
+                <Pause className="h-3 w-3 md:h-3.5 md:w-3.5 text-white" />
               )}
             </button>
             {SCENES.map((scene, idx) => (
               <button
                 key={scene.id}
                 onClick={() => handleTabClick(idx)}
-                className={`text-xs md:text-sm font-medium px-3 py-1.5 rounded-full transition-all ${
+                className={`text-[11px] md:text-sm font-medium px-2 md:px-3 py-1 md:py-1.5 rounded-full transition-all ${
                   idx === currentScene
                     ? "bg-white/10 text-white"
                     : "text-white/40 hover:text-white/60 hover:bg-white/5"

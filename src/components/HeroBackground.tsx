@@ -9,12 +9,12 @@ const ECGLine = lazy(() => import("./ECGLine"));
 const FloatingMedicalIcons = lazy(() => import("./FloatingMedicalIcons"));
 
 const HeroBackground = () => {
-  // Defer all animated layers until after LCP is painted
   const [showAnimations, setShowAnimations] = useState(false);
 
   useEffect(() => {
-    // Use requestIdleCallback (or fallback) to load animations only after
-    // the browser is idle — ensuring hero text paints first as LCP
+    // Skip ALL animation layers on mobile — only show static CSS gradient
+    if (window.innerWidth < 768) return;
+
     const schedule = window.requestIdleCallback || ((cb: () => void) => setTimeout(cb, 50));
     const id = schedule(() => setShowAnimations(true));
     return () => {
@@ -37,7 +37,7 @@ const HeroBackground = () => {
         }}
       />
       
-      {/* All animation layers deferred until after LCP */}
+      {/* All animation layers deferred until after LCP — desktop only */}
       {showAnimations && (
         <Suspense fallback={null}>
           <GradientOrbs />
