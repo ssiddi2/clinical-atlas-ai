@@ -20,12 +20,12 @@ const PendingApprovals = ({ profiles, onRefresh }: PendingApprovalsProps) => {
   const handleApprove = async (userId: string, firstName: string) => {
     setProcessingId(userId);
     try {
-      const { error } = await supabase
-        .from("profiles")
-        .update({ account_status: "approved" })
-        .eq("user_id", userId);
+      const { data, error } = await supabase.functions.invoke("admin-actions", {
+        body: { action: "approve_account", userId },
+      });
 
       if (error) throw error;
+      if (data?.error) throw new Error(data.error);
 
       toast({
         title: "Account Approved",
@@ -48,12 +48,12 @@ const PendingApprovals = ({ profiles, onRefresh }: PendingApprovalsProps) => {
   const handleReject = async (userId: string, firstName: string) => {
     setProcessingId(userId);
     try {
-      const { error } = await supabase
-        .from("profiles")
-        .update({ account_status: "suspended" })
-        .eq("user_id", userId);
+      const { data, error } = await supabase.functions.invoke("admin-actions", {
+        body: { action: "reject_account", userId },
+      });
 
       if (error) throw error;
+      if (data?.error) throw new Error(data.error);
 
       toast({
         title: "Account Suspended",

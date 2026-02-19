@@ -31,27 +31,16 @@ const VerificationActions = ({ userId, documentIds, onActionComplete }: Verifica
     setApproving(true);
     
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      // Update all documents to approved
-      const { error: docError } = await supabase
-        .from("student_documents")
-        .update({
-          status: "approved",
-          verified_at: new Date().toISOString(),
-          verified_by: user?.id,
-        })
-        .in("id", documentIds);
+      const { data, error } = await supabase.functions.invoke("admin-actions", {
+        body: {
+          action: "approve_verification",
+          userId,
+          documentIds,
+        },
+      });
 
-      if (docError) throw docError;
-
-      // Update profile verification status
-      const { error: profileError } = await supabase
-        .from("profiles")
-        .update({ verification_status: "verified" })
-        .eq("user_id", userId);
-
-      if (profileError) throw profileError;
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
 
       toast({
         title: "Student Verified",
@@ -84,28 +73,17 @@ const VerificationActions = ({ userId, documentIds, onActionComplete }: Verifica
     setRejecting(true);
     
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      // Update all documents to rejected
-      const { error: docError } = await supabase
-        .from("student_documents")
-        .update({
-          status: "rejected",
-          verified_at: new Date().toISOString(),
-          verified_by: user?.id,
-          rejection_reason: rejectionReason,
-        })
-        .in("id", documentIds);
+      const { data, error } = await supabase.functions.invoke("admin-actions", {
+        body: {
+          action: "reject_verification",
+          userId,
+          documentIds,
+          rejectionReason,
+        },
+      });
 
-      if (docError) throw docError;
-
-      // Update profile verification status
-      const { error: profileError } = await supabase
-        .from("profiles")
-        .update({ verification_status: "rejected" })
-        .eq("user_id", userId);
-
-      if (profileError) throw profileError;
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
 
       toast({
         title: "Verification Rejected",
