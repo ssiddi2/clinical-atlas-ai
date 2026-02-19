@@ -1,46 +1,92 @@
 
 
-# Add Proper Open Graph & Twitter Card Meta Tags
+# Performance Optimization Plan -- End-to-End Audit
 
-## What's Wrong Now
-- The `og:image` and `twitter:image` point to a generic Lovable placeholder (`https://lovable.dev/opengraph-image-p98pqg.png`) -- not your brand
-- Missing `og:url`, `og:image:width`, `og:image:height` tags (needed for iMessage and social platforms to render correctly)
-- Missing `twitter:title` and `twitter:description` tags
+## Current Performance Snapshot
 
-## What Needs to Happen
+| Metric | Current | Target | Industry Benchmark |
+|--------|---------|--------|--------------------|
+| Full Page Load | 4.5s | < 2.5s | Khan Academy ~2s, Osmosis ~2.5s |
+| First Contentful Paint | 1.7s | < 1.2s | Good threshold: 1.8s |
+| TTFB | 1.2s | < 0.8s | Most CDN-served SPAs: 0.3-0.6s |
+| JS Heap | 16.4MB | < 12MB | Typical SPA: 8-15MB |
+| DOM Nodes | 2,620 | < 1,500 | Google recommends < 1,500 |
+| CLS | 0.0002 | < 0.1 | Already excellent |
+| Script Duration | 738ms | < 400ms | Heavy for a landing page |
 
-### 1. Create a branded OG preview image (1200x630)
-You'll need to provide or create a 1200x630px landscape image representing Livemed Academy and place it in `public/og-preview.png`. This image should be:
-- Your logo, tagline, and brand colors on a dark background
-- Exactly 1200x630 pixels
-- Saved as PNG or JPG
+## Root Causes Identified
 
-### 2. Update `index.html` meta tags
-Replace the existing OG and Twitter meta block (lines 31-38) with complete tags:
+### 1. favicon.png is 569KB (Critical)
+The favicon is being used as both the app icon AND preloaded as an LCP asset. At 569KB for a tiny icon, this is ~10x larger than it should be. It's also linked as `<link rel="preload">` so it blocks rendering.
 
-**Open Graph tags:**
-- `og:title` -- "Livemed Academy | AI-Powered Medical Education for IMGs"
-- `og:description` -- "The global standard for AI-powered medical education. Virtual U.S. clinical rotations, USMLE-aligned curriculum, and ATLAS AI Professor."
-- `og:image` -- `https://www.livemedacademy.org/og-preview.png`
-- `og:image:width` -- "1200"
-- `og:image:height` -- "630"
-- `og:image:type` -- "image/png"
-- `og:type` -- "website"
-- `og:url` -- "https://www.livemedacademy.org"
-- `og:site_name` -- "Livemed Academy"
+### 2. framer-motion loads eagerly (90KB)
+`framer-motion` is imported directly in `Landing.tsx` (not lazy-loaded). The `renderHTML` function from framer-motion consumed 116ms of CPU during scroll. For a landing page, this is heavy.
 
-**Twitter Card tags:**
-- `twitter:card` -- "summary_large_image"
-- `twitter:site` -- "@LivemedAcademy"
-- `twitter:title` -- "Livemed Academy | AI-Powered Medical Education for IMGs"
-- `twitter:description` -- "The global standard for AI-powered medical education. Virtual U.S. clinical rotations, USMLE-aligned curriculum, and ATLAS AI Professor."
-- `twitter:image` -- `https://www.livemedacademy.org/og-preview.png`
+### 3. ParticleBackground canvas runs O(n^2) on every frame
+The `drawParticles` function runs a nested loop comparing every particle pair on every animation frame. This showed up in profiling at 48.7ms during a short scroll.
 
-## Important Note
-You will need to upload a branded 1200x630 image to `public/og-preview.png`. If you don't have one ready, I can create a simple placeholder, but for best results you should design a proper branded image. The image URL must use your live domain (`https://www.livemedacademy.org/og-preview.png`) so social platforms can fetch it -- relative paths won't work for link previews.
+### 4. lucide-react bundle is 157KB
+The full `lucide-react` module loads as a single chunk. Only ~12 icons are used on the landing page.
 
-## File Modified
-| File | Changes |
-|------|---------|
-| `index.html` | Replace lines 31-38 with complete OG + Twitter meta tags |
+### 5. 66 script files loaded
+Development mode loads modules individually. In production this is bundled, but there's no manual chunking strategy in vite.config.ts.
+
+## Optimization Plan
+
+### Phase 1: Quick Wins (biggest impact, lowest risk)
+
+**1a. Compress favicon.png**
+- Replace the 569KB favicon with a properly sized version (< 20KB)
+- Remove the `<link rel="preload" as="image" href="/favicon.png">` tag -- favicons don't need preloading
+- Expected saving: ~550KB off critical path
+
+**1b. Remove preload of favicon**
+- In `index.html`, delete the preload link for favicon.png
+- Keep the preconnect to fonts and backend
+
+**1c. Optimize Vite chunking**
+- Add `manualChunks` to `vite.config.ts` to split framer-motion, lucide-react, and react-router into separate cached chunks
+- This prevents re-downloading the entire vendor bundle on code updates
+
+### Phase 2: Reduce JS on Landing Page
+
+**2a. Reduce particle count and batch canvas draws**
+- In `ParticleBackground.tsx`, batch all line draws into a single `ctx.beginPath()` / `ctx.stroke()` call instead of calling `stroke()` per connection
+- Reduce default particle count on desktop from current level
+
+**2b. Lazy-load framer-motion animations below the fold**
+- The hero section already skips animations on mobile -- extend this pattern
+- Wrap below-fold sections (stats, features, programs) in intersection-observer-based loading
+
+### Phase 3: Asset Optimization
+
+**3a. Convert large PNGs to WebP**
+- `livemed-logo-full.png` (160KB) and `joint-commission-badge.png` should be converted to WebP
+- WebP typically saves 25-35% over PNG
+
+## How This Compares to Other Medical Education Platforms
+
+| Platform | Typical Load | Approach |
+|----------|-------------|----------|
+| Osmosis | ~2.5s | SSR, minimal JS on landing |
+| Amboss | ~2s | Heavy CDN caching, SSR |
+| Khan Academy | ~2s | SSR + progressive hydration |
+| UWorld | ~3s | Minimal landing page, app behind auth |
+| **Livemed (current)** | **4.5s** | SPA, heavy animations, large assets |
+| **Livemed (after plan)** | **~2-2.5s** | Optimized assets + chunking + canvas fixes |
+
+Medical education platforms prioritize reliability and speed because users are often studying on mobile connections in hospitals or between shifts. A sub-3-second load is the minimum expectation; the best platforms achieve under 2 seconds.
+
+## Files to Modify
+
+| File | Change |
+|------|--------|
+| `public/favicon.png` | Compress from 569KB to < 20KB |
+| `index.html` | Remove favicon preload link |
+| `vite.config.ts` | Add manual chunk splitting for vendor libs |
+| `src/components/ParticleBackground.tsx` | Batch canvas draw calls, reduce particle count |
+
+## Accuracy and Reliability Note
+
+This plan focuses purely on performance -- no content or functionality changes. All medical education content, clinical simulations, and AI features remain untouched. The optimizations are standard web performance best practices used across healthcare and education platforms.
 
