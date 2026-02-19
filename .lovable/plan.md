@@ -1,116 +1,78 @@
 
 
-# Expand QBank + Populate All 27 Lesson Modules
+# Fix Sign-In Flow + Add Score Predictor Minimum Question Threshold
 
-## Current State
+## Issue 1: Sign-In Not Working
 
-**QBank:** 60 questions total (8 easy, 38 medium, 14 hard). Only 14 hard questions exist across all subjects. Several subjects have zero hard questions (Hematology, Pharmacology).
+**Root Cause**: Not a code bug. All users except one have `account_status = 'pending_approval'`. The one approved user (`dr.siddiqi@livemedhealth.com`) has `onboarding_completed = false`, so they redirect to `/onboarding` instead of the dashboard.
 
-**Curriculum:** 24 lesson modules exist but only 1 module (Heart Failure: Pathophysiology) has any lesson content -- just 3 text sections. The other 23 lesson modules are completely empty. Students clicking into them see blank pages.
+**Fix**: Two changes needed:
 
-## What This Plan Delivers
+1. **Approve existing users via database** -- Update all `livemedhealth.com` team accounts to `account_status = 'approved'` and optionally set `onboarding_completed = true` so they can access the dashboard immediately.
 
-### Part 1: QBank Expansion (+60 hard USMLE-level questions)
+2. **Add admin self-approval** -- The first admin user (`dr.siddiqi`) should be granted `platform_admin` role (if not already) so they can approve future users from the Admin panel.
 
-A new edge function `seed-qbank-hard-questions` will insert 60 additional hard-difficulty clinical vignettes, bringing the total to ~120 questions with proper difficulty distribution.
+**SQL migration:**
+```sql
+-- Approve Livemed team accounts
+UPDATE profiles 
+SET account_status = 'approved', onboarding_completed = true 
+WHERE user_id IN (
+  SELECT id FROM auth.users 
+  WHERE email LIKE '%@livemedhealth.com'
+);
+```
 
-**Question distribution by subject (6 hard questions each):**
+## Issue 2: Score Predictor Shows Predictions With Zero Data
 
-| Subject | Current Hard | After |
-|---------|-------------|-------|
-| Cardiology | 3 | 9 |
-| Pulmonology | 3 | 9 |
-| Neurology | 0 | 6 |
-| Gastroenterology | 2 | 8 |
-| Endocrinology | 2 | 8 |
-| Nephrology | 3 | 9 |
-| Infectious Disease | 1 | 7 |
-| Hematology | 0 | 6 |
-| Pharmacology | 0 | 6 |
-| Pathophysiology | 0 | 6 |
+**Current behavior**: With 0 questions answered, the predictor shows hardcoded defaults (225 Step 1, 232 Step 2, 85% pass probability). This is misleading.
 
-Each question will follow USMLE Step 1/Step 2 CK format:
-- Multi-sentence clinical vignette with relevant history, vitals, labs
-- 5 answer choices with one best answer
-- Detailed explanation with pathophysiology and why other options are wrong
-- Tagged with subject, system, topic, difficulty "hard", board_yield, and keywords
+**Fix**: Add a minimum question threshold and a gated UI.
 
-### Part 2: Lesson Content for All 24 Modules
+### Minimum Threshold Options
 
-A new edge function `seed-lesson-content` will populate lesson_content rows for all 24 lesson modules. Each module gets 5-6 sections:
+Based on statistical reliability for a weighted 5-factor model:
+- **25 questions** = enough for a rough directional estimate with wide confidence intervals
+- **50 questions** = sufficient for a moderately reliable prediction
 
-1. **Introduction/Overview** (content_type: "text") -- Definition, epidemiology, relevance
-2. **Pathophysiology** (content_type: "text") -- Mechanisms, pathways, cellular/molecular basis
-3. **Clinical Presentation** (content_type: "text") -- Signs, symptoms, physical exam findings
-4. **Diagnosis** (content_type: "text") -- Labs, imaging, diagnostic criteria
-5. **Clinical Pearl** (content_type: "clinical_pearl") -- High-yield board fact
-6. **Key Points** (content_type: "key_points") -- 5-7 bullet point summary
+**Recommendation**: Use **25 questions as minimum to show any prediction**, with a "low confidence" badge below 50 questions and "moderate confidence" at 50+. This is honest and encourages continued use.
 
-This means ~144 lesson sections across all modules, each with medically accurate USMLE-aligned content.
+### Changes to `useScorePredictor.ts`
 
-**Modules covered:**
+- Add a `totalQuestionsAnswered` count to the returned data
+- Add an `insufficientData` boolean flag (true when < 25 questions)
+- Add a `confidenceLevel` field: `'none' | 'low' | 'moderate' | 'high'`
+  - `none`: < 25 questions
+  - `low`: 25-49 questions  
+  - `moderate`: 50-99 questions
+  - `high`: 100+ questions
+- When `insufficientData` is true, return `null` for the prediction (no hardcoded defaults)
 
-**Internal Medicine (6 modules):**
-- Diabetes Mellitus: Pathophysiology
-- Diabetes Management
-- Diabetic Complications
-- Hypertension
-- Chronic Kidney Disease
-- Liver Disease
+### Changes to `ScorePredictor.tsx`
 
-**Cardiology (7 modules):**
-- Heart Failure: Pathophysiology (already has 3 sections -- will add remaining)
-- Heart Failure: Diagnosis
-- Heart Failure: Management
-- Acute Coronary Syndrome
-- Arrhythmias: Basics
-- Cardiac Pharmacology
-- Valvular Heart Disease
+- When `insufficientData` is true, show a "Not Enough Data" state instead of fake scores
+  - Display how many questions the user has answered so far (e.g., "12 / 25 questions completed")
+  - Show a progress bar toward the 25-question threshold
+  - CTA button: "Start a Practice Assessment" linking to `/assessments` or `/qbank`
+- When confidence is `low` (25-49 questions), show predictions with a prominent "Low Confidence" badge and wider confidence intervals (plus/minus 25 instead of 15)
+- When confidence is `moderate` (50-99), show "Moderate Confidence" badge with standard intervals
+- Keep the existing educational disclaimer banner
 
-**Pulmonology (6 modules):**
-- COPD
-- Asthma
-- Pneumonia
-- Pulmonary Embolism
-- Chest X-ray Interpretation
-- Pulmonary Function Tests
+### Changes to `MatchReadyWidget.tsx` (Dashboard widget)
 
-**Neurology (6 modules):**
-- Stroke: Ischemic
-- Stroke: Hemorrhagic
-- Seizures and Epilepsy
-- Headache Disorders
-- Neurological Examination
-- Movement Disorders
+- Also respect the minimum threshold
+- Show "Complete 25+ questions to unlock your MATCH Ready Score" when insufficient data
 
-## Implementation Approach
+## Files to Modify
 
-Due to the large volume of content (~200+ database rows), this will be split across multiple edge functions to stay within execution limits:
+| File | Change |
+|------|--------|
+| `src/hooks/useScorePredictor.ts` | Add `totalQuestionsAnswered`, `insufficientData`, `confidenceLevel` to output; remove hardcoded defaults when < 25 questions |
+| `src/pages/ScorePredictor.tsx` | Add gated UI: "Not Enough Data" state for < 25 questions, confidence badges for 25-49 and 50-99 |
+| `src/components/score/MatchReadyWidget.tsx` | Add locked state when insufficient data |
+| Database migration | Approve existing Livemed team users so they can sign in to the dashboard |
 
-1. **`seed-qbank-hard-questions/index.ts`** -- 60 hard QBank questions
-2. **`seed-lesson-content/index.ts`** -- Lesson content for all 24 modules, batched by specialty
+## Summary
 
-Each function will:
-- Use upsert logic to avoid duplicates if run multiple times
-- Include the Supabase service role key for admin-level inserts
-- Return a summary of what was seeded
-
-A simple trigger button or API call will seed the data.
-
-## Technical Details
-
-### Files to Create
-| File | Purpose |
-|------|---------|
-| `supabase/functions/seed-qbank-hard-questions/index.ts` | 60 hard USMLE vignettes across 10 subjects |
-| `supabase/functions/seed-lesson-content/index.ts` | ~144 lesson sections for 24 modules |
-
-### No Schema Changes Required
-The `qbank_questions` and `lesson_content` tables already have the correct structure. This is purely a data seeding operation.
-
-### Content Quality Standard
-All questions and lesson text will be written to USMLE Step 1/Step 2 CK level, referencing:
-- First Aid for the USMLE Step 1 frameworks
-- Pathoma-style pathophysiology explanations
-- UWorld-style clinical vignette structure (patient age, sex, history, vitals, labs, question stem)
-
+- Sign-in fix: approve team accounts via migration
+- Score predictor: enforce 25-question minimum before showing any predictions, add confidence tiers, remove misleading hardcoded defaults
