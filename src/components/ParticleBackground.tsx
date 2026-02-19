@@ -58,8 +58,8 @@ const ParticleBackground = () => {
       const { w, h } = dimensionsRef.current;
       // Reduce particle count on mobile for better performance
       const isMobile = w < 768;
-      const divisor = isMobile ? 35000 : 20000;
-      const particleCount = Math.min(Math.floor((w * h) / divisor), isMobile ? 40 : 80);
+      const divisor = isMobile ? 45000 : 28000;
+      const particleCount = Math.min(Math.floor((w * h) / divisor), isMobile ? 25 : 55);
       particlesRef.current = [];
 
       const types: ("neuron" | "molecule" | "data")[] = ["neuron", "molecule", "data"];
@@ -97,73 +97,44 @@ const ParticleBackground = () => {
       const mouse = mouseRef.current;
       const len = particles.length;
 
-      // Draw connections - use spatial check to reduce loop iterations
+      // Draw connections - batched into fewer draw calls
+      // Batch thin lines
+      ctx.beginPath();
+      ctx.strokeStyle = "rgba(0, 200, 255, 0.06)";
+      ctx.lineWidth = 0.25;
       for (let i = 0; i < len; i++) {
         const pi = particles[i];
         for (let j = i + 1; j < len; j++) {
           const pj = particles[j];
           const dx = pi.x - pj.x;
           const dy = pi.y - pj.y;
-
-          // Quick distance check before sqrt
-          const maxDistance = (pi.isHub || pj.isHub) ? 200 : 140;
+          const maxDistance = (pi.isHub || pj.isHub) ? 180 : 120;
           if (Math.abs(dx) > maxDistance || Math.abs(dy) > maxDistance) continue;
-
           const distSq = dx * dx + dy * dy;
-          const maxDistSq = maxDistance * maxDistance;
-          if (distSq > maxDistSq) continue;
-
-          const distance = Math.sqrt(distSq);
-          const opacity = (1 - distance / maxDistance) * 0.1;
-          const lineWidth = (pi.isHub && pj.isHub) ? 0.6 : 0.25;
-
-          ctx.beginPath();
-          ctx.strokeStyle = `rgba(0, 200, 255, ${opacity})`;
-          ctx.lineWidth = lineWidth;
+          if (distSq > maxDistance * maxDistance) continue;
           ctx.moveTo(pi.x, pi.y);
           ctx.lineTo(pj.x, pj.y);
-          ctx.stroke();
-
-          // Molecular bond midpoint node
-          if (pi.type === "molecule" && pj.type === "molecule" && distance < 80) {
-            const midX = (pi.x + pj.x) / 2;
-            const midY = (pi.y + pj.y) / 2;
-            ctx.beginPath();
-            ctx.arc(midX, midY, 0.8, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(100, 220, 255, ${opacity * 0.5})`;
-            ctx.fill();
-          }
         }
+      }
+      ctx.stroke();
 
-        // Mouse interaction
+      // Batch mouse interaction lines
+      ctx.beginPath();
+      ctx.strokeStyle = "rgba(0, 220, 255, 0.15)";
+      ctx.lineWidth = 0.35;
+      for (let i = 0; i < len; i++) {
+        const pi = particles[i];
         const mouseDx = pi.x - mouse.x;
         const mouseDy = pi.y - mouse.y;
-        if (Math.abs(mouseDx) < 200 && Math.abs(mouseDy) < 200) {
+        if (Math.abs(mouseDx) < 180 && Math.abs(mouseDy) < 180) {
           const mouseDistSq = mouseDx * mouseDx + mouseDy * mouseDy;
-          if (mouseDistSq < 40000) { // 200^2
-            const mouseDistance = Math.sqrt(mouseDistSq);
-            const opacity = (1 - mouseDistance / 200) * 0.25;
-            ctx.beginPath();
-            ctx.strokeStyle = `rgba(0, 220, 255, ${opacity})`;
-            ctx.lineWidth = pi.isHub ? 0.6 : 0.35;
+          if (mouseDistSq < 32400) {
             ctx.moveTo(pi.x, pi.y);
             ctx.lineTo(mouse.x, mouse.y);
-            ctx.stroke();
-
-            if (mouseDistance < 100) {
-              ctx.beginPath();
-              ctx.arc(pi.x, pi.y, pi.size * 4, 0, Math.PI * 2);
-              const glowGradient = ctx.createRadialGradient(
-                pi.x, pi.y, 0, pi.x, pi.y, pi.size * 4
-              );
-              glowGradient.addColorStop(0, `rgba(0, 220, 255, ${(1 - mouseDistance / 100) * 0.15})`);
-              glowGradient.addColorStop(1, "rgba(0, 220, 255, 0)");
-              ctx.fillStyle = glowGradient;
-              ctx.fill();
-            }
           }
         }
       }
+      ctx.stroke();
 
       // Draw particles
       const timeFactor = time * 0.001;
