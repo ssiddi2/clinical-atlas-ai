@@ -575,4 +575,46 @@
     );
     pointer-events: none;
   }
+
+  /* Floating medical icon animation — runs on compositor thread */
+  @keyframes float-icon {
+    0%, 100% { opacity: 0; transform: translateY(0) rotate(0deg); }
+    15% { opacity: 0.1; }
+    50% { opacity: 0.1; transform: translateY(-30px) rotate(4deg); }
+    85% { opacity: 0.1; }
+  }
+  .animate-float-icon {
+    animation: float-icon 8s ease-in-out infinite;
+    will-change: transform, opacity;
+  }
+
+  /* Quiz answer feedback animations */
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-6px); }
+    40% { transform: translateX(6px); }
+    60% { transform: translateX(-4px); }
+    80% { transform: translateX(4px); }
+  }
+  .animate-shake {
+    animation: shake 0.5s ease-in-out;
+  }
+
+  @keyframes correct-bounce {
+    0% { transform: scale(1); }
+    40% { transform: scale(1.04); }
+    100% { transform: scale(1); }
+  }
+  .animate-correct-bounce {
+    animation: correct-bounce 0.4s ease-out;
+  }
+
+  /* Progress milestone pulse */
+  @keyframes milestone-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 hsl(var(--accent) / 0.4); }
+    50% { box-shadow: 0 0 0 6px hsl(var(--accent) / 0); }
+  }
+  .animate-milestone-pulse {
+    animation: milestone-pulse 1s ease-out 1;
+  }
 }

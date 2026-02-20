@@ -1,15 +1,12 @@
-import { useRef, lazy, Suspense } from "react";
+import { useRef } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion } from "framer-motion";
 import { useIsMobile } from "@/hooks/use-mobile";
 import InlineDemoPlayer from "@/components/InlineDemoPlayer";
 import HeroBackground from "@/components/HeroBackground";
 import jointCommissionBadge from "@/assets/joint-commission-badge.png";
-
-// Defer decorative floating icons — not needed for LCP
-const FloatingMedicalIcons = lazy(() => import("@/components/FloatingMedicalIcons"));
 import {
   GraduationCap,
   Brain,
@@ -83,15 +80,6 @@ const Landing = () => {
   // On desktop: keep the staggered fade-in animations
   const noAnim = isMobile;
 
-
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start start", "end end"]
-  });
-
-  // Subtle parallax for hero content — skip on mobile for performance
-  const heroY = useTransform(scrollYProgress, [0, 0.3], isMobile ? [0, 0] : [0, -80]);
-
   const features = [
     {
       icon: Brain,
@@ -161,10 +149,7 @@ const Landing = () => {
         {/* New Apple-style animated background */}
         <HeroBackground />
         
-        {/* Floating Medical Icons - deferred to not block LCP */}
-        <Suspense fallback={null}>
-          <FloatingMedicalIcons />
-        </Suspense>
+        {/* FloatingMedicalIcons removed — already rendered in HeroBackground */}
         
         {/* Hero Content */}
         {isMobile ? (
@@ -216,10 +201,7 @@ const Landing = () => {
             </div>
           </div>
         ) : (
-          <motion.div 
-            style={{ y: heroY }}
-            className="container mx-auto px-4 md:px-6 relative z-10"
-          >
+          <div className="container mx-auto px-4 md:px-6 relative z-10">
             <div className="max-w-4xl mx-auto text-center">
               <motion.div 
                 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.2 }}
@@ -288,7 +270,7 @@ const Landing = () => {
                 </Button>
               </motion.div>
             </div>
-          </motion.div>
+          </div>
         )}
 
       </section>
@@ -366,8 +348,15 @@ const Landing = () => {
                  loading="lazy"
                  decoding="async"
                />
-              <p className="text-white/90 font-semibold text-lg md:text-xl tracking-tight mb-2">
+              <p className="text-white/90 font-semibold text-lg md:text-xl tracking-tight mb-1">
                 Accredited by The Joint Commission
+              </p>
+              <p className="text-white/60 text-sm md:text-base font-medium mb-2">
+                Livemed — AI-Powered Virtual Specialty Care
+              </p>
+              <p className="text-white/35 text-xs md:text-sm max-w-lg mb-4 leading-relaxed">
+                Livemed's telehealth and virtual specialty care services are accredited by The Joint Commission 
+                for national quality standards. Livemed Academy is the clinical education division of Livemed.
               </p>
               <p className="text-white/40 text-sm md:text-base mb-4">
                 Enrollments starting soon
@@ -571,22 +560,10 @@ const Landing = () => {
 
                   {/* Typing indicator */}
                   <div className="flex items-center gap-2 text-white/25 text-xs pl-2">
-                    <div className="flex gap-1">
-                      <motion.span 
-                        animate={{ opacity: [0.2, 0.8, 0.2] }}
-                        transition={{ duration: 1.5, repeat: Infinity, delay: 0 }}
-                        className="w-1.5 h-1.5 bg-white/30 rounded-full" 
-                      />
-                      <motion.span 
-                        animate={{ opacity: [0.2, 0.8, 0.2] }}
-                        transition={{ duration: 1.5, repeat: Infinity, delay: 0.2 }}
-                        className="w-1.5 h-1.5 bg-white/30 rounded-full" 
-                      />
-                      <motion.span 
-                        animate={{ opacity: [0.2, 0.8, 0.2] }}
-                        transition={{ duration: 1.5, repeat: Infinity, delay: 0.4 }}
-                        className="w-1.5 h-1.5 bg-white/30 rounded-full" 
-                      />
+                  <div className="flex gap-1">
+                      <span className="w-1.5 h-1.5 bg-white/30 rounded-full animate-[pulse_1.5s_ease-in-out_infinite]" />
+                      <span className="w-1.5 h-1.5 bg-white/30 rounded-full animate-[pulse_1.5s_ease-in-out_0.2s_infinite]" />
+                      <span className="w-1.5 h-1.5 bg-white/30 rounded-full animate-[pulse_1.5s_ease-in-out_0.4s_infinite]" />
                     </div>
                     <span>ATLAS is thinking...</span>
                   </div>

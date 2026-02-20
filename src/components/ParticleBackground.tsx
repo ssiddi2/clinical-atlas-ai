@@ -58,8 +58,8 @@ const ParticleBackground = () => {
       const { w, h } = dimensionsRef.current;
       // Reduce particle count on mobile for better performance
       const isMobile = w < 768;
-      const divisor = isMobile ? 45000 : 28000;
-      const particleCount = Math.min(Math.floor((w * h) / divisor), isMobile ? 25 : 55);
+      const divisor = isMobile ? 45000 : 35000;
+      const particleCount = Math.min(Math.floor((w * h) / divisor), isMobile ? 20 : 40);
       particlesRef.current = [];
 
       const types: ("neuron" | "molecule" | "data")[] = ["neuron", "molecule", "data"];
@@ -108,7 +108,7 @@ const ParticleBackground = () => {
           const pj = particles[j];
           const dx = pi.x - pj.x;
           const dy = pi.y - pj.y;
-          const maxDistance = (pi.isHub || pj.isHub) ? 180 : 120;
+          const maxDistance = (pi.isHub || pj.isHub) ? 150 : 100;
           if (Math.abs(dx) > maxDistance || Math.abs(dy) > maxDistance) continue;
           const distSq = dx * dx + dy * dy;
           if (distSq > maxDistance * maxDistance) continue;
@@ -143,18 +143,7 @@ const ParticleBackground = () => {
         const pulse = Math.sin(timeFactor + particle.pulsePhase) * 0.3 + 0.7;
         const currentOpacity = particle.opacity * pulse;
 
-        const glowMultiplier = particle.isHub ? 4 : 3;
-        ctx.beginPath();
-        ctx.arc(particle.x, particle.y, particle.size * glowMultiplier, 0, Math.PI * 2);
-        const outerGradient = ctx.createRadialGradient(
-          particle.x, particle.y, 0,
-          particle.x, particle.y, particle.size * glowMultiplier
-        );
-        outerGradient.addColorStop(0, getParticleColor(particle.type, currentOpacity * 0.15));
-        outerGradient.addColorStop(1, "rgba(0, 200, 255, 0)");
-        ctx.fillStyle = outerGradient;
-        ctx.fill();
-
+      // Simple filled circles — skip per-particle radial gradients for performance
         ctx.beginPath();
         ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
         ctx.fillStyle = getParticleColor(particle.type, currentOpacity * 0.8);
