@@ -1,12 +1,9 @@
 import { lazy, Suspense, useState, useEffect } from "react";
 
-// ALL animation components are lazy-loaded and deferred until after LCP
+// Only load the 3 lightest animation layers
 const GradientOrbs = lazy(() => import("./GradientOrbs"));
-const GlowRings = lazy(() => import("./GlowRings"));
 const ParticleBackground = lazy(() => import("./ParticleBackground"));
-const DNAHelix = lazy(() => import("./DNAHelix"));
 const ECGLine = lazy(() => import("./ECGLine"));
-const FloatingMedicalIcons = lazy(() => import("./FloatingMedicalIcons"));
 
 const HeroBackground = () => {
   const [showAnimations, setShowAnimations] = useState(false);
@@ -37,15 +34,12 @@ const HeroBackground = () => {
         }}
       />
       
-      {/* All animation layers deferred until after LCP — desktop only */}
+      {/* 3 animation layers: GradientOrbs (CSS) + ParticleBackground (canvas) + ECGLine (SVG) */}
       {showAnimations && (
         <Suspense fallback={null}>
           <GradientOrbs />
-          <DNAHelix />
           <ParticleBackground />
-          <GlowRings />
           <ECGLine />
-          <FloatingMedicalIcons />
         </Suspense>
       )}
       

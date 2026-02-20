@@ -490,12 +490,12 @@ const ModuleView = () => {
                   {quizQuestions[currentQuestion].options.map((option, idx) => (
                     <div
                       key={idx}
-                      className={`flex items-center space-x-3 p-4 rounded-lg border transition-colors ${
+                      className={`flex items-center space-x-3 p-4 rounded-lg border transition-all ${
                         showExplanation
                           ? idx === quizQuestions[currentQuestion].correct_answer_index
-                            ? "border-livemed-success bg-livemed-success/10"
+                            ? "border-livemed-success bg-livemed-success/10 animate-correct-bounce"
                             : idx === selectedAnswer
-                            ? "border-destructive bg-destructive/10"
+                            ? "border-destructive bg-destructive/10 animate-shake"
                             : "border-border"
                           : selectedAnswer === idx
                           ? "border-accent bg-accent/10"

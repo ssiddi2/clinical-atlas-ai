@@ -1,5 +1,9 @@
+import { lazy, Suspense } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AlertCircle, Lightbulb, Play } from "lucide-react";
+
+const AnimatedDiagram = lazy(() => import("./AnimatedDiagram"));
+const ClinicalTimeline = lazy(() => import("./ClinicalTimeline"));
 
 interface LessonSection {
   id: string;
@@ -144,6 +148,37 @@ const LessonContentRenderer = ({ section }: LessonContentRendererProps) => {
             </CardContent>
           </Card>
         );
+
+      case "animated_diagram":
+        try {
+          const diagramData = JSON.parse(section.content_text || "{}");
+          return (
+            <Suspense fallback={<Card><CardContent className="p-6 text-muted-foreground">Loading diagram…</CardContent></Card>}>
+              <AnimatedDiagram
+                title={section.section_title}
+                steps={diagramData.steps || []}
+                viewBox={diagramData.viewBox}
+              />
+            </Suspense>
+          );
+        } catch {
+          return null;
+        }
+
+      case "clinical_timeline":
+        try {
+          const timelineData = JSON.parse(section.content_text || "{}");
+          return (
+            <Suspense fallback={<Card><CardContent className="p-6 text-muted-foreground">Loading timeline…</CardContent></Card>}>
+              <ClinicalTimeline
+                title={section.section_title}
+                events={timelineData.events || []}
+              />
+            </Suspense>
+          );
+        } catch {
+          return null;
+        }
 
       default:
         return (

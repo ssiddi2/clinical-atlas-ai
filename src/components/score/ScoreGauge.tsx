@@ -1,5 +1,25 @@
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
+
+function CountUp({ target }: { target: number }) {
+  const [val, setVal] = useState(0);
+  useEffect(() => {
+    let start = 0;
+    const duration = 1200;
+    const startTime = performance.now();
+    const tick = (now: number) => {
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setVal(Math.round(eased * target));
+      if (progress < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+    return () => { start = target; };
+  }, [target]);
+  return <>{val}</>;
+}
 
 interface ScoreGaugeProps {
   score: number;
@@ -91,7 +111,7 @@ export function ScoreGauge({
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5, delay: 0.5 }}
           >
-            {score}
+            <CountUp target={score} />
           </motion.span>
           <span className={`${config.label} text-muted-foreground uppercase tracking-wider`}>
             {label}

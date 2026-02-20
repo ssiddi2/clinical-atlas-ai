@@ -218,9 +218,13 @@ const About = () => {
                 <Shield className="h-8 w-8 text-white" />
               </div>
               <h2 className="text-3xl font-bold mb-4">Educational Standards</h2>
-              <p className="text-muted-foreground max-w-2xl mx-auto">
+              <p className="text-muted-foreground max-w-2xl mx-auto mb-4">
                 Our curriculum is developed in alignment with recognized medical education standards 
                 to ensure quality and relevance for your professional development.
+              </p>
+              <p className="text-sm text-muted-foreground/80 max-w-xl mx-auto">
+                Livemed's AI-powered virtual specialty care services are accredited by The Joint Commission. 
+                Livemed Academy is the clinical education division of Livemed.
               </p>
             </div>
             <div className="grid md:grid-cols-3 gap-6">
@@ -283,10 +287,14 @@ const About = () => {
       <section className="py-12 bg-muted/50">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center">
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-muted-foreground mb-2">
               <strong>Educational Disclaimer:</strong> Livemed Academy is a professional medical education platform 
               offering clinical training, continuing medical education, and competency-based credentials. 
               Livemed Academy is not a degree-granting institution and does not award MD or equivalent medical degrees.
+            </p>
+            <p className="text-xs text-muted-foreground/70">
+              Joint Commission accreditation applies to Livemed's AI-powered virtual specialty care services, 
+              not to the Livemed Academy educational platform.
             </p>
           </div>
         </div>
