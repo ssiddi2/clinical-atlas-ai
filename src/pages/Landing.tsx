@@ -108,11 +108,12 @@ const Landing = () => {
   ];
 
   const stats = [
-    { value: "50+", label: "Partner Institutions" },
-    { value: "10,000+", label: "Students Enrolled" },
-    { value: "95%", label: "USMLE Pass Rate" },
-    { value: "500+", label: "Residency Placements" },
+    { value: "50+", label: "Partner Hospitals" },
+    { value: "8+", label: "Specialty Rotations" },
+    { value: "Live", label: "US Physician Rounds" },
   ];
+
+  const specialties = "Cardiology · Pulmonology · ICU/Critical Care · Nephrology · Neurology · Internal Medicine · Infectious Disease & more";
 
   const programs = [
     {
@@ -288,23 +289,20 @@ const Landing = () => {
         
         <div className="container mx-auto px-4 md:px-6 relative">
           {noAnim ? (
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-px bg-white/[0.06] rounded-2xl overflow-hidden">
-              {stats.map((stat) => {
-                const isHighlighted = stat.label === "USMLE Pass Rate";
-                return (
-                  <div 
-                    key={stat.label} 
-                    className={`p-6 md:p-10 lg:p-12 text-center ${isHighlighted ? "bg-white/[0.04]" : "bg-white/[0.015]"}`}
-                  >
-                    <div className={`font-bold mb-2 md:mb-3 ${isHighlighted ? "text-4xl sm:text-5xl md:text-6xl text-gradient-livemed" : "text-2xl sm:text-3xl md:text-4xl text-white/60"}`}>
-                      {stat.value}
-                    </div>
-                    <div className={`uppercase tracking-[0.15em] font-medium ${isHighlighted ? "text-xs md:text-sm text-white/50" : "text-[10px] md:text-xs text-white/30"}`}>
-                      {stat.label}
-                    </div>
+            <div className="grid grid-cols-3 gap-px bg-white/[0.06] rounded-2xl overflow-hidden">
+              {stats.map((stat) => (
+                <div 
+                  key={stat.label} 
+                  className="p-6 md:p-10 lg:p-12 text-center bg-white/[0.015]"
+                >
+                  <div className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 md:mb-3 text-gradient-livemed">
+                    {stat.value}
                   </div>
-                );
-              })}
+                  <div className="uppercase tracking-[0.15em] font-medium text-[10px] md:text-xs text-white/30">
+                    {stat.label}
+                  </div>
+                </div>
+              ))}
             </div>
           ) : (
             <motion.div 
@@ -312,27 +310,28 @@ const Landing = () => {
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true, margin: "-100px" }}
-              className="grid grid-cols-2 lg:grid-cols-4 gap-px bg-white/[0.06] rounded-2xl overflow-hidden"
+              className="grid grid-cols-3 gap-px bg-white/[0.06] rounded-2xl overflow-hidden"
             >
-              {stats.map((stat) => {
-                const isHighlighted = stat.label === "USMLE Pass Rate";
-                return (
-                  <motion.div 
-                    key={stat.label} 
-                    variants={fadeInScale}
-                    className={`p-6 md:p-10 lg:p-12 text-center ${isHighlighted ? "bg-white/[0.04]" : "bg-white/[0.015]"}`}
-                  >
-                    <div className={`font-bold mb-2 md:mb-3 ${isHighlighted ? "text-4xl sm:text-5xl md:text-6xl text-gradient-livemed" : "text-2xl sm:text-3xl md:text-4xl text-white/60"}`}>
-                      {stat.value}
-                    </div>
-                    <div className={`uppercase tracking-[0.15em] font-medium ${isHighlighted ? "text-xs md:text-sm text-white/50" : "text-[10px] md:text-xs text-white/30"}`}>
-                      {stat.label}
-                    </div>
-                  </motion.div>
-                );
-              })}
+              {stats.map((stat) => (
+                <motion.div 
+                  key={stat.label} 
+                  variants={fadeInScale}
+                  className="p-6 md:p-10 lg:p-12 text-center bg-white/[0.015]"
+                >
+                  <div className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 md:mb-3 text-gradient-livemed">
+                    {stat.value}
+                  </div>
+                  <div className="uppercase tracking-[0.15em] font-medium text-[10px] md:text-xs text-white/30">
+                    {stat.label}
+                  </div>
+                </motion.div>
+              ))}
             </motion.div>
           )}
+
+          <p className="text-center text-white/40 text-xs md:text-sm mt-6 max-w-2xl mx-auto">
+            {specialties}
+          </p>
 
           {/* Joint Commission Accreditation Badge */}
           <div
