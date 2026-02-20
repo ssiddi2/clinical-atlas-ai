@@ -1,78 +1,66 @@
 
 
-# Fix Sign-In Flow + Add Score Predictor Minimum Question Threshold
+# Fix Sign-In Flow + Score Predictor Minimum Question Threshold
 
-## Issue 1: Sign-In Not Working
+## Part 1: Approve Team Accounts
 
-**Root Cause**: Not a code bug. All users except one have `account_status = 'pending_approval'`. The one approved user (`dr.siddiqi@livemedhealth.com`) has `onboarding_completed = false`, so they redirect to `/onboarding` instead of the dashboard.
+Run a database update to set all `@livemedhealth.com` accounts to `approved` with `onboarding_completed = true`, so team members can sign in and reach the dashboard immediately.
 
-**Fix**: Two changes needed:
+## Part 2: Score Predictor Gating (useScorePredictor.ts)
 
-1. **Approve existing users via database** -- Update all `livemedhealth.com` team accounts to `account_status = 'approved'` and optionally set `onboarding_completed = true` so they can access the dashboard immediately.
+Add three new fields to the hook's return value:
 
-2. **Add admin self-approval** -- The first admin user (`dr.siddiqi`) should be granted `platform_admin` role (if not already) so they can approve future users from the Admin panel.
+- `totalQuestionsAnswered` -- count of all questions from `assessment_attempts` plus `qbank_user_progress`
+- `insufficientData` -- true when total < 25
+- `confidenceLevel` -- `'none'` (< 25), `'low'` (25-49), `'moderate'` (50-99), `'high'` (100+)
 
-**SQL migration:**
-```sql
--- Approve Livemed team accounts
-UPDATE profiles 
-SET account_status = 'approved', onboarding_completed = true 
-WHERE user_id IN (
-  SELECT id FROM auth.users 
-  WHERE email LIKE '%@livemedhealth.com'
-);
-```
+When fewer than 25 questions have been answered, set `prediction` to `null` (no hardcoded defaults). Adjust confidence intervals based on tier: +/-25 for low, +/-15 for moderate, +/-10 for high.
 
-## Issue 2: Score Predictor Shows Predictions With Zero Data
+## Part 3: ScorePredictor.tsx (Full Page)
 
-**Current behavior**: With 0 questions answered, the predictor shows hardcoded defaults (225 Step 1, 232 Step 2, 85% pass probability). This is misleading.
+When `insufficientData` is true, replace the scores section with a "Not Enough Data Yet" state:
+- Show current question count out of 25 with a progress bar
+- CTA: "Start a Practice Assessment" linking to `/qbank`
+- Keep the educational disclaimer banner
+- Hide the contributing factors, score history, and topic heatmap (no data to show)
 
-**Fix**: Add a minimum question threshold and a gated UI.
+When data is available but confidence is `low`, show a prominent "Low Confidence -- Early Estimate" badge on the score cards. For `moderate`, show "Moderate Confidence" badge. For `high`, no badge needed.
 
-### Minimum Threshold Options
+## Part 4: MatchReadyWidget.tsx (Dashboard Widget)
 
-Based on statistical reliability for a weighted 5-factor model:
-- **25 questions** = enough for a rough directional estimate with wide confidence intervals
-- **50 questions** = sufficient for a moderately reliable prediction
+When `insufficientData` is true, show a locked state:
+- "Complete 25+ questions to unlock your MATCH Ready Score"
+- Small progress indicator showing X/25
+- CTA button to start an assessment
 
-**Recommendation**: Use **25 questions as minimum to show any prediction**, with a "low confidence" badge below 50 questions and "moderate confidence" at 50+. This is honest and encourages continued use.
+The widget will accept new optional props: `insufficientData`, `totalQuestionsAnswered`, and `confidenceLevel`.
 
-### Changes to `useScorePredictor.ts`
+## Part 5: Dashboard.tsx (Widget Wrapper)
 
-- Add a `totalQuestionsAnswered` count to the returned data
-- Add an `insufficientData` boolean flag (true when < 25 questions)
-- Add a `confidenceLevel` field: `'none' | 'low' | 'moderate' | 'high'`
-  - `none`: < 25 questions
-  - `low`: 25-49 questions  
-  - `moderate`: 50-99 questions
-  - `high`: 100+ questions
-- When `insufficientData` is true, return `null` for the prediction (no hardcoded defaults)
+Update `MatchReadyWidgetWrapper` to pass the new fields (`insufficientData`, `totalQuestionsAnswered`, `confidenceLevel`) from `useScorePredictor` down to `MatchReadyWidget`.
 
-### Changes to `ScorePredictor.tsx`
+## Technical Details
 
-- When `insufficientData` is true, show a "Not Enough Data" state instead of fake scores
-  - Display how many questions the user has answered so far (e.g., "12 / 25 questions completed")
-  - Show a progress bar toward the 25-question threshold
-  - CTA button: "Start a Practice Assessment" linking to `/assessments` or `/qbank`
-- When confidence is `low` (25-49 questions), show predictions with a prominent "Low Confidence" badge and wider confidence intervals (plus/minus 25 instead of 15)
-- When confidence is `moderate` (50-99), show "Moderate Confidence" badge with standard intervals
-- Keep the existing educational disclaimer banner
-
-### Changes to `MatchReadyWidget.tsx` (Dashboard widget)
-
-- Also respect the minimum threshold
-- Show "Complete 25+ questions to unlock your MATCH Ready Score" when insufficient data
-
-## Files to Modify
+### Files to Modify
 
 | File | Change |
 |------|--------|
-| `src/hooks/useScorePredictor.ts` | Add `totalQuestionsAnswered`, `insufficientData`, `confidenceLevel` to output; remove hardcoded defaults when < 25 questions |
-| `src/pages/ScorePredictor.tsx` | Add gated UI: "Not Enough Data" state for < 25 questions, confidence badges for 25-49 and 50-99 |
-| `src/components/score/MatchReadyWidget.tsx` | Add locked state when insufficient data |
-| Database migration | Approve existing Livemed team users so they can sign in to the dashboard |
+| Database (data update) | Approve `@livemedhealth.com` accounts |
+| `src/hooks/useScorePredictor.ts` | Add `totalQuestionsAnswered`, `insufficientData`, `confidenceLevel`; count from both `assessment_attempts` and `qbank_user_progress`; return null prediction when < 25 questions |
+| `src/pages/ScorePredictor.tsx` | Add "Not Enough Data" gated UI with progress bar; add confidence badges for low/moderate tiers |
+| `src/components/score/MatchReadyWidget.tsx` | Add locked state UI when `insufficientData` is true; accept new props |
+| `src/pages/Dashboard.tsx` | Pass new props through `MatchReadyWidgetWrapper` |
 
-## Summary
+### Question Counting Logic
 
-- Sign-in fix: approve team accounts via migration
-- Score predictor: enforce 25-question minimum before showing any predictions, add confidence tiers, remove misleading hardcoded defaults
+Total questions answered = sum of `total_questions` from `assessment_attempts` + count of distinct answered questions from `qbank_user_progress` (to avoid double-counting, use the higher of the two if overlap exists, or simply count distinct `question_id` entries from `qbank_user_progress` where `selected_answer` is not null).
+
+### Confidence Tiers
+
+| Questions | Level | Confidence Interval | Badge |
+|-----------|-------|-------------------|-------|
+| 0-24 | none | N/A (no prediction shown) | N/A |
+| 25-49 | low | +/- 25 points | "Low Confidence -- Early Estimate" |
+| 50-99 | moderate | +/- 15 points | "Moderate Confidence" |
+| 100+ | high | +/- 10 points | None |
+
