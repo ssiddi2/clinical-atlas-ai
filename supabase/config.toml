@@ -8,3 +8,9 @@ verify_jwt = false
 
 [functions.seed-demo-data]
 verify_jwt = false
+
+[functions.admin-actions]
+verify_jwt = false
+
+[functions.admin-create-user]
+verify_jwt = false
