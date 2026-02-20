@@ -63,7 +63,6 @@ INTERACTION GUIDELINES:
 Remember: You are the most patient, consistent, and rigorous professor a student will ever have.`;
 
 serve(async (req) => {
-  // Handle CORS preflight
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
@@ -84,16 +83,15 @@ serve(async (req) => {
       { global: { headers: { Authorization: authHeader } } }
     );
 
-    const token = authHeader.replace("Bearer ", "");
-    const { data: claimsData, error: claimsError } = await supabaseClient.auth.getClaims(token);
-    if (claimsError || !claimsData?.claims) {
+    const { data: userData, error: userError } = await supabaseClient.auth.getUser();
+    if (userError || !userData?.user) {
       return new Response(
         JSON.stringify({ error: "Invalid or expired token" }),
         { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    const userId = claimsData.claims.sub;
+    const userId = userData.user.id;
 
     const { message, conversationId, history = [] } = await req.json();
 
@@ -104,7 +102,6 @@ serve(async (req) => {
       );
     }
 
-    // Build messages array for the AI
     const messages = [
       { role: "system", content: ATLAS_SYSTEM_PROMPT },
       ...history.map((msg: { role: string; content: string }) => ({
@@ -114,44 +111,60 @@ serve(async (req) => {
       { role: "user", content: message },
     ];
 
-    // Call the Lovable AI Gateway
+    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+    if (!LOVABLE_API_KEY) {
+      throw new Error("LOVABLE_API_KEY is not configured");
+    }
+
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${Deno.env.get("LOVABLE_API_KEY")}`,
+        "Authorization": `Bearer ${LOVABLE_API_KEY}`,
       },
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
+        model: "google/gemini-3-flash-preview",
         messages,
         max_tokens: 2000,
         temperature: 0.7,
+        stream: true,
       }),
     });
 
     if (!response.ok) {
+      if (response.status === 429) {
+        return new Response(
+          JSON.stringify({ error: "rate_limited", message: "You're sending messages too quickly. Please wait a moment and try again." }),
+          { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+      if (response.status === 402) {
+        return new Response(
+          JSON.stringify({ error: "credits_exhausted", message: "AI credits have been exhausted. Please try again later." }),
+          { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
       const errorText = await response.text();
-      console.error("AI Gateway error:", errorText);
+      console.error("AI Gateway error:", response.status, errorText);
       throw new Error(`AI Gateway error: ${response.status}`);
     }
 
-    const data = await response.json();
-    const reply = data.choices?.[0]?.message?.content || "I apologize, I couldn't generate a response. Please try again.";
+    console.log(`ATLAS streaming response for user: ${userId}, conversation: ${conversationId}`);
 
-    console.log(`ATLAS response generated for user: ${userId}, conversation: ${conversationId}`);
-
-    return new Response(
-      JSON.stringify({ reply, conversationId }),
-      { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+    // Stream the response directly back to the client
+    return new Response(response.body, {
+      headers: {
+        ...corsHeaders,
+        "Content-Type": "text/event-stream",
+        "Cache-Control": "no-cache",
+        "Connection": "keep-alive",
+      },
+    });
   } catch (error) {
     console.error("Error in atlas-chat function:", error);
     const errorMessage = error instanceof Error ? error.message : "Unknown error";
     return new Response(
-      JSON.stringify({ 
-        error: "Failed to generate response", 
-        details: errorMessage 
-      }),
+      JSON.stringify({ error: "Failed to generate response", details: errorMessage }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }

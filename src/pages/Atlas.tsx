@@ -1,12 +1,12 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "@/hooks/use-toast";
+import ReactMarkdown from "react-markdown";
 import {
   Brain,
   Send,
@@ -32,9 +32,114 @@ interface Conversation {
   created_at: string;
 }
 
+const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/atlas-chat`;
+
+async function streamAtlasChat({
+  message,
+  conversationId,
+  history,
+  onDelta,
+  onDone,
+  onError,
+}: {
+  message: string;
+  conversationId: string | null;
+  history: { role: string; content: string }[];
+  onDelta: (text: string) => void;
+  onDone: () => void;
+  onError: (error: string, type?: string) => void;
+}) {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) {
+    onError("Please sign in to use ATLAS.");
+    return;
+  }
+
+  const resp = await fetch(CHAT_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${session.access_token}`,
+      apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+    },
+    body: JSON.stringify({ message, conversationId, history }),
+  });
+
+  if (!resp.ok) {
+    const errorData = await resp.json().catch(() => ({}));
+    if (resp.status === 429) {
+      onError("You're sending messages too quickly. Please wait a moment and try again.", "rate_limited");
+    } else if (resp.status === 402) {
+      onError("AI credits have been exhausted. Please try again later.", "credits_exhausted");
+    } else {
+      onError(errorData.message || errorData.error || "Failed to get a response from ATLAS.");
+    }
+    return;
+  }
+
+  if (!resp.body) {
+    onError("No response stream received.");
+    return;
+  }
+
+  const reader = resp.body.getReader();
+  const decoder = new TextDecoder();
+  let textBuffer = "";
+  let streamDone = false;
+
+  while (!streamDone) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    textBuffer += decoder.decode(value, { stream: true });
+
+    let newlineIndex: number;
+    while ((newlineIndex = textBuffer.indexOf("\n")) !== -1) {
+      let line = textBuffer.slice(0, newlineIndex);
+      textBuffer = textBuffer.slice(newlineIndex + 1);
+
+      if (line.endsWith("\r")) line = line.slice(0, -1);
+      if (line.startsWith(":") || line.trim() === "") continue;
+      if (!line.startsWith("data: ")) continue;
+
+      const jsonStr = line.slice(6).trim();
+      if (jsonStr === "[DONE]") {
+        streamDone = true;
+        break;
+      }
+
+      try {
+        const parsed = JSON.parse(jsonStr);
+        const content = parsed.choices?.[0]?.delta?.content as string | undefined;
+        if (content) onDelta(content);
+      } catch {
+        textBuffer = line + "\n" + textBuffer;
+        break;
+      }
+    }
+  }
+
+  // Final flush
+  if (textBuffer.trim()) {
+    for (let raw of textBuffer.split("\n")) {
+      if (!raw) continue;
+      if (raw.endsWith("\r")) raw = raw.slice(0, -1);
+      if (raw.startsWith(":") || raw.trim() === "") continue;
+      if (!raw.startsWith("data: ")) continue;
+      const jsonStr = raw.slice(6).trim();
+      if (jsonStr === "[DONE]") continue;
+      try {
+        const parsed = JSON.parse(jsonStr);
+        const content = parsed.choices?.[0]?.delta?.content as string | undefined;
+        if (content) onDelta(content);
+      } catch { /* ignore */ }
+    }
+  }
+
+  onDone();
+}
+
 const Atlas = () => {
   const navigate = useNavigate();
-  const { toast } = useToast();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
@@ -44,36 +149,28 @@ const Atlas = () => {
   const [currentConversation, setCurrentConversation] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const assistantContentRef = useRef("");
 
-  // Auth check
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setUser(session?.user ?? null);
-      if (!session) {
-        navigate("/auth");
-      }
+      if (!session) navigate("/auth");
       setLoading(false);
     });
 
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
-      if (!session) {
-        navigate("/auth");
-      }
+      if (!session) navigate("/auth");
       setLoading(false);
     });
 
     return () => subscription.unsubscribe();
   }, [navigate]);
 
-  // Load conversations
   useEffect(() => {
-    if (user) {
-      loadConversations();
-    }
+    if (user) loadConversations();
   }, [user]);
 
-  // Load messages when conversation changes
   useEffect(() => {
     if (currentConversation) {
       loadMessages(currentConversation);
@@ -82,7 +179,6 @@ const Atlas = () => {
     }
   }, [currentConversation]);
 
-  // Scroll to bottom on new messages
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
@@ -92,15 +188,8 @@ const Atlas = () => {
       .from("eli_conversations")
       .select("*")
       .order("updated_at", { ascending: false });
-
-    if (error) {
-      console.error("Error loading conversations:", error);
-      return;
-    }
-
+    if (error) return;
     setConversations(data || []);
-    
-    // Auto-select most recent conversation if exists
     if (data && data.length > 0 && !currentConversation) {
       setCurrentConversation(data[0].id);
     }
@@ -112,19 +201,13 @@ const Atlas = () => {
       .select("*")
       .eq("conversation_id", conversationId)
       .order("created_at", { ascending: true });
-
-    if (error) {
-      console.error("Error loading messages:", error);
-      return;
-    }
-
-    const typedMessages: Message[] = (data || []).map((msg) => ({
+    if (error) return;
+    setMessages((data || []).map((msg) => ({
       id: msg.id,
       role: msg.role as "user" | "assistant",
       content: msg.content,
       created_at: msg.created_at,
-    }));
-    setMessages(typedMessages);
+    })));
   };
 
   const createNewConversation = async () => {
@@ -133,30 +216,23 @@ const Atlas = () => {
       .insert({ user_id: user?.id, title: "New Conversation" })
       .select()
       .single();
-
     if (error) {
-      toast({
-        title: "Error",
-        description: "Failed to create conversation",
-        variant: "destructive",
-      });
+      toast({ title: "Error", description: "Failed to create conversation", variant: "destructive" });
       return;
     }
-
     setConversations([data, ...conversations]);
     setCurrentConversation(data.id);
     setMessages([]);
   };
 
-  const sendMessage = async () => {
+  const sendMessage = useCallback(async () => {
     if (!message.trim() || sending) return;
-
     const userMessage = message.trim();
     setMessage("");
     setSending(true);
+    assistantContentRef.current = "";
 
     try {
-      // Create conversation if none exists
       let conversationId = currentConversation;
       if (!conversationId) {
         const { data: newConv, error: convError } = await supabase
@@ -164,90 +240,85 @@ const Atlas = () => {
           .insert({ user_id: user?.id, title: userMessage.slice(0, 50) })
           .select()
           .single();
-
         if (convError) throw convError;
         conversationId = newConv.id;
         setCurrentConversation(conversationId);
-        setConversations([newConv, ...conversations]);
+        setConversations((prev) => [newConv, ...prev]);
       }
 
-      // Add user message to UI immediately
-      const tempUserMessage: Message = {
+      const tempUserMsg: Message = {
         id: `temp-${Date.now()}`,
         role: "user",
         content: userMessage,
         created_at: new Date().toISOString(),
       };
-      setMessages((prev) => [...prev, tempUserMessage]);
+      setMessages((prev) => [...prev, tempUserMsg]);
 
-      // Save user message to database
-      const { error: userMsgError } = await supabase
-        .from("eli_messages")
-        .insert({
-          conversation_id: conversationId,
-          role: "user",
-          content: userMessage,
-        });
+      await supabase.from("eli_messages").insert({
+        conversation_id: conversationId,
+        role: "user",
+        content: userMessage,
+      });
 
-      if (userMsgError) throw userMsgError;
+      const history = messages.slice(-10).map((m) => ({ role: m.role, content: m.content }));
 
-      // Call ATLAS edge function
-      const { data: response, error: fnError } = await supabase.functions.invoke("atlas-chat", {
-        body: {
-          message: userMessage,
-          conversationId,
-          history: messages.slice(-10).map((m) => ({
-            role: m.role,
-            content: m.content,
-          })),
+      const assistantMsgId = `temp-assistant-${Date.now()}`;
+
+      await streamAtlasChat({
+        message: userMessage,
+        conversationId,
+        history,
+        onDelta: (chunk) => {
+          assistantContentRef.current += chunk;
+          const contentSoFar = assistantContentRef.current;
+          setMessages((prev) => {
+            const last = prev[prev.length - 1];
+            if (last?.id === assistantMsgId) {
+              return prev.map((m, i) => i === prev.length - 1 ? { ...m, content: contentSoFar } : m);
+            }
+            return [...prev, { id: assistantMsgId, role: "assistant", content: contentSoFar, created_at: new Date().toISOString() }];
+          });
+        },
+        onDone: async () => {
+          const finalContent = assistantContentRef.current;
+          if (finalContent) {
+            await supabase.from("eli_messages").insert({
+              conversation_id: conversationId!,
+              role: "assistant",
+              content: finalContent,
+            });
+          }
+          setSending(false);
+        },
+        onError: (errorMsg, type) => {
+          if (type === "rate_limited") {
+            toast({ title: "Slow down", description: errorMsg, variant: "destructive" });
+          } else if (type === "credits_exhausted") {
+            toast({ title: "Credits Exhausted", description: errorMsg, variant: "destructive" });
+          } else {
+            toast({ title: "Error", description: errorMsg, variant: "destructive" });
+          }
+          setSending(false);
         },
       });
 
-      if (fnError) throw fnError;
-
-      // Add assistant response
-      const assistantMessage: Message = {
-        id: `temp-assistant-${Date.now()}`,
-        role: "assistant",
-        content: response.reply,
-        created_at: new Date().toISOString(),
-      };
-      setMessages((prev) => [...prev, assistantMessage]);
-
-      // Save assistant message to database
-      await supabase.from("eli_messages").insert({
-        conversation_id: conversationId,
-        role: "assistant",
-        content: response.reply,
-      });
-
-      // Update conversation title if first message
       if (messages.length === 0) {
         await supabase
           .from("eli_conversations")
           .update({ title: userMessage.slice(0, 50) })
           .eq("id", conversationId);
-        
         setConversations((prev) =>
-          prev.map((c) =>
-            c.id === conversationId
-              ? { ...c, title: userMessage.slice(0, 50) }
-              : c
-          )
+          prev.map((c) => c.id === conversationId ? { ...c, title: userMessage.slice(0, 50) } : c)
         );
       }
     } catch (error) {
       console.error("Error sending message:", error);
-      toast({
-        title: "Error",
-        description: "Failed to send message. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
+      toast({ title: "Error", description: "Failed to send message. Please try again.", variant: "destructive" });
       setSending(false);
+    } finally {
       textareaRef.current?.focus();
     }
-  };
+  }, [message, sending, currentConversation, messages, user, conversations]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -273,7 +344,7 @@ const Atlas = () => {
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-background">
-      {/* Sidebar - Conversations (hidden on mobile) */}
+      {/* Sidebar */}
       <aside className="hidden md:flex w-72 border-r border-border flex-col bg-muted/30">
         <div className="p-4 border-b border-border">
           <Link to="/dashboard" className="flex items-center gap-2 text-muted-foreground hover:text-foreground mb-4">
@@ -285,7 +356,6 @@ const Atlas = () => {
             New Conversation
           </Button>
         </div>
-
         <ScrollArea className="flex-1">
           <div className="p-2 space-y-1">
             {conversations.map((conv) => (
@@ -310,7 +380,6 @@ const Atlas = () => {
 
       {/* Main Chat Area */}
       <div className="flex-1 flex flex-col min-w-0">
-        {/* Header */}
         <header className="border-b border-border px-3 md:px-4 py-3 flex items-center justify-between bg-background">
           <div className="flex items-center gap-2 md:gap-3">
             <Link to="/dashboard" className="md:hidden text-muted-foreground">
@@ -329,7 +398,6 @@ const Atlas = () => {
           </Link>
         </header>
 
-        {/* Messages Area */}
         <ScrollArea className="flex-1 p-3 md:p-4">
           {messages.length === 0 ? (
             <div className="h-full flex flex-col items-center justify-center text-center p-4 md:p-8">
@@ -341,15 +409,11 @@ const Atlas = () => {
                 Your AI Professor is ready to teach. Ask questions about any medical topic, 
                 work through clinical cases, or prepare for your exams.
               </p>
-
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 md:gap-3 max-w-lg w-full">
                 {suggestedPrompts.map((prompt) => (
                   <button
                     key={prompt}
-                    onClick={() => {
-                      setMessage(prompt);
-                      textareaRef.current?.focus();
-                    }}
+                    onClick={() => { setMessage(prompt); textareaRef.current?.focus(); }}
                     className="p-3 text-left text-xs md:text-sm rounded-lg border border-border hover:bg-muted transition-colors"
                   >
                     <BookOpen className="h-4 w-4 text-accent mb-2" />
@@ -366,7 +430,7 @@ const Atlas = () => {
                   className={`flex gap-2 md:gap-3 ${msg.role === "user" ? "justify-end" : ""}`}
                 >
                   {msg.role === "assistant" && (
-                    <div className="w-6 h-6 md:w-8 md:h-8 rounded-full gradient-livemed flex items-center justify-center flex-shrink-0">
+                    <div className="w-6 h-6 md:w-8 md:h-8 rounded-full gradient-livemed flex items-center justify-center flex-shrink-0 mt-1">
                       <Brain className="h-3 w-3 md:h-4 md:w-4 text-white" />
                     </div>
                   )}
@@ -377,11 +441,17 @@ const Atlas = () => {
                         : "bg-muted"
                     }`}
                   >
-                    <p className="text-xs md:text-sm whitespace-pre-wrap">{msg.content}</p>
+                    {msg.role === "assistant" ? (
+                      <div className="prose prose-sm dark:prose-invert max-w-none text-xs md:text-sm [&>*:first-child]:mt-0 [&>*:last-child]:mb-0">
+                        <ReactMarkdown>{msg.content}</ReactMarkdown>
+                      </div>
+                    ) : (
+                      <p className="text-xs md:text-sm whitespace-pre-wrap">{msg.content}</p>
+                    )}
                   </div>
                 </div>
               ))}
-              {sending && (
+              {sending && messages[messages.length - 1]?.role !== "assistant" && (
                 <div className="flex gap-3">
                   <div className="w-8 h-8 rounded-full gradient-livemed flex items-center justify-center flex-shrink-0">
                     <Brain className="h-4 w-4 text-white" />
@@ -396,7 +466,6 @@ const Atlas = () => {
           )}
         </ScrollArea>
 
-        {/* Input Area */}
         <div className="border-t border-border p-4 bg-background">
           <div className="max-w-3xl mx-auto">
             <div className="relative">
@@ -415,11 +484,7 @@ const Atlas = () => {
                 size="icon"
                 className="absolute right-2 bottom-2 gradient-livemed"
               >
-                {sending ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <Send className="h-4 w-4" />
-                )}
+                {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
               </Button>
             </div>
             <p className="text-xs text-muted-foreground mt-2 text-center">
