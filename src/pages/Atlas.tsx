@@ -143,6 +143,7 @@ const Atlas = () => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
+  const [streaming, setStreaming] = useState(false);
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [conversations, setConversations] = useState<Conversation[]>([]);
@@ -263,6 +264,7 @@ const Atlas = () => {
       const history = messages.slice(-10).map((m) => ({ role: m.role, content: m.content }));
 
       const assistantMsgId = `temp-assistant-${Date.now()}`;
+      setStreaming(true);
 
       await streamAtlasChat({
         message: userMessage,
@@ -280,6 +282,7 @@ const Atlas = () => {
           });
         },
         onDone: async () => {
+          setStreaming(false);
           const finalContent = assistantContentRef.current;
           if (finalContent) {
             await supabase.from("eli_messages").insert({
@@ -441,9 +444,12 @@ const Atlas = () => {
                         : "bg-muted"
                     }`}
                   >
-                    {msg.role === "assistant" ? (
+                  {msg.role === "assistant" ? (
                       <div className="prose prose-sm dark:prose-invert max-w-none text-xs md:text-sm [&>*:first-child]:mt-0 [&>*:last-child]:mb-0">
                         <ReactMarkdown>{msg.content}</ReactMarkdown>
+                        {streaming && msg.id.startsWith("temp-assistant-") && (
+                          <span className="inline-block w-[2px] h-[1em] bg-foreground ml-0.5 align-middle animate-[blink_1s_steps(2)_infinite]" />
+                        )}
                       </div>
                     ) : (
                       <p className="text-xs md:text-sm whitespace-pre-wrap">{msg.content}</p>
@@ -451,7 +457,7 @@ const Atlas = () => {
                   </div>
                 </div>
               ))}
-              {sending && messages[messages.length - 1]?.role !== "assistant" && (
+              {sending && !streaming && messages[messages.length - 1]?.role !== "assistant" && (
                 <div className="flex gap-3">
                   <div className="w-8 h-8 rounded-full gradient-livemed flex items-center justify-center flex-shrink-0">
                     <Brain className="h-4 w-4 text-white" />
