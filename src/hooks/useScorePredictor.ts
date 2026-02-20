@@ -38,12 +38,19 @@ interface AssessmentAttempt {
   created_at: string;
 }
 
+export type ConfidenceLevel = 'none' | 'low' | 'moderate' | 'high';
+
 export function useScorePredictor(userId: string | null) {
   const [prediction, setPrediction] = useState<ScorePrediction | null>(null);
   const [topicPerformance, setTopicPerformance] = useState<TopicPerformance[]>([]);
   const [scoreHistory, setScoreHistory] = useState<{ date: string; score: number }[]>([]);
   const [loading, setLoading] = useState(true);
   const [recentAttempts, setRecentAttempts] = useState<AssessmentAttempt[]>([]);
+  const [totalQuestionsAnswered, setTotalQuestionsAnswered] = useState(0);
+  const [insufficientData, setInsufficientData] = useState(true);
+  const [confidenceLevel, setConfidenceLevel] = useState<ConfidenceLevel>('none');
+
+  const MINIMUM_QUESTIONS = 25;
 
   // USMLE Score calculation algorithm based on multiple factors
   const calculatePredictedScore = useCallback((
@@ -112,6 +119,22 @@ export function useScorePredictor(userId: string | null) {
     return Math.round(Math.min(99, Math.max(1, percentile)));
   }, []);
 
+  const getConfidenceLevel = (count: number): ConfidenceLevel => {
+    if (count < 25) return 'none';
+    if (count < 50) return 'low';
+    if (count < 100) return 'moderate';
+    return 'high';
+  };
+
+  const getConfidenceMargin = (level: ConfidenceLevel): number => {
+    switch (level) {
+      case 'low': return 25;
+      case 'moderate': return 15;
+      case 'high': return 10;
+      default: return 0;
+    }
+  };
+
   const fetchPrediction = useCallback(async () => {
     if (!userId) {
       setLoading(false);
@@ -128,6 +151,33 @@ export function useScorePredictor(userId: string | null) {
         .limit(50);
 
       if (attemptsError) throw attemptsError;
+
+      // Fetch qbank progress for distinct question count
+      const { data: qbankProgress, error: qbankError } = await supabase
+        .from('qbank_user_progress')
+        .select('question_id')
+        .eq('user_id', userId)
+        .not('selected_answer', 'is', null);
+
+      if (qbankError) throw qbankError;
+
+      // Count total questions answered
+      const assessmentQuestions = attempts?.reduce((sum, a) => sum + (a.total_questions || 0), 0) || 0;
+      const distinctQbankQuestions = new Set(qbankProgress?.map(q => q.question_id) || []).size;
+      const totalAnswered = assessmentQuestions + distinctQbankQuestions;
+
+      setTotalQuestionsAnswered(totalAnswered);
+      const confidence = getConfidenceLevel(totalAnswered);
+      setConfidenceLevel(confidence);
+      const isInsufficient = totalAnswered < MINIMUM_QUESTIONS;
+      setInsufficientData(isInsufficient);
+
+      // If insufficient data, don't compute a prediction
+      if (isInsufficient) {
+        setPrediction(null);
+        setLoading(false);
+        return;
+      }
 
       // Fetch module progress for knowledge coverage
       const { data: moduleProgress, error: progressError } = await supabase
@@ -267,10 +317,11 @@ export function useScorePredictor(userId: string | null) {
         })));
       }
 
-      // Confidence interval (±15 points typically)
+      // Confidence interval scaled by confidence level
+      const margin = getConfidenceMargin(confidence);
       const confidenceInterval = {
-        low: Math.max(196, predictedStep1 - 15),
-        high: Math.min(300, predictedStep1 + 15)
+        low: Math.max(196, predictedStep1 - margin),
+        high: Math.min(300, predictedStep1 + margin)
       };
 
       setPrediction({
@@ -387,6 +438,9 @@ export function useScorePredictor(userId: string | null) {
     scoreHistory,
     recentAttempts,
     loading,
+    totalQuestionsAnswered,
+    insufficientData,
+    confidenceLevel,
     saveAssessmentResult,
     refreshPrediction: fetchPrediction
   };

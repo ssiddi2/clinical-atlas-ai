@@ -389,7 +389,7 @@ const Dashboard = () => {
 
 // Wrapper component for MATCH Ready widget
 const MatchReadyWidgetWrapper = ({ userId }: { userId: string | null }) => {
-  const { prediction, loading } = useScorePredictor(userId);
+  const { prediction, loading, insufficientData, totalQuestionsAnswered, confidenceLevel } = useScorePredictor(userId);
   
   return (
     <MatchReadyWidget
@@ -399,6 +399,9 @@ const MatchReadyWidgetWrapper = ({ userId }: { userId: string | null }) => {
       trend={prediction?.trend || 'stable'}
       trendValue={prediction?.trendValue || 0}
       loading={loading}
+      insufficientData={insufficientData}
+      totalQuestionsAnswered={totalQuestionsAnswered}
+      confidenceLevel={confidenceLevel}
     />
   );
 };

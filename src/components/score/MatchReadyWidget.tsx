@@ -1,7 +1,9 @@
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { TrendingUp, TrendingDown, Minus, ChevronRight, Sparkles } from 'lucide-react';
+import { TrendingUp, TrendingDown, Minus, ChevronRight, Sparkles, Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
+import type { ConfidenceLevel } from '@/hooks/useScorePredictor';
 
 interface MatchReadyWidgetProps {
   score: number;
@@ -10,7 +12,12 @@ interface MatchReadyWidgetProps {
   trend: 'up' | 'down' | 'stable';
   trendValue: number;
   loading?: boolean;
+  insufficientData?: boolean;
+  totalQuestionsAnswered?: number;
+  confidenceLevel?: ConfidenceLevel;
 }
+
+const MINIMUM_QUESTIONS = 25;
 
 export function MatchReadyWidget({
   score,
@@ -18,7 +25,10 @@ export function MatchReadyWidget({
   percentile,
   trend,
   trendValue,
-  loading = false
+  loading = false,
+  insufficientData = false,
+  totalQuestionsAnswered = 0,
+  confidenceLevel = 'none'
 }: MatchReadyWidgetProps) {
   const navigate = useNavigate();
 
@@ -54,6 +64,45 @@ export function MatchReadyWidget({
           </div>
         </div>
       </div>
+    );
+  }
+
+  // Locked / insufficient data state
+  if (insufficientData) {
+    const progressPercent = Math.min((totalQuestionsAnswered / MINIMUM_QUESTIONS) * 100, 100);
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="p-4 sm:p-6 rounded-2xl bg-gradient-to-br from-muted/30 via-muted/10 to-transparent border border-border shadow-sm"
+      >
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <Lock className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground" />
+            <h3 className="font-semibold text-foreground text-sm sm:text-base">MATCH Ready™</h3>
+          </div>
+        </div>
+
+        <p className="text-sm text-muted-foreground mb-3">
+          Complete {MINIMUM_QUESTIONS}+ questions to unlock your MATCH Ready Score
+        </p>
+
+        <div className="space-y-2 mb-4">
+          <div className="flex justify-between text-xs text-muted-foreground">
+            <span>{totalQuestionsAnswered} of {MINIMUM_QUESTIONS} questions</span>
+            <span>{Math.round(progressPercent)}%</span>
+          </div>
+          <Progress value={progressPercent} className="h-2" />
+        </div>
+
+        <Button
+          size="sm"
+          className="w-full"
+          onClick={() => navigate('/qbank')}
+        >
+          Start Practice Assessment
+        </Button>
+      </motion.div>
     );
   }
 
