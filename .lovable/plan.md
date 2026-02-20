@@ -1,112 +1,59 @@
 
 
-# Fix ATLAS Chat for Production Launch
+# Remove False Stats & Add Real Specialty Rotations
 
-## Critical Bug Fixes
+## Problem
 
-### 1. Fix Edge Function Authentication
+Multiple pages display fabricated metrics (10,000+ students, 95% USMLE pass rate, 500+ residency placements) that constitute false advertising. These need to be replaced with accurate, verifiable claims.
 
-The current `atlas-chat` edge function uses `supabaseClient.auth.getClaims(token)` which is not a valid Supabase JS method. Replace with `supabaseClient.auth.getUser()` which properly validates the JWT and returns the user.
+## What Changes
 
-Also add:
-- 429/402 error handling from the AI gateway (surface rate limits to users)
-- Upgrade model from `google/gemini-2.5-flash` to `google/gemini-3-flash-preview`
+Replace the inflated stats across 4 files with accurate information focused on what Livemed actually offers: **50+ partner hospitals** and the **specialty rotations covered**.
 
-### 2. Add Streaming Support
+### New Stats (replacing the old ones)
 
-Convert from non-streaming (wait for full response) to SSE streaming:
-- Edge function streams tokens as they arrive from the AI gateway
-- Frontend reads the stream and renders tokens progressively
-- Students see the response building in real-time instead of staring at a spinner
+- **50+** Partner Hospitals (keep -- this is real)
+- **8+** Specialty Rotations
+- **Live** US Physician Rounds
+- **JCo** Accredited Care (where appropriate)
 
-### 3. Add Markdown Rendering
+### Specialties Listed
 
-Install `react-markdown` and render ATLAS responses with proper markdown support:
-- Headers, bold, italic for emphasis
-- Bullet points and numbered lists for differentials
-- Code blocks for mnemonics or formulas
-- This is critical for medical content readability
+Cardiology, Pulmonology, ICU/Critical Care, Nephrology, Neurology, Internal Medicine, Infectious Disease, and more.
 
-### 4. Surface Error States
-
-When the AI gateway returns 429 (rate limit) or 402 (credits exhausted):
-- Show a friendly toast message explaining the issue
-- Don't leave users with a generic "Failed to send message" error
+---
 
 ## Files to Modify
 
-| File | Change |
-|------|--------|
-| `supabase/functions/atlas-chat/index.ts` | Fix auth (getUser instead of getClaims), add streaming, handle 429/402, upgrade model |
-| `src/pages/Atlas.tsx` | Add SSE stream parsing, add markdown rendering, handle rate limit errors |
+### 1. `src/pages/Landing.tsx` (lines 110-115)
 
-## Files to Install
+Replace the 4-stat array:
+- Remove: "10,000+ Students Enrolled", "95% USMLE Pass Rate", "500+ Residency Placements"
+- Keep: "50+ Partner Hospitals"
+- Add: "8+ Specialties" and "Live US Physician Rounds"
+- Add a subtitle line listing the specialties (Cardiology, Pulmonology, ICU, Nephrology, Neurology, Internal Medicine, Infectious Disease)
 
-| Package | Purpose |
-|---------|---------|
-| `react-markdown` | Render AI responses with proper formatting |
+### 2. `src/components/demo/InstitutionalScene.tsx` (lines 9-13, 40)
+
+Replace the 3-stat array:
+- Remove: "10,000+ Students Enrolled", "95% USMLE Pass Rate"
+- Keep: "50+ Partner Hospitals" (update label to "Partner Hospitals")
+- Add: "8+" Specialty Rotations, "Live" US Rounds
+- Update tagline from "From 10 to 10,000 students..." to something accurate like "Live virtual rotations across 8+ medical specialties"
+
+### 3. `src/pages/Institutions.tsx` (lines 70-74)
+
+Replace stats:
+- Remove: "10,000+ Students Trained", "95% Satisfaction Rate"
+- Keep: "50+ Partner Hospitals", "15 Countries"
+- Add: "8+ Specialties" and "Live Rounds"
+
+### 4. `src/pages/About.tsx` (lines 134-136)
+
+Update the stat card label from "Partner Institutions" to "Partner Hospitals" for consistency.
+
+---
 
 ## Technical Details
 
-### Edge Function Changes
-
-```text
-- Replace getClaims(token) with getUser()
-- Enable stream: true in AI gateway request
-- Return response.body as SSE stream
-- Catch 429 -> return { error: "rate_limited" }
-- Catch 402 -> return { error: "credits_exhausted" }
-- Model: google/gemini-3-flash-preview
-```
-
-### Frontend Streaming Pattern
-
-```text
-- Use fetch() with the full function URL (not supabase.functions.invoke, which doesn't support streaming)
-- Read response.body as ReadableStream
-- Parse SSE lines: extract delta.content tokens
-- Append tokens to assistant message in real-time
-- Save complete message to database after stream finishes
-```
-
-### Markdown Rendering
-
-```text
-- Wrap assistant message content in <ReactMarkdown>
-- Add prose styling for clean typography
-- Support: headers, lists, bold, italic, code blocks
-- Keep user messages as plain text
-```
-
-## Competitive Context
-
-For reference, here's how ATLAS compares once these fixes are in:
-
-| Feature | ATLAS (after fix) | Amboss | UWorld | Osmosis |
-|---------|-------------------|--------|--------|---------|
-| AI Socratic Teaching | Yes (streaming) | Basic AI | No | No |
-| Markdown-rich responses | Yes | Yes | N/A | N/A |
-| Real-time streaming | Yes | Yes | N/A | N/A |
-| Conversation history | Yes | Limited | No | No |
-| USMLE-aligned | Yes | Yes | Yes | Yes |
-| Virtual Rotations | Yes | No | No | No |
-| JCo-accredited parent | Yes | No | No | No |
-
-## Pricing Recommendation (for your consideration)
-
-Based on the two-tier access model already built into the platform:
-
-**Learner Tier (Self-Signup)**
-- Target: $39-49/month or $299-399/year
-- Includes: Curriculum, QBank, ATLAS (with daily message limit), Score Predictor
-- Comparable to: Amboss ($25-50/mo), UWorld ($50-80/mo for QBank only)
-- Your advantage: ATLAS AI professor included at no extra cost
-
-**Clinical Tier (Application Required)**
-- Target: $199-299/month or $1,500-2,500/semester program fee
-- Includes: Everything in Learner + Virtual Rotations, Unlimited ATLAS, Residency Prep, LOR support
-- No direct competitor -- virtual US rotations with real physicians is unique
-- Program-based pricing (e.g., $3,000-5,000 for a 12-week rotation program) may work better than monthly for this tier since it mirrors how clinical rotations are traditionally priced
-
-The key insight: Learner tier competes on price with existing tools but offers more (ATLAS). Clinical tier has no real competitor, so you have pricing power -- price on value, not comparison.
-
+All changes are simple string replacements in stat arrays and JSX text. No logic, database, or component structure changes needed.
