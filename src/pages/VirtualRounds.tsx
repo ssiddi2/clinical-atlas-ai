@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { useFeatureAccess } from "@/hooks/useFeatureAccess";
 import { UpgradePrompt } from "@/components/dashboard/UpgradePrompt";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   Video,
   Calendar,
@@ -22,6 +23,7 @@ import {
   Stethoscope,
   GraduationCap,
   Award,
+  Info,
 } from "lucide-react";
 import livemedLogo from "@/assets/livemed-logo-full.png";
 import { format, parseISO, isAfter, isBefore, addHours } from "date-fns";
@@ -260,6 +262,15 @@ const VirtualRounds = () => {
             </div>
           </div>
         </div>
+
+        {/* Transparency Disclaimer */}
+        <Alert className="mb-6 md:mb-8 border-accent/20 bg-accent/5">
+          <Info className="h-4 w-4 text-accent" />
+          <AlertTitle className="text-sm font-semibold">About Our Clinical Rotations</AlertTitle>
+          <AlertDescription className="text-xs text-muted-foreground leading-relaxed">
+            Virtual rotations are conducted via live telemedicine at US partner hospitals that have approved Livemed's clinical observation program. Letters of Recommendation are written and signed by the attending physician at the hospital, on hospital letterhead. Clinical hours are observational telemedicine hours; acceptance and recognition of these hours varies by residency program. We recommend confirming with your target programs how they evaluate telemedicine-based clinical experiences.
+          </AlertDescription>
+        </Alert>
 
         {/* Specialty Filter */}
         <div className="mb-6">

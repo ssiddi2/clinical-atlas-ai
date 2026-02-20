@@ -419,6 +419,13 @@ ${formData.message || "No additional message provided."}
                       )}
                     </Button>
 
+                    <div className="rounded-lg border border-white/10 bg-white/[0.03] p-3 mt-2">
+                      <p className="text-xs text-white/50 leading-relaxed">
+                        <span className="font-semibold text-white/70">Clinical Transparency:</span>{" "}
+                        Virtual rotations are conducted at approved US partner hospitals via telemedicine. LORs are issued by hospital-affiliated attending physicians on institutional letterhead. Recognition of telemedicine-based clinical hours varies by residency program.
+                      </p>
+                    </div>
+
                     <p className="text-xs text-white/40 text-center">
                       By applying, you agree to our{" "}
                       <Link to="/terms" className="text-livemed-cyan hover:underline">Terms of Service</Link>

@@ -92,6 +92,7 @@ const Landing = () => {
       title: "Virtual U.S. Rotations",
       description:
         "Authentic U.S. clinical training with real case discussions and faculty evaluations.",
+      subtitle: "LORs from hospital-affiliated US physicians on institutional letterhead.",
     },
     {
       icon: BookOpen,
@@ -403,6 +404,11 @@ const Landing = () => {
                 <p className="text-white/35 text-sm leading-relaxed line-clamp-2">
                   {feature.description}
                 </p>
+                {"subtitle" in feature && feature.subtitle && (
+                  <p className="text-livemed-cyan/60 text-xs mt-2 leading-relaxed">
+                    {feature.subtitle}
+                  </p>
+                )}
               </div>
             ))}
           </div>
