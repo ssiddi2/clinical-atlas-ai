@@ -7,9 +7,9 @@ interface InstitutionalSceneProps {
 
 const InstitutionalScene = ({ isActive }: InstitutionalSceneProps) => {
   const stats = [
-    { icon: Globe, value: "50+", label: "Partner Institutions" },
-    { icon: Users, value: "10,000+", label: "Students Enrolled" },
-    { icon: GraduationCap, value: "95%", label: "USMLE Pass Rate" },
+    { icon: Globe, value: "50+", label: "Partner Hospitals" },
+    { icon: Users, value: "8+", label: "Specialty Rotations" },
+    { icon: GraduationCap, value: "Live", label: "US Physician Rounds" },
   ];
 
   return (
@@ -37,7 +37,7 @@ const InstitutionalScene = ({ isActive }: InstitutionalSceneProps) => {
           transition={{ duration: 0.5, delay: 0.6 }}
           className="text-white/50 max-w-md mx-auto text-xs md:text-base"
         >
-          From 10 to 10,000 students. One platform. Unlimited potential.
+          Live virtual rotations across 8+ medical specialties.
         </motion.p>
       </motion.div>
 

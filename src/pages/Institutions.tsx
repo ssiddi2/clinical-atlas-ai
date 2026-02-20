@@ -68,10 +68,10 @@ const Institutions = () => {
   ];
 
   const stats = [
-    { value: "50+", label: "Partner Institutions" },
+    { value: "50+", label: "Partner Hospitals" },
     { value: "15", label: "Countries" },
-    { value: "10,000+", label: "Students Trained" },
-    { value: "95%", label: "Satisfaction Rate" },
+    { value: "8+", label: "Specialty Rotations" },
+    { value: "Live", label: "US Physician Rounds" },
   ];
 
   return (
