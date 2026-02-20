@@ -1,59 +1,42 @@
 
+# Add Transparency Disclaimer for Virtual Rotations & LORs
 
-# Remove False Stats & Add Real Specialty Rotations
+## Context
 
-## Problem
+The virtual rotations take place at partner hospitals that have approved the program. Letters of Recommendation (LORs) come directly from the attending physician at the hospital -- not from Livemed Academy itself. This is an important distinction and a strong selling point that should be communicated transparently.
 
-Multiple pages display fabricated metrics (10,000+ students, 95% USMLE pass rate, 500+ residency placements) that constitute false advertising. These need to be replaced with accurate, verifiable claims.
+## What Will Change
 
-## What Changes
+### 1. Virtual Rounds Page (`src/pages/VirtualRounds.tsx`)
 
-Replace the inflated stats across 4 files with accurate information focused on what Livemed actually offers: **50+ partner hospitals** and the **specialty rotations covered**.
+Add a transparency disclaimer card below the hero banner, styled as an informational alert (not a warning). Content:
 
-### New Stats (replacing the old ones)
+> **About Our Clinical Rotations**
+>
+> Virtual rotations are conducted via live telemedicine at US partner hospitals that have approved Livemed's clinical observation program. Letters of Recommendation are written and signed by the attending physician at the hospital, on hospital letterhead. Clinical hours are observational telemedicine hours; acceptance and recognition of these hours varies by residency program. We recommend confirming with your target programs how they evaluate telemedicine-based clinical experiences.
 
-- **50+** Partner Hospitals (keep -- this is real)
-- **8+** Specialty Rotations
-- **Live** US Physician Rounds
-- **JCo** Accredited Care (where appropriate)
+### 2. Apply Page (`src/pages/Apply.tsx`)
 
-### Specialties Listed
+Add a shorter disclaimer near the bottom of the application form:
 
-Cardiology, Pulmonology, ICU/Critical Care, Nephrology, Neurology, Internal Medicine, Infectious Disease, and more.
+> **Clinical Transparency:** Virtual rotations are conducted at approved US partner hospitals via telemedicine. LORs are issued by hospital-affiliated attending physicians. Recognition of telemedicine-based clinical hours varies by residency program.
 
----
+### 3. Landing Page (`src/pages/Landing.tsx`)
 
-## Files to Modify
+In the Virtual Rotations feature section, add a one-line note:
 
-### 1. `src/pages/Landing.tsx` (lines 110-115)
+> LORs from hospital-affiliated US physicians on institutional letterhead.
 
-Replace the 4-stat array:
-- Remove: "10,000+ Students Enrolled", "95% USMLE Pass Rate", "500+ Residency Placements"
-- Keep: "50+ Partner Hospitals"
-- Add: "8+ Specialties" and "Live US Physician Rounds"
-- Add a subtitle line listing the specialties (Cardiology, Pulmonology, ICU, Nephrology, Neurology, Internal Medicine, Infectious Disease)
-
-### 2. `src/components/demo/InstitutionalScene.tsx` (lines 9-13, 40)
-
-Replace the 3-stat array:
-- Remove: "10,000+ Students Enrolled", "95% USMLE Pass Rate"
-- Keep: "50+ Partner Hospitals" (update label to "Partner Hospitals")
-- Add: "8+" Specialty Rotations, "Live" US Rounds
-- Update tagline from "From 10 to 10,000 students..." to something accurate like "Live virtual rotations across 8+ medical specialties"
-
-### 3. `src/pages/Institutions.tsx` (lines 70-74)
-
-Replace stats:
-- Remove: "10,000+ Students Trained", "95% Satisfaction Rate"
-- Keep: "50+ Partner Hospitals", "15 Countries"
-- Add: "8+ Specialties" and "Live Rounds"
-
-### 4. `src/pages/About.tsx` (lines 134-136)
-
-Update the stat card label from "Partner Institutions" to "Partner Hospitals" for consistency.
-
----
+This reinforces the value (real physician, real hospital letterhead) without cluttering the marketing page.
 
 ## Technical Details
 
-All changes are simple string replacements in stat arrays and JSX text. No logic, database, or component structure changes needed.
+### Files to Modify
+
+| File | Change |
+|------|--------|
+| `src/pages/VirtualRounds.tsx` | Add an `Alert` component (from `src/components/ui/alert.tsx`) below the hero banner with the full transparency disclaimer. Uses `Info` icon from lucide-react. |
+| `src/pages/Apply.tsx` | Add a small info card/alert near the form submit area with the short disclaimer. |
+| `src/pages/Landing.tsx` | Add a one-line subtitle under the Virtual Rotations feature card mentioning LORs from hospital physicians. |
+
+No new files, no database changes, no dependencies needed. The `Alert` component already exists in the project.
