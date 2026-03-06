@@ -1,61 +1,42 @@
 
+# Add Transparency Disclaimer for Virtual Rotations & LORs
 
-# Full Page Translation — Applying i18n Across All Pages
+## Context
 
-## Current State
+The virtual rotations take place at partner hospitals that have approved the program. Letters of Recommendation (LORs) come directly from the attending physician at the hospital -- not from Livemed Academy itself. This is an important distinction and a strong selling point that should be communicated transparently.
 
-The i18n infrastructure is fully built (LanguageContext, 6 locale JSON files, LanguageSwitcher component), but **only the Header and Footer** currently use `useTranslation()`. All ~25+ page components still have hardcoded English strings.
+## What Will Change
 
-## What Needs to Change
+### 1. Virtual Rounds Page (`src/pages/VirtualRounds.tsx`)
 
-### Phase 1: Public Pages (highest IMG impact)
-Replace hardcoded strings with `t()` calls in:
-- **Landing.tsx** (~687 lines, ~80 translatable strings — hero, features, stats, programs, testimonials, CTAs)
-- **Programs.tsx** — program names, descriptions, features
-- **Rotations.tsx** — rotation details, specialties
-- **Institutions.tsx** — partnership info
-- **Contact.tsx** — form labels, placeholders
-- **Apply.tsx** — application form, tiers
-- **About.tsx** — mission, values, team
-- **Terms.tsx**, **Privacy.tsx** — legal text
-- **CaseStudies.tsx** — case study content
+Add a transparency disclaimer card below the hero banner, styled as an informational alert (not a warning). Content:
 
-### Phase 2: Auth & Onboarding
-- **Auth.tsx** (~403 lines) — sign in/up forms, labels, errors
-- **Onboarding.tsx** — onboarding steps, document upload labels
-- **PendingApproval.tsx** — status messages
+> **About Our Clinical Rotations**
+>
+> Virtual rotations are conducted via live telemedicine at US partner hospitals that have approved Livemed's clinical observation program. Letters of Recommendation are written and signed by the attending physician at the hospital, on hospital letterhead. Clinical hours are observational telemedicine hours; acceptance and recognition of these hours varies by residency program. We recommend confirming with your target programs how they evaluate telemedicine-based clinical experiences.
 
-### Phase 3: Authenticated Pages (critical for daily IMG use)
-- **Dashboard.tsx** (~409 lines) — welcome, stats, navigation cards
-- **Atlas.tsx** (~506 lines) — chat UI, placeholder text, error messages, suggested prompts
-- **QBank.tsx**, **QBankCreate.tsx**, **QBankSession.tsx**, **QBankReview.tsx**, **QBankPerformance.tsx** — test UI
-- **Curriculum.tsx**, **ModuleView.tsx** — lesson content labels
-- **ScorePredictor.tsx** — score UI
-- **Profile.tsx** — settings labels
-- **Admin.tsx** — admin panel labels
-- **VirtualRounds.tsx**, **RotationExperience.tsx** — rotation UI
-- **Assessments.tsx**, **DiagnosticAssessment.tsx** — assessment UI
-- **Residency.tsx** — readiness UI
+### 2. Apply Page (`src/pages/Apply.tsx`)
 
-### Phase 4: Expand Locale JSON Files
-Add all new keys to all 6 locale files (en, ar, hi, ur, es, fr) with proper translations.
+Add a shorter disclaimer near the bottom of the application form:
 
-## Approach
+> **Clinical Transparency:** Virtual rotations are conducted at approved US partner hospitals via telemedicine. LORs are issued by hospital-affiliated attending physicians. Recognition of telemedicine-based clinical hours varies by residency program.
 
-For each page:
-1. Import `useTranslation` from `@/i18n`
-2. Call `const { t } = useTranslation()` at the top
-3. Replace every hardcoded string with `t("section.key")` 
-4. Add corresponding keys to `en.json` and all other locale files
+### 3. Landing Page (`src/pages/Landing.tsx`)
 
-## Scope & Effort
+In the Virtual Rotations feature section, add a one-line note:
 
-- ~25 page files to modify
-- ~400+ new translation keys across all pages
-- All 6 locale JSON files expanded significantly
-- No database or backend changes needed
+> LORs from hospital-affiliated US physicians on institutional letterhead.
 
-## Note on ATLAS AI Responses
+This reinforces the value (real physician, real hospital letterhead) without cluttering the marketing page.
 
-The ATLAS AI professor's **responses** come from the AI model and are already in whatever language the user writes in (the model responds contextually). The i18n work covers the **UI chrome** around ATLAS — buttons, placeholders, error messages, suggested prompts — not the AI-generated content itself.
+## Technical Details
 
+### Files to Modify
+
+| File | Change |
+|------|--------|
+| `src/pages/VirtualRounds.tsx` | Add an `Alert` component (from `src/components/ui/alert.tsx`) below the hero banner with the full transparency disclaimer. Uses `Info` icon from lucide-react. |
+| `src/pages/Apply.tsx` | Add a small info card/alert near the form submit area with the short disclaimer. |
+| `src/pages/Landing.tsx` | Add a one-line subtitle under the Virtual Rotations feature card mentioning LORs from hospital physicians. |
+
+No new files, no database changes, no dependencies needed. The `Alert` component already exists in the project.
