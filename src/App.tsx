@@ -4,6 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { LanguageProvider } from "./i18n";
 
 // Layouts - loaded eagerly as it wraps all public routes
 import PublicLayout from "./components/layout/PublicLayout";
@@ -81,6 +82,7 @@ const App = () => {
 
   return (
   <QueryClientProvider client={queryClient}>
+    <LanguageProvider>
     <TooltipProvider>
       <Toaster />
       <Sonner />
@@ -156,6 +158,7 @@ const App = () => {
         </Suspense>
       </BrowserRouter>
     </TooltipProvider>
+    </LanguageProvider>
   </QueryClientProvider>
   );
 };

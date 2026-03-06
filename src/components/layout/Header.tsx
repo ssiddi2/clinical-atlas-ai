@@ -3,24 +3,26 @@ import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
 import { useState, useEffect, useCallback } from "react";
 import livemedLogoFull from "@/assets/livemed-logo-full.png";
-
-const navItems = [
-  { label: "Programs", href: "/programs" },
-  { label: "Rotations", href: "/rotations" },
-  { label: "Institutions", href: "/institutions" },
-  { label: "Contact", href: "/contact" },
-];
+import LanguageSwitcher from "./LanguageSwitcher";
+import { useTranslation } from "@/i18n";
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const { t } = useTranslation();
+
+  const navItems = [
+    { label: t("nav.programs"), href: "/programs" },
+    { label: t("nav.rotations"), href: "/rotations" },
+    { label: t("nav.institutions"), href: "/institutions" },
+    { label: t("nav.contact"), href: "/contact" },
+  ];
 
   const handleScroll = useCallback(() => {
     setScrolled(window.scrollY > 20);
   }, []);
 
   useEffect(() => {
-    // Use passive listener for better scroll performance
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, [handleScroll]);
@@ -60,20 +62,21 @@ const Header = () => {
           ))}
         </nav>
 
-        {/* Auth Buttons */}
-        <div className="hidden md:flex items-center gap-4">
+        {/* Auth Buttons + Language Switcher */}
+        <div className="hidden md:flex items-center gap-3">
+          <LanguageSwitcher />
           <Button 
             variant="ghost" 
             className="text-[13px] font-normal text-white/70 hover:text-white hover:bg-transparent px-0"
             asChild
           >
-            <Link to="/auth">Sign In</Link>
+            <Link to="/auth">{t("nav.signIn")}</Link>
           </Button>
           <Button 
             className="bg-white text-black hover:bg-white/90 rounded-full px-5 h-8 text-[13px] font-medium" 
             asChild
           >
-            <Link to="/apply">Apply Now</Link>
+            <Link to="/apply">{t("nav.applyNow")}</Link>
           </Button>
         </div>
 
@@ -106,11 +109,15 @@ const Header = () => {
               </Link>
             ))}
             <div className="flex flex-col gap-3 pt-6 mt-4 border-t border-white/10">
+              <div className="flex items-center justify-between">
+                <span className="text-white/40 text-sm">Language</span>
+                <LanguageSwitcher />
+              </div>
               <Button variant="ghost" className="justify-start text-white/70 hover:text-white hover:bg-transparent" asChild>
-                <Link to="/auth">Sign In</Link>
+                <Link to="/auth">{t("nav.signIn")}</Link>
               </Button>
               <Button className="bg-white text-black hover:bg-white/90 rounded-full font-medium" asChild>
-                <Link to="/apply">Apply Now</Link>
+                <Link to="/apply">{t("nav.applyNow")}</Link>
               </Button>
             </div>
           </nav>

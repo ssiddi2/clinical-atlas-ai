@@ -1,85 +1,42 @@
 
-
-# Full App Internationalization (i18n)
+# Add Transparency Disclaimer for Virtual Rotations & LORs
 
 ## Context
 
-The app targets International Medical Graduates (IMGs) who speak Arabic, Hindi, Urdu, Spanish, and French. We need a full i18n system with a language switcher that translates the entire UI.
+The virtual rotations take place at partner hospitals that have approved the program. Letters of Recommendation (LORs) come directly from the attending physician at the hospital -- not from Livemed Academy itself. This is an important distinction and a strong selling point that should be communicated transparently.
 
-## Approach
+## What Will Change
 
-Use a lightweight, React-native i18n pattern with JSON translation files and a React Context provider. No heavy library needed -- we'll build a simple `useTranslation` hook backed by context and JSON dictionaries.
+### 1. Virtual Rounds Page (`src/pages/VirtualRounds.tsx`)
 
-## Languages
+Add a transparency disclaimer card below the hero banner, styled as an informational alert (not a warning). Content:
 
-English (default), Arabic (ar), Hindi (hi), Urdu (ur), Spanish (es), French (fr)
+> **About Our Clinical Rotations**
+>
+> Virtual rotations are conducted via live telemedicine at US partner hospitals that have approved Livemed's clinical observation program. Letters of Recommendation are written and signed by the attending physician at the hospital, on hospital letterhead. Clinical hours are observational telemedicine hours; acceptance and recognition of these hours varies by residency program. We recommend confirming with your target programs how they evaluate telemedicine-based clinical experiences.
 
-## What Will Be Built
+### 2. Apply Page (`src/pages/Apply.tsx`)
 
-### 1. Translation Infrastructure
+Add a shorter disclaimer near the bottom of the application form:
 
-- **`src/i18n/locales/en.json`** -- English strings (the master file, ~200 keys covering all pages)
-- **`src/i18n/locales/ar.json`**, **`hi.json`**, **`ur.json`**, **`es.json`**, **`fr.json`** -- Translated equivalents
-- **`src/i18n/LanguageContext.tsx`** -- React context providing current locale, `setLocale()`, and a `t(key)` translation function
-- **`src/i18n/index.ts`** -- Barrel export
+> **Clinical Transparency:** Virtual rotations are conducted at approved US partner hospitals via telemedicine. LORs are issued by hospital-affiliated attending physicians. Recognition of telemedicine-based clinical hours varies by residency program.
 
-### 2. Language Switcher Component
+### 3. Landing Page (`src/pages/Landing.tsx`)
 
-- **`src/components/layout/LanguageSwitcher.tsx`** -- A dropdown (using the existing `Select` component) in the Header showing language name + flag emoji. Persists selection to `localStorage`.
+In the Virtual Rotations feature section, add a one-line note:
 
-### 3. RTL Support for Arabic/Urdu
+> LORs from hospital-affiliated US physicians on institutional letterhead.
 
-- The `LanguageContext` will set `dir="rtl"` on the `<html>` element when Arabic or Urdu is selected.
-- Tailwind already supports RTL via the `rtl:` variant -- we'll add `dir` attribute handling.
-
-### 4. Page-by-Page Translation
-
-All hardcoded strings across every page will be replaced with `t("key")` calls. This covers:
-- Header nav items, Footer links
-- Landing page (hero, features, stats, programs, CTA)
-- Programs, Rotations, VirtualRounds, Institutions, Contact, Apply, About, Terms, Privacy
-- Dashboard, Profile, Admin pages
-- Atlas chat UI, QBank UI, Score Predictor
-- Auth/Onboarding flows
-- All button labels, form placeholders, toast messages
-
-### 5. Images
-
-Images themselves stay the same (medical diagrams, logos). Only alt text and surrounding captions/labels get translated.
+This reinforces the value (real physician, real hospital letterhead) without cluttering the marketing page.
 
 ## Technical Details
 
-| Item | Detail |
+### Files to Modify
+
+| File | Change |
 |------|--------|
-| New files | `src/i18n/` directory with 7 files (context + 6 locale JSONs + index) + `LanguageSwitcher.tsx` |
-| Modified files | Every page and layout component (~40 files) to import `useTranslation` and replace strings |
-| Dependencies | None new -- uses existing `Select` component and React context |
-| Database | No changes |
-| RTL | `dir` attribute on `<html>`, Tailwind `rtl:` utilities where needed |
+| `src/pages/VirtualRounds.tsx` | Add an `Alert` component (from `src/components/ui/alert.tsx`) below the hero banner with the full transparency disclaimer. Uses `Info` icon from lucide-react. |
+| `src/pages/Apply.tsx` | Add a small info card/alert near the form submit area with the short disclaimer. |
+| `src/pages/Landing.tsx` | Add a one-line subtitle under the Virtual Rotations feature card mentioning LORs from hospital physicians. |
 
-### Translation Key Structure
-
-```json
-{
-  "nav.programs": "Programs",
-  "nav.rotations": "Rotations",
-  "hero.title": "The Future of Medical Education",
-  "hero.subtitle": "AI-powered clinical training...",
-  "features.atlas.title": "ATLAS™ AI Professor",
-  "dashboard.welcome": "Welcome back",
-  "auth.signIn": "Sign In",
-  "auth.signUp": "Sign Up"
-}
-```
-
-### Implementation Order
-
-1. Create i18n context + English JSON + hook
-2. Add LanguageSwitcher to Header
-3. Translate public pages (Landing, Programs, Rotations, etc.)
-4. Translate authenticated pages (Dashboard, Atlas, QBank, etc.)
-5. Add Arabic RTL support
-6. Add remaining language JSON files (translations will be comprehensive but may need native speaker review)
-
-This is a large refactor touching ~40 files. The structure is straightforward but the volume of string extraction is significant.
-
+No new files, no database changes, no dependencies needed. The `Alert` component already exists in the project.
