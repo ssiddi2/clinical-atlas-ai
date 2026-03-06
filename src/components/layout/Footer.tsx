@@ -1,30 +1,33 @@
 import React, { forwardRef } from "react";
 import { Link } from "react-router-dom";
 import livemedLogoFull from "@/assets/livemed-logo-full.png";
+import { useTranslation } from "@/i18n";
 
 const Footer = forwardRef<HTMLElement>((props, ref) => {
+  const { t } = useTranslation();
+
   const footerLinks = {
-    Programs: [
-      { label: "Pre-Clinical", href: "/programs/pre-clinical" },
-      { label: "Clinical Years", href: "/programs/clinical" },
-      { label: "Residency Prep", href: "/programs/residency" },
-      { label: "CME", href: "/programs/cme" },
+    [t("footer.programs")]: [
+      { label: t("footer.preClinical"), href: "/programs/pre-clinical" },
+      { label: t("footer.clinicalYears"), href: "/programs/clinical" },
+      { label: t("footer.residencyPrep"), href: "/programs/residency" },
+      { label: t("footer.cme"), href: "/programs/cme" },
     ],
-    Platform: [
-      { label: "ATLAS™ AI Professor", href: "/atlas" },
-      { label: "Virtual Rotations", href: "/rotations" },
-      { label: "Assessments", href: "/assessments" },
-      { label: "Live Sessions", href: "/live" },
+    [t("footer.platform")]: [
+      { label: t("footer.atlasAI"), href: "/atlas" },
+      { label: t("footer.virtualRotations"), href: "/rotations" },
+      { label: t("footer.assessments"), href: "/assessments" },
+      { label: t("footer.liveSessions"), href: "/live" },
     ],
-    Company: [
-      { label: "About Us", href: "/about" },
-      { label: "For Institutions", href: "/institutions" },
-      { label: "Contact", href: "/contact" },
+    [t("footer.company")]: [
+      { label: t("footer.aboutUs"), href: "/about" },
+      { label: t("footer.forInstitutions"), href: "/institutions" },
+      { label: t("footer.contact"), href: "/contact" },
     ],
-    Resources: [
-      { label: "Apply Now", href: "/apply" },
-      { label: "Privacy Policy", href: "/privacy" },
-      { label: "Terms of Service", href: "/terms" },
+    [t("footer.resources")]: [
+      { label: t("footer.applyNow"), href: "/apply" },
+      { label: t("footer.privacyPolicy"), href: "/privacy" },
+      { label: t("footer.termsOfService"), href: "/terms" },
     ],
   };
 
@@ -49,7 +52,7 @@ const Footer = forwardRef<HTMLElement>((props, ref) => {
               />
             </Link>
             <p className="text-xs md:text-sm text-white/40 leading-relaxed max-w-[200px]">
-              Division of Clinical & Continuing Medical Education
+              {t("footer.division")}
             </p>
           </div>
 
@@ -80,8 +83,7 @@ const Footer = forwardRef<HTMLElement>((props, ref) => {
       <div className="border-t border-white/5 relative">
         <div className="container mx-auto px-4 md:px-6 py-4">
           <p className="text-[10px] md:text-xs text-white/30 text-center max-w-4xl mx-auto leading-relaxed">
-            Livemed Academy is a professional medical education platform offering clinical and continuing medical education. 
-            Livemed Academy is not a degree-granting institution and does not award MD or equivalent medical degrees.
+            {t("footer.disclaimer")}
           </p>
         </div>
       </div>
@@ -90,20 +92,20 @@ const Footer = forwardRef<HTMLElement>((props, ref) => {
       <div className="border-t border-white/5 relative">
         <div className="container mx-auto px-4 md:px-6 py-4 md:py-6 flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="text-xs text-white/30">
-            © {new Date().getFullYear()} Livemed Academy. All rights reserved.
+            {t("footer.copyright").replace("{year}", new Date().getFullYear().toString())}
           </p>
           <div className="flex items-center gap-6">
             <Link
               to="/terms"
               className="text-xs text-white/30 hover:text-white/60 transition-colors"
             >
-              Terms
+              {t("footer.terms")}
             </Link>
             <Link
               to="/privacy"
               className="text-xs text-white/30 hover:text-white/60 transition-colors"
             >
-              Privacy
+              {t("footer.privacy")}
             </Link>
           </div>
         </div>
