@@ -6,27 +6,15 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import {
-  BookOpen,
-  Brain,
-  Stethoscope,
-  Award,
-  TrendingUp,
-  Calendar,
-  MessageSquare,
-  PlayCircle,
-  FileText,
-  LogOut,
-  Settings,
-  Bell,
-  ShieldCheck,
-  Target,
-  ClipboardCheck,
-  Sparkles,
+  BookOpen, Brain, Stethoscope, Award, TrendingUp, Calendar, MessageSquare,
+  PlayCircle, FileText, LogOut, Settings, Bell, ShieldCheck, Target,
+  ClipboardCheck, Sparkles,
 } from "lucide-react";
 import livemedLogo from "@/assets/livemed-logo-full.png";
 import VerificationBanner from "@/components/dashboard/VerificationBanner";
 import { MatchReadyWidget } from "@/components/score/MatchReadyWidget";
 import { useScorePredictor } from "@/hooks/useScorePredictor";
+import { useTranslation } from "@/i18n";
 
 interface ProfileData {
   onboarding_completed: boolean;
@@ -34,13 +22,9 @@ interface ProfileData {
   weak_areas: string[] | null;
 }
 
-interface DashboardState {
-  profile: ProfileData | null;
-  isAdmin: boolean;
-}
-
 const Dashboard = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<ProfileData | null>(null);
@@ -50,28 +34,21 @@ const Dashboard = () => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setUser(session?.user ?? null);
       setLoading(false);
-      if (!session) {
-        navigate("/auth");
-      } else {
-        loadProfileAndCheckAdmin(session.user.id);
-      }
+      if (!session) navigate("/auth");
+      else loadProfileAndCheckAdmin(session.user.id);
     });
 
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
       setLoading(false);
-      if (!session) {
-        navigate("/auth");
-      } else {
-        loadProfileAndCheckAdmin(session.user.id);
-      }
+      if (!session) navigate("/auth");
+      else loadProfileAndCheckAdmin(session.user.id);
     });
 
     return () => subscription.unsubscribe();
   }, [navigate]);
 
   const loadProfileAndCheckAdmin = async (userId: string) => {
-    // Load profile
     const { data } = await supabase
       .from("profiles")
       .select("onboarding_completed, verification_status, weak_areas")
@@ -79,10 +56,8 @@ const Dashboard = () => {
       .maybeSingle();
     setProfile(data);
 
-    // Check admin role
     const { data: hasRole } = await supabase.rpc("has_role", {
-      _user_id: userId,
-      _role: "platform_admin",
+      _user_id: userId, _role: "platform_admin",
     });
     setIsAdmin(!!hasRole);
   };
@@ -95,26 +70,25 @@ const Dashboard = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-pulse text-muted-foreground">Loading...</div>
+        <div className="animate-pulse text-muted-foreground">{t("common.loading")}</div>
       </div>
     );
   }
 
   const firstName = user?.user_metadata?.first_name || "Student";
-
   const hasTakenDiagnostic = profile?.weak_areas && profile.weak_areas.length > 0;
 
   const quickActions = [
-    { icon: MessageSquare, label: "Ask ATLAS™", href: "/atlas", color: "bg-accent" },
-    { icon: BookOpen, label: "Continue Learning", href: "/curriculum", color: "bg-primary" },
-    { icon: Stethoscope, label: "Live Rounds", href: "/virtual-rounds", color: "bg-livemed-success" },
-    { icon: FileText, label: "Take Assessment", href: "/assessments", color: "bg-livemed-warning" },
+    { icon: MessageSquare, label: t("dashboard.askAtlas"), href: "/atlas", color: "bg-accent" },
+    { icon: BookOpen, label: t("dashboard.continueLearning"), href: "/curriculum", color: "bg-primary" },
+    { icon: Stethoscope, label: t("dashboard.liveRounds"), href: "/virtual-rounds", color: "bg-livemed-success" },
+    { icon: FileText, label: t("dashboard.takeAssessment"), href: "/assessments", color: "bg-livemed-warning" },
   ];
 
   const upcomingItems = [
     { title: "Cardiology Module Review", time: "Today, 2:00 PM", type: "Study", href: "/curriculum" },
-    { title: "Live Rounds: Internal Medicine", time: "Tomorrow, 9:00 AM", type: "Live", href: "/virtual-rounds" },
-    { title: "Live Case Conference", time: "Thu, 4:00 PM", type: "Live", href: "/virtual-rounds" },
+    { title: "Live Rounds: Internal Medicine", time: "Tomorrow, 9:00 AM", type: t("common.live"), href: "/virtual-rounds" },
+    { title: "Live Case Conference", time: "Thu, 4:00 PM", type: t("common.live"), href: "/virtual-rounds" },
   ];
 
   const progressData = [
@@ -134,43 +108,28 @@ const Dashboard = () => {
           </Link>
 
           <nav className="hidden md:flex items-center gap-6">
-            <Link to="/curriculum" className="text-sm font-medium text-muted-foreground hover:text-primary">
-              Curriculum
-            </Link>
-            <Link to="/atlas" className="text-sm font-medium text-muted-foreground hover:text-primary">
-              ATLAS™
-            </Link>
-            <Link to="/virtual-rounds" className="text-sm font-medium text-muted-foreground hover:text-primary">
-              Live Rounds
-            </Link>
-            <Link to="/assessments" className="text-sm font-medium text-muted-foreground hover:text-primary">
-              Assessments
-            </Link>
+            <Link to="/curriculum" className="text-sm font-medium text-muted-foreground hover:text-primary">{t("dashboard.curriculum")}</Link>
+            <Link to="/atlas" className="text-sm font-medium text-muted-foreground hover:text-primary">ATLAS™</Link>
+            <Link to="/virtual-rounds" className="text-sm font-medium text-muted-foreground hover:text-primary">{t("dashboard.liveRounds")}</Link>
+            <Link to="/assessments" className="text-sm font-medium text-muted-foreground hover:text-primary">{t("footer.assessments")}</Link>
           </nav>
 
           <div className="flex items-center gap-3">
             {isAdmin && (
               <Button variant="ghost" size="sm" onClick={() => navigate("/admin")} className="text-primary">
                 <ShieldCheck className="h-5 w-5 mr-1" />
-                <span className="hidden sm:inline">Admin</span>
+                <span className="hidden sm:inline">{t("dashboard.admin")}</span>
               </Button>
             )}
-            <Button variant="ghost" size="icon">
-              <Bell className="h-5 w-5" />
-            </Button>
-            <Button variant="ghost" size="icon" onClick={() => navigate("/profile")}>
-              <Settings className="h-5 w-5" />
-            </Button>
-            <Button variant="ghost" size="icon" onClick={handleSignOut}>
-              <LogOut className="h-5 w-5" />
-            </Button>
+            <Button variant="ghost" size="icon"><Bell className="h-5 w-5" /></Button>
+            <Button variant="ghost" size="icon" onClick={() => navigate("/profile")}><Settings className="h-5 w-5" /></Button>
+            <Button variant="ghost" size="icon" onClick={handleSignOut}><LogOut className="h-5 w-5" /></Button>
           </div>
         </div>
       </header>
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
-        {/* Verification Banner */}
         <VerificationBanner 
           status={profile?.verification_status as 'pending' | 'verified' | 'rejected' | null}
           onboardingCompleted={profile?.onboarding_completed || false}
@@ -179,11 +138,9 @@ const Dashboard = () => {
         {/* Welcome Section */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold mb-2">
-            Welcome back, {firstName}!
+            {t("dashboard.welcomeBack").replace("{name}", firstName)}
           </h1>
-          <p className="text-muted-foreground">
-            Continue your medical education journey. You're making great progress.
-          </p>
+          <p className="text-muted-foreground">{t("dashboard.continueJourney")}</p>
         </div>
 
         {/* Quick Actions */}
@@ -203,7 +160,6 @@ const Dashboard = () => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
-          {/* Main Content Area */}
           <div className="lg:col-span-2 space-y-6 md:space-y-8">
             {/* Diagnostic Assessment Promotion */}
             {!hasTakenDiagnostic && (
@@ -216,34 +172,25 @@ const Dashboard = () => {
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
-                        <CardTitle className="text-lg">Take Your Diagnostic Assessment</CardTitle>
-                        <span className="px-2 py-0.5 text-xs font-medium bg-accent text-accent-foreground rounded-full">Recommended</span>
+                        <CardTitle className="text-lg">{t("dashboard.diagnostic.title")}</CardTitle>
+                        <span className="px-2 py-0.5 text-xs font-medium bg-accent text-accent-foreground rounded-full">{t("dashboard.diagnostic.recommended")}</span>
                       </div>
-                      <CardDescription>Personalize your learning journey</CardDescription>
+                      <CardDescription>{t("dashboard.diagnostic.personalize")}</CardDescription>
                     </div>
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Complete a 20-question diagnostic to identify your strengths and weaknesses. 
-                    We'll create a personalized study plan to maximize your USMLE preparation efficiency.
-                  </p>
+                  <p className="text-sm text-muted-foreground mb-4">{t("dashboard.diagnostic.description")}</p>
                   <div className="flex flex-wrap items-center gap-3">
                     <Button className="gradient-livemed" asChild>
                       <Link to="/diagnostic">
                         <ClipboardCheck className="mr-2 h-4 w-4" />
-                        Start Diagnostic
+                        {t("dashboard.diagnostic.start")}
                       </Link>
                     </Button>
                     <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                      <span className="flex items-center gap-1">
-                        <Sparkles className="h-3 w-3" />
-                        ~40 minutes
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <Target className="h-3 w-3" />
-                        Personalized plan
-                      </span>
+                      <span className="flex items-center gap-1"><Sparkles className="h-3 w-3" />{t("dashboard.diagnostic.duration")}</span>
+                      <span className="flex items-center gap-1"><Target className="h-3 w-3" />{t("dashboard.diagnostic.personalizedPlan")}</span>
                     </div>
                   </div>
                 </CardContent>
@@ -255,7 +202,7 @@ const Dashboard = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <BookOpen className="h-5 w-5 text-accent" />
-                  Continue Where You Left Off
+                  {t("dashboard.continueWhereLeft")}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -268,9 +215,7 @@ const Dashboard = () => {
                     <p className="text-sm text-muted-foreground mb-2">Module 12 of 24 • 35 min remaining</p>
                     <Progress value={50} className="h-2" />
                   </div>
-                  <Button className="gradient-livemed flex-shrink-0">
-                    Resume
-                  </Button>
+                  <Button className="gradient-livemed flex-shrink-0">{t("dashboard.resume")}</Button>
                 </div>
               </CardContent>
             </Card>
@@ -280,9 +225,9 @@ const Dashboard = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <TrendingUp className="h-5 w-5 text-accent" />
-                  Your Progress
+                  {t("dashboard.yourProgress")}
                 </CardTitle>
-                <CardDescription>Competency by organ system</CardDescription>
+                <CardDescription>{t("dashboard.competencyBySystem")}</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
@@ -291,7 +236,7 @@ const Dashboard = () => {
                       <div className="flex justify-between text-sm">
                         <span className="font-medium">{item.subject}</span>
                         <span className="text-muted-foreground">
-                          {item.progress}% ({Math.round(item.total * item.progress / 100)}/{item.total} modules)
+                          {item.progress}% ({Math.round(item.total * item.progress / 100)}/{item.total} {t("curriculum.modules")})
                         </span>
                       </div>
                       <Progress value={item.progress} className="h-2" />
@@ -306,9 +251,9 @@ const Dashboard = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Brain className="h-5 w-5 text-accent" />
-                  Ask ATLAS™
+                  {t("dashboard.askAtlasTitle")}
                 </CardTitle>
-                <CardDescription>Your AI Professor is ready to help</CardDescription>
+                <CardDescription>{t("dashboard.aiReady")}</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="bg-muted/50 rounded-lg p-4 mb-4">
@@ -320,7 +265,7 @@ const Dashboard = () => {
                 <Button variant="outline" className="w-full" asChild>
                   <Link to="/atlas">
                     <MessageSquare className="mr-2 h-4 w-4" />
-                    Start a Conversation
+                    {t("dashboard.startConversation")}
                   </Link>
                 </Button>
               </CardContent>
@@ -329,29 +274,22 @@ const Dashboard = () => {
 
           {/* Sidebar */}
           <div className="space-y-8">
-            {/* Upcoming Schedule */}
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Calendar className="h-5 w-5 text-accent" />
-                  Upcoming
+                  {t("dashboard.upcoming")}
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   {upcomingItems.map((item, idx) => (
-                    <Link
-                      key={idx}
-                      to={item.href}
-                      className="flex items-start gap-3 pb-4 border-b border-border last:border-0 last:pb-0 hover:bg-muted/50 rounded-lg p-2 -mx-2 transition-colors"
-                    >
-                      <div className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${item.type === 'Live' ? 'bg-livemed-success animate-pulse' : 'bg-accent'}`} />
+                    <Link key={idx} to={item.href} className="flex items-start gap-3 pb-4 border-b border-border last:border-0 last:pb-0 hover:bg-muted/50 rounded-lg p-2 -mx-2 transition-colors">
+                      <div className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${item.type === t("common.live") ? 'bg-livemed-success animate-pulse' : 'bg-accent'}`} />
                       <div>
                         <p className="font-medium text-sm">{item.title}</p>
                         <p className="text-xs text-muted-foreground">{item.time}</p>
-                        <span className={`inline-block mt-1 text-xs px-2 py-0.5 rounded ${item.type === 'Live' ? 'bg-livemed-success/20 text-livemed-success' : 'bg-muted'}`}>
-                          {item.type}
-                        </span>
+                        <span className={`inline-block mt-1 text-xs px-2 py-0.5 rounded ${item.type === t("common.live") ? 'bg-livemed-success/20 text-livemed-success' : 'bg-muted'}`}>{item.type}</span>
                       </div>
                     </Link>
                   ))}
@@ -359,24 +297,18 @@ const Dashboard = () => {
               </CardContent>
             </Card>
 
-            {/* MATCH Ready Score Predictor */}
             <MatchReadyWidgetWrapper userId={user?.id || null} />
 
-            {/* Live Virtual Rounds */}
             <Card className="gradient-livemed text-white">
               <CardContent className="p-6">
                 <Stethoscope className="h-8 w-8 mb-4 opacity-80" />
-                <h3 className="font-semibold text-lg mb-2">
-                  Join Live Rounds
-                </h3>
-                <p className="text-sm text-white/80 mb-4">
-                  Shadow US physicians during real telemedicine rounds at hospitals.
-                </p>
+                <h3 className="font-semibold text-lg mb-2">{t("dashboard.joinLiveRounds")}</h3>
+                <p className="text-sm text-white/80 mb-4">{t("dashboard.joinLiveRoundsDesc")}</p>
                 <Button variant="secondary" className="w-full" asChild>
-                  <Link to="/virtual-rounds">View Sessions</Link>
+                  <Link to="/virtual-rounds">{t("dashboard.viewSessions")}</Link>
                 </Button>
                 <Button variant="ghost" className="w-full mt-2 text-white/80 hover:text-white hover:bg-white/10" asChild>
-                  <Link to="/rotation-experience">Practice Cases</Link>
+                  <Link to="/rotation-experience">{t("dashboard.practiceCases")}</Link>
                 </Button>
               </CardContent>
             </Card>
@@ -387,7 +319,6 @@ const Dashboard = () => {
   );
 };
 
-// Wrapper component for MATCH Ready widget
 const MatchReadyWidgetWrapper = ({ userId }: { userId: string | null }) => {
   const { prediction, loading, insufficientData, totalQuestionsAnswered, confidenceLevel } = useScorePredictor(userId);
   

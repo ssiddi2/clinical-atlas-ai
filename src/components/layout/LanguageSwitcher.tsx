@@ -14,7 +14,7 @@ const LanguageSwitcher = () => {
 
   return (
     <Select value={locale} onValueChange={(v) => setLocale(v as Locale)}>
-      <SelectTrigger className="w-auto gap-1.5 border-white/10 bg-transparent text-white/70 hover:text-white text-xs h-8 px-2.5 focus:ring-0 focus:ring-offset-0 [&>svg]:text-white/40">
+      <SelectTrigger className="w-auto gap-1.5 border-0 bg-transparent text-white/70 hover:text-white text-xs h-8 px-2.5 focus:ring-0 focus:ring-offset-0 [&>svg]:text-white/40">
         <span className="mr-0.5">{current?.flag}</span>
         <SelectValue />
       </SelectTrigger>

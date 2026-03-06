@@ -3,6 +3,7 @@ import { ArrowRight, GraduationCap, Award, TrendingUp, Users, Clock, Target, Che
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "react-router-dom";
+import { useTranslation } from "@/i18n";
 
 const caseStudies = [
   {
@@ -79,14 +80,16 @@ const caseStudies = [
   }
 ];
 
-const stats = [
-  { value: "92%", label: "Match Rate", icon: Target },
-  { value: "500+", label: "Matched IMGs", icon: GraduationCap },
-  { value: "45+", label: "Countries", icon: Users },
-  { value: "35pt", label: "Avg Score Improvement", icon: TrendingUp }
-];
-
 const CaseStudies = () => {
+  const { t } = useTranslation();
+
+  const stats = [
+    { value: "92%", label: t("caseStudies.matchRate"), icon: Target },
+    { value: "500+", label: t("caseStudies.matchedIMGs"), icon: GraduationCap },
+    { value: "45+", label: t("caseStudies.countries"), icon: Users },
+    { value: "35pt", label: t("caseStudies.avgImprovement"), icon: TrendingUp }
+  ];
+
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
@@ -101,15 +104,14 @@ const CaseStudies = () => {
           >
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary mb-6">
               <Award className="w-4 h-4" />
-              <span className="text-sm font-medium">Student Success Stories</span>
+              <span className="text-sm font-medium">{t("caseStudies.badge")}</span>
             </div>
             <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-6">
-              From IMG to{" "}
-              <span className="text-primary">Matched Resident</span>
+              {t("caseStudies.title")}{" "}
+              <span className="text-primary">{t("caseStudies.titleHighlight")}</span>
             </h1>
             <p className="text-xl text-muted-foreground mb-8">
-              Real stories from international medical graduates who transformed their careers 
-              with Livemed Academy's comprehensive training programs.
+              {t("caseStudies.subtitle")}
             </p>
           </motion.div>
 
@@ -158,7 +160,7 @@ const CaseStudies = () => {
                             <h3 className="text-2xl font-bold text-foreground">{study.name}</h3>
                             <p className="text-primary font-medium">{study.currentRole}</p>
                             <p className="text-muted-foreground">{study.institution}</p>
-                            <p className="text-sm text-muted-foreground">From {study.origin}</p>
+                            <p className="text-sm text-muted-foreground">{t("caseStudies.from")} {study.origin}</p>
                           </div>
                         </div>
                         
@@ -166,15 +168,15 @@ const CaseStudies = () => {
                         <div className="grid grid-cols-3 gap-4 mb-6">
                           <div className="bg-background/80 backdrop-blur rounded-xl p-4 text-center">
                             <div className="text-2xl font-bold text-primary">{study.step1Score}</div>
-                            <div className="text-xs text-muted-foreground">Step 1</div>
+                            <div className="text-xs text-muted-foreground">{t("caseStudies.step1")}</div>
                           </div>
                           <div className="bg-background/80 backdrop-blur rounded-xl p-4 text-center">
                             <div className="text-2xl font-bold text-primary">{study.step2Score}</div>
-                            <div className="text-xs text-muted-foreground">Step 2 CK</div>
+                            <div className="text-xs text-muted-foreground">{t("caseStudies.step2CK")}</div>
                           </div>
                           <div className="bg-background/80 backdrop-blur rounded-xl p-4 text-center">
                             <div className="text-2xl font-bold text-primary">{study.matchYear}</div>
-                            <div className="text-xs text-muted-foreground">Matched</div>
+                            <div className="text-xs text-muted-foreground">{t("caseStudies.matched")}</div>
                           </div>
                         </div>
 
@@ -196,7 +198,7 @@ const CaseStudies = () => {
                         
                         <h4 className="font-semibold text-foreground mb-4 flex items-center gap-2">
                           <TrendingUp className="w-5 h-5 text-primary" />
-                          Key Achievements
+                          {t("caseStudies.keyAchievements")}
                         </h4>
                         <ul className="space-y-3">
                           {study.highlights.map((highlight, i) => (
@@ -227,20 +229,20 @@ const CaseStudies = () => {
             className="max-w-3xl mx-auto"
           >
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
-              Ready to Write Your Success Story?
+              {t("caseStudies.readyWrite")}
             </h2>
             <p className="text-xl text-white/80 mb-8">
-              Join hundreds of IMGs who have transformed their medical careers with Livemed Academy.
+              {t("caseStudies.readyWriteDesc")}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" variant="secondary" className="text-primary" asChild>
                 <Link to="/programs">
-                  Explore Programs
+                  {t("caseStudies.explorePrograms")}
                   <ArrowRight className="ml-2 w-5 h-5" />
                 </Link>
               </Button>
               <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10" asChild>
-                <Link to="/contact">Request Information</Link>
+                <Link to="/contact">{t("caseStudies.requestInfo")}</Link>
               </Button>
             </div>
           </motion.div>
