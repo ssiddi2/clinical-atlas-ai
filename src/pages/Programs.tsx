@@ -14,23 +14,26 @@ import {
   CheckCircle,
   ArrowRight,
 } from "lucide-react";
+import { useTranslation } from "@/i18n";
 
 const Programs = () => {
+  const { t } = useTranslation();
+
   const programs = {
     "pre-clinical": {
-      title: "Pre-Clinical Program",
-      subtitle: "Years 1-2",
-      description: "Master foundational medical sciences with AI-enhanced learning, interactive case studies, and comprehensive USMLE Step 1 preparation.",
+      title: t("programs.preClinical"),
+      subtitle: t("programs.preClinical.years"),
+      description: t("programs.preClinical.description"),
       icon: Microscope,
-      duration: "24 months",
+      duration: "24",
       modules: "180+",
       features: [
-        "Organ systems-based curriculum",
-        "Interactive pathophysiology modules",
-        "Histology & anatomy virtual labs",
-        "Biochemistry & pharmacology integration",
-        "Weekly AI-powered assessments",
-        "USMLE Step 1 question banks",
+        t("programs.page.feature.organSystems", "Organ systems-based curriculum"),
+        t("programs.page.feature.pathophysiology", "Interactive pathophysiology modules"),
+        t("programs.page.feature.histology", "Histology & anatomy virtual labs"),
+        t("programs.page.feature.biochemistry", "Biochemistry & pharmacology integration"),
+        t("programs.page.feature.weeklyAI", "Weekly AI-powered assessments"),
+        t("programs.page.feature.step1QB", "USMLE Step 1 question banks"),
       ],
       subjects: [
         "Anatomy & Embryology",
@@ -44,19 +47,19 @@ const Programs = () => {
       ],
     },
     clinical: {
-      title: "Clinical Program",
-      subtitle: "Years 3-4",
-      description: "Develop clinical reasoning and patient care skills through virtual rotations, case-based learning, and USMLE Step 2 CK preparation.",
+      title: t("programs.clinical"),
+      subtitle: t("programs.clinical.years"),
+      description: t("programs.clinical.description"),
       icon: Stethoscope,
-      duration: "24 months",
+      duration: "24",
       modules: "200+",
       features: [
-        "Virtual U.S. clinical rotations",
-        "Real case presentations",
-        "Clinical reasoning curriculum",
-        "OSCE preparation modules",
-        "Note-writing with AI feedback",
-        "USMLE Step 2 CK question banks",
+        t("programs.page.feature.virtualRotations", "Virtual U.S. clinical rotations"),
+        t("programs.page.feature.casePresentations", "Real case presentations"),
+        t("programs.page.feature.clinicalReasoning", "Clinical reasoning curriculum"),
+        t("programs.page.feature.osce", "OSCE preparation modules"),
+        t("programs.page.feature.noteWriting", "Note-writing with AI feedback"),
+        t("programs.page.feature.step2QB", "USMLE Step 2 CK question banks"),
       ],
       subjects: [
         "Internal Medicine",
@@ -70,19 +73,19 @@ const Programs = () => {
       ],
     },
     residency: {
-      title: "Residency Preparation",
-      subtitle: "IMG Track",
-      description: "Comprehensive preparation for U.S. residency matching including mock interviews, personal statement coaching, and clinical skills development.",
+      title: t("programs.residencyPrep"),
+      subtitle: t("programs.residencyPrep.years"),
+      description: t("programs.residencyPrep.description"),
       icon: GraduationCap,
-      duration: "6-12 months",
+      duration: "6-12",
       modules: "80+",
       features: [
-        "U.S. healthcare system orientation",
-        "Mock residency interviews",
-        "Personal statement coaching",
-        "CV building workshop",
-        "Communication skills training",
-        "Residency readiness scoring",
+        t("programs.page.feature.usHealthcare", "U.S. healthcare system orientation"),
+        t("programs.page.feature.mockInterviews", "Mock residency interviews"),
+        t("programs.page.feature.personalStatement", "Personal statement coaching"),
+        t("programs.page.feature.cvBuilding", "CV building workshop"),
+        t("programs.page.feature.commSkills", "Communication skills training"),
+        t("programs.page.feature.readinessScoring", "Residency readiness scoring"),
       ],
       subjects: [
         "ERAS Application Guide",
@@ -96,19 +99,19 @@ const Programs = () => {
       ],
     },
     cme: {
-      title: "CME Programs",
-      subtitle: "Physicians",
-      description: "Continuing medical education for practicing physicians with specialty updates, upskilling modules, and certification maintenance.",
+      title: t("programs.cme"),
+      subtitle: t("programs.cme.years"),
+      description: t("programs.cme.description"),
       icon: Award,
-      duration: "Ongoing",
+      duration: t("programs.page.ongoing", "Ongoing"),
       modules: "500+",
       features: [
-        "CME-accredited courses",
-        "Specialty-specific updates",
-        "AI-powered case reviews",
-        "Evidence-based medicine",
-        "Quality improvement training",
-        "Leadership development",
+        t("programs.page.feature.cmeAccredited", "CME-accredited courses"),
+        t("programs.page.feature.specialtyUpdates", "Specialty-specific updates"),
+        t("programs.page.feature.aiCaseReviews", "AI-powered case reviews"),
+        t("programs.page.feature.ebm", "Evidence-based medicine"),
+        t("programs.page.feature.qi", "Quality improvement training"),
+        t("programs.page.feature.leadership", "Leadership development"),
       ],
       subjects: [
         "Board Review",
@@ -131,11 +134,10 @@ const Programs = () => {
           <div className="container mx-auto px-4 relative">
             <div className="max-w-3xl mx-auto text-center">
               <h1 className="text-4xl md:text-5xl font-bold mb-6">
-                Programs for Every Stage of Your Medical Journey
+                {t("programs.page.title")}
               </h1>
               <p className="text-lg text-muted-foreground mb-8">
-                From foundational sciences to residency preparation and continuing education, 
-                our curriculum is mapped to U.S. standards and delivered through AI-enhanced learning.
+                {t("programs.page.subtitle")}
               </p>
             </div>
           </div>
@@ -146,10 +148,10 @@ const Programs = () => {
           <div className="container mx-auto px-4">
             <Tabs defaultValue="pre-clinical" className="w-full">
               <TabsList className="grid w-full max-w-2xl mx-auto grid-cols-4 mb-12">
-                <TabsTrigger value="pre-clinical">Pre-Clinical</TabsTrigger>
-                <TabsTrigger value="clinical">Clinical</TabsTrigger>
-                <TabsTrigger value="residency">Residency Prep</TabsTrigger>
-                <TabsTrigger value="cme">CME</TabsTrigger>
+                <TabsTrigger value="pre-clinical">{t("programs.preClinical")}</TabsTrigger>
+                <TabsTrigger value="clinical">{t("programs.clinical")}</TabsTrigger>
+                <TabsTrigger value="residency">{t("programs.residencyPrep")}</TabsTrigger>
+                <TabsTrigger value="cme">{t("programs.cme")}</TabsTrigger>
               </TabsList>
 
               {Object.entries(programs).map(([key, program]) => (
@@ -175,18 +177,18 @@ const Programs = () => {
                         <div className="flex items-center gap-2">
                           <Clock className="h-5 w-5 text-accent" />
                           <span className="text-sm">
-                            <strong>{program.duration}</strong> program
+                            <strong>{program.duration}</strong> {t("programs.page.months", "months")} {t("programs.page.program")}
                           </span>
                         </div>
                         <div className="flex items-center gap-2">
                           <BookOpen className="h-5 w-5 text-accent" />
                           <span className="text-sm">
-                            <strong>{program.modules}</strong> modules
+                            <strong>{program.modules}</strong> {t("programs.page.modules")}
                           </span>
                         </div>
                       </div>
 
-                      <h3 className="font-semibold mb-4">What You'll Learn</h3>
+                      <h3 className="font-semibold mb-4">{t("programs.page.whatYoullLearn")}</h3>
                       <div className="grid grid-cols-2 gap-2 mb-8">
                         {program.subjects.map((subject) => (
                           <div key={subject} className="flex items-center gap-2 text-sm">
@@ -198,7 +200,7 @@ const Programs = () => {
 
                       <Button size="lg" className="gradient-livemed" asChild>
                         <Link to="/auth?mode=signup">
-                          Enroll Now
+                          {t("programs.page.enrollNow")}
                           <ArrowRight className="ml-2 h-5 w-5" />
                         </Link>
                       </Button>
@@ -207,9 +209,9 @@ const Programs = () => {
                     {/* Features Card */}
                     <Card className="sticky top-24">
                       <CardHeader>
-                        <CardTitle>Program Features</CardTitle>
+                        <CardTitle>{t("programs.page.programFeatures")}</CardTitle>
                         <CardDescription>
-                          Everything included in the {program.title}
+                          {t("programs.page.everythingIncluded")} {program.title}
                         </CardDescription>
                       </CardHeader>
                       <CardContent>
@@ -227,11 +229,10 @@ const Programs = () => {
                       <div className="mt-8 p-4 bg-muted rounded-lg">
                           <div className="flex items-center gap-3 mb-3">
                             <Brain className="h-5 w-5 text-accent" />
-                            <span className="font-medium">ATLAS™ AI Professor Included</span>
+                            <span className="font-medium">{t("programs.page.atlasIncluded")}</span>
                           </div>
                           <p className="text-sm text-muted-foreground">
-                            Get 24/7 access to your personal AI professor for questions, 
-                            explanations, and guided learning.
+                            {t("programs.page.atlasDesc")}
                           </p>
                         </div>
                       </CardContent>
@@ -246,17 +247,16 @@ const Programs = () => {
         {/* CTA */}
         <section className="py-20 bg-muted/30">
           <div className="container mx-auto px-4 text-center">
-            <h2 className="text-3xl font-bold mb-4">Not Sure Which Program is Right for You?</h2>
+            <h2 className="text-3xl font-bold mb-4">{t("programs.page.notSure")}</h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
-              Our admissions team can help you find the perfect program based on your 
-              current training level and career goals.
+              {t("programs.page.notSureDesc")}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" className="gradient-livemed" asChild>
-                <Link to="/auth?mode=signup">Create Free Account</Link>
+                <Link to="/auth?mode=signup">{t("programs.page.createFreeAccount")}</Link>
               </Button>
               <Button size="lg" variant="outline" asChild>
-                <Link to="/contact">Talk to Admissions</Link>
+                <Link to="/contact">{t("programs.page.talkAdmissions")}</Link>
               </Button>
             </div>
             </div>
