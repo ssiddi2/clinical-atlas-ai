@@ -5,102 +5,56 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Mail,
-  MapPin,
-  Phone,
-  CheckCircle,
-  Building2,
-  GraduationCap,
-  Headphones,
-} from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Mail, MapPin, Phone, CheckCircle, Building2, GraduationCap, Headphones } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { useTranslation } from "@/i18n/LanguageContext";
 
 const Contact = () => {
   const [searchParams] = useSearchParams();
+  const { t } = useTranslation();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    organization: "",
-    role: "",
-    inquiryType: "",
-    message: "",
-  });
+  const [formData, setFormData] = useState({ name: "", email: "", organization: "", role: "", inquiryType: "", message: "" });
 
-  // Pre-fill inquiry type from URL param
   useEffect(() => {
     const type = searchParams.get("type");
-    if (type) {
-      setFormData(prev => ({ ...prev, inquiryType: type }));
-    }
+    if (type) setFormData(prev => ({ ...prev, inquiryType: type }));
   }, [searchParams]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-
     try {
       const { error } = await supabase.from("contact_inquiries").insert({
-        full_name: formData.name,
-        email: formData.email,
-        organization: formData.organization || null,
-        role: formData.role || null,
-        inquiry_type: formData.inquiryType,
-        message: formData.message,
+        full_name: formData.name, email: formData.email, organization: formData.organization || null,
+        role: formData.role || null, inquiry_type: formData.inquiryType, message: formData.message,
       });
-
       if (error) throw error;
-
       setIsSubmitted(true);
-      toast.success("Your message has been sent! We'll be in touch within 24 hours.");
+      toast.success(t("contact.messageSent"));
     } catch (error) {
       console.error("Error submitting form:", error);
-      toast.error("Something went wrong. Please try again.");
+      toast.error(t("contact.somethingWrong"));
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleInputChange = (field: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-  };
+  const handleInputChange = (field: string, value: string) => setFormData((prev) => ({ ...prev, [field]: value }));
 
   const contactInfo = [
-    {
-      icon: Mail,
-      title: "Email",
-      value: "hello@livemed.edu",
-      description: "For general inquiries",
-    },
-    {
-      icon: Phone,
-      title: "Phone",
-      value: "+1 (888) 555-0123",
-      description: "Mon-Fri, 9AM-6PM EST",
-    },
-    {
-      icon: MapPin,
-      title: "Headquarters",
-      value: "Miami, Florida",
-      description: "United States",
-    },
+    { icon: Mail, title: t("contact.email"), value: "hello@livemed.edu", description: t("contact.forGeneral") },
+    { icon: Phone, title: t("contact.phone"), value: "+1 (888) 555-0123", description: t("contact.monFri") },
+    { icon: MapPin, title: t("contact.headquarters"), value: "Miami, Florida", description: t("contact.unitedStates") },
   ];
 
   const inquiryTypes = [
-    { value: "demo", label: "Request a Demo", icon: Building2 },
-    { value: "student", label: "Student Inquiry", icon: GraduationCap },
-    { value: "partnership", label: "Partnership Opportunity", icon: Building2 },
-    { value: "support", label: "Technical Support", icon: Headphones },
+    { value: "demo", label: t("contact.requestDemo"), icon: Building2 },
+    { value: "student", label: t("contact.studentInquiry"), icon: GraduationCap },
+    { value: "partnership", label: t("contact.partnership"), icon: Building2 },
+    { value: "support", label: t("contact.support"), icon: Headphones },
   ];
 
   if (isSubmitted) {
@@ -113,26 +67,10 @@ const Contact = () => {
                 <div className="w-20 h-20 rounded-full gradient-livemed flex items-center justify-center mx-auto mb-6">
                   <CheckCircle className="h-10 w-10 text-white" />
                 </div>
-                <h2 className="text-2xl font-bold mb-4">Message Received!</h2>
-                <p className="text-muted-foreground mb-8">
-                  Thank you for reaching out. Our team will review your inquiry and 
-                  respond within 24 business hours.
-                </p>
-                <Button
-                  onClick={() => {
-                    setIsSubmitted(false);
-                    setFormData({
-                      name: "",
-                      email: "",
-                      organization: "",
-                      role: "",
-                      inquiryType: "",
-                      message: "",
-                    });
-                  }}
-                  variant="outline"
-                >
-                  Send Another Message
+                <h2 className="text-2xl font-bold mb-4">{t("contact.messageReceived")}</h2>
+                <p className="text-muted-foreground mb-8">{t("contact.thankYou")}</p>
+                <Button onClick={() => { setIsSubmitted(false); setFormData({ name: "", email: "", organization: "", role: "", inquiryType: "", message: "" }); }} variant="outline">
+                  {t("contact.sendAnother")}
                 </Button>
               </CardContent>
             </Card>
@@ -144,36 +82,24 @@ const Contact = () => {
 
   return (
     <main className="flex-1">
-      {/* Hero */}
       <section className="relative py-20 md:py-28 overflow-hidden">
         <div className="absolute inset-0 gradient-livemed-light" />
         <div className="container mx-auto px-4 relative">
           <div className="max-w-3xl mx-auto text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-6">
-              Let's Start a Conversation
-            </h1>
-            <p className="text-lg text-muted-foreground">
-              Whether you're an individual student or representing an institution, 
-              we're here to help you transform medical education.
-            </p>
+            <h1 className="text-4xl md:text-5xl font-bold mb-6">{t("contact.title")}</h1>
+            <p className="text-lg text-muted-foreground">{t("contact.subtitle")}</p>
           </div>
         </div>
       </section>
 
-      {/* Contact Form & Info */}
       <section className="py-20">
         <div className="container mx-auto px-4">
           <div className="grid lg:grid-cols-3 gap-12 max-w-6xl mx-auto">
-            {/* Contact Info */}
             <div className="lg:col-span-1 space-y-6">
               <div>
-                <h2 className="text-2xl font-bold mb-4">Get in Touch</h2>
-                <p className="text-muted-foreground">
-                  Have questions about our programs? Want to schedule a demo? 
-                  We'd love to hear from you.
-                </p>
+                <h2 className="text-2xl font-bold mb-4">{t("contact.getInTouch")}</h2>
+                <p className="text-muted-foreground">{t("contact.getInTouchDesc")}</p>
               </div>
-
               <div className="space-y-4">
                 {contactInfo.map((info) => (
                   <Card key={info.title}>
@@ -190,123 +116,65 @@ const Contact = () => {
                   </Card>
                 ))}
               </div>
-
-              {/* Quick Links */}
               <Card className="gradient-livemed text-white">
                 <CardContent className="p-6">
-                  <h3 className="font-semibold mb-3">Looking for something specific?</h3>
+                  <h3 className="font-semibold mb-3">{t("contact.lookingSpecific")}</h3>
                   <ul className="space-y-2 text-sm text-white/80">
-                    <li>• <a href="/pricing" className="hover:text-white underline">View pricing plans</a></li>
-                    <li>• <a href="/programs" className="hover:text-white underline">Explore our programs</a></li>
-                    <li>• <a href="/institutions" className="hover:text-white underline">Institutional partnerships</a></li>
+                    <li>• <a href="/pricing" className="hover:text-white underline">{t("contact.viewPricing")}</a></li>
+                    <li>• <a href="/programs" className="hover:text-white underline">{t("contact.explorePrograms")}</a></li>
+                    <li>• <a href="/institutions" className="hover:text-white underline">{t("contact.institutionalPartnerships")}</a></li>
                   </ul>
                 </CardContent>
               </Card>
             </div>
 
-            {/* Contact Form */}
             <div className="lg:col-span-2">
               <Card>
                 <CardHeader>
-                  <CardTitle>Send Us a Message</CardTitle>
-                  <CardDescription>
-                    Fill out the form below and we'll get back to you within 24 hours.
-                  </CardDescription>
+                  <CardTitle>{t("contact.sendMessage")}</CardTitle>
+                  <CardDescription>{t("contact.sendMessageDesc")}</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="grid md:grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label htmlFor="name">Full Name *</Label>
-                        <Input
-                          id="name"
-                          placeholder="Dr. Jane Smith"
-                          value={formData.name}
-                          onChange={(e) => handleInputChange("name", e.target.value)}
-                          required
-                        />
+                        <Label htmlFor="name">{t("contact.fullName")} *</Label>
+                        <Input id="name" placeholder="Dr. Jane Smith" value={formData.name} onChange={(e) => handleInputChange("name", e.target.value)} required />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="email">Email Address *</Label>
-                        <Input
-                          id="email"
-                          type="email"
-                          placeholder="jane@example.com"
-                          value={formData.email}
-                          onChange={(e) => handleInputChange("email", e.target.value)}
-                          required
-                        />
+                        <Label htmlFor="email">{t("contact.emailAddress")} *</Label>
+                        <Input id="email" type="email" placeholder="jane@example.com" value={formData.email} onChange={(e) => handleInputChange("email", e.target.value)} required />
                       </div>
                     </div>
-
                     <div className="grid md:grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label htmlFor="organization">Organization</Label>
-                        <Input
-                          id="organization"
-                          placeholder="University / Hospital / Self"
-                          value={formData.organization}
-                          onChange={(e) => handleInputChange("organization", e.target.value)}
-                        />
+                        <Label htmlFor="organization">{t("contact.organization")}</Label>
+                        <Input id="organization" placeholder={t("contact.orgPlaceholder")} value={formData.organization} onChange={(e) => handleInputChange("organization", e.target.value)} />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="role">Your Role</Label>
-                        <Input
-                          id="role"
-                          placeholder="Student / Faculty / Administrator"
-                          value={formData.role}
-                          onChange={(e) => handleInputChange("role", e.target.value)}
-                        />
+                        <Label htmlFor="role">{t("contact.yourRole")}</Label>
+                        <Input id="role" placeholder={t("contact.rolePlaceholder")} value={formData.role} onChange={(e) => handleInputChange("role", e.target.value)} />
                       </div>
                     </div>
-
                     <div className="space-y-2">
-                      <Label htmlFor="inquiryType">What can we help you with? *</Label>
-                      <Select
-                        value={formData.inquiryType}
-                        onValueChange={(value) => handleInputChange("inquiryType", value)}
-                        required
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select inquiry type" />
-                        </SelectTrigger>
+                      <Label htmlFor="inquiryType">{t("contact.helpWith")} *</Label>
+                      <Select value={formData.inquiryType} onValueChange={(value) => handleInputChange("inquiryType", value)} required>
+                        <SelectTrigger><SelectValue placeholder={t("contact.selectInquiry")} /></SelectTrigger>
                         <SelectContent>
-                          {inquiryTypes.map((type) => (
-                            <SelectItem key={type.value} value={type.value}>
-                              {type.label}
-                            </SelectItem>
-                          ))}
+                          {inquiryTypes.map((type) => (<SelectItem key={type.value} value={type.value}>{type.label}</SelectItem>))}
                         </SelectContent>
                       </Select>
                     </div>
-
                     <div className="space-y-2">
-                      <Label htmlFor="message">Message *</Label>
-                      <Textarea
-                        id="message"
-                        placeholder="Tell us about your needs, questions, or how we can help..."
-                        rows={5}
-                        value={formData.message}
-                        onChange={(e) => handleInputChange("message", e.target.value)}
-                        required
-                      />
+                      <Label htmlFor="message">{t("contact.message")} *</Label>
+                      <Textarea id="message" placeholder={t("contact.messagePlaceholder")} rows={5} value={formData.message} onChange={(e) => handleInputChange("message", e.target.value)} required />
                     </div>
-
-                    <Button
-                      type="submit"
-                      size="lg"
-                      className="w-full gradient-livemed"
-                      disabled={isSubmitting}
-                    >
-                      {isSubmitting ? "Sending..." : "Send Message"}
+                    <Button type="submit" size="lg" className="w-full gradient-livemed" disabled={isSubmitting}>
+                      {isSubmitting ? t("contact.sending") : t("contact.sendBtn")}
                     </Button>
-
                     <p className="text-xs text-muted-foreground text-center">
-                      By submitting this form, you agree to our{" "}
-                      <a href="/privacy" className="underline hover:text-foreground">
-                        Privacy Policy
-                      </a>
-                      .
+                      {t("contact.agreePrivacy")}{" "}
+                      <a href="/privacy" className="underline hover:text-foreground">{t("auth.privacyPolicy")}</a>.
                     </p>
                   </form>
                 </CardContent>
