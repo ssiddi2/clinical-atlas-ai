@@ -33,6 +33,7 @@ import {
   Stethoscope,
 } from "lucide-react";
 import livemedLogo from "@/assets/livemed-logo-full.png";
+import { useTranslation } from "@/i18n/LanguageContext";
 
 interface DiagnosticQuestion {
   id: number;
@@ -268,6 +269,7 @@ interface StudyPlanRecommendation {
 const DiagnosticAssessment = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { t } = useTranslation();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   

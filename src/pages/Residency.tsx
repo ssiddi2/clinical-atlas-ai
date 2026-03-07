@@ -20,9 +20,11 @@ import {
   Users,
 } from "lucide-react";
 import livemedLogo from "@/assets/livemed-logo-full.png";
+import { useTranslation } from "@/i18n/LanguageContext";
 
 const Residency = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -109,7 +111,7 @@ const Residency = () => {
               <img src={livemedLogo} alt="Livemed" style={{ height: '80px', width: 'auto' }} className="object-contain" />
             </Link>
           </div>
-          <h1 className="text-lg font-semibold">Residency Readiness</h1>
+          <h1 className="text-lg font-semibold">{t("residency.title")}</h1>
           <div className="w-20" /> {/* Spacer for centering */}
         </div>
       </header>
@@ -123,10 +125,9 @@ const Residency = () => {
               <div className="text-sm opacity-80">Ready</div>
             </div>
           </div>
-          <h2 className="text-2xl font-bold mb-2">Your Residency Readiness Score</h2>
+          <h2 className="text-2xl font-bold mb-2">{t("residency.yourScore")}</h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            Based on your curriculum progress, assessment scores, clinical reasoning, and rotation performance.
-            Keep learning to improve your match competitiveness!
+            {t("residency.scoreDesc")}
           </p>
         </div>
 

@@ -27,6 +27,7 @@ import {
 } from "lucide-react";
 import livemedLogo from "@/assets/livemed-logo-full.png";
 import { format, parseISO, isAfter, isBefore, addHours } from "date-fns";
+import { useTranslation } from "@/i18n/LanguageContext";
 
 interface RotationSession {
   id: string;
@@ -58,6 +59,7 @@ interface Specialty {
 const VirtualRounds = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { t } = useTranslation();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [sessions, setSessions] = useState<RotationSession[]>([]);

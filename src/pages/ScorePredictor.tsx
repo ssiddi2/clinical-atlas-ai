@@ -22,11 +22,13 @@ import { ScoreHistory } from '@/components/score/ScoreHistory';
 import { ContributingFactors } from '@/components/score/ContributingFactors';
 import { PeerComparison } from '@/components/score/PeerComparison';
 import livemedLogo from '@/assets/livemed-logo.png';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 const MINIMUM_QUESTIONS = 25;
 
 const ScorePredictor = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
@@ -66,7 +68,7 @@ const ScorePredictor = () => {
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
           <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin" />
-          <p className="text-muted-foreground">Calculating your MATCH Ready™ Score...</p>
+          <p className="text-muted-foreground">{t("score.calculating")}</p>
         </div>
       </div>
     );
@@ -159,7 +161,7 @@ const ScorePredictor = () => {
             </div>
             <h1 className="text-lg sm:text-xl font-semibold text-foreground flex items-center gap-2">
               <Sparkles className="w-5 h-5 text-primary" />
-              MATCH Ready™ Performance Tracker
+              {t("score.title")}
             </h1>
           </div>
         </div>
@@ -169,8 +171,7 @@ const ScorePredictor = () => {
       <div className="pt-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="p-3 rounded-lg bg-amber-500/10 border border-amber-500/20 text-center">
           <p className="text-xs sm:text-sm text-amber-200/80">
-            <strong>Educational Tool:</strong> These performance insights are based on your platform activity and are not predictive of actual USMLE outcomes. 
-            Consult official NBME resources for exam preparation guidance.
+            <strong>{t("score.disclaimer")}</strong> {t("score.disclaimerText")}
           </p>
         </div>
       </div>
