@@ -25,6 +25,7 @@ import {
   Loader2,
 } from "lucide-react";
 import livemedLogo from "@/assets/livemed-logo-full.png";
+import { useTranslation } from "@/i18n/LanguageContext";
 
 interface Specialty {
   id: string;
@@ -64,6 +65,7 @@ const iconMap: { [key: string]: React.ElementType } = {
 
 const Curriculum = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [specialties, setSpecialties] = useState<Specialty[]>([]);
@@ -180,7 +182,7 @@ const Curriculum = () => {
             </Link>
             <div className="flex items-center gap-2">
               <BookOpen className="h-5 w-5 text-accent" />
-              <h1 className="font-semibold">Curriculum</h1>
+              <h1 className="font-semibold">{t("curriculum.title")}</h1>
             </div>
           </div>
           <Link to="/dashboard">
@@ -216,8 +218,8 @@ const Curriculum = () => {
           <aside className="hidden lg:block lg:col-span-1">
             <Card className="sticky top-24">
               <CardHeader className="pb-3">
-                <CardTitle className="text-lg">Specialties</CardTitle>
-                <CardDescription>Select a specialty to view modules</CardDescription>
+                <CardTitle className="text-lg">{t("curriculum.specialties")}</CardTitle>
+                <CardDescription>{t("curriculum.selectSpecialty")}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-2">
                 {specialties.map((specialty) => {
@@ -281,17 +283,17 @@ const Curriculum = () => {
                       <div className="flex items-center gap-6 text-sm">
                         <div className="flex items-center gap-2">
                           <BookOpen className="h-4 w-4 text-accent" />
-                          <span>{filteredModules.length} modules</span>
+                          <span>{filteredModules.length} {t("curriculum.modules")}</span>
                         </div>
                         <div className="flex items-center gap-2">
                           <Clock className="h-4 w-4 text-accent" />
                           <span>
-                            {filteredModules.reduce((acc, m) => acc + m.duration_minutes, 0)} min total
+                            <span>{filteredModules.reduce((acc, m) => acc + m.duration_minutes, 0)} {t("curriculum.minTotal")}</span>
                           </span>
                         </div>
                         <div className="flex items-center gap-2">
                           <CheckCircle className="h-4 w-4 text-accent" />
-                          <span>{getSpecialtyProgress(selectedSpecialty)}% complete</span>
+                          <span>{getSpecialtyProgress(selectedSpecialty)}{t("curriculum.percentComplete")}</span>
                         </div>
                       </div>
                     </div>
@@ -301,9 +303,9 @@ const Curriculum = () => {
                 {/* Module List */}
                 <Tabs defaultValue="all">
                   <TabsList className="mb-6">
-                    <TabsTrigger value="all">All Modules</TabsTrigger>
-                    <TabsTrigger value="lessons">Lessons</TabsTrigger>
-                    <TabsTrigger value="quizzes">Quizzes</TabsTrigger>
+                    <TabsTrigger value="all">{t("curriculum.allModules")}</TabsTrigger>
+                    <TabsTrigger value="lessons">{t("curriculum.lessons")}</TabsTrigger>
+                    <TabsTrigger value="quizzes">{t("curriculum.quizzes")}</TabsTrigger>
                   </TabsList>
 
                   <TabsContent value="all" className="space-y-4">

@@ -10,11 +10,13 @@ import { useQBankSession } from '@/hooks/useQBankSession';
 import TestModeSelector from '@/components/qbank/TestModeSelector';
 import FilterPanel from '@/components/qbank/FilterPanel';
 import { supabase } from '@/integrations/supabase/client';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 export default function QBankCreate() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { createSession, isLoading } = useQBankSession();
+  const { t } = useTranslation();
 
   const [mode, setMode] = useState<'tutor' | 'timed'>('tutor');
   const [questionCount, setQuestionCount] = useState(20);
@@ -98,8 +100,8 @@ export default function QBankCreate() {
               <ArrowLeft className="h-5 w-5" />
             </Button>
             <div>
-              <h1 className="text-xl font-semibold text-foreground">Create Test</h1>
-              <p className="text-sm text-muted-foreground">Configure your practice session</p>
+              <h1 className="text-xl font-semibold text-foreground">{t("qbank.createTest")}</h1>
+              <p className="text-sm text-muted-foreground">{t("qbank.configureSession")}</p>
             </div>
           </div>
         </div>
@@ -111,13 +113,13 @@ export default function QBankCreate() {
           <div className="lg:col-span-2 space-y-8">
             {/* Test Mode */}
             <section>
-              <h2 className="text-lg font-semibold text-foreground mb-4">Test Mode</h2>
+              <h2 className="text-lg font-semibold text-foreground mb-4">{t("qbank.testMode")}</h2>
               <TestModeSelector selectedMode={mode} onSelectMode={setMode} />
             </section>
 
             {/* Question Count */}
             <section>
-              <h2 className="text-lg font-semibold text-foreground mb-4">Number of Questions</h2>
+              <h2 className="text-lg font-semibold text-foreground mb-4">{t("qbank.numberOfQuestions")}</h2>
               <Card className="p-6">
                 <div className="flex flex-wrap gap-3 mb-6">
                   {PRESET_COUNTS.map((count) => (
@@ -131,7 +133,7 @@ export default function QBankCreate() {
                     </Button>
                   ))}
                   <div className="flex items-center gap-2">
-                    <Label className="text-muted-foreground">Custom:</Label>
+                    <Label className="text-muted-foreground">{t("qbank.custom")}</Label>
                     <Input
                       type="number"
                       min={1}
@@ -154,7 +156,7 @@ export default function QBankCreate() {
                 
                 <div className="flex justify-between text-sm text-muted-foreground">
                   <span>1</span>
-                  <span>{availableCount} available</span>
+                  <span>{availableCount} {t("qbank.available")}</span>
                 </div>
               </Card>
             </section>
@@ -162,7 +164,7 @@ export default function QBankCreate() {
             {/* Time Limit (Timed Mode Only) */}
             {mode === 'timed' && (
               <section>
-                <h2 className="text-lg font-semibold text-foreground mb-4">Time Limit</h2>
+                <h2 className="text-lg font-semibold text-foreground mb-4">{t("qbank.timeLimit")}</h2>
                 <Card className="p-6">
                   <div className="flex flex-wrap gap-3 mb-6">
                     {[15, 30, 45, 60].map((mins) => (
@@ -191,7 +193,7 @@ export default function QBankCreate() {
                   </div>
                   
                   <p className="text-sm text-muted-foreground mt-4">
-                    Recommended: ~1.5 minutes per question ({Math.round(questionCount * 1.5)} min for {questionCount} questions)
+                    {t("qbank.recommendedTime").replace("{time}", String(Math.round(questionCount * 1.5))).replace("{count}", String(questionCount))}
                   </p>
                 </Card>
               </section>
@@ -200,24 +202,24 @@ export default function QBankCreate() {
 
           {/* Filters Sidebar */}
           <div>
-            <h2 className="text-lg font-semibold text-foreground mb-4">Filters</h2>
+            <h2 className="text-lg font-semibold text-foreground mb-4">{t("qbank.filters")}</h2>
             <FilterPanel onFiltersChange={handleFiltersChange} />
 
             {/* Start Button */}
             <Card className="p-6 mt-6 sticky top-4">
               <div className="text-center mb-4">
-                <p className="text-sm text-muted-foreground mb-1">Ready to start</p>
+                <p className="text-sm text-muted-foreground mb-1">{t("qbank.readyToStart")}</p>
                 <p className="text-2xl font-bold text-foreground">
-                  {Math.min(questionCount, availableCount)} Questions
+                  {Math.min(questionCount, availableCount)} {t("qbank.questions")}
                 </p>
                 {mode === 'timed' && (
-                  <p className="text-sm text-muted-foreground">{timeLimitMinutes} minute time limit</p>
+                  <p className="text-sm text-muted-foreground">{timeLimitMinutes} {t("qbank.timeLimit").toLowerCase()}</p>
                 )}
               </div>
               
               {availableCount === 0 && !isCheckingCount && (
                 <p className="text-sm text-red-400 text-center mb-4">
-                  No questions match your filters. Try adjusting your selection.
+                  {t("qbank.noQuestionsMatch")}
                 </p>
               )}
 
@@ -228,7 +230,7 @@ export default function QBankCreate() {
                 size="lg"
               >
                 <Play className="h-5 w-5" />
-                {isLoading ? 'Creating...' : 'Start Test'}
+                {isLoading ? t("qbank.creating") : t("qbank.startTest")}
               </Button>
             </Card>
           </div>

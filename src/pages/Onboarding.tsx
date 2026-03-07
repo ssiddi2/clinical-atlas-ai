@@ -11,6 +11,7 @@ import { Send, Loader2, Upload, CheckCircle2, FileText, ArrowRight, Bot, User as
 import { motion, AnimatePresence } from "framer-motion";
 import livemedLogoIcon from "@/assets/livemed-logo-icon.png";
 import DocumentUpload from "@/components/onboarding/DocumentUpload";
+import { useTranslation } from "@/i18n/LanguageContext";
 
 interface Message {
   role: "user" | "assistant";
@@ -30,6 +31,7 @@ const STEPS = [
 const Onboarding = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { t } = useTranslation();
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const [user, setUser] = useState<User | null>(null);
@@ -212,7 +214,7 @@ const Onboarding = () => {
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="h-8 w-8 animate-spin mx-auto text-primary" />
-          <p className="mt-4 text-muted-foreground">Setting up your profile...</p>
+          <p className="mt-4 text-muted-foreground">{t("onboarding.settingUp")}</p>
         </div>
       </div>
     );
@@ -228,7 +230,7 @@ const Onboarding = () => {
             <span className="font-semibold text-lg">Livemed Academy</span>
           </Link>
           <div className="text-sm text-muted-foreground">
-            Complete your profile
+            {t("onboarding.completeProfile")}
           </div>
         </div>
       </header>
@@ -237,8 +239,8 @@ const Onboarding = () => {
       <div className="container mx-auto px-4 py-4">
         <div className="max-w-3xl mx-auto">
           <div className="flex items-center justify-between mb-2 text-sm">
-            <span className="text-muted-foreground">Profile Setup</span>
-            <span className="font-medium">{currentProgress}% Complete</span>
+            <span className="text-muted-foreground">{t("onboarding.profileSetup")}</span>
+            <span className="font-medium">{currentProgress}% {t("onboarding.complete")}</span>
           </div>
           <Progress value={currentProgress} className="h-2" />
           <div className="flex justify-between mt-2">
@@ -328,12 +330,12 @@ const Onboarding = () => {
             {documentsUploaded && (
               <div className="border-t border-border/40 p-6 text-center">
                 <CheckCircle2 className="h-12 w-12 text-green-500 mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">Profile Complete!</h3>
+                <h3 className="text-lg font-semibold mb-2">{t("onboarding.profileComplete")}</h3>
                 <p className="text-muted-foreground mb-4">
-                  Your documents have been submitted for verification. You'll have full access once verified (usually within 24-48 hours).
+                  {t("onboarding.docsSubmitted")}
                 </p>
                 <Button onClick={handleContinueToDashboard} className="gradient-livemed">
-                  Continue to Dashboard
+                  {t("onboarding.continueToDashboard")}
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </div>
@@ -347,7 +349,7 @@ const Onboarding = () => {
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     onKeyPress={handleKeyPress}
-                    placeholder="Type your response..."
+                    placeholder={t("onboarding.typeResponse")}
                     disabled={sending}
                     className="flex-1"
                   />
@@ -377,7 +379,7 @@ const Onboarding = () => {
                 onClick={() => setInput("I'd prefer to skip this question for now")}
                 className="text-xs"
               >
-                Skip this question
+                {t("onboarding.skipQuestion")}
               </Button>
               <Button
                 variant="outline"
@@ -385,7 +387,7 @@ const Onboarding = () => {
                 onClick={() => navigate("/dashboard")}
                 className="text-xs"
               >
-                Complete later
+                {t("onboarding.completeLater")}
               </Button>
             </div>
           )}
