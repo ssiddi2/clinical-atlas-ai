@@ -18,6 +18,7 @@ import {
   BookOpen,
 } from "lucide-react";
 import livemedLogo from "@/assets/livemed-logo-full.png";
+import { useTranslation } from "@/i18n/LanguageContext";
 
 interface Message {
   id: string;
@@ -140,6 +141,7 @@ async function streamAtlasChat({
 
 const Atlas = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
@@ -339,10 +341,10 @@ const Atlas = () => {
   }
 
   const suggestedPrompts = [
-    "Explain the pathophysiology of heart failure",
-    "What's the differential for chest pain?",
-    "Help me understand EKG interpretation",
-    "Review USMLE Step 1 cardiology concepts",
+    t("atlas.prompt1"),
+    t("atlas.prompt2"),
+    t("atlas.prompt3"),
+    t("atlas.prompt4"),
   ];
 
   return (
@@ -352,11 +354,11 @@ const Atlas = () => {
         <div className="p-4 border-b border-border">
           <Link to="/dashboard" className="flex items-center gap-2 text-muted-foreground hover:text-foreground mb-4">
             <ArrowLeft className="h-4 w-4" />
-            <span className="text-sm">Back to Dashboard</span>
+            <span className="text-sm">{t("atlas.backToDashboard")}</span>
           </Link>
           <Button onClick={createNewConversation} className="w-full gradient-livemed">
             <Plus className="h-4 w-4 mr-2" />
-            New Conversation
+            {t("atlas.newConversation")}
           </Button>
         </div>
         <ScrollArea className="flex-1">
@@ -393,7 +395,7 @@ const Atlas = () => {
             </div>
             <div>
               <h1 className="font-semibold text-sm md:text-base">ATLAS™</h1>
-              <p className="text-xs text-muted-foreground hidden sm:block">AI Professor</p>
+              <p className="text-xs text-muted-foreground hidden sm:block">{t("atlas.aiProfessor")}</p>
             </div>
           </div>
           <Link to="/dashboard" className="hidden md:block">
@@ -407,10 +409,9 @@ const Atlas = () => {
               <div className="w-16 h-16 md:w-20 md:h-20 rounded-full gradient-livemed flex items-center justify-center mb-4 md:mb-6">
                 <Sparkles className="h-8 w-8 md:h-10 md:w-10 text-white" />
               </div>
-              <h2 className="text-xl md:text-2xl font-bold mb-2">Meet ATLAS™</h2>
+              <h2 className="text-xl md:text-2xl font-bold mb-2">{t("atlas.meetAtlas")}</h2>
               <p className="text-muted-foreground mb-6 md:mb-8 max-w-md text-sm md:text-base">
-                Your AI Professor is ready to teach. Ask questions about any medical topic, 
-                work through clinical cases, or prepare for your exams.
+                {t("atlas.readyToTeach")}
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 md:gap-3 max-w-lg w-full">
                 {suggestedPrompts.map((prompt) => (
@@ -480,7 +481,7 @@ const Atlas = () => {
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="Ask ATLAS anything about medicine..."
+                placeholder={t("atlas.askAnything")}
                 className="min-h-[60px] max-h-[200px] pr-14 resize-none"
                 disabled={sending}
               />

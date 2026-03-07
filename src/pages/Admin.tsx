@@ -10,12 +10,14 @@ import PendingVerifications from "@/components/admin/PendingVerifications";
 import PendingApprovals from "@/components/admin/PendingApprovals";
 import CreateUserModal from "@/components/admin/CreateUserModal";
 import { Database } from "@/integrations/supabase/types";
+import { useTranslation } from "@/i18n/LanguageContext";
 
 type Profile = Database["public"]["Tables"]["profiles"]["Row"];
 type StudentDocument = Database["public"]["Tables"]["student_documents"]["Row"];
 
 const Admin = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
