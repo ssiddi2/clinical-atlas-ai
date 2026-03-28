@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Lock, Stethoscope, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 interface UpgradePromptProps {
   feature: string;
@@ -11,14 +12,15 @@ interface UpgradePromptProps {
 }
 
 export function UpgradePrompt({ feature, description, compact = false }: UpgradePromptProps) {
+  const { t } = useTranslation();
   const defaultDescriptions: Record<string, string> = {
-    virtualRounds: 'Join live telemedicine rounds with US physicians and earn clinical hours.',
-    rotationExperience: 'Experience authentic clinical cases with real-time feedback.',
-    residencyPrep: 'Access the full residency readiness program including CV review and mock interviews.',
-    lor: 'Request letters of recommendation from faculty who have observed your clinical work.',
+    virtualRounds: t('dashboard.upgrade.virtualRounds', 'Join live telemedicine rounds with US physicians and earn clinical hours.'),
+    rotationExperience: t('dashboard.upgrade.rotationExperience', 'Experience authentic clinical cases with real-time feedback.'),
+    residencyPrep: t('dashboard.upgrade.residencyPrep', 'Access the full residency readiness program including CV review and mock interviews.'),
+    lor: t('dashboard.upgrade.lor', 'Request letters of recommendation from faculty who have observed your clinical work.'),
   };
 
-  const desc = description || defaultDescriptions[feature] || 'Upgrade to Clinical tier to unlock this feature.';
+  const desc = description || defaultDescriptions[feature] || t('dashboard.upgrade.defaultDesc', 'Upgrade to Clinical tier to unlock this feature.');
 
   if (compact) {
     return (
@@ -32,13 +34,13 @@ export function UpgradePrompt({ feature, description, compact = false }: Upgrade
             <Lock className="w-4 h-4 text-primary" />
           </div>
           <div>
-            <p className="text-sm font-medium text-foreground">Clinical Access Required</p>
+            <p className="text-sm font-medium text-foreground">{t("dashboard.upgrade.clinicalRequired")}</p>
             <p className="text-xs text-muted-foreground">{desc}</p>
           </div>
         </div>
         <Button size="sm" variant="outline" asChild>
           <Link to="/contact?type=upgrade">
-            Learn More
+            {t("dashboard.upgrade.learnMore")}
           </Link>
         </Button>
       </motion.div>
@@ -59,7 +61,7 @@ export function UpgradePrompt({ feature, description, compact = false }: Upgrade
           </div>
           
           <h3 className="text-xl font-bold text-foreground mb-2">
-            Upgrade to Clinical Access
+            {t("dashboard.upgrade.upgradeTitle")}
           </h3>
           
           <p className="text-muted-foreground mb-6">
@@ -69,12 +71,12 @@ export function UpgradePrompt({ feature, description, compact = false }: Upgrade
           <div className="space-y-3">
             <Button className="w-full gradient-livemed" asChild>
               <Link to="/contact?type=upgrade">
-                Request Clinical Access
+                {t("dashboard.upgrade.requestAccess")}
                 <ArrowRight className="w-4 h-4 ml-2" />
               </Link>
             </Button>
             <p className="text-xs text-muted-foreground">
-              Clinical access requires document verification and admin approval.
+              {t("dashboard.upgrade.note")}
             </p>
           </div>
         </CardContent>

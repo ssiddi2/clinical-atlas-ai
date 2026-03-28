@@ -1,6 +1,7 @@
 import { Clock, BookOpen, Timer, Zap } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 interface TestModeSelectorProps {
   selectedMode: 'tutor' | 'timed';
@@ -8,6 +9,7 @@ interface TestModeSelectorProps {
 }
 
 export default function TestModeSelector({ selectedMode, onSelectMode }: TestModeSelectorProps) {
+  const { t } = useTranslation();
   return (
     <div className="grid md:grid-cols-2 gap-4">
       {/* Tutor Mode */}
@@ -30,22 +32,22 @@ export default function TestModeSelector({ selectedMode, onSelectMode }: TestMod
             <BookOpen className="h-6 w-6" />
           </div>
           <div className="flex-1">
-            <h3 className="text-lg font-semibold text-foreground mb-1">Tutor Mode</h3>
+            <h3 className="text-lg font-semibold text-foreground mb-1">{t("qbank.testMode.tutor")}</h3>
             <p className="text-sm text-muted-foreground mb-3">
-              Get immediate feedback after each question. Best for learning and reviewing concepts.
+              {t("qbank.testMode.tutorDesc")}
             </p>
             <ul className="space-y-1">
               <li className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Zap className="h-3 w-3 text-primary" />
-                Instant explanations
+                {t("qbank.testMode.instantExplanations")}
               </li>
               <li className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Zap className="h-3 w-3 text-primary" />
-                Learn as you go
+                {t("qbank.testMode.learnAsYouGo")}
               </li>
               <li className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Zap className="h-3 w-3 text-primary" />
-                No time pressure
+                {t("qbank.testMode.noTimePressure")}
               </li>
             </ul>
           </div>
@@ -72,22 +74,22 @@ export default function TestModeSelector({ selectedMode, onSelectMode }: TestMod
             <Timer className="h-6 w-6" />
           </div>
           <div className="flex-1">
-            <h3 className="text-lg font-semibold text-foreground mb-1">Timed Mode</h3>
+            <h3 className="text-lg font-semibold text-foreground mb-1">{t("qbank.testMode.timed")}</h3>
             <p className="text-sm text-muted-foreground mb-3">
-              Simulate real exam conditions. See explanations only after completing the block.
+              {t("qbank.testMode.timedDesc")}
             </p>
             <ul className="space-y-1">
               <li className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Clock className="h-3 w-3 text-primary" />
-                USMLE-realistic timing
+                {t("qbank.testMode.realisticTiming")}
               </li>
               <li className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Clock className="h-3 w-3 text-primary" />
-                1.5 min/question average
+                {t("qbank.testMode.avgTime")}
               </li>
               <li className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Clock className="h-3 w-3 text-primary" />
-                Review all at the end
+                {t("qbank.testMode.reviewAtEnd")}
               </li>
             </ul>
           </div>

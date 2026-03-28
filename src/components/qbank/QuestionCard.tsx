@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { SessionQuestion } from '@/hooks/useQBankSession';
 import AnswerOption from './AnswerOption';
+import { useTranslation } from '@/i18n/LanguageContext';
 
 interface QuestionCardProps {
   question: SessionQuestion;
@@ -37,6 +38,7 @@ export default function QuestionCard({
   onPrev,
   isSubmitting,
 }: QuestionCardProps) {
+  const { t } = useTranslation();
   const hasAnswered = question.isCorrect !== undefined;
   const canSubmit = selectedAnswer !== undefined && !hasAnswered && mode === 'tutor';
 
@@ -55,7 +57,7 @@ export default function QuestionCard({
       <div className="flex items-center justify-between p-4 border-b border-border bg-card/50">
         <div className="flex items-center gap-3">
           <span className="text-sm text-muted-foreground">
-            Question {questionNumber} of {totalQuestions}
+            {t("qbank.questionXofY").replace("{x}", String(questionNumber)).replace("{y}", String(totalQuestions))}
           </span>
           <Badge variant="outline" className={cn('text-xs', getDifficultyColor(question.difficulty))}>
             {question.difficulty}
@@ -89,7 +91,7 @@ export default function QuestionCard({
       <div className="flex-1 overflow-y-auto p-6">
         <Card className="p-6 bg-card/50 border-border mb-6">
           <div className="text-sm text-muted-foreground mb-2">
-            ID: {question.question_id}
+            {t("qbank.questionId")} {question.question_id}
           </div>
           <div className="prose prose-invert max-w-none">
             <p className="text-foreground leading-relaxed whitespace-pre-wrap">
@@ -127,7 +129,7 @@ export default function QuestionCard({
         {showExplanation && (
           <Card className="mt-6 p-6 bg-card/50 border-border">
             <h3 className="text-lg font-semibold text-foreground mb-3">
-              Explanation
+              {t("qbank.explanation")}
             </h3>
             <div className="prose prose-invert max-w-none">
               <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">
@@ -144,7 +146,7 @@ export default function QuestionCard({
             {question.first_aid_reference && (
               <div className="mt-4 pt-4 border-t border-border">
                 <span className="text-sm text-muted-foreground">
-                  First Aid Reference: {question.first_aid_reference}
+                  {t("qbank.firstAidRef")} {question.first_aid_reference}
                 </span>
               </div>
             )}
@@ -160,7 +162,7 @@ export default function QuestionCard({
           disabled={questionNumber === 1}
         >
           <ChevronLeft className="h-4 w-4 mr-1" />
-          Previous
+          {t("common.previous")}
         </Button>
 
         <div className="flex items-center gap-2">
@@ -170,7 +172,7 @@ export default function QuestionCard({
               disabled={isSubmitting}
               className="bg-primary hover:bg-primary/90"
             >
-              {isSubmitting ? 'Submitting...' : 'Submit Answer'}
+              {isSubmitting ? t("qbank.submittingAnswer") : t("qbank.submitAnswer")}
             </Button>
           )}
         </div>
@@ -180,7 +182,7 @@ export default function QuestionCard({
           onClick={onNext}
           disabled={questionNumber === totalQuestions}
         >
-          Next
+          {t("common.next")}
           <ChevronRight className="h-4 w-4 ml-1" />
         </Button>
       </div>
