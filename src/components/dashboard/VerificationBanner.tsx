@@ -1,6 +1,7 @@
 import { AlertCircle, CheckCircle2, Clock, XCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { useTranslation } from "@/i18n/LanguageContext";
 
 interface VerificationBannerProps {
   status: 'pending' | 'verified' | 'rejected' | null;
@@ -8,6 +9,7 @@ interface VerificationBannerProps {
 }
 
 const VerificationBanner = ({ status, onboardingCompleted }: VerificationBannerProps) => {
+  const { t } = useTranslation();
   // Don't show banner if verified
   if (status === 'verified') return null;
 
@@ -18,12 +20,12 @@ const VerificationBanner = ({ status, onboardingCompleted }: VerificationBannerP
         <div className="flex items-start gap-3">
           <AlertCircle className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
           <div className="flex-1">
-            <h4 className="font-medium text-sm mb-1">Complete Your Profile</h4>
+            <h4 className="font-medium text-sm mb-1">{t("dashboard.verification.completeProfile")}</h4>
             <p className="text-sm text-muted-foreground mb-3">
-              Finish setting up your student profile to unlock all features and verify your account.
+              {t("dashboard.verification.completeProfileDesc")}
             </p>
             <Button asChild size="sm" className="gradient-livemed">
-              <Link to="/onboarding">Complete Profile</Link>
+              <Link to="/onboarding">{t("dashboard.verification.completeProfileBtn")}</Link>
             </Button>
           </div>
         </div>
@@ -38,9 +40,9 @@ const VerificationBanner = ({ status, onboardingCompleted }: VerificationBannerP
         <div className="flex items-start gap-3">
           <Clock className="h-5 w-5 text-amber-500 flex-shrink-0 mt-0.5" />
           <div className="flex-1">
-            <h4 className="font-medium text-sm mb-1">Verification Pending</h4>
+            <h4 className="font-medium text-sm mb-1">{t("dashboard.verification.pending")}</h4>
             <p className="text-sm text-muted-foreground">
-              Your documents are being reviewed. You have access to limited features while we verify your student status. This typically takes 24-48 hours.
+              {t("dashboard.verification.pendingDesc")}
             </p>
           </div>
         </div>
@@ -55,16 +57,16 @@ const VerificationBanner = ({ status, onboardingCompleted }: VerificationBannerP
         <div className="flex items-start gap-3">
           <XCircle className="h-5 w-5 text-destructive flex-shrink-0 mt-0.5" />
           <div className="flex-1">
-            <h4 className="font-medium text-sm mb-1">Verification Failed</h4>
+            <h4 className="font-medium text-sm mb-1">{t("dashboard.verification.failed")}</h4>
             <p className="text-sm text-muted-foreground mb-3">
-              We couldn't verify your student status with the documents provided. Please upload clearer documents or contact support for assistance.
+              {t("dashboard.verification.failedDesc")}
             </p>
             <div className="flex gap-2">
               <Button asChild size="sm" variant="outline">
-                <Link to="/onboarding">Upload New Documents</Link>
+                <Link to="/onboarding">{t("dashboard.verification.uploadNew")}</Link>
               </Button>
               <Button asChild size="sm" variant="ghost">
-                <Link to="/contact">Contact Support</Link>
+                <Link to="/contact">{t("dashboard.verification.contactSupport")}</Link>
               </Button>
             </div>
           </div>

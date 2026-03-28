@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Users, UserCheck, UserX, Clock, UserPlus, Ban } from "lucide-react";
+import { useTranslation } from "@/i18n/LanguageContext";
 
 interface AdminStatsProps {
   pending: number;
@@ -20,30 +21,31 @@ const AdminStats = ({
   approved = 0,
   suspended = 0,
 }: AdminStatsProps) => {
+  const { t } = useTranslation();
   const accountStats = [
     {
-      title: "Pending Approval",
+      title: t("admin.stats.pendingApproval"),
       value: pendingApproval,
       icon: UserPlus,
       color: "text-orange-500",
       bgColor: "bg-orange-500/10",
     },
     {
-      title: "Approved Accounts",
+      title: t("admin.stats.approvedAccounts"),
       value: approved,
       icon: UserCheck,
       color: "text-green-500",
       bgColor: "bg-green-500/10",
     },
     {
-      title: "Suspended",
+      title: t("admin.stats.suspended"),
       value: suspended,
       icon: Ban,
       color: "text-red-500",
       bgColor: "bg-red-500/10",
     },
     {
-      title: "Total Users",
+      title: t("admin.stats.totalUsers"),
       value: total,
       icon: Users,
       color: "text-primary",
@@ -53,21 +55,21 @@ const AdminStats = ({
 
   const verificationStats = [
     {
-      title: "Pending Verification",
+      title: t("admin.stats.pendingVerification"),
       value: pending,
       icon: Clock,
       color: "text-yellow-500",
       bgColor: "bg-yellow-500/10",
     },
     {
-      title: "Verified Students",
+      title: t("admin.stats.verifiedStudents"),
       value: verified,
       icon: UserCheck,
       color: "text-emerald-500",
       bgColor: "bg-emerald-500/10",
     },
     {
-      title: "Rejected",
+      title: t("admin.stats.rejected"),
       value: rejected,
       icon: UserX,
       color: "text-rose-500",
@@ -79,7 +81,7 @@ const AdminStats = ({
     <div className="space-y-6">
       {/* Account Approval Stats */}
       <div>
-        <h3 className="text-sm font-medium text-muted-foreground mb-3">Account Status</h3>
+        <h3 className="text-sm font-medium text-muted-foreground mb-3">{t("admin.stats.accountStatus")}</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {accountStats.map((stat) => (
             <Card key={stat.title}>
@@ -101,7 +103,7 @@ const AdminStats = ({
 
       {/* Verification Stats */}
       <div>
-        <h3 className="text-sm font-medium text-muted-foreground mb-3">Document Verification</h3>
+        <h3 className="text-sm font-medium text-muted-foreground mb-3">{t("admin.stats.docVerification")}</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {verificationStats.map((stat) => (
             <Card key={stat.title}>
