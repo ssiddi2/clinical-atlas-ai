@@ -882,6 +882,8 @@
   "physician.virtualRoundsDesc": "Lead clinical case discussions",
   "physician.writeLOR": "Write LOR",
   "physician.writeLORDesc": "Recommend a student",
+  "physician.notificationsComingSoon": "Notifications feature is coming soon.",
+  "physician.lorComingSoon": "Letter of Recommendation feature is coming soon.",
 
   "classroom.title": "Virtual Classroom",
   "classroom.subtitle": "Browse and enroll in live lectures from teaching physicians.",
