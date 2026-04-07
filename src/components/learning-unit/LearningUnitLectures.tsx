@@ -77,14 +77,13 @@ export default function LearningUnitLectures({ topicId, courseId, isInstructor }
         </div>
       )}
 
-      {showCreate && (
-        <CreateLectureModal
-          onClose={() => setShowCreate(false)}
-          onCreated={() => { setShowCreate(false); load(); }}
-          defaultCourseId={courseId}
-          defaultTopicId={topicId}
-        />
-      )}
+      <CreateLectureModal
+        open={showCreate}
+        onOpenChange={setShowCreate}
+        onCreated={() => { setShowCreate(false); load(); }}
+        defaultCourseId={courseId}
+        defaultTopicId={topicId}
+      />
     </div>
   );
 }

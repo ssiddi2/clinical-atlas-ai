@@ -14,6 +14,7 @@ interface Props {
   onOpenChange: (open: boolean) => void;
   onCreated: () => void;
   defaultCourseId?: string;
+  defaultTopicId?: string;
 }
 
 export default function CreateLectureModal({ open, onOpenChange, onCreated, defaultCourseId }: Props) {

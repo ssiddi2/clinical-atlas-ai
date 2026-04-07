@@ -16,6 +16,7 @@ import {
 interface CourseMaterialsProps {
   courseId: string;
   isInstructor: boolean;
+  topicId?: string;
 }
 
 interface Material {
