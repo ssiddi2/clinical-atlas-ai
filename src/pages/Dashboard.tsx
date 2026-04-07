@@ -95,6 +95,7 @@ const Dashboard = () => {
   const quickActions = [
     { icon: MessageSquare, label: t("dashboard.askAtlas"), href: "/atlas", color: "bg-accent" },
     { icon: BookOpen, label: t("dashboard.continueLearning"), href: "/curriculum", color: "bg-primary" },
+    { icon: GraduationCap, label: t("courses.browseCourses"), href: "/courses", color: "bg-livemed-purple" },
     { icon: Video, label: t("dashboard.virtualClassroom"), href: "/virtual-classroom", color: "bg-livemed-purple" },
     { icon: Stethoscope, label: t("dashboard.liveRounds"), href: "/virtual-rounds", color: "bg-livemed-success" },
     { icon: FileText, label: t("dashboard.takeAssessment"), href: "/assessments", color: "bg-livemed-warning" },
