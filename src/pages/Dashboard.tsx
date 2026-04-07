@@ -8,7 +8,7 @@ import { Progress } from "@/components/ui/progress";
 import {
   BookOpen, Brain, Stethoscope, Award, TrendingUp, Calendar, MessageSquare,
   PlayCircle, FileText, LogOut, Settings, Bell, ShieldCheck, Target,
-  ClipboardCheck, Sparkles,
+  ClipboardCheck, Sparkles, Video,
 } from "lucide-react";
 import livemedLogo from "@/assets/livemed-logo-full.png";
 import VerificationBanner from "@/components/dashboard/VerificationBanner";
@@ -22,6 +22,13 @@ interface ProfileData {
   weak_areas: string[] | null;
 }
 
+interface UpcomingLecture {
+  id: string;
+  title: string;
+  scheduled_start: string;
+  status: string;
+}
+
 const Dashboard = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -29,6 +36,7 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [upcomingLectures, setUpcomingLectures] = useState<UpcomingLecture[]>([]);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
@@ -49,17 +57,22 @@ const Dashboard = () => {
   }, [navigate]);
 
   const loadProfileAndCheckAdmin = async (userId: string) => {
-    const { data } = await supabase
-      .from("profiles")
-      .select("onboarding_completed, verification_status, weak_areas")
-      .eq("user_id", userId)
-      .maybeSingle();
-    setProfile(data);
+    const [profileRes, adminRes, enrollmentsRes] = await Promise.all([
+      supabase.from("profiles").select("onboarding_completed, verification_status, weak_areas").eq("user_id", userId).maybeSingle(),
+      supabase.rpc("has_role", { _user_id: userId, _role: "platform_admin" }),
+      supabase.from("classroom_enrollments").select("classroom_id, virtual_classrooms(id, title, scheduled_start, status)").eq("student_id", userId),
+    ]);
+    setProfile(profileRes.data);
+    setIsAdmin(!!adminRes.data);
 
-    const { data: hasRole } = await supabase.rpc("has_role", {
-      _user_id: userId, _role: "platform_admin",
-    });
-    setIsAdmin(!!hasRole);
+    if (enrollmentsRes.data) {
+      const lectures = enrollmentsRes.data
+        .map((e: any) => e.virtual_classrooms)
+        .filter((vc: any) => vc && (vc.status === "scheduled" || vc.status === "live"))
+        .sort((a: any, b: any) => new Date(a.scheduled_start).getTime() - new Date(b.scheduled_start).getTime())
+        .slice(0, 3);
+      setUpcomingLectures(lectures);
+    }
   };
 
   const handleSignOut = async () => {
