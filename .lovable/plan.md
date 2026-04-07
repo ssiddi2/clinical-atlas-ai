@@ -1,51 +1,64 @@
 
-# Subtopic → Learning Unit Upgrade
 
-## Overview
-Transform each curriculum subtopic (leaf node in `course_topics`) into a full "Learning Unit" — a dedicated page where physicians control all teaching content, assessments, and student progression.
+# Admin Dashboard Upgrade: Role-Based Views, Course Oversight, and Enrollment Management
 
-## Database Changes
+## Problem
+The admin dashboard currently shows all users in a single flat list with no distinction between students and professors. There is no visibility into courses, enrollments, or which student belongs to which professor's course. Admin cannot assign/remove students from courses.
 
-### New table: `learning_unit_content`
-Stores rich content per topic: explanation, quick notes, exam traps, instructor notes, flow control settings (passing score, gating, retry rules).
+## Solution
 
-### New table: `learning_unit_questions`
-Per-topic MCQs with difficulty, concept tag, and exam relevance — separate from course-level quizzes for granular topic control.
+### 1. Tabbed Admin Layout
+Replace the current single-page layout with a tabbed interface:
+- **Overview** (existing stats + pending approvals)
+- **Professors** (list of physician/faculty users with their courses)
+- **Students** (list of student users with their enrollments)
+- **Courses** (all courses with enrollment details, admin can manage)
+- **Applications** (existing)
+- **Verifications** (existing)
 
-### New table: `learning_unit_progress`
-Per-student, per-topic tracking: quiz score, completion status, attempts, time spent.
+### 2. Professors Tab (New Component: `AdminProfessors.tsx`)
+- List all users with `physician` or `faculty` role
+- For each professor show: name, status, number of courses, total enrolled students
+- Expandable row showing their courses with student count per course
+- Click course name to jump to Course detail in Courses tab
 
-All three tables get RLS: instructors CRUD, enrolled students read + update own progress, admins full access.
+### 3. Students Tab (New Component: `AdminStudents.tsx`)
+- List all users with `student` role
+- Show: name, status, enrolled courses count
+- Expandable row showing which courses they are enrolled in and the professor name
+- Quick actions: activate/deactivate account
 
-## New Route & Page
-`/courses/:courseId/topic/:topicId` → **LearningUnitPage** with 7 tabs:
-1. **Overview** — Explanation editor, Quick Notes, Exam Traps, Instructor Note, toggle High Yield / Important / Exam Focus
-2. **Lecture** — Lectures linked to this topic, create or link existing
-3. **Materials** — Reuses existing CourseMaterials filtered by topic_id
-4. **Questions** — Full MCQ editor (create/edit/delete), difficulty + concept tags, "Generate with AI" button
-5. **Student Performance** — Completion tracking, scores, struggling students, send reminders
-6. **AI Assistant** — ATLAS chat scoped to topic
-7. **Settings** — Passing score, require quiz before next topic, retry rules
+### 4. Courses Tab (New Component: `AdminCourses.tsx`)
+- List all courses with: title, professor name, enrolled student count, status
+- Expandable course detail showing:
+  - Full student roster with enrollment status (pending/approved)
+  - Admin can **approve/reject** pending enrollments
+  - Admin can **remove** a student from a course (delete enrollment)
+  - Admin can **add** a student to a course (insert enrollment with status "approved")
+- "Add Student" button opens a dropdown of approved students not yet in the course
 
-## AI Generation (Controlled)
-"Generate with AI" inside Questions tab calls the edge function with topic context. Returns explanation draft + MCQs + quick notes + exam traps in a **review panel** — physician must Approve, Edit, or Reject each item before anything is saved. Nothing auto-publishes.
+### 5. Data Loading
+The `loadData` function in `Admin.tsx` will additionally fetch:
+- `user_roles` table to identify professors vs students
+- `courses` table (all courses visible to admin via existing RLS)
+- `course_enrollments` table (all enrollments visible to admin via existing RLS)
 
-## Learning Flow Control
-- Physician sets passing score per unit and can require quiz completion before next topic unlocks
-- Student-facing: locked topics show lock icon in curriculum tree
-- Failed attempts can trigger retry with different questions
+No database changes needed -- all tables already have admin RLS policies granting full access.
 
-## CurriculumBuilder Update
-- Leaf subtopics become clickable → navigate to Learning Unit page
-- Visual indicators for content status (empty vs populated)
-- Existing CRUD preserved
+### 6. Admin Enrollment Actions
+For add/remove student operations, use direct Supabase client calls since admin RLS policies already grant ALL access on `course_enrollments`.
 
-## Implementation Order
-1. Database migration (3 tables + RLS)
-2. LearningUnitPage with Overview + Settings tabs
-3. LearningUnitQuestions — MCQ editor + quiz-taking
-4. LearningUnitProgress — student tracking table
-5. AIGenerationPanel — AI content generation with review workflow
-6. Update CurriculumBuilder — clickable subtopics + lock indicators
-7. Extend generate-course-quiz edge function for topic-level generation
-8. Add route in App.tsx + wire student progress
+## Files Changed
+1. **`src/pages/Admin.tsx`** -- Add Tabs UI, fetch roles/courses/enrollments, pass data to new components
+2. **`src/components/admin/AdminProfessors.tsx`** -- New: professor list with course breakdown
+3. **`src/components/admin/AdminStudents.tsx`** -- New: student list with enrollment info
+4. **`src/components/admin/AdminCourses.tsx`** -- New: course list with full roster management (add/remove students, approve enrollments)
+5. **`src/components/admin/AdminStats.tsx`** -- Add professor/student/course counts
+6. **`src/components/admin/UserManagement.tsx`** -- Minor: add role badge (student vs professor)
+
+## No Database Changes
+All required RLS policies already exist:
+- `course_enrollments`: "Admins can manage all enrollments" (ALL)
+- `courses`: "Admins can manage all courses" (ALL)
+- `user_roles`: "Platform admins can manage roles" (ALL)
+
