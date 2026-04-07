@@ -6,11 +6,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   LogOut, Plus, Video, Users, Calendar, BookOpen, Clock, CheckCircle2,
-  Play, Settings, Bell,
+  Play, Settings, Bell, GraduationCap,
 } from "lucide-react";
 import livemedLogo from "@/assets/livemed-logo-full.png";
 import CreateLectureModal from "@/components/classroom/CreateLectureModal";
+import CreateCourseModal from "@/components/courses/CreateCourseModal";
 import LectureCard from "@/components/classroom/LectureCard";
+import CourseCard from "@/components/courses/CourseCard";
 import { useTranslation } from "@/i18n/LanguageContext";
 import { useToast } from "@/hooks/use-toast";
 
