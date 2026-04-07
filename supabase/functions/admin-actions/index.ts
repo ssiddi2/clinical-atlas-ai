@@ -61,7 +61,7 @@ serve(async (req) => {
     }
 
     // Validate action
-    const validActions = ["approve_account", "reject_account", "approve_verification", "reject_verification"];
+    const validActions = ["approve_account", "reject_account", "approve_verification", "reject_verification", "toggle_account_status"];
     if (!validActions.includes(action)) {
       return new Response(JSON.stringify({ error: "Invalid action" }), {
         status: 400,
