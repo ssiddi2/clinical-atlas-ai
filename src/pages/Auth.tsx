@@ -46,9 +46,10 @@ const Auth = () => {
         .eq("user_id", session.user.id);
 
       const isPhysician = roles?.some(r => r.role === "physician" || r.role === "faculty");
+      const isAdmin = roles?.some(r => r.role === "platform_admin");
 
-      // Physicians skip pending approval check
-      if (!isPhysician && profile?.account_status === "pending_approval") {
+      // Admins and physicians skip pending approval check
+      if (!isPhysician && !isAdmin && profile?.account_status === "pending_approval") {
         navigate("/pending-approval");
         return;
       }
@@ -58,7 +59,9 @@ const Auth = () => {
         return;
       }
 
-      if (isPhysician) {
+      if (isAdmin) {
+        navigate("/admin");
+      } else if (isPhysician) {
         navigate("/physician-dashboard");
       } else if (profile?.onboarding_completed) {
         navigate("/dashboard");
