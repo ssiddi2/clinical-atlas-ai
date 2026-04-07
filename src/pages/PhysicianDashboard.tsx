@@ -103,6 +103,12 @@ const PhysicianDashboard = () => {
     toast({ title: t("classroom.lectureCreated"), description: t("classroom.lectureCreatedDesc") });
   };
 
+  const handleCourseCreated = () => {
+    if (user) loadData(user.id);
+    setShowCourseModal(false);
+    toast({ title: t("courses.courseCreated"), description: t("courses.courseCreatedDesc") });
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
