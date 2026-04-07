@@ -31,6 +31,21 @@ interface UpcomingLecture {
   status: string;
 }
 
+interface CourseProgress {
+  courseTitle: string;
+  totalTopics: number;
+  completedTopics: number;
+  progress: number;
+}
+
+interface ContinueLearningData {
+  courseTitle: string;
+  topicTitle: string;
+  courseId: string;
+  topicId: string;
+  progress: number;
+}
+
 const Dashboard = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -39,6 +54,8 @@ const Dashboard = () => {
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [upcomingLectures, setUpcomingLectures] = useState<UpcomingLecture[]>([]);
+  const [courseProgressData, setCourseProgressData] = useState<CourseProgress[]>([]);
+  const [continueLearning, setContinueLearning] = useState<ContinueLearningData | null>(null);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
@@ -59,21 +76,90 @@ const Dashboard = () => {
   }, [navigate]);
 
   const loadProfileAndCheckAdmin = async (userId: string) => {
-    const [profileRes, adminRes, enrollmentsRes] = await Promise.all([
+    // Fetch profile, admin check, and enrolled course IDs
+    const [profileRes, adminRes, courseEnrollRes] = await Promise.all([
       supabase.from("profiles").select("onboarding_completed, verification_status, weak_areas").eq("user_id", userId).maybeSingle(),
       supabase.rpc("has_role", { _user_id: userId, _role: "platform_admin" }),
-      supabase.from("classroom_enrollments").select("classroom_id, virtual_classrooms(id, title, scheduled_start, status)").eq("student_id", userId),
+      supabase.from("course_enrollments").select("course_id").eq("student_id", userId).eq("status", "approved"),
     ]);
     setProfile(profileRes.data);
     setIsAdmin(!!adminRes.data);
 
-    if (enrollmentsRes.data) {
-      const lectures = enrollmentsRes.data
-        .map((e: any) => e.virtual_classrooms)
-        .filter((vc: any) => vc && (vc.status === "scheduled" || vc.status === "live"))
-        .sort((a: any, b: any) => new Date(a.scheduled_start).getTime() - new Date(b.scheduled_start).getTime())
-        .slice(0, 3);
-      setUpcomingLectures(lectures);
+    const enrolledCourseIds = courseEnrollRes.data?.map((e: any) => e.course_id) || [];
+
+    if (enrolledCourseIds.length > 0) {
+      // Fetch upcoming lectures, courses, topics, and progress in parallel
+      const [lecturesRes, coursesRes, topicsRes, progressRes] = await Promise.all([
+        supabase.from("virtual_classrooms")
+          .select("id, title, scheduled_start, status")
+          .in("course_id", enrolledCourseIds)
+          .in("status", ["scheduled", "live"])
+          .order("scheduled_start", { ascending: true })
+          .limit(3),
+        supabase.from("courses").select("id, title").in("id", enrolledCourseIds),
+        supabase.from("course_topics").select("id, course_id, title, parent_topic_id").in("course_id", enrolledCourseIds),
+        supabase.from("learning_unit_progress").select("topic_id, completed, updated_at").eq("student_id", userId),
+      ]);
+
+      // Upcoming lectures
+      if (lecturesRes.data) {
+        setUpcomingLectures(lecturesRes.data);
+      }
+
+      // Course progress calculation
+      const courses = coursesRes.data || [];
+      const topics = topicsRes.data || [];
+      const progressRecords = progressRes.data || [];
+      const completedTopicIds = new Set(progressRecords.filter((p: any) => p.completed).map((p: any) => p.topic_id));
+
+      const progressList: CourseProgress[] = courses.map((course: any) => {
+        // Leaf topics (subtopics) for this course
+        const courseTopics = topics.filter((t: any) => t.course_id === course.id);
+        const parentIds = new Set(courseTopics.filter((t: any) => t.parent_topic_id === null).map((t: any) => t.id));
+        const leafTopics = courseTopics.filter((t: any) => t.parent_topic_id !== null);
+        const total = leafTopics.length || 1;
+        const completed = leafTopics.filter((t: any) => completedTopicIds.has(t.id)).length;
+        return {
+          courseTitle: course.title,
+          totalTopics: total,
+          completedTopics: completed,
+          progress: Math.round((completed / total) * 100),
+        };
+      });
+      setCourseProgressData(progressList);
+
+      // Continue learning: find most recent incomplete progress
+      const incompleteProgress = progressRecords
+        .filter((p: any) => !p.completed)
+        .sort((a: any, b: any) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime());
+
+      if (incompleteProgress.length > 0) {
+        const recentTopicId = incompleteProgress[0].topic_id;
+        const topic = topics.find((t: any) => t.id === recentTopicId);
+        if (topic) {
+          const course = courses.find((c: any) => c.id === topic.course_id);
+          setContinueLearning({
+            courseTitle: course?.title || "Course",
+            topicTitle: topic.title,
+            courseId: topic.course_id,
+            topicId: topic.id,
+            progress: 50, // approximate
+          });
+        }
+      } else if (courses.length > 0) {
+        // No progress yet — suggest first course's first topic
+        const firstCourse = courses[0];
+        const firstTopic = topics.find((t: any) => t.course_id === firstCourse.id && t.parent_topic_id !== null);
+        if (firstTopic) {
+          setContinueLearning({
+            courseTitle: firstCourse.title,
+            topicTitle: firstTopic.title,
+            courseId: firstCourse.id,
+            topicId: firstTopic.id,
+            progress: 0,
+          });
+        }
+      }
     }
   };
 
@@ -96,7 +182,7 @@ const Dashboard = () => {
   const quickActions = [
     { icon: MessageSquare, label: t("dashboard.askAtlas"), href: "/atlas", color: "bg-accent" },
     { icon: BookOpen, label: t("dashboard.continueLearning"), href: "/curriculum", color: "bg-primary" },
-    { icon: GraduationCap, label: t("courses.browseCourses"), href: "/courses", color: "bg-livemed-purple" },
+    { icon: GraduationCap, label: t("courses.myCourses") || "My Courses", href: "/courses", color: "bg-livemed-purple" },
     { icon: Video, label: t("dashboard.virtualClassroom"), href: "/virtual-classroom", color: "bg-livemed-purple" },
     { icon: Stethoscope, label: t("dashboard.liveRounds"), href: "/virtual-rounds", color: "bg-livemed-success" },
     { icon: FileText, label: t("dashboard.takeAssessment"), href: "/assessments", color: "bg-livemed-warning" },
@@ -109,17 +195,7 @@ const Dashboard = () => {
         type: l.status === "live" ? t("common.live") : "Lecture",
         href: "/virtual-classroom",
       }))
-    : [
-        { title: "Cardiology Module Review", time: "Today, 2:00 PM", type: "Study", href: "/curriculum" },
-        { title: "Live Rounds: Internal Medicine", time: "Tomorrow, 9:00 AM", type: t("common.live"), href: "/virtual-rounds" },
-      ];
-
-  const progressData = [
-    { subject: "Cardiology", progress: 78, total: 24 },
-    { subject: "Pulmonology", progress: 65, total: 20 },
-    { subject: "Neurology", progress: 42, total: 28 },
-    { subject: "GI", progress: 90, total: 18 },
-  ];
+    : [];
 
   return (
     <div className="min-h-screen bg-background">
@@ -133,7 +209,7 @@ const Dashboard = () => {
           <nav className="hidden md:flex items-center gap-6">
             <Link to="/curriculum" className="text-sm font-medium text-muted-foreground hover:text-primary">{t("dashboard.curriculum")}</Link>
             <Link to="/atlas" className="text-sm font-medium text-muted-foreground hover:text-primary">ATLAS™</Link>
-            <Link to="/courses" className="text-sm font-medium text-muted-foreground hover:text-primary">{t("courses.courses")}</Link>
+            <Link to="/courses" className="text-sm font-medium text-muted-foreground hover:text-primary">{t("courses.myCourses") || "My Courses"}</Link>
             <Link to="/virtual-classroom" className="text-sm font-medium text-muted-foreground hover:text-primary">{t("dashboard.virtualClassroom")}</Link>
             <Link to="/virtual-rounds" className="text-sm font-medium text-muted-foreground hover:text-primary">{t("dashboard.liveRounds")}</Link>
             <Link to="/assessments" className="text-sm font-medium text-muted-foreground hover:text-primary">{t("footer.assessments")}</Link>
@@ -231,17 +307,28 @@ const Dashboard = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="flex items-center gap-4 p-4 bg-muted/50 rounded-lg">
-                  <div className="w-16 h-16 rounded-lg gradient-livemed flex items-center justify-center flex-shrink-0">
-                    <PlayCircle className="h-8 w-8 text-white" />
+                {continueLearning ? (
+                  <Link to={`/courses/${continueLearning.courseId}/topics/${continueLearning.topicId}`} className="flex items-center gap-4 p-4 bg-muted/50 rounded-lg hover:bg-muted/70 transition-colors">
+                    <div className="w-16 h-16 rounded-lg gradient-livemed flex items-center justify-center flex-shrink-0">
+                      <PlayCircle className="h-8 w-8 text-white" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-semibold mb-1">{continueLearning.courseTitle}: {continueLearning.topicTitle}</h3>
+                      <p className="text-sm text-muted-foreground mb-2">In progress</p>
+                      <Progress value={continueLearning.progress} className="h-2" />
+                    </div>
+                    <Button className="gradient-livemed flex-shrink-0">{t("dashboard.resume")}</Button>
+                  </Link>
+                ) : (
+                  <div className="flex items-center gap-4 p-4 bg-muted/50 rounded-lg">
+                    <div className="w-16 h-16 rounded-lg bg-muted flex items-center justify-center flex-shrink-0">
+                      <BookOpen className="h-8 w-8 text-muted-foreground/50" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-muted-foreground text-sm">No courses enrolled yet. Contact your admin to get enrolled in a course.</p>
+                    </div>
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold mb-1">Cardiology: Heart Failure Management</h3>
-                    <p className="text-sm text-muted-foreground mb-2">Module 12 of 24 • 35 min remaining</p>
-                    <Progress value={50} className="h-2" />
-                  </div>
-                  <Button className="gradient-livemed flex-shrink-0">{t("dashboard.resume")}</Button>
-                </div>
+                )}
               </CardContent>
             </Card>
 
@@ -255,19 +342,23 @@ const Dashboard = () => {
                 <CardDescription>{t("dashboard.competencyBySystem")}</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  {progressData.map((item) => (
-                    <div key={item.subject} className="space-y-2">
-                      <div className="flex justify-between text-sm">
-                        <span className="font-medium">{item.subject}</span>
-                        <span className="text-muted-foreground">
-                          {item.progress}% ({Math.round(item.total * item.progress / 100)}/{item.total} {t("curriculum.modules")})
-                        </span>
+                {courseProgressData.length > 0 ? (
+                  <div className="space-y-4">
+                    {courseProgressData.map((item) => (
+                      <div key={item.courseTitle} className="space-y-2">
+                        <div className="flex justify-between text-sm">
+                          <span className="font-medium">{item.courseTitle}</span>
+                          <span className="text-muted-foreground">
+                            {item.progress}% ({item.completedTopics}/{item.totalTopics} topics)
+                          </span>
+                        </div>
+                        <Progress value={item.progress} className="h-2" />
                       </div>
-                      <Progress value={item.progress} className="h-2" />
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-muted-foreground text-sm">No course progress yet. Enroll in a course to start tracking your progress.</p>
+                )}
               </CardContent>
             </Card>
 
@@ -307,18 +398,22 @@ const Dashboard = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  {upcomingItems.map((item, idx) => (
-                    <Link key={idx} to={item.href} className="flex items-start gap-3 pb-4 border-b border-border last:border-0 last:pb-0 hover:bg-muted/50 rounded-lg p-2 -mx-2 transition-colors">
-                      <div className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${item.type === t("common.live") ? 'bg-livemed-success animate-pulse' : 'bg-accent'}`} />
-                      <div>
-                        <p className="font-medium text-sm">{item.title}</p>
-                        <p className="text-xs text-muted-foreground">{item.time}</p>
-                        <span className={`inline-block mt-1 text-xs px-2 py-0.5 rounded ${item.type === t("common.live") ? 'bg-livemed-success/20 text-livemed-success' : 'bg-muted'}`}>{item.type}</span>
-                      </div>
-                    </Link>
-                  ))}
-                </div>
+                {upcomingItems.length > 0 ? (
+                  <div className="space-y-4">
+                    {upcomingItems.map((item, idx) => (
+                      <Link key={idx} to={item.href} className="flex items-start gap-3 pb-4 border-b border-border last:border-0 last:pb-0 hover:bg-muted/50 rounded-lg p-2 -mx-2 transition-colors">
+                        <div className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${item.type === t("common.live") ? 'bg-livemed-success animate-pulse' : 'bg-accent'}`} />
+                        <div>
+                          <p className="font-medium text-sm">{item.title}</p>
+                          <p className="text-xs text-muted-foreground">{item.time}</p>
+                          <span className={`inline-block mt-1 text-xs px-2 py-0.5 rounded ${item.type === t("common.live") ? 'bg-livemed-success/20 text-livemed-success' : 'bg-muted'}`}>{item.type}</span>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-muted-foreground text-sm">No upcoming sessions</p>
+                )}
               </CardContent>
             </Card>
 
