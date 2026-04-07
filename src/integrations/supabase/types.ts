@@ -207,6 +207,7 @@ export type Database = {
           file_url: string
           id: string
           material_type: string
+          topic_id: string | null
           uploaded_by: string
         }
         Insert: {
@@ -218,6 +219,7 @@ export type Database = {
           file_url: string
           id?: string
           material_type?: string
+          topic_id?: string | null
           uploaded_by: string
         }
         Update: {
@@ -229,6 +231,7 @@ export type Database = {
           file_url?: string
           id?: string
           material_type?: string
+          topic_id?: string | null
           uploaded_by?: string
         }
         Relationships: [
@@ -237,6 +240,54 @@ export type Database = {
             columns: ["course_id"]
             isOneToOne: false
             referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "course_materials_topic_id_fkey"
+            columns: ["topic_id"]
+            isOneToOne: false
+            referencedRelation: "course_topics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      course_quiz_attempts: {
+        Row: {
+          answers: Json
+          created_at: string
+          id: string
+          quiz_id: string
+          score: number
+          student_id: string
+          time_taken_seconds: number
+          total_questions: number
+        }
+        Insert: {
+          answers?: Json
+          created_at?: string
+          id?: string
+          quiz_id: string
+          score?: number
+          student_id: string
+          time_taken_seconds?: number
+          total_questions?: number
+        }
+        Update: {
+          answers?: Json
+          created_at?: string
+          id?: string
+          quiz_id?: string
+          score?: number
+          student_id?: string
+          time_taken_seconds?: number
+          total_questions?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "course_quiz_attempts_quiz_id_fkey"
+            columns: ["quiz_id"]
+            isOneToOne: false
+            referencedRelation: "course_quizzes"
             referencedColumns: ["id"]
           },
         ]
@@ -250,6 +301,7 @@ export type Database = {
           questions: Json
           status: string
           title: string
+          topic_id: string | null
           updated_at: string
         }
         Insert: {
@@ -260,6 +312,7 @@ export type Database = {
           questions?: Json
           status?: string
           title: string
+          topic_id?: string | null
           updated_at?: string
         }
         Update: {
@@ -270,6 +323,7 @@ export type Database = {
           questions?: Json
           status?: string
           title?: string
+          topic_id?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -278,6 +332,61 @@ export type Database = {
             columns: ["course_id"]
             isOneToOne: false
             referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "course_quizzes_topic_id_fkey"
+            columns: ["topic_id"]
+            isOneToOne: false
+            referencedRelation: "course_topics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      course_topics: {
+        Row: {
+          course_id: string
+          created_at: string
+          id: string
+          is_high_yield: boolean
+          parent_topic_id: string | null
+          sort_order: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          course_id: string
+          created_at?: string
+          id?: string
+          is_high_yield?: boolean
+          parent_topic_id?: string | null
+          sort_order?: number
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          course_id?: string
+          created_at?: string
+          id?: string
+          is_high_yield?: boolean
+          parent_topic_id?: string | null
+          sort_order?: number
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "course_topics_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "course_topics_parent_topic_id_fkey"
+            columns: ["parent_topic_id"]
+            isOneToOne: false
+            referencedRelation: "course_topics"
             referencedColumns: ["id"]
           },
         ]
@@ -1327,6 +1436,7 @@ export type Database = {
           specialty_id: string | null
           status: string
           title: string
+          topic_id: string | null
           updated_at: string
         }
         Insert: {
@@ -1343,6 +1453,7 @@ export type Database = {
           specialty_id?: string | null
           status?: string
           title: string
+          topic_id?: string | null
           updated_at?: string
         }
         Update: {
@@ -1359,6 +1470,7 @@ export type Database = {
           specialty_id?: string | null
           status?: string
           title?: string
+          topic_id?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -1374,6 +1486,13 @@ export type Database = {
             columns: ["specialty_id"]
             isOneToOne: false
             referencedRelation: "specialties"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "virtual_classrooms_topic_id_fkey"
+            columns: ["topic_id"]
+            isOneToOne: false
+            referencedRelation: "course_topics"
             referencedColumns: ["id"]
           },
         ]
