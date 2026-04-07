@@ -94,15 +94,22 @@ const Dashboard = () => {
   const quickActions = [
     { icon: MessageSquare, label: t("dashboard.askAtlas"), href: "/atlas", color: "bg-accent" },
     { icon: BookOpen, label: t("dashboard.continueLearning"), href: "/curriculum", color: "bg-primary" },
+    { icon: Video, label: t("dashboard.virtualClassroom"), href: "/virtual-classroom", color: "bg-livemed-purple" },
     { icon: Stethoscope, label: t("dashboard.liveRounds"), href: "/virtual-rounds", color: "bg-livemed-success" },
     { icon: FileText, label: t("dashboard.takeAssessment"), href: "/assessments", color: "bg-livemed-warning" },
   ];
 
-  const upcomingItems = [
-    { title: "Cardiology Module Review", time: "Today, 2:00 PM", type: "Study", href: "/curriculum" },
-    { title: "Live Rounds: Internal Medicine", time: "Tomorrow, 9:00 AM", type: t("common.live"), href: "/virtual-rounds" },
-    { title: "Live Case Conference", time: "Thu, 4:00 PM", type: t("common.live"), href: "/virtual-rounds" },
-  ];
+  const upcomingItems = upcomingLectures.length > 0
+    ? upcomingLectures.map(l => ({
+        title: l.title,
+        time: new Date(l.scheduled_start).toLocaleString(undefined, { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }),
+        type: l.status === "live" ? t("common.live") : "Lecture",
+        href: "/virtual-classroom",
+      }))
+    : [
+        { title: "Cardiology Module Review", time: "Today, 2:00 PM", type: "Study", href: "/curriculum" },
+        { title: "Live Rounds: Internal Medicine", time: "Tomorrow, 9:00 AM", type: t("common.live"), href: "/virtual-rounds" },
+      ];
 
   const progressData = [
     { subject: "Cardiology", progress: 78, total: 24 },
