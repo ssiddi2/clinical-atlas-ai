@@ -1,64 +1,50 @@
 
 
-# Admin Dashboard Upgrade: Role-Based Views, Course Oversight, and Enrollment Management
+# Fix Student Views: Show Only Enrolled Course Content
 
 ## Problem
-The admin dashboard currently shows all users in a single flat list with no distinction between students and professors. There is no visibility into courses, enrollments, or which student belongs to which professor's course. Admin cannot assign/remove students from courses.
+Students see ALL content across the platform instead of only content related to their enrolled courses:
+1. **Courses page** shows all active courses (catalog browse) -- should show only enrolled courses as "My Courses"
+2. **Virtual Classroom** shows ALL lectures from all professors -- should only show lectures linked to enrolled courses
+3. **Dashboard "Upcoming"** falls back to hardcoded items and shows hardcoded progress data
+4. **Dashboard "Continue Learning"** is completely hardcoded (Cardiology: Heart Failure)
+5. **Dashboard progress** shows static fake data (Cardiology 78%, Pulmonology 65%, etc.)
+6. **Curriculum page** shows all modules from all specialties -- not filtered to enrolled courses
+7. **Assessments page** uses hardcoded sample questions, not tied to course content
 
 ## Solution
 
-### 1. Tabbed Admin Layout
-Replace the current single-page layout with a tabbed interface:
-- **Overview** (existing stats + pending approvals)
-- **Professors** (list of physician/faculty users with their courses)
-- **Students** (list of student users with their enrollments)
-- **Courses** (all courses with enrollment details, admin can manage)
-- **Applications** (existing)
-- **Verifications** (existing)
+### 1. Courses Page → "My Courses" (enrolled only)
+- Change query from fetching ALL active courses to only courses where student has an approved enrollment
+- Join `course_enrollments` to `courses` filtered by `student_id` and `status = 'approved'`
+- Update page title from "Course Catalog" to "My Courses"
+- Remove specialty filter (irrelevant when showing only enrolled)
+- Keep search
 
-### 2. Professors Tab (New Component: `AdminProfessors.tsx`)
-- List all users with `physician` or `faculty` role
-- For each professor show: name, status, number of courses, total enrolled students
-- Expandable row showing their courses with student count per course
-- Click course name to jump to Course detail in Courses tab
+### 2. Virtual Classroom → Only lectures from enrolled courses
+- Instead of fetching ALL `virtual_classrooms`, filter by `course_id IN (student's enrolled course IDs)`
+- First fetch enrolled course IDs, then filter classrooms by those course IDs
+- Remove "All Lectures" tab, default to showing only relevant lectures
 
-### 3. Students Tab (New Component: `AdminStudents.tsx`)
-- List all users with `student` role
-- Show: name, status, enrolled courses count
-- Expandable row showing which courses they are enrolled in and the professor name
-- Quick actions: activate/deactivate account
+### 3. Dashboard — Replace all hardcoded content
+- **Upcoming section**: Remove hardcoded fallback items; if no enrolled lectures exist, show "No upcoming sessions" message
+- **Continue Learning**: Fetch the student's most recent `learning_unit_progress` or `user_module_progress` record and display actual course/topic info instead of hardcoded "Cardiology: Heart Failure"
+- **Progress section**: Fetch actual enrolled courses and compute progress from `learning_unit_progress` per course instead of static `progressData` array
 
-### 4. Courses Tab (New Component: `AdminCourses.tsx`)
-- List all courses with: title, professor name, enrolled student count, status
-- Expandable course detail showing:
-  - Full student roster with enrollment status (pending/approved)
-  - Admin can **approve/reject** pending enrollments
-  - Admin can **remove** a student from a course (delete enrollment)
-  - Admin can **add** a student to a course (insert enrollment with status "approved")
-- "Add Student" button opens a dropdown of approved students not yet in the course
+### 4. Curriculum Page → Filter to enrolled course specialties
+- Only show specialties and modules that belong to courses the student is enrolled in
+- Alternatively, keep curriculum as-is since it's a general learning resource, but this depends on intent -- the plan will filter it to enrolled course topics
 
-### 5. Data Loading
-The `loadData` function in `Admin.tsx` will additionally fetch:
-- `user_roles` table to identify professors vs students
-- `courses` table (all courses visible to admin via existing RLS)
-- `course_enrollments` table (all enrollments visible to admin via existing RLS)
-
-No database changes needed -- all tables already have admin RLS policies granting full access.
-
-### 6. Admin Enrollment Actions
-For add/remove student operations, use direct Supabase client calls since admin RLS policies already grant ALL access on `course_enrollments`.
+### 5. Quick Actions cleanup
+- Remove "Browse Courses" from quick actions or rename to "My Courses"
+- Keep other actions that are generally useful (ATLAS, Assessments, etc.)
 
 ## Files Changed
-1. **`src/pages/Admin.tsx`** -- Add Tabs UI, fetch roles/courses/enrollments, pass data to new components
-2. **`src/components/admin/AdminProfessors.tsx`** -- New: professor list with course breakdown
-3. **`src/components/admin/AdminStudents.tsx`** -- New: student list with enrollment info
-4. **`src/components/admin/AdminCourses.tsx`** -- New: course list with full roster management (add/remove students, approve enrollments)
-5. **`src/components/admin/AdminStats.tsx`** -- Add professor/student/course counts
-6. **`src/components/admin/UserManagement.tsx`** -- Minor: add role badge (student vs professor)
+1. **`src/pages/Courses.tsx`** — Filter to enrolled courses only, update title
+2. **`src/pages/VirtualClassroom.tsx`** — Filter lectures to enrolled course IDs only
+3. **`src/pages/Dashboard.tsx`** — Replace hardcoded continue learning, progress, and upcoming fallback with real DB queries
+4. **`src/pages/Curriculum.tsx`** — Filter modules to enrolled course specialties
 
 ## No Database Changes
-All required RLS policies already exist:
-- `course_enrollments`: "Admins can manage all enrollments" (ALL)
-- `courses`: "Admins can manage all courses" (ALL)
-- `user_roles`: "Platform admins can manage roles" (ALL)
+All filtering uses existing tables and RLS policies.
 
