@@ -14,10 +14,9 @@ const VirtualClassroom = () => {
   const { t } = useTranslation();
   const [classrooms, setClassrooms] = useState<any[]>([]);
   const [enrollments, setEnrollments] = useState<Set<string>>(new Set());
-  const [enrollmentCounts, setEnrollmentCounts] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
-  const [tab, setTab] = useState("all");
+  const [tab, setTab] = useState("upcoming");
 
   useEffect(() => {
     loadData();
@@ -27,13 +26,34 @@ const VirtualClassroom = () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { navigate("/auth"); return; }
 
-    const [classRes, enrollRes] = await Promise.all([
-      supabase.from("virtual_classrooms").select("*").order("scheduled_start", { ascending: true }),
-      supabase.from("classroom_enrollments").select("classroom_id").eq("student_id", user.id),
-    ]);
+    // Get student's approved course enrollments
+    const { data: courseEnrollData } = await supabase
+      .from("course_enrollments")
+      .select("course_id")
+      .eq("student_id", user.id)
+      .eq("status", "approved");
 
-    if (classRes.data) setClassrooms(classRes.data);
-    if (enrollRes.data) setEnrollments(new Set(enrollRes.data.map(e => e.classroom_id)));
+    const enrolledCourseIds = courseEnrollData?.map(e => e.course_id) || [];
+
+    // Get classrooms only for enrolled courses
+    let classRes;
+    if (enrolledCourseIds.length > 0) {
+      classRes = await supabase
+        .from("virtual_classrooms")
+        .select("*")
+        .in("course_id", enrolledCourseIds)
+        .order("scheduled_start", { ascending: true });
+    }
+
+    // Also get classroom enrollments for this student
+    const { data: classEnrollData } = await supabase
+      .from("classroom_enrollments")
+      .select("classroom_id")
+      .eq("student_id", user.id);
+
+    if (classRes?.data) setClassrooms(classRes.data);
+    else setClassrooms([]);
+    if (classEnrollData) setEnrollments(new Set(classEnrollData.map(e => e.classroom_id)));
     setLoading(false);
   };
 
@@ -56,7 +76,6 @@ const VirtualClassroom = () => {
   return (
     <div className="min-h-screen bg-background">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
-        {/* Header */}
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon" onClick={() => navigate("/dashboard")}>
             <ArrowLeft className="h-5 w-5" />
@@ -70,7 +89,6 @@ const VirtualClassroom = () => {
           </div>
         </div>
 
-        {/* Search */}
         <div className="relative max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
@@ -81,10 +99,8 @@ const VirtualClassroom = () => {
           />
         </div>
 
-        {/* Tabs */}
         <Tabs value={tab} onValueChange={setTab}>
           <TabsList>
-            <TabsTrigger value="all">{t("classroom.allLectures")}</TabsTrigger>
             <TabsTrigger value="upcoming">{t("classroom.upcoming")}</TabsTrigger>
             <TabsTrigger value="live">
               <div className="flex items-center gap-1.5">
@@ -93,6 +109,7 @@ const VirtualClassroom = () => {
               </div>
             </TabsTrigger>
             <TabsTrigger value="enrolled">{t("classroom.myLectures")}</TabsTrigger>
+            <TabsTrigger value="all">{t("classroom.allLectures")}</TabsTrigger>
           </TabsList>
 
           <TabsContent value={tab} className="mt-6">
