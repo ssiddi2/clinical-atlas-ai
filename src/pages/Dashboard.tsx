@@ -8,10 +8,11 @@ import { Progress } from "@/components/ui/progress";
 import {
   BookOpen, Brain, Stethoscope, Award, TrendingUp, Calendar, MessageSquare,
   PlayCircle, FileText, LogOut, Settings, Bell, ShieldCheck, Target,
-  ClipboardCheck, Sparkles, Video,
+  ClipboardCheck, Sparkles, Video, GraduationCap,
 } from "lucide-react";
 import livemedLogo from "@/assets/livemed-logo-full.png";
 import VerificationBanner from "@/components/dashboard/VerificationBanner";
+import StudyPlanWidget from "@/components/dashboard/StudyPlanWidget";
 import { MatchReadyWidget } from "@/components/score/MatchReadyWidget";
 import { useScorePredictor } from "@/hooks/useScorePredictor";
 import { useTranslation } from "@/i18n";
@@ -94,6 +95,7 @@ const Dashboard = () => {
   const quickActions = [
     { icon: MessageSquare, label: t("dashboard.askAtlas"), href: "/atlas", color: "bg-accent" },
     { icon: BookOpen, label: t("dashboard.continueLearning"), href: "/curriculum", color: "bg-primary" },
+    { icon: GraduationCap, label: t("courses.browseCourses"), href: "/courses", color: "bg-livemed-purple" },
     { icon: Video, label: t("dashboard.virtualClassroom"), href: "/virtual-classroom", color: "bg-livemed-purple" },
     { icon: Stethoscope, label: t("dashboard.liveRounds"), href: "/virtual-rounds", color: "bg-livemed-success" },
     { icon: FileText, label: t("dashboard.takeAssessment"), href: "/assessments", color: "bg-livemed-warning" },
@@ -130,6 +132,7 @@ const Dashboard = () => {
           <nav className="hidden md:flex items-center gap-6">
             <Link to="/curriculum" className="text-sm font-medium text-muted-foreground hover:text-primary">{t("dashboard.curriculum")}</Link>
             <Link to="/atlas" className="text-sm font-medium text-muted-foreground hover:text-primary">ATLAS™</Link>
+            <Link to="/courses" className="text-sm font-medium text-muted-foreground hover:text-primary">{t("courses.courses")}</Link>
             <Link to="/virtual-classroom" className="text-sm font-medium text-muted-foreground hover:text-primary">{t("dashboard.virtualClassroom")}</Link>
             <Link to="/virtual-rounds" className="text-sm font-medium text-muted-foreground hover:text-primary">{t("dashboard.liveRounds")}</Link>
             <Link to="/assessments" className="text-sm font-medium text-muted-foreground hover:text-primary">{t("footer.assessments")}</Link>
@@ -165,7 +168,7 @@ const Dashboard = () => {
         </div>
 
         {/* Quick Actions */}
-        <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 md:gap-4 mb-8">
+        <div className="grid grid-cols-2 lg:grid-cols-6 gap-3 md:gap-4 mb-8">
           {quickActions.map((action) => (
             <Link key={action.label} to={action.href}>
               <Card className="hover:shadow-livemed transition-all duration-300 hover:-translate-y-1 cursor-pointer h-full">
@@ -317,6 +320,8 @@ const Dashboard = () => {
                 </div>
               </CardContent>
             </Card>
+
+            <StudyPlanWidget userId={user?.id || null} />
 
             <MatchReadyWidgetWrapper userId={user?.id || null} />
 
