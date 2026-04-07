@@ -6,8 +6,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/hooks/use-toast";
-import { Eye, EyeOff, Loader2, ArrowLeft } from "lucide-react";
+import { Eye, EyeOff, Loader2, ArrowLeft, GraduationCap, Stethoscope } from "lucide-react";
 import livemedLogoFull from "@/assets/livemed-logo-full.png";
 import livemedLogoIcon from "@/assets/livemed-logo-icon.png";
 import { useTranslation } from "@/i18n/LanguageContext";
@@ -26,10 +27,12 @@ const Auth = () => {
   const [password, setPassword] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
+  const [signupRole, setSignupRole] = useState<"student" | "physician">("student");
 
   useEffect(() => {
     const handleAuthRedirect = async (session: any) => {
       if (!session) return;
+
       const { data: profile } = await supabase
         .from("profiles")
         .select("onboarding_completed, account_status")
@@ -45,7 +48,18 @@ const Auth = () => {
         await supabase.auth.signOut();
         return;
       }
-      if (profile?.onboarding_completed) {
+
+      // Check role for routing
+      const { data: roles } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", session.user.id);
+
+      const isPhysician = roles?.some(r => r.role === "physician" || r.role === "faculty");
+
+      if (isPhysician) {
+        navigate("/physician-dashboard");
+      } else if (profile?.onboarding_completed) {
         navigate("/dashboard");
       } else {
         navigate("/onboarding");
@@ -85,7 +99,10 @@ const Auth = () => {
       const redirectUrl = `${window.location.origin}/`;
       const { error } = await supabase.auth.signUp({
         email, password,
-        options: { emailRedirectTo: redirectUrl, data: { first_name: firstName, last_name: lastName } },
+        options: {
+          emailRedirectTo: redirectUrl,
+          data: { first_name: firstName, last_name: lastName, signup_role: signupRole },
+        },
       });
       if (error) {
         if (error.message.includes("already registered")) {
@@ -168,6 +185,41 @@ const Auth = () => {
 
                 <TabsContent value="signup">
                   <form onSubmit={handleSignUp} className="space-y-5">
+                    {/* Role Selector */}
+                    <div className="space-y-3">
+                      <Label className="text-sm font-medium">{t("auth.iAmA")}</Label>
+                      <RadioGroup value={signupRole} onValueChange={(v) => setSignupRole(v as "student" | "physician")} className="grid grid-cols-2 gap-3">
+                        <Label
+                          htmlFor="role-student"
+                          className={`flex flex-col items-center gap-2 rounded-lg border-2 p-4 cursor-pointer transition-all ${
+                            signupRole === "student"
+                              ? "border-primary bg-primary/10"
+                              : "border-border/50 hover:border-border"
+                          }`}
+                        >
+                          <RadioGroupItem value="student" id="role-student" className="sr-only" />
+                          <GraduationCap className={`h-6 w-6 ${signupRole === "student" ? "text-primary" : "text-muted-foreground"}`} />
+                          <span className={`text-sm font-medium ${signupRole === "student" ? "text-primary" : "text-muted-foreground"}`}>
+                            {t("auth.medicalStudent")}
+                          </span>
+                        </Label>
+                        <Label
+                          htmlFor="role-physician"
+                          className={`flex flex-col items-center gap-2 rounded-lg border-2 p-4 cursor-pointer transition-all ${
+                            signupRole === "physician"
+                              ? "border-primary bg-primary/10"
+                              : "border-border/50 hover:border-border"
+                          }`}
+                        >
+                          <RadioGroupItem value="physician" id="role-physician" className="sr-only" />
+                          <Stethoscope className={`h-6 w-6 ${signupRole === "physician" ? "text-primary" : "text-muted-foreground"}`} />
+                          <span className={`text-sm font-medium ${signupRole === "physician" ? "text-primary" : "text-muted-foreground"}`}>
+                            {t("auth.teachingAttending")}
+                          </span>
+                        </Label>
+                      </RadioGroup>
+                    </div>
+
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label htmlFor="first-name" className="text-sm">{t("auth.firstName")}</Label>

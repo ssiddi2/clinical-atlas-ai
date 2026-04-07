@@ -1,0 +1,125 @@
+import { useEffect, useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ArrowLeft, Video, BookOpen, Search } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import LectureCard from "@/components/classroom/LectureCard";
+import { useTranslation } from "@/i18n/LanguageContext";
+
+const VirtualClassroom = () => {
+  const navigate = useNavigate();
+  const { t } = useTranslation();
+  const [classrooms, setClassrooms] = useState<any[]>([]);
+  const [enrollments, setEnrollments] = useState<Set<string>>(new Set());
+  const [enrollmentCounts, setEnrollmentCounts] = useState<Record<string, number>>({});
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
+  const [tab, setTab] = useState("all");
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const loadData = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) { navigate("/auth"); return; }
+
+    const [classRes, enrollRes] = await Promise.all([
+      supabase.from("virtual_classrooms").select("*").order("scheduled_start", { ascending: true }),
+      supabase.from("classroom_enrollments").select("classroom_id").eq("student_id", user.id),
+    ]);
+
+    if (classRes.data) setClassrooms(classRes.data);
+    if (enrollRes.data) setEnrollments(new Set(enrollRes.data.map(e => e.classroom_id)));
+    setLoading(false);
+  };
+
+  const filtered = classrooms.filter(c => {
+    const matchesSearch = !search || c.title.toLowerCase().includes(search.toLowerCase());
+    if (tab === "enrolled") return matchesSearch && enrollments.has(c.id);
+    if (tab === "upcoming") return matchesSearch && c.status === "scheduled";
+    if (tab === "live") return matchesSearch && c.status === "live";
+    return matchesSearch;
+  });
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-background">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+        {/* Header */}
+        <div className="flex items-center gap-4">
+          <Button variant="ghost" size="icon" onClick={() => navigate("/dashboard")}>
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+          <div>
+            <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
+              <Video className="h-6 w-6 text-primary" />
+              {t("classroom.title")}
+            </h1>
+            <p className="text-muted-foreground text-sm mt-1">{t("classroom.subtitle")}</p>
+          </div>
+        </div>
+
+        {/* Search */}
+        <div className="relative max-w-md">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder={t("classroom.searchPlaceholder")}
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            className="pl-10"
+          />
+        </div>
+
+        {/* Tabs */}
+        <Tabs value={tab} onValueChange={setTab}>
+          <TabsList>
+            <TabsTrigger value="all">{t("classroom.allLectures")}</TabsTrigger>
+            <TabsTrigger value="upcoming">{t("classroom.upcoming")}</TabsTrigger>
+            <TabsTrigger value="live">
+              <div className="flex items-center gap-1.5">
+                {classrooms.some(c => c.status === "live") && <div className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />}
+                {t("classroom.live")}
+              </div>
+            </TabsTrigger>
+            <TabsTrigger value="enrolled">{t("classroom.myLectures")}</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value={tab} className="mt-6">
+            {filtered.length === 0 ? (
+              <Card className="bg-card/50 border-border/30">
+                <CardContent className="flex flex-col items-center justify-center py-16 text-center">
+                  <BookOpen className="h-12 w-12 text-muted-foreground/30 mb-4" />
+                  <p className="text-muted-foreground">{t("classroom.noLectures")}</p>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="grid gap-4 md:grid-cols-2">
+                {filtered.map(lecture => (
+                  <LectureCard
+                    key={lecture.id}
+                    lecture={lecture}
+                    isEnrolled={enrollments.has(lecture.id)}
+                    onRefresh={loadData}
+                  />
+                ))}
+              </div>
+            )}
+          </TabsContent>
+        </Tabs>
+      </div>
+    </div>
+  );
+};
+
+export default VirtualClassroom;
