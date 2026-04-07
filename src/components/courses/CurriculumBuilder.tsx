@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Trash2, ChevronDown, ChevronRight, Star, GripVertical, Edit2, Check, X } from "lucide-react";
+import { Plus, Trash2, ChevronDown, ChevronRight, Star, GripVertical, Edit2, Check, X, BookOpen, ExternalLink } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface Topic {
@@ -23,6 +24,7 @@ interface Props {
 }
 
 export default function CurriculumBuilder({ courseId, isInstructor }: Props) {
+  const navigate = useNavigate();
   const { toast } = useToast();
   const [topics, setTopics] = useState<Topic[]>([]);
   const [loading, setLoading] = useState(true);
@@ -110,15 +112,25 @@ export default function CurriculumBuilder({ courseId, isInstructor }: Props) {
     const isEditing = editingId === topic.id;
     const isAddingChild = addingTo === topic.id;
 
+    const isLeaf = !hasChildren;
+
+    const handleClick = () => {
+      if (isLeaf) {
+        navigate(`/courses/${courseId}/topic/${topic.id}`);
+      } else {
+        toggleExpand(topic.id);
+      }
+    };
+
     return (
       <div key={topic.id} style={{ marginLeft: depth * 20 }}>
         <div className="flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-muted/50 group">
           {isInstructor && <GripVertical className="h-3.5 w-3.5 text-muted-foreground/30 cursor-grab" />}
           
-          <button onClick={() => toggleExpand(topic.id)} className="p-0.5">
+          <button onClick={handleClick} className="p-0.5">
             {hasChildren ? (
               isExpanded ? <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" /> : <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />
-            ) : <div className="w-3.5" />}
+            ) : <BookOpen className="h-3.5 w-3.5 text-primary/60" />}
           </button>
 
           {isEditing ? (
@@ -139,7 +151,10 @@ export default function CurriculumBuilder({ courseId, isInstructor }: Props) {
             </div>
           ) : (
             <>
-              <span className="text-sm font-medium text-foreground flex-1">{topic.title}</span>
+              <button onClick={handleClick} className="text-sm font-medium text-foreground flex-1 text-left hover:text-primary transition-colors">
+                {topic.title}
+                {isLeaf && <ExternalLink className="h-3 w-3 inline ml-1.5 opacity-0 group-hover:opacity-50" />}
+              </button>
               {topic.is_high_yield && (
                 <Badge variant="outline" className="bg-yellow-500/10 text-yellow-400 border-yellow-500/30 text-[10px] px-1.5 py-0">
                   <Star className="h-2.5 w-2.5 mr-0.5 fill-yellow-400" /> HY

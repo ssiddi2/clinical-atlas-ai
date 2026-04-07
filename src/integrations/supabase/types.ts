@@ -518,6 +518,171 @@ export type Database = {
           },
         ]
       }
+      learning_unit_content: {
+        Row: {
+          allow_retry: boolean | null
+          created_at: string | null
+          exam_traps: string | null
+          explanation: string | null
+          id: string
+          instructor_note: string | null
+          is_exam_focus: boolean | null
+          is_high_yield: boolean | null
+          is_important: boolean | null
+          passing_score: number | null
+          quick_notes: string | null
+          require_quiz_before_next: boolean | null
+          status: string | null
+          topic_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          allow_retry?: boolean | null
+          created_at?: string | null
+          exam_traps?: string | null
+          explanation?: string | null
+          id?: string
+          instructor_note?: string | null
+          is_exam_focus?: boolean | null
+          is_high_yield?: boolean | null
+          is_important?: boolean | null
+          passing_score?: number | null
+          quick_notes?: string | null
+          require_quiz_before_next?: boolean | null
+          status?: string | null
+          topic_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          allow_retry?: boolean | null
+          created_at?: string | null
+          exam_traps?: string | null
+          explanation?: string | null
+          id?: string
+          instructor_note?: string | null
+          is_exam_focus?: boolean | null
+          is_high_yield?: boolean | null
+          is_important?: boolean | null
+          passing_score?: number | null
+          quick_notes?: string | null
+          require_quiz_before_next?: boolean | null
+          status?: string | null
+          topic_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "learning_unit_content_topic_id_fkey"
+            columns: ["topic_id"]
+            isOneToOne: true
+            referencedRelation: "course_topics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      learning_unit_progress: {
+        Row: {
+          attempts: number | null
+          completed: boolean | null
+          created_at: string | null
+          id: string
+          last_attempt_at: string | null
+          quiz_answers: Json | null
+          quiz_score: number | null
+          student_id: string
+          time_spent_seconds: number | null
+          topic_id: string
+          updated_at: string | null
+        }
+        Insert: {
+          attempts?: number | null
+          completed?: boolean | null
+          created_at?: string | null
+          id?: string
+          last_attempt_at?: string | null
+          quiz_answers?: Json | null
+          quiz_score?: number | null
+          student_id: string
+          time_spent_seconds?: number | null
+          topic_id: string
+          updated_at?: string | null
+        }
+        Update: {
+          attempts?: number | null
+          completed?: boolean | null
+          created_at?: string | null
+          id?: string
+          last_attempt_at?: string | null
+          quiz_answers?: Json | null
+          quiz_score?: number | null
+          student_id?: string
+          time_spent_seconds?: number | null
+          topic_id?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "learning_unit_progress_topic_id_fkey"
+            columns: ["topic_id"]
+            isOneToOne: false
+            referencedRelation: "course_topics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      learning_unit_questions: {
+        Row: {
+          concept_tag: string | null
+          correct_answer_index: number
+          created_at: string | null
+          created_by: string
+          difficulty: string | null
+          exam_relevance: string | null
+          explanation: string | null
+          id: string
+          options: Json
+          sort_order: number | null
+          stem: string
+          topic_id: string
+        }
+        Insert: {
+          concept_tag?: string | null
+          correct_answer_index?: number
+          created_at?: string | null
+          created_by: string
+          difficulty?: string | null
+          exam_relevance?: string | null
+          explanation?: string | null
+          id?: string
+          options?: Json
+          sort_order?: number | null
+          stem: string
+          topic_id: string
+        }
+        Update: {
+          concept_tag?: string | null
+          correct_answer_index?: number
+          created_at?: string | null
+          created_by?: string
+          difficulty?: string | null
+          exam_relevance?: string | null
+          explanation?: string | null
+          id?: string
+          options?: Json
+          sort_order?: number | null
+          stem?: string
+          topic_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "learning_unit_questions_topic_id_fkey"
+            columns: ["topic_id"]
+            isOneToOne: false
+            referencedRelation: "course_topics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       lesson_content: {
         Row: {
           content_text: string | null

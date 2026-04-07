@@ -14,9 +14,10 @@ interface Props {
   onOpenChange: (open: boolean) => void;
   onCreated: () => void;
   defaultCourseId?: string;
+  defaultTopicId?: string;
 }
 
-export default function CreateLectureModal({ open, onOpenChange, onCreated, defaultCourseId }: Props) {
+export default function CreateLectureModal({ open, onOpenChange, onCreated, defaultCourseId, defaultTopicId }: Props) {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [specialties, setSpecialties] = useState<any[]>([]);
@@ -61,6 +62,7 @@ export default function CreateLectureModal({ open, onOpenChange, onCreated, defa
       description: form.description || null,
       specialty_id: form.specialty_id || null,
       course_id: form.course_id || null,
+      topic_id: defaultTopicId || null,
       scheduled_start: form.scheduled_start,
       scheduled_end: form.scheduled_end,
       max_students: form.max_students,

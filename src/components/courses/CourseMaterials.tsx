@@ -16,6 +16,7 @@ import {
 interface CourseMaterialsProps {
   courseId: string;
   isInstructor: boolean;
+  topicId?: string;
 }
 
 interface Material {
@@ -30,7 +31,7 @@ interface Material {
 
 const MATERIAL_TYPES = ["notes", "slides", "syllabus", "assignment", "other"];
 
-const CourseMaterials = ({ courseId, isInstructor }: CourseMaterialsProps) => {
+const CourseMaterials = ({ courseId, isInstructor, topicId }: CourseMaterialsProps) => {
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [materials, setMaterials] = useState<Material[]>([]);
@@ -39,11 +40,13 @@ const CourseMaterials = ({ courseId, isInstructor }: CourseMaterialsProps) => {
   const [materialType, setMaterialType] = useState("notes");
 
   const loadMaterials = async () => {
-    const { data } = await supabase
+    let query = supabase
       .from("course_materials")
       .select("*")
       .eq("course_id", courseId)
       .order("created_at", { ascending: false });
+    if (topicId) query = query.eq("topic_id", topicId);
+    const { data } = await query;
     if (data) setMaterials(data);
     setLoading(false);
   };
@@ -77,6 +80,7 @@ const CourseMaterials = ({ courseId, isInstructor }: CourseMaterialsProps) => {
         file_url: filePath,
         file_type: file.type || "application/octet-stream",
         material_type: materialType,
+        topic_id: topicId || null,
       });
 
       if (insertError) throw insertError;
