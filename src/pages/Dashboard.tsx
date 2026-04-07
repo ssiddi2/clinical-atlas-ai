@@ -8,10 +8,11 @@ import { Progress } from "@/components/ui/progress";
 import {
   BookOpen, Brain, Stethoscope, Award, TrendingUp, Calendar, MessageSquare,
   PlayCircle, FileText, LogOut, Settings, Bell, ShieldCheck, Target,
-  ClipboardCheck, Sparkles, Video,
+  ClipboardCheck, Sparkles, Video, GraduationCap,
 } from "lucide-react";
 import livemedLogo from "@/assets/livemed-logo-full.png";
 import VerificationBanner from "@/components/dashboard/VerificationBanner";
+import StudyPlanWidget from "@/components/dashboard/StudyPlanWidget";
 import { MatchReadyWidget } from "@/components/score/MatchReadyWidget";
 import { useScorePredictor } from "@/hooks/useScorePredictor";
 import { useTranslation } from "@/i18n";
