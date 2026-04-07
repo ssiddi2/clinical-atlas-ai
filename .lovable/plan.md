@@ -1,117 +1,149 @@
 
-# Physician System → USMLE Training Platform Upgrade
+# Subtopic → Learning Unit Upgrade
 
-## Phase 1: Foundation Fixes (Critical Path)
+## Overview
+Transform each curriculum subtopic (leaf node in `course_topics`) into a full "Learning Unit" — a dedicated page where physicians control all teaching content, assessments, and student progression.
 
-### 1A. Fix Course ↔ Lecture Connection
-- Add `course_id` dropdown to CreateLectureModal (physician's courses only)
-- Display lectures inside CourseDetail → Lectures tab (filter by course_id)
-- Already have `course_id` column on `virtual_classrooms` — just need UI wiring
+## Database Changes
 
-### 1B. Enable Editing (Courses + Lectures)
-- Add EditCourseModal (title, description, dates, max_students, status)
-- Add EditLectureModal (title, time, meeting_url, description, course_id reassignment)
-- Wire edit buttons into existing card components
+### New table: `learning_unit_content`
+Stores the rich content for each topic (explanation, quick notes, exam traps, instructor notes).
 
-### 1C. Upgrade Quiz Editor
-- Make AI-generated quiz questions fully editable (stem, options, correct answer, explanation)
-- Allow physician to manually add questions (not just AI)
-- Add delete question functionality
-- Add difficulty tagging per question
+```sql
+CREATE TABLE learning_unit_content (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  topic_id uuid NOT NULL REFERENCES course_topics(id) ON DELETE CASCADE,
+  explanation text DEFAULT '',
+  quick_notes text DEFAULT '',
+  exam_traps text DEFAULT '',
+  instructor_note text DEFAULT '',
+  is_high_yield boolean DEFAULT false,
+  is_important boolean DEFAULT false,
+  is_exam_focus boolean DEFAULT false,
+  status text DEFAULT 'draft',
+  passing_score integer DEFAULT 70,
+  require_quiz_before_next boolean DEFAULT false,
+  allow_retry boolean DEFAULT true,
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now(),
+  UNIQUE(topic_id)
+);
+```
 
-## Phase 2: Curriculum & Structure
+### New table: `learning_unit_questions`
+Per-topic MCQs (separate from course_quizzes for topic-level granularity).
 
-### 2A. Curriculum Builder
-**New tables:**
-- `course_topics` (course_id, title, sort_order, is_high_yield, parent_topic_id for subtopics)
+```sql
+CREATE TABLE learning_unit_questions (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  topic_id uuid NOT NULL REFERENCES course_topics(id) ON DELETE CASCADE,
+  stem text NOT NULL,
+  options jsonb NOT NULL DEFAULT '[]',
+  correct_answer_index integer NOT NULL DEFAULT 0,
+  explanation text DEFAULT '',
+  difficulty text DEFAULT 'medium',
+  concept_tag text DEFAULT '',
+  exam_relevance text DEFAULT 'medium',
+  created_by uuid NOT NULL,
+  sort_order integer DEFAULT 0,
+  created_at timestamptz DEFAULT now()
+);
+```
 
-**UI:**
-- New "Curriculum" tab inside CourseDetail
-- Tree view: System → Topic → Subtopic
-- CRUD operations + reorder
-- Link lectures/materials/quizzes to topics
+### New table: `learning_unit_progress`
+Per-student, per-topic progress tracking.
 
-### 2B. Physician Sidebar Navigation
-- Replace flat PhysicianDashboard with sidebar layout
-- Sections: Courses, Lectures, Students, Analytics
-- Tabs inside course: Curriculum, Lectures, Materials, Quizzes, Students, Analytics
+```sql
+CREATE TABLE learning_unit_progress (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  student_id uuid NOT NULL,
+  topic_id uuid NOT NULL REFERENCES course_topics(id) ON DELETE CASCADE,
+  quiz_score integer,
+  quiz_answers jsonb DEFAULT '[]',
+  time_spent_seconds integer DEFAULT 0,
+  completed boolean DEFAULT false,
+  attempts integer DEFAULT 0,
+  last_attempt_at timestamptz,
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now(),
+  UNIQUE(student_id, topic_id)
+);
+```
 
-## Phase 3: Student Performance & Tracking
+RLS for all three tables: instructors (via course_topics → courses) get full CRUD; enrolled students get SELECT + INSERT/UPDATE on their own progress rows. Admins get ALL.
 
-### 3A. Persist Quiz Attempts
-**New table:**
-- `course_quiz_attempts` (student_id, quiz_id, answers jsonb, score, time_taken, created_at)
+### Extend existing tables
+- `course_materials`: already has `topic_id` — will use it to filter materials per learning unit
+- `virtual_classrooms`: already has `topic_id` — will use it to link lectures per learning unit
 
-**UI:**
-- Student takes quiz → results saved
-- Physician sees scores per student in Students tab
+## New Route
+`/courses/:courseId/topic/:topicId` → `LearningUnitPage.tsx`
 
-### 3B. Student Profile View
-- Clickable student names in course roster
-- Profile modal: enrolled courses, quiz scores, weak topics, attendance
+## New Components
 
-### 3C. Attendance System
-- Auto-mark via meeting join (placeholder — needs meeting integration)
-- Manual toggle on lecture card for physician
-- Attendance % calculation per student
+### 1. `LearningUnitPage.tsx` (~400 lines)
+Full-page view with 7 tabs:
+- **Overview**: Explanation editor (textarea with markdown preview for now, rich text later), Quick Notes, Exam Traps, Instructor Note, High Yield / Important / Exam Focus toggles
+- **Lecture**: List lectures linked to this topic (from `virtual_classrooms` where `topic_id` matches), create new or link existing
+- **Materials**: Reuse `CourseMaterials` filtered by `topic_id`
+- **Questions**: CRUD for `learning_unit_questions` — full editor with difficulty, concept tag, exam relevance. "Generate with AI" button
+- **Student Performance**: Show `learning_unit_progress` — who completed, avg score, struggling students, time spent
+- **AI Assistant**: ATLAS chat scoped to this topic
+- **Settings**: Passing score, require quiz before next, retry rules
 
-### 3D. Performance Visualizations
-- Topic heatmap (reuse existing TopicHeatmap component)
-- Performance trend chart (recharts)
-- Per-student analytics in physician view
+### 2. `LearningUnitQuestions.tsx` (~250 lines)
+Full MCQ editor similar to existing `CourseQuizzes` editor but for per-topic questions:
+- Create/edit/delete questions
+- Tag with difficulty, concept, exam relevance
+- "Generate with AI" button → calls edge function → shows review panel (approve/edit/reject each question)
 
-## Phase 4: AI & Learning Loop
+### 3. `LearningUnitProgress.tsx` (~150 lines)
+Table showing per-student progress for this topic: score, completion status, attempts, time spent. Physician can send reminder notification or assign extra questions.
 
-### 4A. Enhanced AI Workflow
-- After material upload: AI generates MCQs + key points + flashcards
-- Show in "AI Suggestions Panel" (draft state)
-- Physician reviews/edits before publishing
+### 4. `AIGenerationPanel.tsx` (~200 lines)
+When physician clicks "Generate with AI":
+- Calls `generate-course-quiz` edge function (extended) with `topic_id` and `generation_type` param
+- Returns: explanation draft, MCQs, quick summary, exam traps
+- Shows in a review panel with Approve / Edit / Reject per item
+- Nothing auto-publishes
 
-### 4B. Learning Loop Logic
-- After lecture ends → auto-assign linked quiz
-- If score < 70% → flag weak areas, recommend review, assign retry
-- Track improvement over attempts
+## Edge Function Update: `generate-course-quiz`
+Add support for `topic_id` and `generation_type: "learning_unit"` parameter. When provided:
+- Generate explanation text, 5-10 MCQs, quick notes summary, and exam traps
+- Return structured JSON for review panel
 
-### 4C. Notification Upgrades
-- New lecture assigned → notify enrolled students
-- Quiz published → notify
-- Quiz graded / feedback → notify
-- Weak area alert → notify student
+## UI Changes
+
+### CurriculumBuilder.tsx
+- Make leaf-level subtopics clickable → navigate to `/courses/${courseId}/topic/${topicId}`
+- Add visual indicator (icon) showing if a learning unit has content vs empty
+- Keep existing CRUD (add/edit/delete/reorder/high-yield toggle)
+
+### CourseDetail.tsx
+- No structural changes needed — Curriculum tab stays as-is
+
+### App.tsx
+- Add route: `/courses/:courseId/topic/:topicId` → `LearningUnitPage`
+
+## Learning Flow Logic
+- `learning_unit_content.require_quiz_before_next` controls gating
+- Student-facing: when viewing curriculum tree, locked topics show a lock icon
+- Check: student has `learning_unit_progress.completed = true` for prerequisite topic (previous sibling by `sort_order`)
+- Physician sets passing score per unit; student must score >= threshold to mark completed
 
 ## Implementation Order
+1. Database migration (3 new tables + RLS)
+2. `LearningUnitPage.tsx` with Overview + Settings tabs
+3. `LearningUnitQuestions.tsx` — MCQ editor + quiz-taking
+4. `LearningUnitProgress.tsx` — student tracking
+5. `AIGenerationPanel.tsx` — AI content generation with review
+6. Update `CurriculumBuilder.tsx` — make subtopics clickable + lock indicators
+7. Update `generate-course-quiz` edge function for topic-level generation
+8. Add route in `App.tsx`
+9. Wire student quiz attempts into `learning_unit_progress`
 
-**Today (Phase 1):** Fix course↔lecture link, add editing, upgrade quiz editor
-**Next (Phase 2):** Curriculum builder, sidebar navigation
-**Then (Phase 3):** Quiz attempts persistence, student profiles, attendance, analytics
-**Finally (Phase 4):** AI enhancements, learning loop, notification upgrades
-
-## Database Changes Needed
-
-Phase 1: No new tables (use existing columns)
-Phase 2: `course_topics` table
-Phase 3: `course_quiz_attempts` table
-Phase 4: No new tables (extend existing edge functions)
-
-## Files Affected
-
-Phase 1:
-- `CreateLectureModal.tsx` — add course_id dropdown
-- New: `EditCourseModal.tsx`, `EditLectureModal.tsx`
-- `CourseQuizzes.tsx` — full quiz editor
-- `CourseDetail.tsx` — wire lectures by course_id
-- `PhysicianDashboard.tsx` — edit buttons
-
-Phase 2:
-- New: `CurriculumBuilder.tsx`
-- `PhysicianDashboard.tsx` → sidebar layout
-- `CourseDetail.tsx` — add Curriculum + Analytics tabs
-
-Phase 3:
-- New: `StudentProfileModal.tsx` (enhance existing)
-- New: `CourseAnalytics.tsx`
-- `CourseQuizzes.tsx` — save attempts
-- `CourseDetail.tsx` — attendance UI
-
-Phase 4:
-- `generate-course-quiz` edge function — extend for flashcards/key points
-- New: notification trigger logic in quiz/lecture flows
+## Scope Note
+- Rich text editor: uses textarea + markdown for v1 (avoids heavy dependency). Can upgrade to TipTap later.
+- Drag-and-drop reorder for questions uses manual sort_order buttons for v1.
+- Attendance auto-marking is out of scope for this change (requires meeting integration).
+- All new tables get proper RLS. No changes to existing tables' structure.
