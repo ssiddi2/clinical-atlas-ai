@@ -148,9 +148,14 @@ const PhysicianDashboard = () => {
             </h1>
             <p className="text-muted-foreground mt-1">{t("physician.dashboardSubtitle")}</p>
           </div>
-          <Button onClick={() => setShowCreateModal(true)} className="gradient-livemed">
-            <Plus className="h-4 w-4 mr-2" /> {t("classroom.createLecture")}
-          </Button>
+          <div className="flex gap-2">
+            <Button onClick={() => setShowCourseModal(true)} variant="outline">
+              <Plus className="h-4 w-4 mr-2" /> {t("courses.createCourse")}
+            </Button>
+            <Button onClick={() => setShowCreateModal(true)} className="gradient-livemed">
+              <Plus className="h-4 w-4 mr-2" /> {t("classroom.createLecture")}
+            </Button>
+          </div>
         </div>
 
         {/* Stats */}
@@ -268,6 +273,10 @@ const PhysicianDashboard = () => {
         onOpenChange={setShowCreateModal}
         onCreated={handleLectureCreated}
       />
+      <CreateCourseModal
+        open={showCourseModal}
+        onOpenChange={setShowCourseModal}
+        onCreated={handleCourseCreated}
     </div>
   );
 };
