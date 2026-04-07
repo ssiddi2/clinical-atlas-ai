@@ -8,6 +8,7 @@ import livemedLogo from "@/assets/livemed-logo-full.png";
 import AdminStats from "@/components/admin/AdminStats";
 import PendingVerifications from "@/components/admin/PendingVerifications";
 import PendingApprovals from "@/components/admin/PendingApprovals";
+import PendingApplications from "@/components/admin/PendingApplications";
 import CreateUserModal from "@/components/admin/CreateUserModal";
 import { Database } from "@/integrations/supabase/types";
 import { useTranslation } from "@/i18n/LanguageContext";
