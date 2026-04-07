@@ -4,10 +4,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Users, Calendar, CheckCircle2, XCircle, Clock, Video, BookOpen } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ArrowLeft, Users, Calendar, CheckCircle2, XCircle, Clock, Video, BookOpen, FileText, ClipboardCheck } from "lucide-react";
 import { useTranslation } from "@/i18n/LanguageContext";
 import { useToast } from "@/hooks/use-toast";
 import LectureCard from "@/components/classroom/LectureCard";
+import CourseMaterials from "@/components/courses/CourseMaterials";
+import CourseQuizzes from "@/components/courses/CourseQuizzes";
 
 const CourseDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -48,6 +51,17 @@ const CourseDetail = () => {
     }).eq("id", enrollmentId);
 
     if (!error) {
+      // Notify the student
+      const enrollment = enrollments.find(e => e.id === enrollmentId);
+      if (enrollment) {
+        await supabase.from("notifications").insert({
+          user_id: enrollment.student_id,
+          type: "enrollment_" + status,
+          title: status === "approved" ? "Enrollment approved!" : "Enrollment rejected",
+          message: `Your enrollment in "${course?.title}" has been ${status}.`,
+          link: status === "approved" ? `/courses/${id}` : "/courses",
+        });
+      }
       toast({ title: status === "approved" ? t("courses.studentApproved") : t("courses.studentRejected") });
       loadData();
     }
@@ -101,89 +115,147 @@ const CourseDetail = () => {
           ))}
         </div>
 
-        {/* Pending Enrollment Requests - instructor only */}
-        {isInstructor && pending.length > 0 && (
-          <Card className="border-yellow-500/30">
-            <CardHeader>
-              <CardTitle className="text-lg flex items-center gap-2">
-                <Clock className="h-5 w-5 text-yellow-400" />
-                {t("courses.pendingRequests")} ({pending.length})
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              {pending.map((e: any) => (
-                <div key={e.id} className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
-                  <div>
-                    <p className="font-medium text-foreground">
-                      {e.profiles?.first_name || ""} {e.profiles?.last_name || t("courses.unknownStudent")}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {t("courses.requestedOn")} {new Date(e.enrolled_at).toLocaleDateString()}
-                    </p>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button size="sm" onClick={() => handleEnrollmentAction(e.id, "approved")} className="bg-green-600 hover:bg-green-700 text-white">
-                      <CheckCircle2 className="h-3.5 w-3.5 mr-1" /> {t("courses.approve")}
-                    </Button>
-                    <Button size="sm" variant="outline" className="text-destructive" onClick={() => handleEnrollmentAction(e.id, "rejected")}>
-                      <XCircle className="h-3.5 w-3.5 mr-1" /> {t("courses.reject")}
-                    </Button>
-                  </div>
-                </div>
-              ))}
-            </CardContent>
-          </Card>
-        )}
+        <Tabs defaultValue="lectures" className="w-full">
+          <TabsList className="grid w-full grid-cols-4">
+            <TabsTrigger value="lectures" className="flex items-center gap-1.5">
+              <Video className="h-3.5 w-3.5" /> Lectures
+            </TabsTrigger>
+            <TabsTrigger value="materials" className="flex items-center gap-1.5">
+              <FileText className="h-3.5 w-3.5" /> Materials
+            </TabsTrigger>
+            <TabsTrigger value="quizzes" className="flex items-center gap-1.5">
+              <ClipboardCheck className="h-3.5 w-3.5" /> Quizzes
+            </TabsTrigger>
+            <TabsTrigger value="students" className="flex items-center gap-1.5">
+              <Users className="h-3.5 w-3.5" /> Students
+            </TabsTrigger>
+          </TabsList>
 
-        {/* Student Roster - instructor only */}
-        {isInstructor && approved.length > 0 && (
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg flex items-center gap-2">
-                <Users className="h-5 w-5 text-primary" />
-                {t("courses.studentRoster")} ({approved.length})
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                {approved.map((e: any) => (
-                  <div key={e.id} className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
-                    <p className="font-medium text-foreground">
-                      {e.profiles?.first_name || ""} {e.profiles?.last_name || t("courses.unknownStudent")}
-                    </p>
-                    <Badge variant="outline" className="bg-green-500/20 text-green-400 border-green-500/30">
-                      <CheckCircle2 className="h-3 w-3 mr-1" /> {t("courses.enrollment.approved")}
-                    </Badge>
+          <TabsContent value="lectures">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <Video className="h-5 w-5 text-primary" />
+                  {t("courses.courseLectures")}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {lectures.length === 0 ? (
+                  <div className="text-center py-8">
+                    <BookOpen className="h-10 w-10 text-muted-foreground/30 mx-auto mb-3" />
+                    <p className="text-muted-foreground">{t("courses.noLectures")}</p>
                   </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        )}
+                ) : (
+                  <div className="space-y-3">
+                    {lectures.map(l => (
+                      <LectureCard key={l.id} lecture={l} isInstructor={isInstructor} onRefresh={loadData} />
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
 
-        {/* Lectures */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg flex items-center gap-2">
-              <Video className="h-5 w-5 text-primary" />
-              {t("courses.courseLectures")}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {lectures.length === 0 ? (
-              <div className="text-center py-8">
-                <BookOpen className="h-10 w-10 text-muted-foreground/30 mx-auto mb-3" />
-                <p className="text-muted-foreground">{t("courses.noLectures")}</p>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {lectures.map(l => (
-                  <LectureCard key={l.id} lecture={l} isInstructor={isInstructor} onRefresh={loadData} />
-                ))}
-              </div>
+          <TabsContent value="materials">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <FileText className="h-5 w-5 text-primary" />
+                  Course Materials
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <CourseMaterials courseId={id!} isInstructor={isInstructor} />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="quizzes">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <ClipboardCheck className="h-5 w-5 text-primary" />
+                  Course Quizzes
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <CourseQuizzes courseId={id!} isInstructor={isInstructor} />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="students">
+            {/* Pending Enrollment Requests */}
+            {isInstructor && pending.length > 0 && (
+              <Card className="border-yellow-500/30 mb-4">
+                <CardHeader>
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <Clock className="h-5 w-5 text-yellow-400" />
+                    {t("courses.pendingRequests")} ({pending.length})
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {pending.map((e: any) => (
+                    <div key={e.id} className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
+                      <div>
+                        <p className="font-medium text-foreground">
+                          {e.profiles?.first_name || ""} {e.profiles?.last_name || t("courses.unknownStudent")}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {t("courses.requestedOn")} {new Date(e.enrolled_at).toLocaleDateString()}
+                        </p>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button size="sm" onClick={() => handleEnrollmentAction(e.id, "approved")} className="bg-green-600 hover:bg-green-700 text-white">
+                          <CheckCircle2 className="h-3.5 w-3.5 mr-1" /> {t("courses.approve")}
+                        </Button>
+                        <Button size="sm" variant="outline" className="text-destructive" onClick={() => handleEnrollmentAction(e.id, "rejected")}>
+                          <XCircle className="h-3.5 w-3.5 mr-1" /> {t("courses.reject")}
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
             )}
-          </CardContent>
-        </Card>
+
+            {/* Student Roster */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <Users className="h-5 w-5 text-primary" />
+                  {t("courses.studentRoster")} ({approved.length})
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {approved.length === 0 ? (
+                  <div className="text-center py-8">
+                    <Users className="h-10 w-10 text-muted-foreground/30 mx-auto mb-3" />
+                    <p className="text-muted-foreground">No enrolled students yet</p>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {approved.map((e: any) => (
+                      <div key={e.id} className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
+                        <div>
+                          <p className="font-medium text-foreground">
+                            {e.profiles?.first_name || ""} {e.profiles?.last_name || t("courses.unknownStudent")}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            Enrolled {new Date(e.enrolled_at).toLocaleDateString()}
+                          </p>
+                        </div>
+                        <Badge variant="outline" className="bg-green-500/20 text-green-400 border-green-500/30">
+                          <CheckCircle2 className="h-3 w-3 mr-1" /> {t("courses.enrollment.approved")}
+                        </Badge>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
