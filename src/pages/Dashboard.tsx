@@ -321,6 +321,8 @@ const Dashboard = () => {
               </CardContent>
             </Card>
 
+            <StudyPlanWidget userId={user?.id || null} />
+
             <MatchReadyWidgetWrapper userId={user?.id || null} />
 
             <Card className="gradient-livemed text-white">
