@@ -21,6 +21,7 @@ const PhysicianDashboard = () => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [lectures, setLectures] = useState<any[]>([]);
+  const [enrollmentCounts, setEnrollmentCounts] = useState<Record<string, number>>({});
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [profile, setProfile] = useState<any>(null);
 
@@ -48,7 +49,24 @@ const PhysicianDashboard = () => {
       supabase.from("virtual_classrooms").select("*").eq("instructor_id", userId).order("scheduled_start", { ascending: true }),
     ]);
     if (profileRes.data) setProfile(profileRes.data);
-    if (lecturesRes.data) setLectures(lecturesRes.data);
+    if (lecturesRes.data) {
+      setLectures(lecturesRes.data);
+      // Load enrollment counts for all lectures
+      const ids = lecturesRes.data.map((l: any) => l.id);
+      if (ids.length > 0) {
+        const { data: enrollments } = await supabase
+          .from("classroom_enrollments")
+          .select("classroom_id")
+          .in("classroom_id", ids);
+        if (enrollments) {
+          const counts: Record<string, number> = {};
+          enrollments.forEach((e: any) => {
+            counts[e.classroom_id] = (counts[e.classroom_id] || 0) + 1;
+          });
+          setEnrollmentCounts(counts);
+        }
+      }
+    }
   };
 
   const handleSignOut = async () => {
@@ -83,8 +101,8 @@ const PhysicianDashboard = () => {
             <img src={livemedLogo} alt="Livemed" className="h-8 object-contain" />
           </Link>
           <div className="flex items-center gap-3">
-            <Button variant="ghost" size="icon"><Bell className="h-5 w-5" /></Button>
-            <Button variant="ghost" size="icon"><Settings className="h-5 w-5" /></Button>
+            <Button variant="ghost" size="icon" onClick={() => toast({ title: t("common.comingSoon"), description: t("physician.notificationsComingSoon") })}><Bell className="h-5 w-5" /></Button>
+            <Button variant="ghost" size="icon" onClick={() => navigate("/profile")}><Settings className="h-5 w-5" /></Button>
             <Button variant="ghost" size="sm" onClick={handleSignOut}>
               <LogOut className="h-4 w-4 mr-2" /> {t("dashboard.signOut")}
             </Button>
@@ -112,7 +130,7 @@ const PhysicianDashboard = () => {
             { icon: Calendar, label: t("physician.upcoming"), value: upcoming.length, color: "text-blue-400" },
             { icon: Play, label: t("physician.liveNow"), value: live.length, color: "text-green-400" },
             { icon: CheckCircle2, label: t("physician.completed"), value: completed.length, color: "text-muted-foreground" },
-            { icon: Users, label: t("physician.totalStudents"), value: lectures.reduce((a, l) => a + (l.max_students || 0), 0), color: "text-primary" },
+            { icon: Users, label: t("physician.totalStudents"), value: Object.values(enrollmentCounts).reduce((a, b) => a + b, 0), color: "text-primary" },
           ].map((stat) => (
             <Card key={stat.label} className="bg-card/50 border-border/30">
               <CardContent className="flex items-center gap-4 p-5">
@@ -137,7 +155,7 @@ const PhysicianDashboard = () => {
             </h2>
             <div className="grid gap-4">
               {live.map(lecture => (
-                <LectureCard key={lecture.id} lecture={lecture} isInstructor onRefresh={() => user && loadData(user.id)} />
+                <LectureCard key={lecture.id} lecture={lecture} isInstructor enrollmentCount={enrollmentCounts[lecture.id] || 0} onRefresh={() => user && loadData(user.id)} />
               ))}
             </div>
           </section>
@@ -161,7 +179,7 @@ const PhysicianDashboard = () => {
           ) : (
             <div className="grid gap-4 md:grid-cols-2">
               {upcoming.map(lecture => (
-                <LectureCard key={lecture.id} lecture={lecture} isInstructor onRefresh={() => user && loadData(user.id)} />
+                <LectureCard key={lecture.id} lecture={lecture} isInstructor enrollmentCount={enrollmentCounts[lecture.id] || 0} onRefresh={() => user && loadData(user.id)} />
               ))}
             </div>
           )}
@@ -175,7 +193,7 @@ const PhysicianDashboard = () => {
             </h2>
             <div className="grid gap-4 md:grid-cols-2">
               {completed.slice(0, 4).map(lecture => (
-                <LectureCard key={lecture.id} lecture={lecture} isInstructor onRefresh={() => user && loadData(user.id)} />
+                <LectureCard key={lecture.id} lecture={lecture} isInstructor enrollmentCount={enrollmentCounts[lecture.id] || 0} onRefresh={() => user && loadData(user.id)} />
               ))}
             </div>
           </section>
@@ -203,7 +221,7 @@ const PhysicianDashboard = () => {
                 </div>
               </CardContent>
             </Card>
-            <Card className="bg-card/50 border-border/30 hover:border-primary/30 transition-colors cursor-pointer">
+            <Card className="bg-card/50 border-border/30 hover:border-primary/30 transition-colors cursor-pointer" onClick={() => toast({ title: t("common.comingSoon"), description: t("physician.lorComingSoon") })}>
               <CardContent className="flex items-center gap-4 p-5">
                 <div className="p-3 rounded-xl bg-yellow-500/10 text-yellow-500"><BookOpen className="h-5 w-5" /></div>
                 <div>

@@ -8,7 +8,7 @@ import { Progress } from "@/components/ui/progress";
 import {
   BookOpen, Brain, Stethoscope, Award, TrendingUp, Calendar, MessageSquare,
   PlayCircle, FileText, LogOut, Settings, Bell, ShieldCheck, Target,
-  ClipboardCheck, Sparkles,
+  ClipboardCheck, Sparkles, Video,
 } from "lucide-react";
 import livemedLogo from "@/assets/livemed-logo-full.png";
 import VerificationBanner from "@/components/dashboard/VerificationBanner";
@@ -22,6 +22,13 @@ interface ProfileData {
   weak_areas: string[] | null;
 }
 
+interface UpcomingLecture {
+  id: string;
+  title: string;
+  scheduled_start: string;
+  status: string;
+}
+
 const Dashboard = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -29,6 +36,7 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [upcomingLectures, setUpcomingLectures] = useState<UpcomingLecture[]>([]);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
@@ -49,17 +57,22 @@ const Dashboard = () => {
   }, [navigate]);
 
   const loadProfileAndCheckAdmin = async (userId: string) => {
-    const { data } = await supabase
-      .from("profiles")
-      .select("onboarding_completed, verification_status, weak_areas")
-      .eq("user_id", userId)
-      .maybeSingle();
-    setProfile(data);
+    const [profileRes, adminRes, enrollmentsRes] = await Promise.all([
+      supabase.from("profiles").select("onboarding_completed, verification_status, weak_areas").eq("user_id", userId).maybeSingle(),
+      supabase.rpc("has_role", { _user_id: userId, _role: "platform_admin" }),
+      supabase.from("classroom_enrollments").select("classroom_id, virtual_classrooms(id, title, scheduled_start, status)").eq("student_id", userId),
+    ]);
+    setProfile(profileRes.data);
+    setIsAdmin(!!adminRes.data);
 
-    const { data: hasRole } = await supabase.rpc("has_role", {
-      _user_id: userId, _role: "platform_admin",
-    });
-    setIsAdmin(!!hasRole);
+    if (enrollmentsRes.data) {
+      const lectures = enrollmentsRes.data
+        .map((e: any) => e.virtual_classrooms)
+        .filter((vc: any) => vc && (vc.status === "scheduled" || vc.status === "live"))
+        .sort((a: any, b: any) => new Date(a.scheduled_start).getTime() - new Date(b.scheduled_start).getTime())
+        .slice(0, 3);
+      setUpcomingLectures(lectures);
+    }
   };
 
   const handleSignOut = async () => {
@@ -81,15 +94,22 @@ const Dashboard = () => {
   const quickActions = [
     { icon: MessageSquare, label: t("dashboard.askAtlas"), href: "/atlas", color: "bg-accent" },
     { icon: BookOpen, label: t("dashboard.continueLearning"), href: "/curriculum", color: "bg-primary" },
+    { icon: Video, label: t("dashboard.virtualClassroom"), href: "/virtual-classroom", color: "bg-livemed-purple" },
     { icon: Stethoscope, label: t("dashboard.liveRounds"), href: "/virtual-rounds", color: "bg-livemed-success" },
     { icon: FileText, label: t("dashboard.takeAssessment"), href: "/assessments", color: "bg-livemed-warning" },
   ];
 
-  const upcomingItems = [
-    { title: "Cardiology Module Review", time: "Today, 2:00 PM", type: "Study", href: "/curriculum" },
-    { title: "Live Rounds: Internal Medicine", time: "Tomorrow, 9:00 AM", type: t("common.live"), href: "/virtual-rounds" },
-    { title: "Live Case Conference", time: "Thu, 4:00 PM", type: t("common.live"), href: "/virtual-rounds" },
-  ];
+  const upcomingItems = upcomingLectures.length > 0
+    ? upcomingLectures.map(l => ({
+        title: l.title,
+        time: new Date(l.scheduled_start).toLocaleString(undefined, { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }),
+        type: l.status === "live" ? t("common.live") : "Lecture",
+        href: "/virtual-classroom",
+      }))
+    : [
+        { title: "Cardiology Module Review", time: "Today, 2:00 PM", type: "Study", href: "/curriculum" },
+        { title: "Live Rounds: Internal Medicine", time: "Tomorrow, 9:00 AM", type: t("common.live"), href: "/virtual-rounds" },
+      ];
 
   const progressData = [
     { subject: "Cardiology", progress: 78, total: 24 },
@@ -110,6 +130,7 @@ const Dashboard = () => {
           <nav className="hidden md:flex items-center gap-6">
             <Link to="/curriculum" className="text-sm font-medium text-muted-foreground hover:text-primary">{t("dashboard.curriculum")}</Link>
             <Link to="/atlas" className="text-sm font-medium text-muted-foreground hover:text-primary">ATLAS™</Link>
+            <Link to="/virtual-classroom" className="text-sm font-medium text-muted-foreground hover:text-primary">{t("dashboard.virtualClassroom")}</Link>
             <Link to="/virtual-rounds" className="text-sm font-medium text-muted-foreground hover:text-primary">{t("dashboard.liveRounds")}</Link>
             <Link to="/assessments" className="text-sm font-medium text-muted-foreground hover:text-primary">{t("footer.assessments")}</Link>
           </nav>
@@ -144,7 +165,7 @@ const Dashboard = () => {
         </div>
 
         {/* Quick Actions */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-8">
+        <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 md:gap-4 mb-8">
           {quickActions.map((action) => (
             <Link key={action.label} to={action.href}>
               <Card className="hover:shadow-livemed transition-all duration-300 hover:-translate-y-1 cursor-pointer h-full">

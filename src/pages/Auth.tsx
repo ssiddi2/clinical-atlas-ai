@@ -39,7 +39,16 @@ const Auth = () => {
         .eq("user_id", session.user.id)
         .single();
 
-      if (profile?.account_status === "pending_approval") {
+      // Check role for routing
+      const { data: roles } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", session.user.id);
+
+      const isPhysician = roles?.some(r => r.role === "physician" || r.role === "faculty");
+
+      // Physicians skip pending approval check
+      if (!isPhysician && profile?.account_status === "pending_approval") {
         navigate("/pending-approval");
         return;
       }
@@ -48,14 +57,6 @@ const Auth = () => {
         await supabase.auth.signOut();
         return;
       }
-
-      // Check role for routing
-      const { data: roles } = await supabase
-        .from("user_roles")
-        .select("role")
-        .eq("user_id", session.user.id);
-
-      const isPhysician = roles?.some(r => r.role === "physician" || r.role === "faculty");
 
       if (isPhysician) {
         navigate("/physician-dashboard");
