@@ -9,6 +9,7 @@ import AdminStats from "@/components/admin/AdminStats";
 import PendingVerifications from "@/components/admin/PendingVerifications";
 import PendingApprovals from "@/components/admin/PendingApprovals";
 import PendingApplications from "@/components/admin/PendingApplications";
+import UserManagement from "@/components/admin/UserManagement";
 import CreateUserModal from "@/components/admin/CreateUserModal";
 import { Database } from "@/integrations/supabase/types";
 import { useTranslation } from "@/i18n/LanguageContext";
@@ -202,6 +203,17 @@ const Admin = () => {
             </p>
           </div>
           <PendingApplications />
+        </div>
+
+        {/* User Management */}
+        <div className="bg-card rounded-lg border p-6 mb-6">
+          <div className="mb-4">
+            <h2 className="text-xl font-semibold">User Management</h2>
+            <p className="text-sm text-muted-foreground">
+              Activate or deactivate existing user accounts.
+            </p>
+          </div>
+          <UserManagement profiles={profiles} onRefresh={loadData} />
         </div>
 
         {/* Verification Queue */}

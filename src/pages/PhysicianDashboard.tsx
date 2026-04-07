@@ -15,6 +15,7 @@ import LectureCard from "@/components/classroom/LectureCard";
 import CourseCard from "@/components/courses/CourseCard";
 import { useTranslation } from "@/i18n/LanguageContext";
 import { useToast } from "@/hooks/use-toast";
+import NotificationBell from "@/components/notifications/NotificationBell";
 
 const PhysicianDashboard = () => {
   const navigate = useNavigate();
@@ -130,7 +131,7 @@ const PhysicianDashboard = () => {
             <img src={livemedLogo} alt="Livemed" className="h-8 object-contain" />
           </Link>
           <div className="flex items-center gap-3">
-            <Button variant="ghost" size="icon" onClick={() => toast({ title: t("common.comingSoon"), description: t("physician.notificationsComingSoon") })}><Bell className="h-5 w-5" /></Button>
+            <NotificationBell userId={user?.id || null} />
             <Button variant="ghost" size="icon" onClick={() => navigate("/profile")}><Settings className="h-5 w-5" /></Button>
             <Button variant="ghost" size="sm" onClick={handleSignOut}>
               <LogOut className="h-4 w-4 mr-2" /> {t("dashboard.signOut")}
