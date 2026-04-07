@@ -11,6 +11,7 @@ import {
   ClipboardCheck, Sparkles, Video, GraduationCap,
 } from "lucide-react";
 import livemedLogo from "@/assets/livemed-logo-full.png";
+import NotificationBell from "@/components/notifications/NotificationBell";
 import VerificationBanner from "@/components/dashboard/VerificationBanner";
 import StudyPlanWidget from "@/components/dashboard/StudyPlanWidget";
 import { MatchReadyWidget } from "@/components/score/MatchReadyWidget";
@@ -145,7 +146,7 @@ const Dashboard = () => {
                 <span className="hidden sm:inline">{t("dashboard.admin")}</span>
               </Button>
             )}
-            <Button variant="ghost" size="icon"><Bell className="h-5 w-5" /></Button>
+            <NotificationBell userId={user?.id || null} />
             <Button variant="ghost" size="icon" onClick={() => navigate("/profile")}><Settings className="h-5 w-5" /></Button>
             <Button variant="ghost" size="icon" onClick={handleSignOut}><LogOut className="h-5 w-5" /></Button>
           </div>
