@@ -15,6 +15,7 @@ export default function QuestionNav({
   currentIndex,
   onNavigate,
 }: QuestionNavProps) {
+  const { t } = useTranslation();
   const getQuestionStatus = (question: SessionQuestion, index: number) => {
     const isCurrent = index === currentIndex;
     const isAnswered = question.selectedAnswer !== undefined;

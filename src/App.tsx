@@ -43,6 +43,8 @@ const QBankCreate = lazy(() => import("./pages/QBankCreate"));
 const QBankSession = lazy(() => import("./pages/QBankSession"));
 const QBankReview = lazy(() => import("./pages/QBankReview"));
 const QBankPerformance = lazy(() => import("./pages/QBankPerformance"));
+const PhysicianDashboard = lazy(() => import("./pages/PhysicianDashboard"));
+const VirtualClassroom = lazy(() => import("./pages/VirtualClassroom"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -148,6 +150,12 @@ const App = () => {
             <Route path="/qbank/session/:id" element={<QBankSession />} />
             <Route path="/qbank/review/:id" element={<QBankReview />} />
             <Route path="/qbank/performance" element={<QBankPerformance />} />
+
+            {/* Physician Dashboard */}
+            <Route path="/physician-dashboard" element={<PhysicianDashboard />} />
+
+            {/* Virtual Classroom */}
+            <Route path="/virtual-classroom" element={<VirtualClassroom />} />
 
             {/* Admin Dashboard (platform_admin only) */}
             <Route path="/admin" element={<Admin />} />
