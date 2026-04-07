@@ -181,9 +181,9 @@ const Dashboard = () => {
 
   const quickActions = [
     { icon: MessageSquare, label: t("dashboard.askAtlas"), href: "/atlas", color: "bg-accent" },
-    { icon: BookOpen, label: t("dashboard.continueLearning"), href: "/curriculum", color: "bg-primary" },
-    { icon: GraduationCap, label: t("courses.myCourses") || "My Courses", href: "/courses", color: "bg-livemed-purple" },
-    { icon: Video, label: t("dashboard.virtualClassroom"), href: "/virtual-classroom", color: "bg-livemed-purple" },
+    { icon: GraduationCap, label: t("courses.myCourses") || "My Courses", href: "/courses", color: "bg-primary" },
+    { icon: Video, label: t("dashboard.virtualClassroom"), href: "/virtual-classroom", color: "bg-livemed-info" },
+    { icon: BookOpen, label: t("dashboard.curriculum"), href: "/curriculum", color: "bg-livemed-purple" },
     { icon: Stethoscope, label: t("dashboard.liveRounds"), href: "/virtual-rounds", color: "bg-livemed-success" },
     { icon: FileText, label: t("dashboard.takeAssessment"), href: "/assessments", color: "bg-livemed-warning" },
   ];
@@ -308,7 +308,7 @@ const Dashboard = () => {
               </CardHeader>
               <CardContent>
                 {continueLearning ? (
-                  <Link to={`/courses/${continueLearning.courseId}/topics/${continueLearning.topicId}`} className="flex items-center gap-4 p-4 bg-muted/50 rounded-lg hover:bg-muted/70 transition-colors">
+                  <Link to={`/courses/${continueLearning.courseId}/topic/${continueLearning.topicId}`} className="flex items-center gap-4 p-4 bg-muted/50 rounded-lg hover:bg-muted/70 transition-colors">
                     <div className="w-16 h-16 rounded-lg gradient-livemed flex items-center justify-center flex-shrink-0">
                       <PlayCircle className="h-8 w-8 text-white" />
                     </div>
