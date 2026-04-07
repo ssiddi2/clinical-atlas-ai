@@ -1,50 +1,37 @@
 
 
-# Fix Student Views: Show Only Enrolled Course Content
+# Fix Curriculum Page: Show Course-Specific Topics Instead of Generic Modules
 
 ## Problem
-Students see ALL content across the platform instead of only content related to their enrolled courses:
-1. **Courses page** shows all active courses (catalog browse) -- should show only enrolled courses as "My Courses"
-2. **Virtual Classroom** shows ALL lectures from all professors -- should only show lectures linked to enrolled courses
-3. **Dashboard "Upcoming"** falls back to hardcoded items and shows hardcoded progress data
-4. **Dashboard "Continue Learning"** is completely hardcoded (Cardiology: Heart Failure)
-5. **Dashboard progress** shows static fake data (Cardiology 78%, Pulmonology 65%, etc.)
-6. **Curriculum page** shows all modules from all specialties -- not filtered to enrolled courses
-7. **Assessments page** uses hardcoded sample questions, not tied to course content
+The Curriculum page (`/curriculum`) uses the **old generic module system** (`specialties` + `modules` tables) which shows 8 pre-seeded Cardiology modules (Heart Failure: Pathophysiology, Heart Failure: Diagnosis, etc.). These are NOT the professor's actual course content.
+
+The student's enrolled course ("USMLE Step 1 – Cardiology Mastery") has its own professor-built curriculum in `course_topics` (Myocardial Infarction → Pathophysiology, Risk Factors, Clinical Presentation, etc.) — but the Curriculum page completely ignores this.
+
+**Result**: Student sees generic modules that don't match what the professor is teaching.
 
 ## Solution
+Rewrite the Curriculum page to show **enrolled courses and their `course_topics` tree** instead of the old `specialties`/`modules` data.
 
-### 1. Courses Page → "My Courses" (enrolled only)
-- Change query from fetching ALL active courses to only courses where student has an approved enrollment
-- Join `course_enrollments` to `courses` filtered by `student_id` and `status = 'approved'`
-- Update page title from "Course Catalog" to "My Courses"
-- Remove specialty filter (irrelevant when showing only enrolled)
-- Keep search
+### New Data Flow
+1. Fetch enrolled course IDs from `course_enrollments`
+2. Fetch those courses (title, description, professor name)
+3. Fetch `course_topics` for those courses (the professor's actual curriculum tree)
+4. Fetch `learning_unit_progress` for the student's completion tracking
+5. Display courses in sidebar, topics as a tree in the main area
 
-### 2. Virtual Classroom → Only lectures from enrolled courses
-- Instead of fetching ALL `virtual_classrooms`, filter by `course_id IN (student's enrolled course IDs)`
-- First fetch enrolled course IDs, then filter classrooms by those course IDs
-- Remove "All Lectures" tab, default to showing only relevant lectures
+### UI Changes
+- **Sidebar**: Lists enrolled courses (instead of specialties)
+- **Main area**: Shows the selected course's topic tree (System → Topic → Subtopic) from `course_topics`
+- **Leaf subtopics**: Clickable → navigate to `/courses/:courseId/topic/:topicId` (the Learning Unit page)
+- **Progress**: Pulled from `learning_unit_progress` per topic instead of `user_module_progress` per module
+- **Empty state**: "No courses enrolled yet" when no enrollments exist
 
-### 3. Dashboard — Replace all hardcoded content
-- **Upcoming section**: Remove hardcoded fallback items; if no enrolled lectures exist, show "No upcoming sessions" message
-- **Continue Learning**: Fetch the student's most recent `learning_unit_progress` or `user_module_progress` record and display actual course/topic info instead of hardcoded "Cardiology: Heart Failure"
-- **Progress section**: Fetch actual enrolled courses and compute progress from `learning_unit_progress` per course instead of static `progressData` array
-
-### 4. Curriculum Page → Filter to enrolled course specialties
-- Only show specialties and modules that belong to courses the student is enrolled in
-- Alternatively, keep curriculum as-is since it's a general learning resource, but this depends on intent -- the plan will filter it to enrolled course topics
-
-### 5. Quick Actions cleanup
-- Remove "Browse Courses" from quick actions or rename to "My Courses"
-- Keep other actions that are generally useful (ATLAS, Assessments, etc.)
+### Old module system
+The `specialties`/`modules` tables and `user_module_progress` are no longer referenced on this page. They remain in the DB for other potential uses but are not shown to students.
 
 ## Files Changed
-1. **`src/pages/Courses.tsx`** — Filter to enrolled courses only, update title
-2. **`src/pages/VirtualClassroom.tsx`** — Filter lectures to enrolled course IDs only
-3. **`src/pages/Dashboard.tsx`** — Replace hardcoded continue learning, progress, and upcoming fallback with real DB queries
-4. **`src/pages/Curriculum.tsx`** — Filter modules to enrolled course specialties
+1. **`src/pages/Curriculum.tsx`** — Rewrite data loading and rendering to use `courses` + `course_topics` + `learning_unit_progress` instead of `specialties` + `modules` + `user_module_progress`
 
 ## No Database Changes
-All filtering uses existing tables and RLS policies.
+All required tables and RLS policies already exist.
 
