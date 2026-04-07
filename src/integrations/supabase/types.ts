@@ -67,6 +67,38 @@ export type Database = {
           },
         ]
       }
+      classroom_enrollments: {
+        Row: {
+          attended: boolean
+          classroom_id: string
+          enrolled_at: string
+          id: string
+          student_id: string
+        }
+        Insert: {
+          attended?: boolean
+          classroom_id: string
+          enrolled_at?: string
+          id?: string
+          student_id: string
+        }
+        Update: {
+          attended?: boolean
+          classroom_id?: string
+          enrolled_at?: string
+          id?: string
+          student_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "classroom_enrollments_classroom_id_fkey"
+            columns: ["classroom_id"]
+            isOneToOne: false
+            referencedRelation: "virtual_classrooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       competency_scores: {
         Row: {
           assessment_count: number
@@ -1049,6 +1081,62 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      virtual_classrooms: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          instructor_id: string
+          max_students: number
+          meeting_url: string | null
+          recording_url: string | null
+          scheduled_end: string
+          scheduled_start: string
+          specialty_id: string | null
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          instructor_id: string
+          max_students?: number
+          meeting_url?: string | null
+          recording_url?: string | null
+          scheduled_end: string
+          scheduled_start: string
+          specialty_id?: string | null
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          instructor_id?: string
+          max_students?: number
+          meeting_url?: string | null
+          recording_url?: string | null
+          scheduled_end?: string
+          scheduled_start?: string
+          specialty_id?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "virtual_classrooms_specialty_id_fkey"
+            columns: ["specialty_id"]
+            isOneToOne: false
+            referencedRelation: "specialties"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
