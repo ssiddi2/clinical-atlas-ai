@@ -23,8 +23,11 @@ const PhysicianDashboard = () => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [lectures, setLectures] = useState<any[]>([]);
+  const [courses, setCourses] = useState<any[]>([]);
   const [enrollmentCounts, setEnrollmentCounts] = useState<Record<string, number>>({});
+  const [courseEnrollmentCounts, setCourseEnrollmentCounts] = useState<Record<string, number>>({});
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showCourseModal, setShowCourseModal] = useState(false);
   const [profile, setProfile] = useState<any>(null);
 
   useEffect(() => {
@@ -46,14 +49,14 @@ const PhysicianDashboard = () => {
   }, [navigate]);
 
   const loadData = async (userId: string) => {
-    const [profileRes, lecturesRes] = await Promise.all([
+    const [profileRes, lecturesRes, coursesRes] = await Promise.all([
       supabase.from("profiles").select("first_name, last_name").eq("user_id", userId).single(),
       supabase.from("virtual_classrooms").select("*").eq("instructor_id", userId).order("scheduled_start", { ascending: true }),
+      supabase.from("courses").select("*, specialties(name)").eq("instructor_id", userId).order("created_at", { ascending: false }),
     ]);
     if (profileRes.data) setProfile(profileRes.data);
     if (lecturesRes.data) {
       setLectures(lecturesRes.data);
-      // Load enrollment counts for all lectures
       const ids = lecturesRes.data.map((l: any) => l.id);
       if (ids.length > 0) {
         const { data: enrollments } = await supabase
@@ -66,6 +69,24 @@ const PhysicianDashboard = () => {
             counts[e.classroom_id] = (counts[e.classroom_id] || 0) + 1;
           });
           setEnrollmentCounts(counts);
+        }
+      }
+    }
+    if (coursesRes.data) {
+      setCourses(coursesRes.data);
+      const cIds = coursesRes.data.map((c: any) => c.id);
+      if (cIds.length > 0) {
+        const { data: cEnrollments } = await supabase
+          .from("course_enrollments")
+          .select("course_id")
+          .eq("status", "approved")
+          .in("course_id", cIds);
+        if (cEnrollments) {
+          const counts: Record<string, number> = {};
+          cEnrollments.forEach((e: any) => {
+            counts[e.course_id] = (counts[e.course_id] || 0) + 1;
+          });
+          setCourseEnrollmentCounts(counts);
         }
       }
     }
