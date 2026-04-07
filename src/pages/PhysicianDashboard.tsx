@@ -155,7 +155,7 @@ const PhysicianDashboard = () => {
             </h2>
             <div className="grid gap-4">
               {live.map(lecture => (
-                <LectureCard key={lecture.id} lecture={lecture} isInstructor onRefresh={() => user && loadData(user.id)} />
+                <LectureCard key={lecture.id} lecture={lecture} isInstructor enrollmentCount={enrollmentCounts[lecture.id] || 0} onRefresh={() => user && loadData(user.id)} />
               ))}
             </div>
           </section>
@@ -179,7 +179,7 @@ const PhysicianDashboard = () => {
           ) : (
             <div className="grid gap-4 md:grid-cols-2">
               {upcoming.map(lecture => (
-                <LectureCard key={lecture.id} lecture={lecture} isInstructor onRefresh={() => user && loadData(user.id)} />
+                <LectureCard key={lecture.id} lecture={lecture} isInstructor enrollmentCount={enrollmentCounts[lecture.id] || 0} onRefresh={() => user && loadData(user.id)} />
               ))}
             </div>
           )}
@@ -193,7 +193,7 @@ const PhysicianDashboard = () => {
             </h2>
             <div className="grid gap-4 md:grid-cols-2">
               {completed.slice(0, 4).map(lecture => (
-                <LectureCard key={lecture.id} lecture={lecture} isInstructor onRefresh={() => user && loadData(user.id)} />
+                <LectureCard key={lecture.id} lecture={lecture} isInstructor enrollmentCount={enrollmentCounts[lecture.id] || 0} onRefresh={() => user && loadData(user.id)} />
               ))}
             </div>
           </section>
@@ -221,7 +221,7 @@ const PhysicianDashboard = () => {
                 </div>
               </CardContent>
             </Card>
-            <Card className="bg-card/50 border-border/30 hover:border-primary/30 transition-colors cursor-pointer">
+            <Card className="bg-card/50 border-border/30 hover:border-primary/30 transition-colors cursor-pointer" onClick={() => toast({ title: t("common.comingSoon"), description: t("physician.lorComingSoon") })}>
               <CardContent className="flex items-center gap-4 p-5">
                 <div className="p-3 rounded-xl bg-yellow-500/10 text-yellow-500"><BookOpen className="h-5 w-5" /></div>
                 <div>
