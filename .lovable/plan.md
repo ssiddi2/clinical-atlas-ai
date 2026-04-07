@@ -1,92 +1,112 @@
 
 
-# Tailored Curriculum + Course System + Physician Classrooms
+# Enhanced Platform: Content Management, AI Test Generation, and Notifications
 
 ## Current State
 
-- **Onboarding** collects academic info, step status, weak areas, goals — but this data is never used to personalize the student experience
-- **Curriculum** has 27 modules across only 4 of 10 specialties (Cardiology, Pulmonology, Neurology, Internal Medicine). Surgery, Emergency Medicine, GI, Nephrology, Endocrinology, and Family Medicine have zero modules
-- **Virtual Classroom** is lecture-based (one-off sessions), not course-based — no persistent "class" a student belongs to
-- **Physicians** can only create standalone lectures, not structured courses with enrolled cohorts
+- **Student flow**: Apply Now form → Admin reviews → Admin creates account → Student onboards → Student browses courses & enrolls
+- **Physician flow**: Admin creates physician account → Physician creates courses & lectures (title, description, schedule, meeting URL only)
+- **Admin flow**: View applications, approve/reject accounts, verify documents, create users
+
+## Gaps Identified
+
+1. **Physicians cannot upload content** — no file uploads (PDFs, notes, slides) attached to courses
+2. **No AI-generated tests from course content** — ATLAS exists for chat but doesn't generate course-specific quizzes
+3. **No notification system** — students don't know when a physician uploads content or creates a lecture
+4. **Admin cannot activate/deactivate accounts** — only approve/reject during initial signup; no toggle for existing accounts
+5. **Physician cannot see enrolled student details** — roster exists but is minimal
 
 ## What This Plan Builds
 
-### 1. Personalized Study Plan (uses onboarding data)
-After onboarding, the student dashboard shows a **tailored learning path** based on their weak areas, step status, and goals. A new `study_plans` table stores a prioritized list of modules/specialties for each student. The onboarding edge function generates this plan at completion.
+### 1. Course Content Uploads (Physician)
+Physicians can upload PDFs, Word docs, notes, and slides to their courses. Each upload is stored in a new `course-materials` storage bucket and tracked in a `course_materials` table.
 
-### 2. Full Course System (replaces one-off lectures)
-New `courses` table where physicians create structured multi-session courses (e.g., "Cardiology Rotation Prep — 8 weeks"). Each course:
-- Belongs to a specialty
-- Has multiple lectures (existing `virtual_classrooms` linked via `course_id`)
-- Has an enrollment roster with admission control
-- Shows progress tracking per student
+**Physician UI**: New "Materials" tab on course detail page with drag-and-drop file upload, file list with download/delete, and material type labels (notes, slides, syllabus, assignment).
 
-### 3. Physician Course Management
-Physician dashboard gets a **Courses** tab alongside current Lectures:
-- Create/edit courses with syllabus description, specialty, schedule
-- Admit or reject student enrollment requests
-- View student roster and attendance
-- Attach curriculum modules to course as required reading
+### 2. AI-Generated Tests from Course Content (Physician)
+Physicians click "Generate Quiz" on a course. An edge function reads the course materials text, sends it to Lovable AI (Gemini Flash), and returns structured MCQ questions. The physician can review, edit, and publish the quiz.
 
-### 4. Student Course Enrollment
-Students browse available courses, request enrollment. Physician approves. Once enrolled:
-- Course appears on student dashboard with schedule
-- Tailored curriculum highlights course-required modules
-- Student sees their physician's lectures in order
+**New table**: `course_quizzes` (course_id, title, questions jsonb, created_by, status)
+**New edge function**: `generate-course-quiz` — extracts text from uploaded materials, prompts AI to generate 10-20 MCQs, returns structured JSON
 
-### 5. Fill Missing Specialties
-Seed modules for the 6 empty specialties (Surgery, EM, GI, Nephrology, Endocrinology, Family Medicine) — ~6 modules each, same structure as existing ones. This ensures all core rotation specialties are covered.
+### 3. In-App Notifications
+A `notifications` table stores alerts. Students get notified when:
+- A physician uploads new material to an enrolled course
+- A new lecture is scheduled for an enrolled course
+- Their enrollment is approved/rejected
+
+Physicians get notified when a student requests enrollment.
+
+**UI**: Bell icon badge count in header, dropdown notification panel, mark-as-read.
+
+### 4. Admin Account Management
+Add activate/deactivate toggle for any user account from the admin dashboard. Currently admin can only approve pending accounts — this adds the ability to suspend and reactivate existing approved accounts.
+
+### 5. Physician Student Roster Enhancement
+Show enrolled student count, names, and enrollment status on physician's course page. Add ability to view student profiles.
 
 ## Database Changes
 
 ```text
-NEW TABLE: courses
-  id, instructor_id, specialty_id, title, description,
-  start_date, end_date, max_students, status (draft/active/completed),
-  created_at, updated_at
+NEW TABLE: course_materials
+  id, course_id, uploaded_by, file_name, file_url, file_type,
+  material_type (notes/slides/syllabus/assignment/other),
+  description, created_at
 
-NEW TABLE: course_enrollments
-  id, course_id, student_id, status (pending/approved/rejected),
-  enrolled_at, approved_at
+NEW TABLE: course_quizzes
+  id, course_id, title, questions (jsonb),
+  created_by, status (draft/published), created_at, updated_at
 
-NEW TABLE: study_plans
-  id, user_id, plan_data (jsonb — ordered specialty/module priorities),
-  generated_from (jsonb — snapshot of onboarding inputs),
-  created_at, updated_at
+NEW TABLE: notifications
+  id, user_id, type, title, message, link,
+  is_read, created_at
 
-ALTER: virtual_classrooms
-  ADD course_id uuid NULLABLE (links lecture to a course)
+NEW STORAGE BUCKET: course-materials (private)
 ```
 
-RLS: courses visible to all authenticated, writable by instructor. Course enrollments readable by student + instructor, insertable by student, updatable by instructor. Study plans owned by user.
+RLS:
+- `course_materials`: instructor can CRUD own course materials; enrolled students can SELECT
+- `course_quizzes`: instructor CRUD; enrolled students SELECT published only
+- `notifications`: users can read/update their own only
+- `course-materials` bucket: instructor upload/delete; enrolled students download
+
+## New Edge Function
+
+**`generate-course-quiz`**: Receives course_id, fetches material file URLs, extracts text (for PDFs stored in bucket), sends to Lovable AI with structured output (tool calling) to generate MCQs with stems, options, correct answers, and explanations. Returns JSON for physician to review.
 
 ## UI Changes
 
-### Physician Dashboard
-- New "My Courses" section: create course, manage roster, link lectures to course
-- Course detail page: student list, lecture schedule, attendance
+### Physician Dashboard / Course Detail
+- "Materials" tab: upload files, list materials, delete
+- "Generate Quiz" button: triggers AI quiz generation, shows preview, allows publish
+- "Students" tab: enhanced roster with student names and enrollment dates
+- Notification bell in header with unread count
 
-### Student Dashboard  
-- "My Study Plan" widget: prioritized specialties based on weak areas/goals
-- "My Courses" section: enrolled courses with upcoming lectures
-- Course catalog: browse and request enrollment
+### Student Dashboard
+- Notification bell with unread count and dropdown
+- Course detail page shows available materials for download
+- Course quizzes available under "Assessments" within enrolled course
 
-### Course Catalog Page (`/courses`)
-- Browse all active courses by specialty
-- Filter by specialty, physician, schedule
-- Request enrollment button
+### Admin Dashboard
+- User management section: list all users with activate/deactivate toggle
+- Existing create user modal unchanged
 
 ## Implementation Order
 
-1. Database migrations (4 changes above)
-2. Seed ~36 new modules across 6 empty specialties
-3. Build course CRUD for physicians (create, edit, roster management)
-4. Build course catalog and enrollment for students
-5. Generate personalized study plan from onboarding data
-6. Wire study plan into student dashboard
-7. Link virtual_classrooms to courses
-8. Add all translation keys
+1. Database migrations (3 new tables + 1 storage bucket + RLS)
+2. Course materials upload UI for physicians
+3. Notification system (table + insert triggers + UI bell component)
+4. Admin activate/deactivate accounts
+5. `generate-course-quiz` edge function with Lovable AI
+6. Quiz generation UI for physicians + quiz-taking UI for students
+7. Wire notifications into content upload and enrollment flows
+8. Translation keys for all new strings
 
-## Scope Note
-This is a large feature set (~15 files new/modified, 3 new tables, ~36 seed modules). Medical terminology in module content stays in English as it is internationally standardized. The approach prioritizes the physician-as-professor model where physicians own courses and control admission, which aligns with your vision of a structured medical school experience.
+## Technical Notes
+
+- File uploads use Supabase Storage with signed URLs for private bucket access
+- AI quiz generation uses Lovable AI Gateway (`google/gemini-3-flash-preview`) with tool calling for structured output
+- Notifications are inserted server-side via the edge function or client-side after successful mutations
+- Admin account toggle calls the existing `admin-actions` edge function with a new `toggle_account_status` action
+- No realtime needed initially — notifications load on page refresh / poll every 60s
 
