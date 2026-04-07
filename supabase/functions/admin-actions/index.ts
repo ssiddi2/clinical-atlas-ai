@@ -51,7 +51,7 @@ serve(async (req) => {
       });
     }
 
-    const { action, userId, documentIds, rejectionReason } = await req.json();
+    const { action, userId, documentIds, rejectionReason, newStatus } = await req.json();
 
     if (!action || !userId) {
       return new Response(JSON.stringify({ error: "action and userId are required" }), {
@@ -154,8 +154,23 @@ serve(async (req) => {
         result = { success: true, message: "Verification rejected" };
         break;
       }
-    }
 
+      case "toggle_account_status": {
+        if (!newStatus || !["approved", "suspended"].includes(newStatus)) {
+          return new Response(JSON.stringify({ error: "newStatus must be 'approved' or 'suspended'" }), {
+            status: 400,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+        const { error } = await supabase
+          .from("profiles")
+          .update({ account_status: newStatus })
+          .eq("user_id", userId);
+        if (error) throw error;
+        result = { success: true, message: `Account ${newStatus}` };
+        break;
+      }
+    }
     console.log(`Admin action: ${action} by admin ${user.id} for user ${userId}`);
 
     return new Response(JSON.stringify(result), {
