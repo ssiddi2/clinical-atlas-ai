@@ -5,53 +5,46 @@ import { User } from "@supabase/supabase-js";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
-  BookOpen, Brain, Heart, Stethoscope, Wind, Zap, Droplet, Users, Activity,
-  AlertCircle, Clock, CheckCircle, PlayCircle, ArrowLeft, Loader2,
+  BookOpen, Clock, CheckCircle, ArrowLeft, Loader2, ChevronRight, ChevronDown, Star, GraduationCap,
 } from "lucide-react";
 import livemedLogo from "@/assets/livemed-logo-full.png";
 import { useTranslation } from "@/i18n/LanguageContext";
 
-interface Specialty {
-  id: string;
-  name: string;
-  description: string;
-  icon: string;
-}
-
-interface Module {
+interface EnrolledCourse {
   id: string;
   title: string;
-  description: string;
-  duration_minutes: number;
-  content_type: string;
+  description: string | null;
+  instructor_id: string;
+  instructor_name?: string;
+}
+
+interface CourseTopic {
+  id: string;
+  title: string;
+  course_id: string;
+  parent_topic_id: string | null;
   sort_order: number;
-  specialty_id: string;
+  is_high_yield: boolean;
 }
 
-interface ModuleProgress {
-  module_id: string;
-  progress_percent: number;
-  completed_at: string | null;
+interface TopicProgress {
+  topic_id: string;
+  completed: boolean;
+  quiz_score: number | null;
 }
-
-const iconMap: { [key: string]: React.ElementType } = {
-  stethoscope: Stethoscope, activity: Activity, "alert-circle": AlertCircle,
-  heart: Heart, wind: Wind, brain: Brain, circle: BookOpen, droplet: Droplet,
-  zap: Zap, users: Users,
-};
 
 const Curriculum = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const [specialties, setSpecialties] = useState<Specialty[]>([]);
-  const [modules, setModules] = useState<Module[]>([]);
-  const [progress, setProgress] = useState<ModuleProgress[]>([]);
-  const [selectedSpecialty, setSelectedSpecialty] = useState<string | null>(null);
+  const [courses, setCourses] = useState<EnrolledCourse[]>([]);
+  const [topics, setTopics] = useState<CourseTopic[]>([]);
+  const [progress, setProgress] = useState<TopicProgress[]>([]);
+  const [selectedCourse, setSelectedCourse] = useState<string | null>(null);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
@@ -72,77 +65,68 @@ const Curriculum = () => {
   const loadData = async () => {
     if (!user) return;
 
-    // Get enrolled course IDs
     const { data: enrollData } = await supabase
       .from("course_enrollments")
       .select("course_id")
       .eq("student_id", user.id)
       .eq("status", "approved");
 
-    const enrolledCourseIds = enrollData?.map(e => e.course_id) || [];
-
-    if (enrolledCourseIds.length === 0) {
-      setSpecialties([]);
-      setModules([]);
-      setProgress([]);
+    const enrolledIds = enrollData?.map(e => e.course_id) || [];
+    if (enrolledIds.length === 0) {
+      setCourses([]); setTopics([]); setProgress([]);
       return;
     }
 
-    // Get specialty IDs from enrolled courses
-    const { data: coursesData } = await supabase
-      .from("courses")
-      .select("specialty_id")
-      .in("id", enrolledCourseIds)
-      .not("specialty_id", "is", null);
-
-    const enrolledSpecialtyIds = [...new Set((coursesData || []).map((c: any) => c.specialty_id).filter(Boolean))];
-
-    if (enrolledSpecialtyIds.length === 0) {
-      setSpecialties([]);
-      setModules([]);
-      setProgress([]);
-      return;
-    }
-
-    // Load only enrolled specialties, their modules, and progress
-    const [specRes, modRes, progRes] = await Promise.all([
-      supabase.from("specialties").select("*").in("id", enrolledSpecialtyIds).order("sort_order"),
-      supabase.from("modules").select("*").in("specialty_id", enrolledSpecialtyIds).order("sort_order"),
-      supabase.from("user_module_progress").select("*"),
+    const [coursesRes, topicsRes, progressRes] = await Promise.all([
+      supabase.from("courses").select("id, title, description, instructor_id").in("id", enrolledIds),
+      supabase.from("course_topics").select("*").in("course_id", enrolledIds).order("sort_order"),
+      supabase.from("learning_unit_progress").select("topic_id, completed, quiz_score").eq("student_id", user.id),
     ]);
 
-    if (specRes.data) {
-      setSpecialties(specRes.data);
-      if (specRes.data.length > 0 && !selectedSpecialty) {
-        setSelectedSpecialty(specRes.data[0].id);
+    const courseList: EnrolledCourse[] = coursesRes.data || [];
+
+    // Fetch instructor names
+    const instructorIds = [...new Set(courseList.map(c => c.instructor_id))];
+    if (instructorIds.length > 0) {
+      const { data: profiles } = await supabase
+        .from("profiles")
+        .select("user_id, first_name, last_name")
+        .in("user_id", instructorIds);
+      if (profiles) {
+        const nameMap: Record<string, string> = {};
+        profiles.forEach(p => { nameMap[p.user_id] = `${p.first_name || ""} ${p.last_name || ""}`.trim() || "Professor"; });
+        courseList.forEach(c => { c.instructor_name = nameMap[c.instructor_id] || "Professor"; });
       }
     }
-    if (modRes.data) setModules(modRes.data);
-    if (progRes.data) setProgress(progRes.data);
+
+    setCourses(courseList);
+    if (courseList.length > 0 && !selectedCourse) setSelectedCourse(courseList[0].id);
+    setTopics(topicsRes.data || []);
+    setProgress(progressRes.data || []);
   };
 
-  const getModuleProgress = (moduleId: string): number => {
-    const p = progress.find((p) => p.module_id === moduleId);
-    return p?.progress_percent || 0;
+  const isCompleted = (topicId: string) => progress.find(p => p.topic_id === topicId)?.completed || false;
+
+  const getCourseTopics = (courseId: string) => topics.filter(t => t.course_id === courseId);
+
+  const getCourseProgress = (courseId: string): number => {
+    const courseTopics = getCourseTopics(courseId);
+    const leafTopics = courseTopics.filter(t => !courseTopics.some(c => c.parent_topic_id === t.id));
+    if (leafTopics.length === 0) return 0;
+    const completed = leafTopics.filter(t => isCompleted(t.id)).length;
+    return Math.round((completed / leafTopics.length) * 100);
   };
 
-  const isModuleCompleted = (moduleId: string): boolean => {
-    const p = progress.find((p) => p.module_id === moduleId);
-    return p?.completed_at !== null && p?.completed_at !== undefined;
+  const buildTree = (courseId: string) => {
+    const courseTopics = getCourseTopics(courseId);
+    const roots = courseTopics.filter(t => !t.parent_topic_id);
+    const getChildren = (parentId: string): CourseTopic[] =>
+      courseTopics.filter(t => t.parent_topic_id === parentId).sort((a, b) => a.sort_order - b.sort_order);
+    return { roots: roots.sort((a, b) => a.sort_order - b.sort_order), getChildren };
   };
 
-  const getSpecialtyProgress = (specialtyId: string): number => {
-    const specialtyModules = modules.filter((m) => m.specialty_id === specialtyId);
-    if (specialtyModules.length === 0) return 0;
-    const totalProgress = specialtyModules.reduce((acc, m) => acc + getModuleProgress(m.id), 0);
-    return Math.round(totalProgress / specialtyModules.length);
-  };
-
-  const getCompletedModulesCount = (specialtyId: string): number => {
-    return modules.filter((m) => m.specialty_id === specialtyId).filter((m) => isModuleCompleted(m.id)).length;
-  };
-
-  const filteredModules = selectedSpecialty ? modules.filter((m) => m.specialty_id === selectedSpecialty) : modules;
+  const selectedCourseData = courses.find(c => c.id === selectedCourse);
+  const tree = selectedCourse ? buildTree(selectedCourse) : null;
 
   if (loading) {
     return (
@@ -172,53 +156,44 @@ const Curriculum = () => {
       </header>
 
       <div className="container mx-auto px-4 py-6 md:py-8">
-        {specialties.length === 0 ? (
+        {courses.length === 0 ? (
           <Card className="bg-card/50 border-border/30">
             <CardContent className="flex flex-col items-center justify-center py-16 text-center">
               <BookOpen className="h-12 w-12 text-muted-foreground/30 mb-4" />
-              <p className="text-muted-foreground">No curriculum available. Enroll in a course to access curriculum content.</p>
+              <p className="text-muted-foreground">No courses enrolled yet. Contact your admin to get enrolled in a course.</p>
             </CardContent>
           </Card>
         ) : (
           <>
-            {/* Mobile Specialty Selector */}
+            {/* Mobile Course Selector */}
             <div className="lg:hidden overflow-x-auto pb-4 mb-6 -mx-4 px-4">
               <div className="flex gap-2 min-w-max">
-                {specialties.map((specialty) => {
-                  const Icon = iconMap[specialty.icon] || BookOpen;
-                  return (
-                    <Button key={specialty.id} variant={selectedSpecialty === specialty.id ? "default" : "outline"} size="sm" onClick={() => setSelectedSpecialty(specialty.id)} className="flex items-center gap-2 whitespace-nowrap">
-                      <Icon className="h-4 w-4" />
-                      {specialty.name}
-                    </Button>
-                  );
-                })}
+                {courses.map((course) => (
+                  <Button key={course.id} variant={selectedCourse === course.id ? "default" : "outline"} size="sm" onClick={() => setSelectedCourse(course.id)} className="whitespace-nowrap">
+                    {course.title}
+                  </Button>
+                ))}
               </div>
             </div>
 
             <div className="grid lg:grid-cols-4 gap-6 md:gap-8">
+              {/* Sidebar */}
               <aside className="hidden lg:block lg:col-span-1">
                 <Card className="sticky top-24">
                   <CardHeader className="pb-3">
-                    <CardTitle className="text-lg">{t("curriculum.specialties")}</CardTitle>
-                    <CardDescription>{t("curriculum.selectSpecialty")}</CardDescription>
+                    <CardTitle className="text-lg">My Courses</CardTitle>
+                    <CardDescription>Select a course to view curriculum</CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-2">
-                    {specialties.map((specialty) => {
-                      const Icon = iconMap[specialty.icon] || BookOpen;
-                      const progressPercent = getSpecialtyProgress(specialty.id);
-                      const completedCount = getCompletedModulesCount(specialty.id);
-                      const totalModules = modules.filter((m) => m.specialty_id === specialty.id).length;
+                    {courses.map((course) => {
+                      const pct = getCourseProgress(course.id);
+                      const courseTopicCount = getCourseTopics(course.id).filter(t => !getCourseTopics(course.id).some(c => c.parent_topic_id === t.id)).length;
+                      const completedCount = getCourseTopics(course.id).filter(t => !getCourseTopics(course.id).some(c => c.parent_topic_id === t.id)).filter(t => isCompleted(t.id)).length;
                       return (
-                        <button key={specialty.id} onClick={() => setSelectedSpecialty(specialty.id)} className={`w-full text-left p-3 rounded-lg transition-all ${selectedSpecialty === specialty.id ? "bg-accent text-accent-foreground" : "hover:bg-muted"}`}>
-                          <div className="flex items-center gap-3">
-                            <Icon className="h-5 w-5 flex-shrink-0" />
-                            <div className="flex-1 min-w-0">
-                              <div className="font-medium text-sm truncate">{specialty.name}</div>
-                              <div className="text-xs opacity-70">{completedCount}/{totalModules} modules</div>
-                            </div>
-                          </div>
-                          {totalModules > 0 && <Progress value={progressPercent} className="h-1 mt-2" />}
+                        <button key={course.id} onClick={() => setSelectedCourse(course.id)} className={`w-full text-left p-3 rounded-lg transition-all ${selectedCourse === course.id ? "bg-accent text-accent-foreground" : "hover:bg-muted"}`}>
+                          <div className="font-medium text-sm truncate">{course.title}</div>
+                          <div className="text-xs opacity-70 mt-1">{completedCount}/{courseTopicCount} topics • {course.instructor_name}</div>
+                          {courseTopicCount > 0 && <Progress value={pct} className="h-1 mt-2" />}
                         </button>
                       );
                     })}
@@ -226,55 +201,39 @@ const Curriculum = () => {
                 </Card>
               </aside>
 
+              {/* Main Content */}
               <main className="lg:col-span-3">
-                {selectedSpecialty && (
+                {selectedCourseData && tree && (
                   <>
-                    {(() => {
-                      const specialty = specialties.find((s) => s.id === selectedSpecialty);
-                      if (!specialty) return null;
-                      const Icon = iconMap[specialty.icon] || BookOpen;
-                      return (
-                        <div className="mb-8">
-                          <div className="flex items-center gap-4 mb-4">
-                            <div className="w-14 h-14 rounded-2xl gradient-livemed flex items-center justify-center">
-                              <Icon className="h-7 w-7 text-white" />
-                            </div>
-                            <div>
-                              <h2 className="text-2xl font-bold">{specialty.name}</h2>
-                              <p className="text-muted-foreground">{specialty.description}</p>
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-6 text-sm">
-                            <div className="flex items-center gap-2"><BookOpen className="h-4 w-4 text-accent" /><span>{filteredModules.length} {t("curriculum.modules")}</span></div>
-                            <div className="flex items-center gap-2"><Clock className="h-4 w-4 text-accent" /><span>{filteredModules.reduce((acc, m) => acc + m.duration_minutes, 0)} {t("curriculum.minTotal")}</span></div>
-                            <div className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-accent" /><span>{getSpecialtyProgress(selectedSpecialty)}{t("curriculum.percentComplete")}</span></div>
-                          </div>
+                    <div className="mb-8">
+                      <div className="flex items-center gap-4 mb-4">
+                        <div className="w-14 h-14 rounded-2xl gradient-livemed flex items-center justify-center">
+                          <GraduationCap className="h-7 w-7 text-white" />
                         </div>
-                      );
-                    })()}
+                        <div>
+                          <h2 className="text-2xl font-bold">{selectedCourseData.title}</h2>
+                          <p className="text-muted-foreground">{selectedCourseData.description || "Course curriculum"}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-6 text-sm">
+                        <div className="flex items-center gap-2"><BookOpen className="h-4 w-4 text-accent" /><span>{tree.roots.length} systems</span></div>
+                        <div className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-accent" /><span>{getCourseProgress(selectedCourseData.id)}% complete</span></div>
+                        <div className="flex items-center gap-2"><GraduationCap className="h-4 w-4 text-accent" /><span>{selectedCourseData.instructor_name}</span></div>
+                      </div>
+                    </div>
 
-                    <Tabs defaultValue="all">
-                      <TabsList className="mb-6">
-                        <TabsTrigger value="all">{t("curriculum.allModules")}</TabsTrigger>
-                        <TabsTrigger value="lessons">{t("curriculum.lessons")}</TabsTrigger>
-                        <TabsTrigger value="quizzes">{t("curriculum.quizzes")}</TabsTrigger>
-                      </TabsList>
-                      <TabsContent value="all" className="space-y-4">
-                        {filteredModules.map((module, idx) => (
-                          <ModuleCard key={module.id} module={module} index={idx + 1} progress={getModuleProgress(module.id)} completed={isModuleCompleted(module.id)} />
-                        ))}
-                      </TabsContent>
-                      <TabsContent value="lessons" className="space-y-4">
-                        {filteredModules.filter((m) => m.content_type === "lesson").map((module, idx) => (
-                          <ModuleCard key={module.id} module={module} index={idx + 1} progress={getModuleProgress(module.id)} completed={isModuleCompleted(module.id)} />
-                        ))}
-                      </TabsContent>
-                      <TabsContent value="quizzes" className="space-y-4">
-                        {filteredModules.filter((m) => m.content_type === "quiz").map((module, idx) => (
-                          <ModuleCard key={module.id} module={module} index={idx + 1} progress={getModuleProgress(module.id)} completed={isModuleCompleted(module.id)} />
-                        ))}
-                      </TabsContent>
-                    </Tabs>
+                    <div className="space-y-3">
+                      {tree.roots.map((root) => (
+                        <TopicNode key={root.id} topic={root} getChildren={tree.getChildren} allTopics={getCourseTopics(selectedCourseData.id)} progress={progress} courseId={selectedCourseData.id} depth={0} />
+                      ))}
+                      {tree.roots.length === 0 && (
+                        <Card className="bg-card/50 border-border/30">
+                          <CardContent className="py-12 text-center text-muted-foreground">
+                            No curriculum topics have been added to this course yet.
+                          </CardContent>
+                        </Card>
+                      )}
+                    </div>
                   </>
                 )}
               </main>
@@ -286,37 +245,79 @@ const Curriculum = () => {
   );
 };
 
-interface ModuleCardProps {
-  module: Module;
-  index: number;
-  progress: number;
-  completed: boolean;
+interface TopicNodeProps {
+  topic: CourseTopic;
+  getChildren: (parentId: string) => CourseTopic[];
+  allTopics: CourseTopic[];
+  progress: TopicProgress[];
+  courseId: string;
+  depth: number;
 }
 
-const ModuleCard = ({ module, index, progress, completed }: ModuleCardProps) => {
-  const isQuiz = module.content_type === "quiz";
-  return (
-    <Link to={`/curriculum/${module.id}`}>
-      <Card className="hover:shadow-livemed transition-all duration-300 hover:-translate-y-1 group">
-        <CardContent className="p-4 flex items-center gap-4">
-          <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${completed ? "bg-livemed-success text-white" : progress > 0 ? "bg-accent text-accent-foreground" : "bg-muted text-muted-foreground"}`}>
-            {completed ? <CheckCircle className="h-5 w-5" /> : <span className="font-semibold">{index}</span>}
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-1">
-              <h3 className="font-semibold group-hover:text-accent transition-colors truncate">{module.title}</h3>
-              <Badge variant={isQuiz ? "default" : "secondary"} className="flex-shrink-0">{isQuiz ? "Quiz" : "Lesson"}</Badge>
+const TopicNode = ({ topic, getChildren, allTopics, progress, courseId, depth }: TopicNodeProps) => {
+  const [open, setOpen] = useState(depth < 1);
+  const children = getChildren(topic.id);
+  const isLeaf = children.length === 0;
+  const completed = progress.find(p => p.topic_id === topic.id)?.completed || false;
+  const score = progress.find(p => p.topic_id === topic.id)?.quiz_score;
+
+  // Calculate progress for non-leaf nodes
+  const getSubtreeLeaves = (topicId: string): CourseTopic[] => {
+    const kids = allTopics.filter(t => t.parent_topic_id === topicId);
+    if (kids.length === 0) return [allTopics.find(t => t.id === topicId)!].filter(Boolean);
+    return kids.flatMap(k => getSubtreeLeaves(k.id));
+  };
+
+  const leaves = isLeaf ? [] : getSubtreeLeaves(topic.id);
+  const completedLeaves = leaves.filter(l => progress.find(p => p.topic_id === l.id)?.completed);
+  const nodePct = leaves.length > 0 ? Math.round((completedLeaves.length / leaves.length) * 100) : 0;
+
+  if (isLeaf) {
+    return (
+      <Link to={`/courses/${courseId}/topic/${topic.id}`}>
+        <Card className="hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 group" style={{ marginLeft: depth * 16 }}>
+          <CardContent className="p-3 flex items-center gap-3">
+            <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${completed ? "bg-green-500/20 text-green-500" : "bg-muted text-muted-foreground"}`}>
+              {completed ? <CheckCircle className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
             </div>
-            <p className="text-sm text-muted-foreground line-clamp-1">{module.description}</p>
-            {progress > 0 && !completed && <Progress value={progress} className="h-1 mt-2 max-w-xs" />}
-          </div>
-          <div className="flex items-center gap-4 flex-shrink-0">
-            <div className="flex items-center gap-1 text-sm text-muted-foreground"><Clock className="h-4 w-4" /><span>{module.duration_minutes} min</span></div>
-            <Button variant="ghost" size="icon" className="group-hover:bg-accent group-hover:text-accent-foreground"><PlayCircle className="h-5 w-5" /></Button>
-          </div>
-        </CardContent>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2">
+                <span className="font-medium text-sm group-hover:text-accent transition-colors truncate">{topic.title}</span>
+                {topic.is_high_yield && <Badge variant="destructive" className="text-[10px] px-1.5 py-0">HY</Badge>}
+              </div>
+              {score !== null && score !== undefined && (
+                <span className="text-xs text-muted-foreground">Score: {score}%</span>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      </Link>
+    );
+  }
+
+  return (
+    <Collapsible open={open} onOpenChange={setOpen}>
+      <Card style={{ marginLeft: depth * 16 }} className="overflow-hidden">
+        <CollapsibleTrigger asChild>
+          <button className="w-full text-left p-4 flex items-center gap-3 hover:bg-muted/50 transition-colors">
+            {open ? <ChevronDown className="h-5 w-5 text-muted-foreground flex-shrink-0" /> : <ChevronRight className="h-5 w-5 text-muted-foreground flex-shrink-0" />}
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2">
+                <span className="font-semibold">{topic.title}</span>
+                {topic.is_high_yield && <Badge variant="destructive" className="text-[10px] px-1.5 py-0">HY</Badge>}
+                <span className="text-xs text-muted-foreground ml-auto">{completedLeaves.length}/{leaves.length}</span>
+              </div>
+              {leaves.length > 0 && <Progress value={nodePct} className="h-1 mt-2 max-w-xs" />}
+            </div>
+          </button>
+        </CollapsibleTrigger>
+        <CollapsibleContent className="pb-2 px-2 space-y-2">
+          {children.map(child => (
+            <TopicNode key={child.id} topic={child} getChildren={getChildren} allTopics={allTopics} progress={progress} courseId={courseId} depth={depth + 1} />
+          ))}
+        </CollapsibleContent>
       </Card>
-    </Link>
+    </Collapsible>
   );
 };
 
