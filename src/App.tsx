@@ -47,6 +47,7 @@ const PhysicianDashboard = lazy(() => import("./pages/PhysicianDashboard"));
 const VirtualClassroom = lazy(() => import("./pages/VirtualClassroom"));
 const Courses = lazy(() => import("./pages/Courses"));
 const CourseDetail = lazy(() => import("./pages/CourseDetail"));
+const LearningUnitPage = lazy(() => import("./pages/LearningUnitPage"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -162,6 +163,7 @@ const App = () => {
             {/* Courses */}
             <Route path="/courses" element={<Courses />} />
             <Route path="/courses/:id" element={<CourseDetail />} />
+            <Route path="/courses/:courseId/topic/:topicId" element={<LearningUnitPage />} />
 
             {/* Admin Dashboard (platform_admin only) */}
             <Route path="/admin" element={<Admin />} />
