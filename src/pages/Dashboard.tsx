@@ -182,9 +182,9 @@ const Dashboard = () => {
   const quickActions = [
     { icon: MessageSquare, label: t("dashboard.askAtlas"), href: "/atlas", color: "bg-accent" },
     { icon: GraduationCap, label: t("courses.myCourses") || "My Courses", href: "/courses", color: "bg-primary" },
-    { icon: Video, label: t("dashboard.virtualClassroom"), href: "/virtual-classroom", color: "bg-livemed-info" },
-    { icon: BookOpen, label: t("dashboard.curriculum"), href: "/curriculum", color: "bg-livemed-purple" },
-    { icon: Stethoscope, label: t("dashboard.liveRounds"), href: "/virtual-rounds", color: "bg-livemed-success" },
+    { icon: Video, label: t("dashboard.virtualClassroom"), href: "/virtual-classroom", color: "bg-livemed-success" },
+    { icon: BookOpen, label: t("dashboard.curriculum"), href: "/curriculum", color: "bg-livemed-warning" },
+    { icon: Stethoscope, label: t("dashboard.liveRounds"), href: "/virtual-rounds", color: "bg-destructive" },
     { icon: FileText, label: t("dashboard.takeAssessment"), href: "/assessments", color: "bg-livemed-warning" },
   ];
 
