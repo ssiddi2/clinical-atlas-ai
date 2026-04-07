@@ -277,6 +277,7 @@ const PhysicianDashboard = () => {
         open={showCourseModal}
         onOpenChange={setShowCourseModal}
         onCreated={handleCourseCreated}
+      />
     </div>
   );
 };
