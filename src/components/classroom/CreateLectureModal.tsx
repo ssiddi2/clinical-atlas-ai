@@ -13,16 +13,19 @@ interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onCreated: () => void;
+  defaultCourseId?: string;
 }
 
-export default function CreateLectureModal({ open, onOpenChange, onCreated }: Props) {
+export default function CreateLectureModal({ open, onOpenChange, onCreated, defaultCourseId }: Props) {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [specialties, setSpecialties] = useState<any[]>([]);
+  const [courses, setCourses] = useState<any[]>([]);
   const [form, setForm] = useState({
     title: "",
     description: "",
     specialty_id: "",
+    course_id: defaultCourseId || "",
     scheduled_start: "",
     scheduled_end: "",
     max_students: 50,
@@ -33,7 +36,18 @@ export default function CreateLectureModal({ open, onOpenChange, onCreated }: Pr
     supabase.from("specialties").select("id, name").order("sort_order").then(({ data }) => {
       if (data) setSpecialties(data);
     });
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (user) {
+        supabase.from("courses").select("id, title").eq("instructor_id", user.id).order("title").then(({ data }) => {
+          if (data) setCourses(data);
+        });
+      }
+    });
   }, []);
+
+  useEffect(() => {
+    if (defaultCourseId) setForm(f => ({ ...f, course_id: defaultCourseId }));
+  }, [defaultCourseId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,6 +60,7 @@ export default function CreateLectureModal({ open, onOpenChange, onCreated }: Pr
       title: form.title,
       description: form.description || null,
       specialty_id: form.specialty_id || null,
+      course_id: form.course_id || null,
       scheduled_start: form.scheduled_start,
       scheduled_end: form.scheduled_end,
       max_students: form.max_students,
@@ -54,7 +69,7 @@ export default function CreateLectureModal({ open, onOpenChange, onCreated }: Pr
 
     setLoading(false);
     if (!error) {
-      setForm({ title: "", description: "", specialty_id: "", scheduled_start: "", scheduled_end: "", max_students: 50, meeting_url: "" });
+      setForm({ title: "", description: "", specialty_id: "", course_id: defaultCourseId || "", scheduled_start: "", scheduled_end: "", max_students: 50, meeting_url: "" });
       onCreated();
     }
   };
@@ -74,6 +89,15 @@ export default function CreateLectureModal({ open, onOpenChange, onCreated }: Pr
           <div className="space-y-2">
             <Label>{t("classroom.description")}</Label>
             <Textarea value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} placeholder={t("classroom.descriptionPlaceholder")} rows={3} />
+          </div>
+          <div className="space-y-2">
+            <Label>Assign to Course</Label>
+            <Select value={form.course_id} onValueChange={v => setForm({ ...form, course_id: v })}>
+              <SelectTrigger><SelectValue placeholder="Select course (recommended)" /></SelectTrigger>
+              <SelectContent>
+                {courses.map(c => <SelectItem key={c.id} value={c.id}>{c.title}</SelectItem>)}
+              </SelectContent>
+            </Select>
           </div>
           <div className="space-y-2">
             <Label>{t("classroom.specialty")}</Label>
