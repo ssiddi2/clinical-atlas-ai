@@ -1,112 +1,117 @@
 
+# Physician System → USMLE Training Platform Upgrade
 
-# Enhanced Platform: Content Management, AI Test Generation, and Notifications
+## Phase 1: Foundation Fixes (Critical Path)
 
-## Current State
+### 1A. Fix Course ↔ Lecture Connection
+- Add `course_id` dropdown to CreateLectureModal (physician's courses only)
+- Display lectures inside CourseDetail → Lectures tab (filter by course_id)
+- Already have `course_id` column on `virtual_classrooms` — just need UI wiring
 
-- **Student flow**: Apply Now form → Admin reviews → Admin creates account → Student onboards → Student browses courses & enrolls
-- **Physician flow**: Admin creates physician account → Physician creates courses & lectures (title, description, schedule, meeting URL only)
-- **Admin flow**: View applications, approve/reject accounts, verify documents, create users
+### 1B. Enable Editing (Courses + Lectures)
+- Add EditCourseModal (title, description, dates, max_students, status)
+- Add EditLectureModal (title, time, meeting_url, description, course_id reassignment)
+- Wire edit buttons into existing card components
 
-## Gaps Identified
+### 1C. Upgrade Quiz Editor
+- Make AI-generated quiz questions fully editable (stem, options, correct answer, explanation)
+- Allow physician to manually add questions (not just AI)
+- Add delete question functionality
+- Add difficulty tagging per question
 
-1. **Physicians cannot upload content** — no file uploads (PDFs, notes, slides) attached to courses
-2. **No AI-generated tests from course content** — ATLAS exists for chat but doesn't generate course-specific quizzes
-3. **No notification system** — students don't know when a physician uploads content or creates a lecture
-4. **Admin cannot activate/deactivate accounts** — only approve/reject during initial signup; no toggle for existing accounts
-5. **Physician cannot see enrolled student details** — roster exists but is minimal
+## Phase 2: Curriculum & Structure
 
-## What This Plan Builds
+### 2A. Curriculum Builder
+**New tables:**
+- `course_topics` (course_id, title, sort_order, is_high_yield, parent_topic_id for subtopics)
 
-### 1. Course Content Uploads (Physician)
-Physicians can upload PDFs, Word docs, notes, and slides to their courses. Each upload is stored in a new `course-materials` storage bucket and tracked in a `course_materials` table.
+**UI:**
+- New "Curriculum" tab inside CourseDetail
+- Tree view: System → Topic → Subtopic
+- CRUD operations + reorder
+- Link lectures/materials/quizzes to topics
 
-**Physician UI**: New "Materials" tab on course detail page with drag-and-drop file upload, file list with download/delete, and material type labels (notes, slides, syllabus, assignment).
+### 2B. Physician Sidebar Navigation
+- Replace flat PhysicianDashboard with sidebar layout
+- Sections: Courses, Lectures, Students, Analytics
+- Tabs inside course: Curriculum, Lectures, Materials, Quizzes, Students, Analytics
 
-### 2. AI-Generated Tests from Course Content (Physician)
-Physicians click "Generate Quiz" on a course. An edge function reads the course materials text, sends it to Lovable AI (Gemini Flash), and returns structured MCQ questions. The physician can review, edit, and publish the quiz.
+## Phase 3: Student Performance & Tracking
 
-**New table**: `course_quizzes` (course_id, title, questions jsonb, created_by, status)
-**New edge function**: `generate-course-quiz` — extracts text from uploaded materials, prompts AI to generate 10-20 MCQs, returns structured JSON
+### 3A. Persist Quiz Attempts
+**New table:**
+- `course_quiz_attempts` (student_id, quiz_id, answers jsonb, score, time_taken, created_at)
 
-### 3. In-App Notifications
-A `notifications` table stores alerts. Students get notified when:
-- A physician uploads new material to an enrolled course
-- A new lecture is scheduled for an enrolled course
-- Their enrollment is approved/rejected
+**UI:**
+- Student takes quiz → results saved
+- Physician sees scores per student in Students tab
 
-Physicians get notified when a student requests enrollment.
+### 3B. Student Profile View
+- Clickable student names in course roster
+- Profile modal: enrolled courses, quiz scores, weak topics, attendance
 
-**UI**: Bell icon badge count in header, dropdown notification panel, mark-as-read.
+### 3C. Attendance System
+- Auto-mark via meeting join (placeholder — needs meeting integration)
+- Manual toggle on lecture card for physician
+- Attendance % calculation per student
 
-### 4. Admin Account Management
-Add activate/deactivate toggle for any user account from the admin dashboard. Currently admin can only approve pending accounts — this adds the ability to suspend and reactivate existing approved accounts.
+### 3D. Performance Visualizations
+- Topic heatmap (reuse existing TopicHeatmap component)
+- Performance trend chart (recharts)
+- Per-student analytics in physician view
 
-### 5. Physician Student Roster Enhancement
-Show enrolled student count, names, and enrollment status on physician's course page. Add ability to view student profiles.
+## Phase 4: AI & Learning Loop
 
-## Database Changes
+### 4A. Enhanced AI Workflow
+- After material upload: AI generates MCQs + key points + flashcards
+- Show in "AI Suggestions Panel" (draft state)
+- Physician reviews/edits before publishing
 
-```text
-NEW TABLE: course_materials
-  id, course_id, uploaded_by, file_name, file_url, file_type,
-  material_type (notes/slides/syllabus/assignment/other),
-  description, created_at
+### 4B. Learning Loop Logic
+- After lecture ends → auto-assign linked quiz
+- If score < 70% → flag weak areas, recommend review, assign retry
+- Track improvement over attempts
 
-NEW TABLE: course_quizzes
-  id, course_id, title, questions (jsonb),
-  created_by, status (draft/published), created_at, updated_at
-
-NEW TABLE: notifications
-  id, user_id, type, title, message, link,
-  is_read, created_at
-
-NEW STORAGE BUCKET: course-materials (private)
-```
-
-RLS:
-- `course_materials`: instructor can CRUD own course materials; enrolled students can SELECT
-- `course_quizzes`: instructor CRUD; enrolled students SELECT published only
-- `notifications`: users can read/update their own only
-- `course-materials` bucket: instructor upload/delete; enrolled students download
-
-## New Edge Function
-
-**`generate-course-quiz`**: Receives course_id, fetches material file URLs, extracts text (for PDFs stored in bucket), sends to Lovable AI with structured output (tool calling) to generate MCQs with stems, options, correct answers, and explanations. Returns JSON for physician to review.
-
-## UI Changes
-
-### Physician Dashboard / Course Detail
-- "Materials" tab: upload files, list materials, delete
-- "Generate Quiz" button: triggers AI quiz generation, shows preview, allows publish
-- "Students" tab: enhanced roster with student names and enrollment dates
-- Notification bell in header with unread count
-
-### Student Dashboard
-- Notification bell with unread count and dropdown
-- Course detail page shows available materials for download
-- Course quizzes available under "Assessments" within enrolled course
-
-### Admin Dashboard
-- User management section: list all users with activate/deactivate toggle
-- Existing create user modal unchanged
+### 4C. Notification Upgrades
+- New lecture assigned → notify enrolled students
+- Quiz published → notify
+- Quiz graded / feedback → notify
+- Weak area alert → notify student
 
 ## Implementation Order
 
-1. Database migrations (3 new tables + 1 storage bucket + RLS)
-2. Course materials upload UI for physicians
-3. Notification system (table + insert triggers + UI bell component)
-4. Admin activate/deactivate accounts
-5. `generate-course-quiz` edge function with Lovable AI
-6. Quiz generation UI for physicians + quiz-taking UI for students
-7. Wire notifications into content upload and enrollment flows
-8. Translation keys for all new strings
+**Today (Phase 1):** Fix course↔lecture link, add editing, upgrade quiz editor
+**Next (Phase 2):** Curriculum builder, sidebar navigation
+**Then (Phase 3):** Quiz attempts persistence, student profiles, attendance, analytics
+**Finally (Phase 4):** AI enhancements, learning loop, notification upgrades
 
-## Technical Notes
+## Database Changes Needed
 
-- File uploads use Supabase Storage with signed URLs for private bucket access
-- AI quiz generation uses Lovable AI Gateway (`google/gemini-3-flash-preview`) with tool calling for structured output
-- Notifications are inserted server-side via the edge function or client-side after successful mutations
-- Admin account toggle calls the existing `admin-actions` edge function with a new `toggle_account_status` action
-- No realtime needed initially — notifications load on page refresh / poll every 60s
+Phase 1: No new tables (use existing columns)
+Phase 2: `course_topics` table
+Phase 3: `course_quiz_attempts` table
+Phase 4: No new tables (extend existing edge functions)
 
+## Files Affected
+
+Phase 1:
+- `CreateLectureModal.tsx` — add course_id dropdown
+- New: `EditCourseModal.tsx`, `EditLectureModal.tsx`
+- `CourseQuizzes.tsx` — full quiz editor
+- `CourseDetail.tsx` — wire lectures by course_id
+- `PhysicianDashboard.tsx` — edit buttons
+
+Phase 2:
+- New: `CurriculumBuilder.tsx`
+- `PhysicianDashboard.tsx` → sidebar layout
+- `CourseDetail.tsx` — add Curriculum + Analytics tabs
+
+Phase 3:
+- New: `StudentProfileModal.tsx` (enhance existing)
+- New: `CourseAnalytics.tsx`
+- `CourseQuizzes.tsx` — save attempts
+- `CourseDetail.tsx` — attendance UI
+
+Phase 4:
+- `generate-course-quiz` edge function — extend for flashcards/key points
+- New: notification trigger logic in quiz/lecture flows
