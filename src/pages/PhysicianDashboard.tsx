@@ -233,6 +233,35 @@ const PhysicianDashboard = () => {
           </section>
         )}
 
+        {/* My Courses */}
+        <section>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-semibold text-foreground flex items-center gap-2">
+              <GraduationCap className="h-5 w-5 text-primary" /> {t("courses.myCourses")}
+            </h2>
+            <Button variant="outline" size="sm" onClick={() => setShowCourseModal(true)}>
+              <Plus className="h-4 w-4 mr-1" /> {t("courses.createCourse")}
+            </Button>
+          </div>
+          {courses.length === 0 ? (
+            <Card className="bg-card/50 border-border/30">
+              <CardContent className="flex flex-col items-center justify-center py-12 text-center">
+                <GraduationCap className="h-12 w-12 text-muted-foreground/30 mb-4" />
+                <p className="text-muted-foreground mb-4">{t("courses.noCourses")}</p>
+                <Button onClick={() => setShowCourseModal(true)} variant="outline">
+                  <Plus className="h-4 w-4 mr-2" /> {t("courses.createCourse")}
+                </Button>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="grid gap-4 md:grid-cols-2">
+              {courses.map(course => (
+                <CourseCard key={course.id} course={course} isInstructor enrollmentCount={courseEnrollmentCounts[course.id] || 0} onRefresh={() => user && loadData(user.id)} />
+              ))}
+            </div>
+          )}
+        </section>
+
         {/* Quick Actions */}
         <section>
           <h2 className="text-xl font-semibold text-foreground mb-4">{t("physician.quickActions")}</h2>
