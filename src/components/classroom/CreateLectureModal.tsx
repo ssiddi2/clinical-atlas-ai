@@ -127,7 +127,17 @@ export default function CreateLectureModal({ open, onOpenChange, onCreated, defa
             </div>
             <div className="space-y-2">
               <Label>{t("classroom.meetingUrl")}</Label>
-              <Input value={form.meeting_url} onChange={e => setForm({ ...form, meeting_url: e.target.value })} placeholder="https://zoom.us/..." />
+              <Input
+                value={form.meeting_url}
+                onChange={e => setForm({ ...form, meeting_url: e.target.value })}
+                placeholder="https://meet.google.com/abc-defg-hij"
+              />
+              <p className="text-xs text-muted-foreground">
+                Paste your Google Meet, Zoom, or Microsoft Teams link. Create a Meet at{" "}
+                <a href="https://meet.google.com/new" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                  meet.google.com/new
+                </a>
+              </p>
             </div>
           </div>
           <Button type="submit" className="w-full gradient-livemed" disabled={loading}>
