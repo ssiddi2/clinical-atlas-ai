@@ -17,3 +17,6 @@ verify_jwt = false
 
 [functions.generate-course-quiz]
 verify_jwt = false
+
+[functions.physician-invite-students]
+verify_jwt = false
