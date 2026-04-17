@@ -6,13 +6,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   LogOut, Plus, Video, Users, Calendar, BookOpen, Clock, CheckCircle2,
-  Play, Settings, Bell, GraduationCap,
+  Play, Settings, Bell, GraduationCap, UserPlus,
 } from "lucide-react";
 import livemedLogo from "@/assets/livemed-logo-full.png";
 import CreateLectureModal from "@/components/classroom/CreateLectureModal";
 import CreateCourseModal from "@/components/courses/CreateCourseModal";
 import LectureCard from "@/components/classroom/LectureCard";
 import CourseCard from "@/components/courses/CourseCard";
+import InviteStudentsModal from "@/components/physician/InviteStudentsModal";
 import { useTranslation } from "@/i18n/LanguageContext";
 import { useToast } from "@/hooks/use-toast";
 import NotificationBell from "@/components/notifications/NotificationBell";
@@ -29,6 +30,7 @@ const PhysicianDashboard = () => {
   const [courseEnrollmentCounts, setCourseEnrollmentCounts] = useState<Record<string, number>>({});
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showCourseModal, setShowCourseModal] = useState(false);
+  const [inviteCourse, setInviteCourse] = useState<{ id: string; title: string } | null>(null);
   const [profile, setProfile] = useState<any>(null);
 
   useEffect(() => {
@@ -257,7 +259,17 @@ const PhysicianDashboard = () => {
           ) : (
             <div className="grid gap-4 md:grid-cols-2">
               {courses.map(course => (
-                <CourseCard key={course.id} course={course} isInstructor enrollmentCount={courseEnrollmentCounts[course.id] || 0} onRefresh={() => user && loadData(user.id)} />
+                <div key={course.id} className="space-y-2">
+                  <CourseCard course={course} isInstructor enrollmentCount={courseEnrollmentCounts[course.id] || 0} onRefresh={() => user && loadData(user.id)} />
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full"
+                    onClick={() => setInviteCourse({ id: course.id, title: course.title })}
+                  >
+                    <UserPlus className="h-3.5 w-3.5 mr-1.5" /> Invite Students
+                  </Button>
+                </div>
               ))}
             </div>
           )}
@@ -308,6 +320,14 @@ const PhysicianDashboard = () => {
         onOpenChange={setShowCourseModal}
         onCreated={handleCourseCreated}
       />
+      {inviteCourse && (
+        <InviteStudentsModal
+          open={!!inviteCourse}
+          onOpenChange={(o) => !o && setInviteCourse(null)}
+          courseId={inviteCourse.id}
+          courseTitle={inviteCourse.title}
+        />
+      )}
     </div>
   );
 };
