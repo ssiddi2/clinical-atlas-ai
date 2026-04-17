@@ -1,37 +1,84 @@
 
 
-# Fix Curriculum Page: Show Course-Specific Topics Instead of Generic Modules
+# Production Readiness: Attending Onboarding, Student Onboarding & Live Sessions Plan
 
-## Problem
-The Curriculum page (`/curriculum`) uses the **old generic module system** (`specialties` + `modules` tables) which shows 8 pre-seeded Cardiology modules (Heart Failure: Pathophysiology, Heart Failure: Diagnosis, etc.). These are NOT the professor's actual course content.
+## Current State Audit
 
-The student's enrolled course ("USMLE Step 1 – Cardiology Mastery") has its own professor-built curriculum in `course_topics` (Myocardial Infarction → Pathophysiology, Risk Factors, Clinical Presentation, etc.) — but the Curriculum page completely ignores this.
+**What exists:**
+- Attending/physician role exists (`physician` role) → routes to `/physician-dashboard`
+- Physicians can create courses, lectures, topics, materials, quizzes
+- Students sign up → pending approval → admin approves → onboarding chat → document upload → dashboard
+- Course enrollment workflow (student requests → instructor approves)
+- Virtual Classroom with `meeting_url` field on lectures (already supports any video link — Google Meet, Zoom, etc.)
+- Admin can create users directly via `CreateUserModal` with auto-approve
+- Lecture attendance tracking exists
 
-**Result**: Student sees generic modules that don't match what the professor is teaching.
+**Gaps for production launch in 2 days:**
+1. No clear "Attending" signup path tested — physician role exists but needs verification
+2. Google Meet integration is manual (paste URL) — works but no helper UI
+3. No bulk student invite tool for an attending to onboard their cohort
+4. Demo data may pollute the production view
+5. Email notifications for enrollment/lecture reminders not verified
 
-## Solution
-Rewrite the Curriculum page to show **enrolled courses and their `course_topics` tree** instead of the old `specialties`/`modules` data.
+---
 
-### New Data Flow
-1. Fetch enrolled course IDs from `course_enrollments`
-2. Fetch those courses (title, description, professor name)
-3. Fetch `course_topics` for those courses (the professor's actual curriculum tree)
-4. Fetch `learning_unit_progress` for the student's completion tracking
-5. Display courses in sidebar, topics as a tree in the main area
+## Plan: Three Tracks
 
-### UI Changes
-- **Sidebar**: Lists enrolled courses (instead of specialties)
-- **Main area**: Shows the selected course's topic tree (System → Topic → Subtopic) from `course_topics`
-- **Leaf subtopics**: Clickable → navigate to `/courses/:courseId/topic/:topicId` (the Learning Unit page)
-- **Progress**: Pulled from `learning_unit_progress` per topic instead of `user_module_progress` per module
-- **Empty state**: "No courses enrolled yet" when no enrollments exist
+### Track A — Attending (You) Setup
+1. **Verify your attending account exists.** If not, admin-create a `physician` account for you (email + password) with auto-approve.
+2. **Confirm `/physician-dashboard` access** — you'll see Courses, Lectures, Students tabs.
+3. **Create your first Course** (e.g. "USMLE Step 2 CK – Internal Medicine Rounds") via the dashboard.
+4. **Build the curriculum** using the Course Topics tree (System → Topic → Subtopic) so students see real content in `/curriculum`.
 
-### Old module system
-The `specialties`/`modules` tables and `user_module_progress` are no longer referenced on this page. They remain in the DB for other potential uses but are not shown to students.
+### Track B — Student Onboarding (Bulk)
+**Add an "Invite Students" feature on the physician dashboard:**
+- Bulk paste emails OR upload CSV (email, first_name, last_name)
+- For each: edge function creates the auth account (auto-approved + auto-enrolled in chosen course) and emails them a temp password + login link
+- Reuses existing `admin-create-user` pattern but scoped to physician's own course (new edge function: `physician-invite-students`)
+- Students log in → skip approval wall → land on dashboard with the course already enrolled → optional onboarding chat
+
+**Files to add/edit:**
+- New edge function: `supabase/functions/physician-invite-students/index.ts` (validates caller is physician + owns course, creates users, enrolls them, sends welcome email via Resend or logs creds)
+- New component: `src/components/physician/InviteStudentsModal.tsx` (paste emails or CSV upload)
+- Update `src/pages/PhysicianDashboard.tsx` — add "Invite Students" button per course
+- Update `supabase/config.toml` — register new function
+
+### Track C — Live Session via Google Meet
+**Confirm: Yes, you can use your personal Google Meet — no integration needed.**
+- When creating a lecture (`CreateLectureModal`), the `meeting_url` field accepts any URL
+- **Improvement:** Add a "Generate Meet Link" helper text + validation that the URL is a valid `meet.google.com/*`, `zoom.us/*`, or `teams.microsoft.com/*` link
+- Add a prominent "Join Live Session" button on student dashboard 15 min before scheduled start (already partially built in `LectureCard`)
+
+**Files to edit:**
+- `src/components/classroom/CreateLectureModal.tsx` — add helper text "Paste your Google Meet / Zoom link"
+- `src/components/classroom/LectureCard.tsx` — verify the join button shows for enrolled students at the right time
+
+### Track D — Production Hardening (must-do before launch)
+1. **Disable demo data seeding** in production — verify `useSeedDemoData` is admin-only / disabled
+2. **Enable Leaked Password Protection** in Cloud auth settings (1-click)
+3. **Email confirmation** — confirm new student signups get verification emails (or auto-confirm if you prefer instant access for invited students)
+4. **End-to-end smoke test** (after build):
+   - Create attending account → log in → create course → invite 2 test students → both log in → both see course → start a Meet → both join → mark attendance → assign quiz → student takes quiz → score appears on physician dashboard
+
+---
 
 ## Files Changed
-1. **`src/pages/Curriculum.tsx`** — Rewrite data loading and rendering to use `courses` + `course_topics` + `learning_unit_progress` instead of `specialties` + `modules` + `user_module_progress`
+1. `supabase/functions/physician-invite-students/index.ts` — NEW (bulk invite + auto-enroll)
+2. `supabase/config.toml` — register function
+3. `src/components/physician/InviteStudentsModal.tsx` — NEW
+4. `src/pages/PhysicianDashboard.tsx` — add invite button
+5. `src/components/classroom/CreateLectureModal.tsx` — Google Meet helper UI
+6. `src/components/classroom/LectureCard.tsx` — verify join-live timing logic
 
 ## No Database Changes
-All required tables and RLS policies already exist.
+All required tables (`courses`, `course_enrollments`, `user_roles`, `profiles`) and RLS policies already exist.
+
+## Post-Build Testing Checklist (I will run after implementation)
+- [ ] Create your attending account
+- [ ] Log in as attending → create test course
+- [ ] Bulk-invite 2 dummy students
+- [ ] Log in as student → confirm auto-enrollment + course visible in `/courses` and `/curriculum`
+- [ ] Schedule a lecture with a Google Meet link → confirm student sees join button
+- [ ] Student takes a quiz → physician sees score
+- [ ] Confirm Leaked Password Protection is on
 
