@@ -51,8 +51,9 @@ export default function LiveQuiz() {
     setResponses(r || []);
     // resume on next unanswered question
     const answered = new Set((r || []).map(x => x.question_index));
-    const next = (q?.questions || []).findIndex((_: any, idx: number) => !answered.has(idx));
-    setCurrentIdx(next === -1 ? (q?.questions?.length || 1) - 1 : next);
+    const qs = (q?.questions as any[]) || [];
+    const next = qs.findIndex((_, idx) => !answered.has(idx));
+    setCurrentIdx(next === -1 ? Math.max(qs.length - 1, 0) : next);
     setQuestionStartTime(Date.now());
     setLoading(false);
   };

@@ -48,6 +48,7 @@ const VirtualClassroom = lazy(() => import("./pages/VirtualClassroom"));
 const Courses = lazy(() => import("./pages/Courses"));
 const CourseDetail = lazy(() => import("./pages/CourseDetail"));
 const LearningUnitPage = lazy(() => import("./pages/LearningUnitPage"));
+const LiveQuiz = lazy(() => import("./pages/LiveQuiz"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -159,6 +160,9 @@ const App = () => {
 
             {/* Virtual Classroom */}
             <Route path="/virtual-classroom" element={<VirtualClassroom />} />
+
+            {/* Live Quiz (USMLE Whisperer) */}
+            <Route path="/live-quiz/:id" element={<LiveQuiz />} />
 
             {/* Courses */}
             <Route path="/courses" element={<Courses />} />
