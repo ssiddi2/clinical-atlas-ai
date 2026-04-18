@@ -1674,6 +1674,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      profile_self_update_safe: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
       app_role:
