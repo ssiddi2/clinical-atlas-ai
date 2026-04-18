@@ -1,84 +1,91 @@
 
 
-# Production Readiness: Attending Onboarding, Student Onboarding & Live Sessions Plan
+The user wants comprehensive end-to-end testing of the production-ready platform. Since this is in plan mode and testing requires browser automation + edge function calls (which need approval to switch to default mode), I'll present a clear test plan.
 
-## Current State Audit
+Key flows to verify:
+1. Attending login → physician dashboard access
+2. Course creation
+3. Bulk student invite (new edge function)
+4. Student auto-enrollment + login
+5. Lecture creation with Google Meet link
+6. Student sees "Join Live" button
+7. Quiz assignment + attempt + score visibility
+8. Security posture (RLS, leaked password protection)
 
-**What exists:**
-- Attending/physician role exists (`physician` role) → routes to `/physician-dashboard`
-- Physicians can create courses, lectures, topics, materials, quizzes
-- Students sign up → pending approval → admin approves → onboarding chat → document upload → dashboard
-- Course enrollment workflow (student requests → instructor approves)
-- Virtual Classroom with `meeting_url` field on lectures (already supports any video link — Google Meet, Zoom, etc.)
-- Admin can create users directly via `CreateUserModal` with auto-approve
-- Lecture attendance tracking exists
+# Comprehensive Production Smoke Test Plan
 
-**Gaps for production launch in 2 days:**
-1. No clear "Attending" signup path tested — physician role exists but needs verification
-2. Google Meet integration is manual (paste URL) — works but no helper UI
-3. No bulk student invite tool for an attending to onboard their cohort
-4. Demo data may pollute the production view
-5. Email notifications for enrollment/lecture reminders not verified
+## Test Strategy
+I'll execute a full end-to-end test using browser automation + direct edge-function calls + database queries. Any bug found gets fixed immediately, then re-tested.
 
----
+## Test Phases
 
-## Plan: Three Tracks
+### Phase 1 — Account & Role Verification
+- Confirm demo accounts exist and load: `demo-physician@livemed.academy`, `demo-student@livemed.academy`, `demo-admin@livemed.academy`
+- Log in as physician → verify redirect to `/physician-dashboard`
+- Log in as student → verify redirect to `/dashboard` (not `/pending-approval`)
+- Log in as admin → verify `/admin` access
 
-### Track A — Attending (You) Setup
-1. **Verify your attending account exists.** If not, admin-create a `physician` account for you (email + password) with auto-approve.
-2. **Confirm `/physician-dashboard` access** — you'll see Courses, Lectures, Students tabs.
-3. **Create your first Course** (e.g. "USMLE Step 2 CK – Internal Medicine Rounds") via the dashboard.
-4. **Build the curriculum** using the Course Topics tree (System → Topic → Subtopic) so students see real content in `/curriculum`.
+### Phase 2 — Attending Workflow
+- As physician: create a test course "Production Smoke Test – Internal Medicine"
+- Build curriculum: add 1 system → 1 topic → 1 subtopic in `course_topics`
+- Add learning unit content (quick notes, exam traps) to the subtopic
+- Create a quiz with 2 questions, publish it
+- Schedule a lecture with a Google Meet URL (`https://meet.google.com/test-abc-xyz`), starts in 10 min
 
-### Track B — Student Onboarding (Bulk)
-**Add an "Invite Students" feature on the physician dashboard:**
-- Bulk paste emails OR upload CSV (email, first_name, last_name)
-- For each: edge function creates the auth account (auto-approved + auto-enrolled in chosen course) and emails them a temp password + login link
-- Reuses existing `admin-create-user` pattern but scoped to physician's own course (new edge function: `physician-invite-students`)
-- Students log in → skip approval wall → land on dashboard with the course already enrolled → optional onboarding chat
+### Phase 3 — Bulk Student Invite (NEW feature)
+- As physician: invoke `physician-invite-students` with 2 test emails (`smoketest1@livemedu.test`, `smoketest2@livemedu.test`)
+- Verify edge function response: `created: 2`, temp passwords returned
+- Query DB to confirm: profiles created with `account_status='approved'`, `user_roles` has `student`, `course_enrollments` has `status='approved'`
+- Verify `notifications` row created for each student
 
-**Files to add/edit:**
-- New edge function: `supabase/functions/physician-invite-students/index.ts` (validates caller is physician + owns course, creates users, enrolls them, sends welcome email via Resend or logs creds)
-- New component: `src/components/physician/InviteStudentsModal.tsx` (paste emails or CSV upload)
-- Update `src/pages/PhysicianDashboard.tsx` — add "Invite Students" button per course
-- Update `supabase/config.toml` — register new function
+### Phase 4 — Student Experience
+- Log in as `smoketest1` with temp password → should land on `/dashboard` immediately (no pending wall)
+- Verify `/courses` shows only the test course (not all courses)
+- Verify `/curriculum` shows the test course's topic tree (not generic modules)
+- Verify `/virtual-classroom` shows the scheduled lecture with "Join Live Session" button
+- Click into subtopic → Learning Unit page loads
+- Take the quiz → submit → verify `course_quiz_attempts` row created
 
-### Track C — Live Session via Google Meet
-**Confirm: Yes, you can use your personal Google Meet — no integration needed.**
-- When creating a lecture (`CreateLectureModal`), the `meeting_url` field accepts any URL
-- **Improvement:** Add a "Generate Meet Link" helper text + validation that the URL is a valid `meet.google.com/*`, `zoom.us/*`, or `teams.microsoft.com/*` link
-- Add a prominent "Join Live Session" button on student dashboard 15 min before scheduled start (already partially built in `LectureCard`)
+### Phase 5 — Physician Visibility
+- Re-login as physician → verify Students tab shows the 2 invited students
+- Verify quiz attempt score appears in the course analytics
 
-**Files to edit:**
-- `src/components/classroom/CreateLectureModal.tsx` — add helper text "Paste your Google Meet / Zoom link"
-- `src/components/classroom/LectureCard.tsx` — verify the join button shows for enrolled students at the right time
+### Phase 6 — Security & Production Hardening
+- Run `security--run_security_scan` → confirm no critical findings
+- Verify `qbank_questions` requires authentication (anon SELECT should fail)
+- Verify `notifications` insert requires `auth.uid() = user_id`
+- Check leaked password protection status
+- Confirm `seed-demo-data` is gated (admin-only or removed from production UI)
 
-### Track D — Production Hardening (must-do before launch)
-1. **Disable demo data seeding** in production — verify `useSeedDemoData` is admin-only / disabled
-2. **Enable Leaked Password Protection** in Cloud auth settings (1-click)
-3. **Email confirmation** — confirm new student signups get verification emails (or auto-confirm if you prefer instant access for invited students)
-4. **End-to-end smoke test** (after build):
-   - Create attending account → log in → create course → invite 2 test students → both log in → both see course → start a Meet → both join → mark attendance → assign quiz → student takes quiz → score appears on physician dashboard
+### Phase 7 — Cleanup
+- Delete test course, test students, test enrollments to leave production clean
 
----
+## Bug-Fix Loop
+If ANY phase fails:
+1. Read logs (edge function + console + network)
+2. Fix the root cause in code or DB
+3. Re-run the failing phase
+4. Continue forward only when green
 
-## Files Changed
-1. `supabase/functions/physician-invite-students/index.ts` — NEW (bulk invite + auto-enroll)
-2. `supabase/config.toml` — register function
-3. `src/components/physician/InviteStudentsModal.tsx` — NEW
-4. `src/pages/PhysicianDashboard.tsx` — add invite button
-5. `src/components/classroom/CreateLectureModal.tsx` — Google Meet helper UI
-6. `src/components/classroom/LectureCard.tsx` — verify join-live timing logic
+## Final Deliverable
+A signed-off checklist:
+- [ ] Physician onboarding works
+- [ ] Course + curriculum creation works
+- [ ] Bulk invite works (with temp credentials)
+- [ ] Auto-enrolled students see only their course
+- [ ] Live lecture join button works
+- [ ] Quiz flow end-to-end works
+- [ ] Security scan clean
+- [ ] No demo data leaks
+- [ ] Cleanup complete
 
-## No Database Changes
-All required tables (`courses`, `course_enrollments`, `user_roles`, `profiles`) and RLS policies already exist.
+## Files Possibly Changed (only if bugs found)
+None expected — but may patch:
+- `supabase/functions/physician-invite-students/index.ts` (if invite fails)
+- `src/pages/PhysicianDashboard.tsx` (if UI bug)
+- `src/components/classroom/LectureCard.tsx` (if join button doesn't show)
+- New migration (if RLS gap discovered)
 
-## Post-Build Testing Checklist (I will run after implementation)
-- [ ] Create your attending account
-- [ ] Log in as attending → create test course
-- [ ] Bulk-invite 2 dummy students
-- [ ] Log in as student → confirm auto-enrollment + course visible in `/courses` and `/curriculum`
-- [ ] Schedule a lecture with a Google Meet link → confirm student sees join button
-- [ ] Student takes a quiz → physician sees score
-- [ ] Confirm Leaked Password Protection is on
+## No Database Schema Changes Planned
+All required tables/policies exist. Only data inserts/cleanup during testing.
 
