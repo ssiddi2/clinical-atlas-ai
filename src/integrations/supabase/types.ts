@@ -730,6 +730,97 @@ export type Database = {
           },
         ]
       }
+      live_quiz_responses: {
+        Row: {
+          created_at: string
+          id: string
+          is_correct: boolean
+          question_index: number
+          quiz_id: string
+          selected_index: number
+          student_id: string
+          time_taken_seconds: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_correct?: boolean
+          question_index: number
+          quiz_id: string
+          selected_index: number
+          student_id: string
+          time_taken_seconds?: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_correct?: boolean
+          question_index?: number
+          quiz_id?: string
+          selected_index?: number
+          student_id?: string
+          time_taken_seconds?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "live_quiz_responses_quiz_id_fkey"
+            columns: ["quiz_id"]
+            isOneToOne: false
+            referencedRelation: "live_quizzes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      live_quizzes: {
+        Row: {
+          classroom_id: string
+          closed_at: string | null
+          created_at: string
+          id: string
+          instructor_id: string
+          launched_at: string | null
+          questions: Json
+          status: string
+          title: string
+          topic_hint: string | null
+          updated_at: string
+        }
+        Insert: {
+          classroom_id: string
+          closed_at?: string | null
+          created_at?: string
+          id?: string
+          instructor_id: string
+          launched_at?: string | null
+          questions?: Json
+          status?: string
+          title: string
+          topic_hint?: string | null
+          updated_at?: string
+        }
+        Update: {
+          classroom_id?: string
+          closed_at?: string | null
+          created_at?: string
+          id?: string
+          instructor_id?: string
+          launched_at?: string | null
+          questions?: Json
+          status?: string
+          title?: string
+          topic_hint?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "live_quizzes_classroom_id_fkey"
+            columns: ["classroom_id"]
+            isOneToOne: false
+            referencedRelation: "virtual_classrooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       modules: {
         Row: {
           content_type: string | null

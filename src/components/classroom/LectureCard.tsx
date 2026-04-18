@@ -4,10 +4,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Clock, Users, ExternalLink, Play, Trash2, Edit2 } from "lucide-react";
+import { Calendar, Clock, Users, ExternalLink, Play, Trash2, Edit2, Sparkles } from "lucide-react";
 import { useTranslation } from "@/i18n/LanguageContext";
 import { useToast } from "@/hooks/use-toast";
 import EditLectureModal from "./EditLectureModal";
+import LiveQuizDashboard from "./LiveQuizDashboard";
 
 interface Props {
   lecture: any;
@@ -21,6 +22,7 @@ export default function LectureCard({ lecture, isInstructor, isEnrolled, enrollm
   const { t } = useTranslation();
   const { toast } = useToast();
   const [showEdit, setShowEdit] = useState(false);
+  const [showQuiz, setShowQuiz] = useState(false);
 
   const statusColors: Record<string, string> = {
     scheduled: "bg-blue-500/20 text-blue-400 border-blue-500/30",
@@ -109,6 +111,9 @@ export default function LectureCard({ lecture, isInstructor, isEnrolled, enrollm
                     </a>
                   </Button>
                 )}
+                <Button size="sm" variant="outline" onClick={() => setShowQuiz(true)} className="border-primary/40 text-primary hover:bg-primary/10">
+                  <Sparkles className="h-3.5 w-3.5 mr-1.5" /> Live Quiz
+                </Button>
                 <Button size="sm" variant="ghost" onClick={() => setShowEdit(true)}>
                   <Edit2 className="h-3.5 w-3.5" />
                 </Button>
@@ -142,12 +147,20 @@ export default function LectureCard({ lecture, isInstructor, isEnrolled, enrollm
       </Card>
 
       {isInstructor && (
-        <EditLectureModal
-          open={showEdit}
-          onOpenChange={setShowEdit}
-          lecture={lecture}
-          onUpdated={() => { setShowEdit(false); onRefresh?.(); }}
-        />
+        <>
+          <EditLectureModal
+            open={showEdit}
+            onOpenChange={setShowEdit}
+            lecture={lecture}
+            onUpdated={() => { setShowEdit(false); onRefresh?.(); }}
+          />
+          <LiveQuizDashboard
+            open={showQuiz}
+            onOpenChange={setShowQuiz}
+            classroomId={lecture.id}
+            classroomTitle={lecture.title}
+          />
+        </>
       )}
     </>
   );
