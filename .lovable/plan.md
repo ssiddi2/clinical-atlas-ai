@@ -1,74 +1,107 @@
 
 
-User is asking a process/walkthrough question, not requesting implementation. No plan or code needed — just a clear narrative of how an end-to-end session works on the platform today, given what's built (signup, course creation, lecture scheduling, Google Meet, attendance, USMLE Whisperer live quizzes, remediation).
+User has multiple asks bundled together. Let me parse:
 
-I'll walk through it chronologically from the attending's and student's perspectives, then call out the differentiators. Keep it concise and concrete.
+1. **ATLAS capability question** — Can it tutor conversationally? (Answer: yes, already implemented per memory `atlas-chat-implementation` — Gemini 3 Flash SSE streaming. I should explain capabilities + propose enhancements.)
 
----
+2. **Restore conversational AI signup questionnaire** — They previously had an AI-driven onboarding (still exists: `onboarding-chat` edge function + `onboarding_conversations` table + `Onboarding.tsx` page). User wants to confirm it asks about: hobbies, medical school, country, age, career goals. Need to verify current questions and ADD missing fields (hobbies, age).
 
-# How a Full Teaching Session Works on Livemed Academy
+3. **Virtual rotations should require application** — Currently `rotation_enrollments` allows direct self-enrollment (RLS: `auth.uid() = user_id`). Need application/approval flow.
 
-## Phase 1 — Before the session (you, the attending)
+4. **Profile pictures for students AND attendings** — `profiles.avatar_url` exists but no upload UI. Need avatar upload component + storage bucket policies.
 
-1. **Log in** at `/auth` → routed to `/physician-dashboard`.
-2. **Create the course** once (e.g., "Inpatient Hospital Medicine — Spring 2026"). Set max students, dates, specialty = Internal Medicine.
-3. **Bulk-invite students** by pasting their emails. They get an email + are auto-enrolled (status = `approved`) the moment they sign up.
-4. **Schedule a lecture** inside the course:
-   - Title (e.g., "Acute CHF Exacerbation — Admission to Discharge")
-   - Date/time
-   - **Paste a Google Meet link** (you create at meet.google.com/new)
-   - Optional: attach pre-read PDFs as Course Materials
-5. Students automatically see it on their `/virtual-classroom` page and get a notification.
+Let me check current onboarding to know what to add and current avatar handling.
 
-## Phase 2 — Session start (T-0)
-
-6. You click **"Go Live"** on the lecture card → status flips to `live`, a green pulsing dot appears for students.
-7. Students click **"Join Lecture"** → opens your Google Meet in a new tab. Attendance is logged automatically when they join.
-8. You teach in Meet — share slides, use the whiteboard, present a patient case, whatever your style is.
-
-## Phase 3 — Mid-lecture engagement (the differentiator)
-
-9. At any decision point ("OK class — what's your next step?") you click **"Live Quiz" (USMLE Whisperer™)** on the lecture card.
-10. A modal opens. Type the topic (e.g., "BNP interpretation in acute decompensated heart failure") → click **Generate**.
-11. ATLAS AI writes 5 NBME-style vignettes in ~15 seconds. You review them on screen.
-12. Click **"Push to Students"** → every attendee gets a real-time notification + the quiz appears on their screen at `/live-quiz/:id`.
-13. Students answer in real-time. You watch the **live heatmap** populate: "4/12 got Q3 correct — anchoring on troponin."
-14. You teach to the miss right there in Meet. Close the loop in 90 seconds.
-
-## Phase 4 — End of session
-
-15. Click **"End Lecture"** → status flips to `completed`. Quiz auto-closes.
-16. Students see their score + your AI explanations immediately.
-17. Anyone who scored <70% gets auto-flagged for remediation in their Learning Unit queue.
-18. You see a class-level performance report: which concepts were missed, who attended, who didn't.
-
-## Phase 5 — After the session
-
-19. Upload your slide deck → appears under Course Materials (only enrolled students can view).
-20. Optional: schedule the next lecture, push a permanent QBank assignment, or send a follow-up note.
-21. Attendance + quiz scores feed each student's MATCH Ready™ score predictor automatically.
+I have enough context from the system prompt. Let me design.
 
 ---
 
-## What makes this different from Zoom + Google Forms
+# Plan: ATLAS Tutor Mode + Richer Onboarding + Rotation Applications + Profile Photos
 
-- **Zero context-switching** — quiz, attendance, remediation, and analytics all live next to the lecture, not in 4 different tabs.
-- **AI does the busywork** — you don't write 5 vignettes per lecture. ATLAS does, in 15 seconds, in NBME style.
-- **The data flywheel** — every miss in your live quiz becomes a personalized study recommendation for that student tonight.
-- **Audit trail** — for IMG students applying to residency, every lecture attended + score is timestamped and exportable as evidence of US clinical engagement.
+## 1. ATLAS as a Conversational Tutor (clarification + small upgrade)
 
-## A typical 60-min Inpatient Medicine session might look like
+ATLAS already works as a streaming AI chat (Gemini 3 Flash, markdown, SSE). What it can do **today**:
+- Answer any USMLE/clinical question conversationally
+- Explain concepts, walk through differentials, generate mnemonics
+- Maintains conversation memory per session (`eli_conversations` + `eli_messages`)
+
+**Small upgrade:** Add a "Tutor Mode" system-prompt variant so ATLAS asks Socratic follow-up questions ("What would you order next? Why?") instead of just answering. One-line change in the `atlas-chat` edge function — toggle via a button in the chat UI.
+
+## 2. Richer AI Onboarding Questionnaire
+
+Current `onboarding-chat` collects: institution, country, year, USMLE status, target specialty, study habits, contact. **Missing per your request:** hobbies, age, "why medicine" story.
+
+**Changes:**
+- Extend `ExtractedData` interface + system prompt in `supabase/functions/onboarding-chat/index.ts` to also collect:
+  - `age` (from date_of_birth — already in profiles)
+  - `hobbies` (new column on profiles)
+  - `why_medicine` (new column — short personal story)
+  - `languages_spoken` (new column)
+- Migration: add `hobbies text[]`, `why_medicine text`, `languages_spoken text[]` to `profiles`.
+- Update conversation flow to weave these in naturally between academic and career sections.
+
+## 3. Profile Pictures (Students + Attendings)
+
+`profiles.avatar_url` column exists — no upload UI today.
+
+**Changes:**
+- New storage bucket `avatars` (public read, authenticated write to own folder).
+- New component `AvatarUpload.tsx` — drag/drop, crops to square, uploads to `avatars/{user_id}/avatar.jpg`, writes URL to `profiles.avatar_url`.
+- Add to `Onboarding.tsx` (final step before document upload) and `Profile.tsx` (editable anytime).
+- Display avatars on `LectureCard`, `PhysicianDashboard`, course rosters, and admin views.
+
+## 4. Virtual Rotation Application Process
+
+Today: `rotation_enrollments` lets students self-enroll directly. You want an application gate.
+
+**Changes:**
+- Add `status text default 'pending'` + `application_reason text` + `cv_url text` columns to `rotation_enrollments`.
+- New table policies: students INSERT with status='pending'; only physicians/admins UPDATE to 'approved'/'rejected'.
+- New `RotationApplicationModal.tsx` — short form: why this rotation (200 words), upload CV/transcript.
+- Update `Rotations.tsx` "Enroll" button → "Apply".
+- Admin/physician view: pending applications list with approve/reject + reviewer notes (extend `PendingApprovals.tsx` or create `RotationApplications.tsx`).
+- On approval: create notification + grant Meet link access.
+
+## Database Changes
 
 ```text
-00:00  Go Live → students join Meet
-00:05  Present admission: 68F with dyspnea, JVD, S3
-00:15  USMLE Whisperer #1: "Most appropriate next test?" → 5 questions
-00:20  Review misses live, teach BNP cutoffs
-00:30  Continue case: diuresis, response, complications
-00:45  USMLE Whisperer #2: "Discharge criteria + readmission risk"
-00:55  Wrap, assign 10 QBank questions on CHF
-01:00  End Lecture → analytics dashboard appears
+profiles:
+  + hobbies text[]
+  + why_medicine text
+  + languages_spoken text[]
+
+rotation_enrollments:
+  + status text default 'pending'
+  + application_reason text
+  + cv_url text
+  + reviewed_by uuid
+  + reviewed_at timestamptz
+  + reviewer_notes text
+
+storage.buckets: avatars (public)
+storage.buckets: rotation-applications (private)
++ RLS policies for both
 ```
 
-That's the full loop. Want me to walk through what the **student's screen** looks like at each phase, or queue up a dry-run with a test student account so you can see it live before launch?
+## Files to Create
+
+- `src/components/profile/AvatarUpload.tsx`
+- `src/components/rotations/RotationApplicationModal.tsx`
+- `src/components/admin/RotationApplications.tsx`
+
+## Files to Edit
+
+- `supabase/functions/onboarding-chat/index.ts` (add fields + flow)
+- `src/pages/Onboarding.tsx` (add avatar step)
+- `src/pages/Profile.tsx` (avatar editor)
+- `src/pages/Rotations.tsx` (Apply button + modal)
+- `src/pages/Admin.tsx` (rotation applications tab)
+- `src/components/classroom/LectureCard.tsx` (show instructor avatar)
+- `src/components/layout/Header.tsx` (show user avatar)
+
+## Out of Scope (ask if you want these)
+
+- Auto-cropping/face detection on avatars (using base browser cropping only)
+- ATLAS voice mode (separate feature)
+- Hobby-based student matching/study groups
 
