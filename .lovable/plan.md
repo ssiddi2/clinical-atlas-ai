@@ -1,107 +1,64 @@
 
 
-User has multiple asks bundled together. Let me parse:
-
-1. **ATLAS capability question** — Can it tutor conversationally? (Answer: yes, already implemented per memory `atlas-chat-implementation` — Gemini 3 Flash SSE streaming. I should explain capabilities + propose enhancements.)
-
-2. **Restore conversational AI signup questionnaire** — They previously had an AI-driven onboarding (still exists: `onboarding-chat` edge function + `onboarding_conversations` table + `Onboarding.tsx` page). User wants to confirm it asks about: hobbies, medical school, country, age, career goals. Need to verify current questions and ADD missing fields (hobbies, age).
-
-3. **Virtual rotations should require application** — Currently `rotation_enrollments` allows direct self-enrollment (RLS: `auth.uid() = user_id`). Need application/approval flow.
-
-4. **Profile pictures for students AND attendings** — `profiles.avatar_url` exists but no upload UI. Need avatar upload component + storage bucket policies.
-
-Let me check current onboarding to know what to add and current avatar handling.
-
-I have enough context from the system prompt. Let me design.
+User asks an open-ended product question — "how could we make teaching sessions more interactive?" — not an implementation request. This is brainstorming/discussion. I'll respond with a focused, ranked list of concrete interactivity upgrades grounded in what's already built (Meet link + USMLE Whisperer + attendance + ATLAS) and what's a small lift vs. a big one. No code changes, no plan to execute — just ideas with effort estimates so the user can pick.
 
 ---
 
-# Plan: ATLAS Tutor Mode + Richer Onboarding + Rotation Applications + Profile Photos
+# Ways to Make Teaching Sessions More Interactive
 
-## 1. ATLAS as a Conversational Tutor (clarification + small upgrade)
+Ranked by **impact ÷ effort**. Everything assumes your current stack: Google Meet for video, USMLE Whisperer for live quizzes, ATLAS for AI.
 
-ATLAS already works as a streaming AI chat (Gemini 3 Flash, markdown, SSE). What it can do **today**:
-- Answer any USMLE/clinical question conversationally
-- Explain concepts, walk through differentials, generate mnemonics
-- Maintains conversation memory per session (`eli_conversations` + `eli_messages`)
+## Tier 1 — High impact, ship in <1 day
 
-**Small upgrade:** Add a "Tutor Mode" system-prompt variant so ATLAS asks Socratic follow-up questions ("What would you order next? Why?") instead of just answering. One-line change in the `atlas-chat` edge function — toggle via a button in the chat UI.
+### 1. Live "Raise Hand" + Cold Call Wheel
+A side panel during a live lecture where students tap "I have an answer" or "I'm confused." You see a queue. One click = "Cold call Sarah" → her name flashes on her screen + a 30-sec mic prompt. Replaces the awkward "anyone? anyone?" silence on Meet.
 
-## 2. Richer AI Onboarding Questionnaire
+### 2. Live Reactions + Confusion Meter
+Three buttons always visible to students during a live session: 👍 Got it · 🤔 Confused · 🐢 Slow down. Aggregated in real time on your dashboard as a single bar ("60% confused on this slide"). Zero friction, massive signal.
 
-Current `onboarding-chat` collects: institution, country, year, USMLE status, target specialty, study habits, contact. **Missing per your request:** hobbies, age, "why medicine" story.
+### 3. Student-Submitted Cases Mid-Lecture
+A "Submit a Patient" button. Student types: "I saw a 45M with sudden CP and ST elevations in II/III/aVF — what now?" You see submissions in a queue, pick one, screen-share it as a live teaching case. Turns passive students into contributors.
 
-**Changes:**
-- Extend `ExtractedData` interface + system prompt in `supabase/functions/onboarding-chat/index.ts` to also collect:
-  - `age` (from date_of_birth — already in profiles)
-  - `hobbies` (new column on profiles)
-  - `why_medicine` (new column — short personal story)
-  - `languages_spoken` (new column)
-- Migration: add `hobbies text[]`, `why_medicine text`, `languages_spoken text[]` to `profiles`.
-- Update conversation flow to weave these in naturally between academic and career sections.
+### 4. Whisperer "Confidence Slider"
+After each USMLE Whisperer question, students rate confidence 0–100% before seeing the answer. You get a calibration heatmap: "Class is 80% confident but only 40% correct on troponin timing — they don't know they don't know." Gold for IMG teaching.
 
-## 3. Profile Pictures (Students + Attendings)
+## Tier 2 — High impact, 2–4 days
 
-`profiles.avatar_url` column exists — no upload UI today.
+### 5. Live Differential Diagnosis Board
+Shared canvas where you reveal a chief complaint, then students drop diagnoses on a Bayesian probability ladder (high/intermediate/low). Class consensus updates live. You then walk through what data moves each Dx up or down. Mimics real morning report.
 
-**Changes:**
-- New storage bucket `avatars` (public read, authenticated write to own folder).
-- New component `AvatarUpload.tsx` — drag/drop, crops to square, uploads to `avatars/{user_id}/avatar.jpg`, writes URL to `profiles.avatar_url`.
-- Add to `Onboarding.tsx` (final step before document upload) and `Profile.tsx` (editable anytime).
-- Display avatars on `LectureCard`, `PhysicianDashboard`, course rosters, and admin views.
+### 6. ATLAS Co-Pilot in Lecture
+A slim sidebar where ATLAS listens to your Meet audio (transcript), and any student can quietly ask: "What's the difference between ARDS and cardiogenic pulmonary edema?" without interrupting you. ATLAS answers privately to that student, with a citation back to your lecture timestamp. Shy students ask 10x more questions.
 
-## 4. Virtual Rotation Application Process
+### 7. Branching Case Mode
+Instead of linear slides, you build the case as a tree: "Pt presents with chest pain → vote: A) ECG B) Trop C) CXR." Class vote determines which branch you teach next. Same case, different path each session, never boring on the second teaching.
 
-Today: `rotation_enrollments` lets students self-enroll directly. You want an application gate.
+### 8. Two-Minute Teach-Back
+At the end of each section, every student records a 2-min audio clip explaining the concept back. ATLAS auto-grades clarity + accuracy + flags misconceptions. You see who actually understood vs. nodded along.
 
-**Changes:**
-- Add `status text default 'pending'` + `application_reason text` + `cv_url text` columns to `rotation_enrollments`.
-- New table policies: students INSERT with status='pending'; only physicians/admins UPDATE to 'approved'/'rejected'.
-- New `RotationApplicationModal.tsx` — short form: why this rotation (200 words), upload CV/transcript.
-- Update `Rotations.tsx` "Enroll" button → "Apply".
-- Admin/physician view: pending applications list with approve/reject + reviewer notes (extend `PendingApprovals.tsx` or create `RotationApplications.tsx`).
-- On approval: create notification + grant Meet link access.
+## Tier 3 — Differentiator features, 1–2 weeks
 
-## Database Changes
+### 9. Virtual Patient Simulator (text-based)
+ATLAS roleplays a patient. Students take turns "interviewing" via chat in front of the class. You pause, freeze, teach. Cheap, runs on Gemini, infinitely scalable, no actor needed.
 
-```text
-profiles:
-  + hobbies text[]
-  + why_medicine text
-  + languages_spoken text[]
+### 10. Post-Lecture "60-Second Recap" Auto-Reels
+ATLAS turns each lecture's transcript + quiz misses into a 60-second TikTok-style vertical recap video the next morning. Students re-watch on the train. Drives retention + organic sharing.
 
-rotation_enrollments:
-  + status text default 'pending'
-  + application_reason text
-  + cv_url text
-  + reviewed_by uuid
-  + reviewed_at timestamptz
-  + reviewer_notes text
+### 11. Peer Teaching Slots
+Last 10 minutes of every lecture, 1 randomly-selected student presents a case they saw that week. You critique. Builds confidence + creates ownership.
 
-storage.buckets: avatars (public)
-storage.buckets: rotation-applications (private)
-+ RLS policies for both
-```
+### 12. Live Pimp Mode (Optional, Opt-in)
+Old-school Socratic pimping but consensual: students opt in at session start, ATLAS picks one randomly per concept, asks 3 escalating questions in chat. Their answer (and your reaction) goes only to them. Game-ifies the dread.
 
-## Files to Create
+---
 
-- `src/components/profile/AvatarUpload.tsx`
-- `src/components/rotations/RotationApplicationModal.tsx`
-- `src/components/admin/RotationApplications.tsx`
+## My Top 3 to Build This Week
 
-## Files to Edit
+If you want a single "wow moment" for launch, I'd ship in this order:
 
-- `supabase/functions/onboarding-chat/index.ts` (add fields + flow)
-- `src/pages/Onboarding.tsx` (add avatar step)
-- `src/pages/Profile.tsx` (avatar editor)
-- `src/pages/Rotations.tsx` (Apply button + modal)
-- `src/pages/Admin.tsx` (rotation applications tab)
-- `src/components/classroom/LectureCard.tsx` (show instructor avatar)
-- `src/components/layout/Header.tsx` (show user avatar)
+1. **Confusion Meter + Reactions** (Tier 1 #2) — 4 hours, immediate behavior change
+2. **Whisperer Confidence Slider** (Tier 1 #4) — 3 hours, deepens what you already have
+3. **ATLAS Co-Pilot Sidebar** (Tier 2 #6) — 2 days, but this is the *unfair advantage* nobody else has
 
-## Out of Scope (ask if you want these)
-
-- Auto-cropping/face detection on avatars (using base browser cropping only)
-- ATLAS voice mode (separate feature)
-- Hobby-based student matching/study groups
+Want me to plan and build #1 + #2 right now (same-day ship), or go straight to the ATLAS Co-Pilot since that's the real moat?
 
