@@ -1,11 +1,14 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Stethoscope, Heart, Brain, Zap, Activity, Users, CheckCircle, Clock, Award, FileText, ArrowRight, Video, Globe } from "lucide-react";
 import { useTranslation } from "@/i18n/LanguageContext";
+import RotationApplicationModal from "@/components/rotations/RotationApplicationModal";
 
 const Rotations = () => {
   const { t } = useTranslation();
+  const [applyFor, setApplyFor] = useState<{ id: string; title: string } | null>(null);
 
   const rotations = [
     { id: "internal-medicine", title: "Internal Medicine", icon: Stethoscope, duration: "8 weeks", cases: 40, description: "Master comprehensive adult medicine with complex multi-system cases, diagnostic reasoning, and evidence-based management.", topics: ["Hospital Medicine", "Ambulatory Care", "Critical Care", "Consultative Medicine"] },
@@ -40,8 +43,8 @@ const Rotations = () => {
               <span>{t("rotations.timezones")}</span>
             </div>
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button size="lg" className="gradient-livemed" asChild>
-                <Link to="/auth?mode=signup">{t("rotations.joinRounds")}<ArrowRight className="ml-2 h-5 w-5" /></Link>
+              <Button size="lg" className="gradient-livemed" onClick={() => setApplyFor({ id: rotations[0].id, title: rotations[0].title })}>
+                Apply for a Rotation<ArrowRight className="ml-2 h-5 w-5" />
               </Button>
               <Button size="lg" variant="outline" asChild>
                 <Link to="/contact">{t("rotations.requestInfo")}</Link>
@@ -100,8 +103,8 @@ const Rotations = () => {
                       </div>
                     ))}
                   </div>
-                  <Button variant="outline" className="w-full" asChild>
-                    <Link to={`/rotations/${rotation.id}`}>{t("rotations.viewRotation")}<ArrowRight className="ml-2 h-4 w-4" /></Link>
+                  <Button variant="outline" className="w-full" onClick={() => setApplyFor({ id: rotation.id, title: rotation.title })}>
+                    Apply now<ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </CardContent>
               </Card>
@@ -114,11 +117,19 @@ const Rotations = () => {
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold text-white mb-4">{t("rotations.readyStart")}</h2>
           <p className="text-lg text-white/80 max-w-2xl mx-auto mb-8">{t("rotations.readyStartDesc")}</p>
-          <Button size="lg" variant="secondary" asChild>
-            <Link to="/auth?mode=signup">{t("rotations.enrollNow")}<ArrowRight className="ml-2 h-5 w-5" /></Link>
+          <Button size="lg" variant="secondary" onClick={() => setApplyFor({ id: rotations[0].id, title: rotations[0].title })}>
+            Start your application<ArrowRight className="ml-2 h-5 w-5" />
           </Button>
         </div>
       </section>
+
+      {applyFor && (
+        <RotationApplicationModal
+          open={!!applyFor}
+          onOpenChange={(o) => !o && setApplyFor(null)}
+          rotation={applyFor}
+        />
+      )}
     </div>
   );
 };

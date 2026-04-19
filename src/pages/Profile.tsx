@@ -8,13 +8,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Camera, LogOut, Save, User as UserIcon } from "lucide-react";
+import { ArrowLeft, LogOut, Save, User as UserIcon } from "lucide-react";
 import livemedLogo from "@/assets/livemed-logo-full.png";
 import { useTranslation } from "@/i18n";
+import AvatarUpload from "@/components/profile/AvatarUpload";
 
 interface ProfileData {
   first_name: string; last_name: string; institution: string; country: string;
-  year_of_study: number | null; program_level: string | null;
+  year_of_study: number | null; program_level: string | null; avatar_url: string | null;
 }
 
 const Profile = () => {
@@ -25,7 +26,7 @@ const Profile = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [profile, setProfile] = useState<ProfileData>({
-    first_name: "", last_name: "", institution: "", country: "", year_of_study: null, program_level: null,
+    first_name: "", last_name: "", institution: "", country: "", year_of_study: null, program_level: null, avatar_url: null,
   });
 
   useEffect(() => {
@@ -45,8 +46,8 @@ const Profile = () => {
   const loadProfile = async () => {
     if (!user) return;
     setLoading(true);
-    const { data } = await supabase.from("profiles").select("first_name, last_name, institution, country, year_of_study, program_level").eq("user_id", user.id).single();
-    if (data) setProfile({ first_name: data.first_name || "", last_name: data.last_name || "", institution: data.institution || "", country: data.country || "", year_of_study: data.year_of_study, program_level: data.program_level });
+    const { data } = await supabase.from("profiles").select("first_name, last_name, institution, country, year_of_study, program_level, avatar_url").eq("user_id", user.id).single();
+    if (data) setProfile({ first_name: data.first_name || "", last_name: data.last_name || "", institution: data.institution || "", country: data.country || "", year_of_study: data.year_of_study, program_level: data.program_level, avatar_url: data.avatar_url });
     setLoading(false);
   };
 
@@ -93,13 +94,16 @@ const Profile = () => {
 
       <main className="container mx-auto px-4 py-8 max-w-2xl">
         <div className="flex flex-col items-center mb-8">
-          <div className="relative mb-4">
-            <div className="w-24 h-24 rounded-full gradient-livemed flex items-center justify-center text-white text-3xl font-bold">
-              {profile.first_name?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase() || "?"}
-            </div>
-            <Button size="icon" variant="secondary" className="absolute bottom-0 right-0 rounded-full h-8 w-8"><Camera className="h-4 w-4" /></Button>
-          </div>
-          <h2 className="text-xl font-semibold">{profile.first_name} {profile.last_name}</h2>
+          {user && (
+            <AvatarUpload
+              userId={user.id}
+              currentUrl={profile.avatar_url}
+              fallbackText={profile.first_name || user.email}
+              size="lg"
+              onUploaded={(url) => setProfile({ ...profile, avatar_url: url })}
+            />
+          )}
+          <h2 className="text-xl font-semibold mt-4">{profile.first_name} {profile.last_name}</h2>
           <p className="text-sm text-muted-foreground">{user?.email}</p>
         </div>
 

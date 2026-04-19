@@ -25,6 +25,10 @@ interface ExtractedData {
   state_province?: string;
   address_line1?: string;
   phone_number?: string;
+  date_of_birth?: string;
+  hobbies?: string[];
+  why_medicine?: string;
+  languages_spoken?: string[];
 }
 
 const ONBOARDING_STEPS = [
@@ -56,6 +60,10 @@ PROFILE FIELDS TO COLLECT:
 - year_of_study (1-6)
 - medical_school_type (allopathic/osteopathic/international)
 - expected_graduation (year)
+- date_of_birth (YYYY-MM-DD format — derive from age if needed)
+- languages_spoken (array of languages)
+- why_medicine (their personal story — why did they choose medicine?)
+- hobbies (array of hobbies / interests outside medicine)
 - target_specialty (desired residency specialty)
 - usmle_step1_status (not_taken/scheduled/passed)
 - usmle_step1_score (optional, if passed)
@@ -71,12 +79,15 @@ PROFILE FIELDS TO COLLECT:
 
 CONVERSATION FLOW:
 1. WELCOME: Greet them by name, explain you'll help set up their profile
-2. ACADEMIC: Ask about their medical school, year, and type (MD/DO/International)
-3. EXAMS: Ask about USMLE status (Step 1 and Step 2)
-4. CAREER: Ask about specialty interests and career goals
-5. LEARNING: Ask about study habits, learning style, weak areas
-6. CONTACT: Ask for location (country, city) and phone for reminders
-7. COMPLETE: Summarize their profile and let them know next step is document upload
+2. PERSONAL: Ask their age (calculate date_of_birth as YYYY-01-01) and which languages they speak
+3. ACADEMIC: Ask about their medical school, country, year, and type (MD/DO/International)
+4. STORY: Ask the meaningful question — "Why medicine? What drew you to this path?" Keep it warm.
+5. HOBBIES: Ask what they love doing outside of medicine (1-2 hobbies is fine)
+6. EXAMS: Ask about USMLE status (Step 1 and Step 2)
+7. CAREER: Ask about specialty interests and career goals
+8. LEARNING: Ask about study habits, learning style, weak areas
+9. CONTACT: Ask for location (city) and phone for reminders
+10. COMPLETE: Summarize their profile warmly and let them know next step is uploading a profile photo + verification documents
 
 When transitioning between sections, be natural. For example:
 - "Great! Now let's talk about your career aspirations..."
@@ -311,6 +322,10 @@ Student name: ${profile?.first_name || 'Student'} ${profile?.last_name || ''}
       if (extractedData.state_province) profileUpdate.state_province = extractedData.state_province;
       if (extractedData.address_line1) profileUpdate.address_line1 = extractedData.address_line1;
       if (extractedData.phone_number) profileUpdate.phone_number = extractedData.phone_number;
+      if (extractedData.date_of_birth) profileUpdate.date_of_birth = extractedData.date_of_birth;
+      if (extractedData.hobbies) profileUpdate.hobbies = extractedData.hobbies;
+      if (extractedData.why_medicine) profileUpdate.why_medicine = extractedData.why_medicine;
+      if (extractedData.languages_spoken) profileUpdate.languages_spoken = extractedData.languages_spoken;
 
       if (Object.keys(profileUpdate).length > 0) {
         await supabase
