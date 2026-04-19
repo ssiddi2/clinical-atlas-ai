@@ -201,18 +201,17 @@ export default function LiveQuizDashboard({ open, onOpenChange, classroomId, cla
             </div>
 
             <ReactionMeter classroomId={classroomId} />
-          </div>
-        )}
-      </DialogContent>
-    </Dialog>
-  );
-}
 
             <div className="space-y-3">
               {questions.map((q, qIdx) => {
                 const qResponses = responses.filter(r => r.question_index === qIdx);
                 const correctCount = qResponses.filter(r => r.is_correct).length;
                 const correctPct = qResponses.length ? Math.round((correctCount / qResponses.length) * 100) : 0;
+                const withConfidence = qResponses.filter(r => r.confidence_percent != null);
+                const avgConfidence = withConfidence.length
+                  ? Math.round(withConfidence.reduce((s, r) => s + r.confidence_percent, 0) / withConfidence.length)
+                  : null;
+                const calibrationGap = avgConfidence != null && qResponses.length > 0 ? avgConfidence - correctPct : null;
                 return (
                   <Card key={qIdx} className="bg-card/30 border-border/20">
                     <CardContent className="p-4 space-y-3">
@@ -232,6 +231,20 @@ export default function LiveQuizDashboard({ open, onOpenChange, classroomId, cla
                           </div>
                         )}
                       </div>
+
+                      {avgConfidence != null && (
+                        <div className="flex items-center gap-2 text-xs rounded-md bg-card/50 border border-border/20 px-2 py-1.5">
+                          <Gauge className="h-3.5 w-3.5 text-primary" />
+                          <span className="text-muted-foreground">Avg confidence</span>
+                          <span className="font-semibold text-foreground">{avgConfidence}%</span>
+                          {calibrationGap != null && Math.abs(calibrationGap) >= 20 && (
+                            <span className={`ml-auto text-[10px] uppercase font-semibold tracking-wide ${calibrationGap > 0 ? "text-amber-400" : "text-sky-400"}`}>
+                              {calibrationGap > 0 ? `Overconfident +${calibrationGap}` : `Underconfident ${calibrationGap}`}
+                            </span>
+                          )}
+                        </div>
+                      )}
+
                       {qResponses.length > 0 && (
                         <div className="space-y-1.5">
                           {q.options.map((opt, oIdx) => {
