@@ -149,7 +149,7 @@ export default function RotationApplications() {
                 />
 
                 <div className="flex gap-2">
-                  <Button size="sm" onClick={() => decide(app, "approved")} disabled={acting === app.id} className="bg-green-600 hover:bg-green-700">
+                  <Button size="sm" onClick={() => decide(app, "approved")} disabled={acting === app.id} className="gradient-livemed">
                     <CheckCircle2 className="h-4 w-4 mr-1.5" /> Approve
                   </Button>
                   <Button size="sm" variant="destructive" onClick={() => decide(app, "rejected")} disabled={acting === app.id}>

@@ -15,6 +15,7 @@ import CreateUserModal from "@/components/admin/CreateUserModal";
 import AdminProfessors from "@/components/admin/AdminProfessors";
 import AdminStudents from "@/components/admin/AdminStudents";
 import AdminCourses from "@/components/admin/AdminCourses";
+import RotationApplications from "@/components/admin/RotationApplications";
 import { Database } from "@/integrations/supabase/types";
 
 type Profile = Database["public"]["Tables"]["profiles"]["Row"];
@@ -139,6 +140,7 @@ const Admin = () => {
             <TabsTrigger value="students">Students ({studentCount})</TabsTrigger>
             <TabsTrigger value="courses">Courses ({courses.length})</TabsTrigger>
             <TabsTrigger value="applications">Applications</TabsTrigger>
+            <TabsTrigger value="rotations">Rotation Apps</TabsTrigger>
             <TabsTrigger value="verifications">Verifications</TabsTrigger>
           </TabsList>
 
@@ -181,6 +183,13 @@ const Admin = () => {
             <div className="bg-card rounded-lg border p-6">
               <h2 className="text-xl font-semibold mb-4">Applications</h2>
               <PendingApplications />
+            </div>
+          </TabsContent>
+
+          <TabsContent value="rotations">
+            <div className="bg-card rounded-lg border p-6">
+              <h2 className="text-xl font-semibold mb-4">Virtual Rotation Applications</h2>
+              <RotationApplications />
             </div>
           </TabsContent>
 
