@@ -5,8 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Loader2, Users, CheckCircle2, XCircle, PlayCircle, StopCircle, Sparkles } from "lucide-react";
+import { Loader2, Users, CheckCircle2, XCircle, PlayCircle, StopCircle, Sparkles, Gauge } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import ReactionMeter from "./ReactionMeter";
 
 interface Question {
   stem: string;
@@ -198,6 +199,14 @@ export default function LiveQuizDashboard({ open, onOpenChange, classroomId, cla
               <span>{totalParticipants} student{totalParticipants !== 1 ? "s" : ""} responding</span>
               <span className="ml-auto">{responses.length} / {questions.length * Math.max(totalParticipants, 1)} answers</span>
             </div>
+
+            <ReactionMeter classroomId={classroomId} />
+          </div>
+        )}
+      </DialogContent>
+    </Dialog>
+  );
+}
 
             <div className="space-y-3">
               {questions.map((q, qIdx) => {
