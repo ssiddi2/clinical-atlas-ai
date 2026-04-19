@@ -683,6 +683,47 @@ export type Database = {
           },
         ]
       }
+      lecture_copilot_questions: {
+        Row: {
+          answer: string | null
+          answered_at: string | null
+          classroom_id: string
+          created_at: string
+          id: string
+          question: string
+          status: string
+          student_id: string
+        }
+        Insert: {
+          answer?: string | null
+          answered_at?: string | null
+          classroom_id: string
+          created_at?: string
+          id?: string
+          question: string
+          status?: string
+          student_id: string
+        }
+        Update: {
+          answer?: string | null
+          answered_at?: string | null
+          classroom_id?: string
+          created_at?: string
+          id?: string
+          question?: string
+          status?: string
+          student_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lecture_copilot_questions_classroom_id_fkey"
+            columns: ["classroom_id"]
+            isOneToOne: false
+            referencedRelation: "virtual_classrooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       lesson_content: {
         Row: {
           content_text: string | null
@@ -732,6 +773,7 @@ export type Database = {
       }
       live_quiz_responses: {
         Row: {
+          confidence_percent: number | null
           created_at: string
           id: string
           is_correct: boolean
@@ -742,6 +784,7 @@ export type Database = {
           time_taken_seconds: number
         }
         Insert: {
+          confidence_percent?: number | null
           created_at?: string
           id?: string
           is_correct?: boolean
@@ -752,6 +795,7 @@ export type Database = {
           time_taken_seconds?: number
         }
         Update: {
+          confidence_percent?: number | null
           created_at?: string
           id?: string
           is_correct?: boolean
@@ -814,6 +858,38 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "live_quizzes_classroom_id_fkey"
+            columns: ["classroom_id"]
+            isOneToOne: false
+            referencedRelation: "virtual_classrooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      live_reactions: {
+        Row: {
+          classroom_id: string
+          created_at: string
+          id: string
+          reaction: string
+          student_id: string
+        }
+        Insert: {
+          classroom_id: string
+          created_at?: string
+          id?: string
+          reaction: string
+          student_id: string
+        }
+        Update: {
+          classroom_id?: string
+          created_at?: string
+          id?: string
+          reaction?: string
+          student_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "live_reactions_classroom_id_fkey"
             columns: ["classroom_id"]
             isOneToOne: false
             referencedRelation: "virtual_classrooms"
