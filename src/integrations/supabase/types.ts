@@ -949,8 +949,10 @@ export type Database = {
           emergency_contact_phone: string | null
           expected_graduation: string | null
           first_name: string | null
+          hobbies: string[] | null
           id: string
           institution: string | null
+          languages_spoken: string[] | null
           last_name: string | null
           learning_style: string | null
           medical_school_type: string | null
@@ -970,6 +972,7 @@ export type Database = {
           usmle_step2_status: string | null
           verification_status: string | null
           weak_areas: string[] | null
+          why_medicine: string | null
           year_of_study: number | null
         }
         Insert: {
@@ -986,8 +989,10 @@ export type Database = {
           emergency_contact_phone?: string | null
           expected_graduation?: string | null
           first_name?: string | null
+          hobbies?: string[] | null
           id?: string
           institution?: string | null
+          languages_spoken?: string[] | null
           last_name?: string | null
           learning_style?: string | null
           medical_school_type?: string | null
@@ -1007,6 +1012,7 @@ export type Database = {
           usmle_step2_status?: string | null
           verification_status?: string | null
           weak_areas?: string[] | null
+          why_medicine?: string | null
           year_of_study?: number | null
         }
         Update: {
@@ -1023,8 +1029,10 @@ export type Database = {
           emergency_contact_phone?: string | null
           expected_graduation?: string | null
           first_name?: string | null
+          hobbies?: string[] | null
           id?: string
           institution?: string | null
+          languages_spoken?: string[] | null
           last_name?: string | null
           learning_style?: string | null
           medical_school_type?: string | null
@@ -1044,6 +1052,7 @@ export type Database = {
           usmle_step2_status?: string | null
           verification_status?: string | null
           weak_areas?: string[] | null
+          why_medicine?: string | null
           year_of_study?: number | null
         }
         Relationships: []
@@ -1373,36 +1382,54 @@ export type Database = {
       }
       rotation_enrollments: {
         Row: {
+          application_reason: string | null
           attendance_minutes: number | null
           attended: boolean | null
+          cv_url: string | null
           enrolled_at: string
           evaluation_score: number | null
           feedback: string | null
           id: string
           physician_comments: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          reviewer_notes: string | null
           session_id: string
+          status: string
           user_id: string
         }
         Insert: {
+          application_reason?: string | null
           attendance_minutes?: number | null
           attended?: boolean | null
+          cv_url?: string | null
           enrolled_at?: string
           evaluation_score?: number | null
           feedback?: string | null
           id?: string
           physician_comments?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          reviewer_notes?: string | null
           session_id: string
+          status?: string
           user_id: string
         }
         Update: {
+          application_reason?: string | null
           attendance_minutes?: number | null
           attended?: boolean | null
+          cv_url?: string | null
           enrolled_at?: string
           evaluation_score?: number | null
           feedback?: string | null
           id?: string
           physician_comments?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          reviewer_notes?: string | null
           session_id?: string
+          status?: string
           user_id?: string
         }
         Relationships: [
