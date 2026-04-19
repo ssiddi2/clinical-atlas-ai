@@ -4,8 +4,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Slider } from "@/components/ui/slider";
 import { ArrowLeft, CheckCircle2, XCircle, Sparkles, Loader2, Trophy } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import ReactionPanel from "@/components/classroom/ReactionPanel";
+import CopilotSidebar from "@/components/classroom/CopilotSidebar";
 
 export default function LiveQuiz() {
   const { id } = useParams();
@@ -19,6 +22,7 @@ export default function LiveQuiz() {
   const [submitted, setSubmitted] = useState(false);
   const [responses, setResponses] = useState<any[]>([]);
   const [questionStartTime, setQuestionStartTime] = useState(Date.now());
+  const [confidence, setConfidence] = useState<number>(50);
 
   useEffect(() => {
     (async () => {
@@ -49,7 +53,6 @@ export default function LiveQuiz() {
     ]);
     setQuiz(q);
     setResponses(r || []);
-    // resume on next unanswered question
     const answered = new Set((r || []).map(x => x.question_index));
     const qs = (q?.questions as any[]) || [];
     const next = qs.findIndex((_, idx) => !answered.has(idx));
@@ -70,18 +73,20 @@ export default function LiveQuiz() {
       selected_index: selected,
       is_correct: isCorrect,
       time_taken_seconds: time,
+      confidence_percent: confidence,
     });
     if (error) {
       toast({ title: "Submit failed", description: error.message, variant: "destructive" });
       return;
     }
     setSubmitted(true);
-    setResponses(prev => [...prev, { question_index: currentIdx, selected_index: selected, is_correct: isCorrect }]);
+    setResponses(prev => [...prev, { question_index: currentIdx, selected_index: selected, is_correct: isCorrect, confidence_percent: confidence }]);
   };
 
   const next = () => {
     setSelected(null);
     setSubmitted(false);
+    setConfidence(50);
     setCurrentIdx(i => i + 1);
     setQuestionStartTime(Date.now());
   };
@@ -137,73 +142,108 @@ export default function LiveQuiz() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="max-w-3xl mx-auto px-4 py-6 space-y-4">
-        <div className="flex items-center justify-between">
-          <Button variant="ghost" size="sm" onClick={() => navigate("/dashboard")}>
-            <ArrowLeft className="h-4 w-4 mr-1.5" /> Exit
-          </Button>
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Sparkles className="h-4 w-4 text-primary" />
-            <span>Question {currentIdx + 1} of {total}</span>
+      <div className="max-w-6xl mx-auto px-4 py-6 grid lg:grid-cols-[1fr_320px] gap-4">
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <Button variant="ghost" size="sm" onClick={() => navigate("/dashboard")}>
+              <ArrowLeft className="h-4 w-4 mr-1.5" /> Exit
+            </Button>
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Sparkles className="h-4 w-4 text-primary" />
+              <span>Question {currentIdx + 1} of {total}</span>
+            </div>
           </div>
+
+          {quiz.classroom_id && user && (
+            <div className="flex items-center justify-between rounded-lg border border-border/30 bg-card/30 px-3 py-2">
+              <span className="text-xs text-muted-foreground">How are you following along?</span>
+              <ReactionPanel classroomId={quiz.classroom_id} studentId={user.id} />
+            </div>
+          )}
+
+          <Card className="bg-card/50 border-border/30">
+            <CardContent className="p-6 space-y-5">
+              <div className="flex items-center gap-2">
+                <Badge variant="outline">{q.difficulty}</Badge>
+                <Badge variant="secondary">{q.concept}</Badge>
+              </div>
+              <p className="text-foreground leading-relaxed whitespace-pre-line">{q.stem}</p>
+
+              <div className="space-y-2">
+                {q.options.map((opt: string, oIdx: number) => {
+                  const isSelected = selected === oIdx;
+                  const isCorrect = oIdx === q.correct_answer_index;
+                  let cls = "border-border/30 hover:border-border/60 hover:bg-card/80";
+                  if (submitted) {
+                    if (isCorrect) cls = "border-green-500/50 bg-green-500/10";
+                    else if (isSelected) cls = "border-red-500/50 bg-red-500/10";
+                    else cls = "border-border/20 opacity-60";
+                  } else if (isSelected) {
+                    cls = "border-primary bg-primary/10";
+                  }
+                  return (
+                    <button
+                      key={oIdx}
+                      disabled={submitted}
+                      onClick={() => setSelected(oIdx)}
+                      className={`w-full text-left rounded-lg border p-3 transition-all flex items-start gap-3 ${cls}`}
+                    >
+                      <span className="font-mono text-sm text-muted-foreground shrink-0">{String.fromCharCode(65 + oIdx)}.</span>
+                      <span className="flex-1 text-sm text-foreground">{opt}</span>
+                      {submitted && isCorrect && <CheckCircle2 className="h-4 w-4 text-green-400 shrink-0" />}
+                      {submitted && isSelected && !isCorrect && <XCircle className="h-4 w-4 text-red-400 shrink-0" />}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {!submitted && selected !== null && (
+                <div className="rounded-lg bg-card/80 border border-border/30 p-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-semibold text-primary uppercase tracking-wide">How confident are you?</span>
+                    <span className="text-sm font-mono text-foreground">{confidence}%</span>
+                  </div>
+                  <Slider
+                    value={[confidence]}
+                    onValueChange={(v) => setConfidence(v[0])}
+                    min={0}
+                    max={100}
+                    step={5}
+                  />
+                  <div className="flex justify-between text-[10px] text-muted-foreground uppercase tracking-wide">
+                    <span>Guessing</span>
+                    <span>Sure</span>
+                  </div>
+                </div>
+              )}
+
+              {submitted && (
+                <div className="rounded-lg bg-card/80 border border-border/30 p-4 space-y-2">
+                  <p className="text-xs font-semibold text-primary uppercase tracking-wide">Explanation</p>
+                  <p className="text-sm text-foreground/80 leading-relaxed">{q.explanation}</p>
+                </div>
+              )}
+
+              <div className="flex justify-end pt-2">
+                {!submitted ? (
+                  <Button onClick={submit} disabled={selected === null} className="gradient-livemed">
+                    Submit Answer
+                  </Button>
+                ) : currentIdx < total - 1 ? (
+                  <Button onClick={next} className="gradient-livemed">Next Question</Button>
+                ) : (
+                  <Button onClick={next} className="gradient-livemed">See Results</Button>
+                )}
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
-        <Card className="bg-card/50 border-border/30">
-          <CardContent className="p-6 space-y-5">
-            <div className="flex items-center gap-2">
-              <Badge variant="outline">{q.difficulty}</Badge>
-              <Badge variant="secondary">{q.concept}</Badge>
-            </div>
-            <p className="text-foreground leading-relaxed whitespace-pre-line">{q.stem}</p>
-
-            <div className="space-y-2">
-              {q.options.map((opt: string, oIdx: number) => {
-                const isSelected = selected === oIdx;
-                const isCorrect = oIdx === q.correct_answer_index;
-                let cls = "border-border/30 hover:border-border/60 hover:bg-card/80";
-                if (submitted) {
-                  if (isCorrect) cls = "border-green-500/50 bg-green-500/10";
-                  else if (isSelected) cls = "border-red-500/50 bg-red-500/10";
-                  else cls = "border-border/20 opacity-60";
-                } else if (isSelected) {
-                  cls = "border-primary bg-primary/10";
-                }
-                return (
-                  <button
-                    key={oIdx}
-                    disabled={submitted}
-                    onClick={() => setSelected(oIdx)}
-                    className={`w-full text-left rounded-lg border p-3 transition-all flex items-start gap-3 ${cls}`}
-                  >
-                    <span className="font-mono text-sm text-muted-foreground shrink-0">{String.fromCharCode(65 + oIdx)}.</span>
-                    <span className="flex-1 text-sm text-foreground">{opt}</span>
-                    {submitted && isCorrect && <CheckCircle2 className="h-4 w-4 text-green-400 shrink-0" />}
-                    {submitted && isSelected && !isCorrect && <XCircle className="h-4 w-4 text-red-400 shrink-0" />}
-                  </button>
-                );
-              })}
-            </div>
-
-            {submitted && (
-              <div className="rounded-lg bg-card/80 border border-border/30 p-4 space-y-2">
-                <p className="text-xs font-semibold text-primary uppercase tracking-wide">Explanation</p>
-                <p className="text-sm text-foreground/80 leading-relaxed">{q.explanation}</p>
-              </div>
-            )}
-
-            <div className="flex justify-end pt-2">
-              {!submitted ? (
-                <Button onClick={submit} disabled={selected === null} className="gradient-livemed">
-                  Submit Answer
-                </Button>
-              ) : currentIdx < total - 1 ? (
-                <Button onClick={next} className="gradient-livemed">Next Question</Button>
-              ) : (
-                <Button onClick={next} className="gradient-livemed">See Results</Button>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+        {quiz.classroom_id && user && (
+          <div className="lg:sticky lg:top-6 lg:h-[calc(100vh-3rem)]">
+            <CopilotSidebar classroomId={quiz.classroom_id} studentId={user.id} />
+          </div>
+        )}
       </div>
     </div>
   );
