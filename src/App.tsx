@@ -34,6 +34,7 @@ const Residency = lazy(() => import("./pages/Residency"));
 const Profile = lazy(() => import("./pages/Profile"));
 const CaseStudies = lazy(() => import("./pages/CaseStudies"));
 const Onboarding = lazy(() => import("./pages/Onboarding"));
+const LearningAssessment = lazy(() => import("./pages/LearningAssessment"));
 const Admin = lazy(() => import("./pages/Admin"));
 const ScorePredictor = lazy(() => import("./pages/ScorePredictor"));
 const PendingApproval = lazy(() => import("./pages/PendingApproval"));
@@ -115,6 +116,9 @@ const App = () => {
 
             {/* Onboarding (after signup) */}
             <Route path="/onboarding" element={<Onboarding />} />
+
+            {/* Learning Profile Assessment */}
+            <Route path="/learning-assessment" element={<LearningAssessment />} />
 
             {/* Pending Approval (awaiting admin approval) */}
             <Route path="/pending-approval" element={<PendingApproval />} />
