@@ -72,6 +72,18 @@ serve(async (req) => {
       ? `Current lecture: "${classroom.title}"${classroom.description ? `\nLecture description: ${classroom.description}` : ""}\n\n`
       : "";
 
+    // Pull the student's learning profile so the answer style adapts to them.
+    const { data: profile } = await adminClient
+      .from("profiles")
+      .select("learning_profile, first_name")
+      .eq("user_id", studentId)
+      .maybeSingle();
+
+    const lp: any = profile?.learning_profile;
+    const profileLine = lp
+      ? `Adapt to this student: ${lp.vark?.dominant ?? "balanced"} learner, ${lp.kolb_style ?? "balanced"} processor, test anxiety ${lp.test_anxiety ?? "moderate"}, English comfort ${lp.english_comfort ?? 3}/5, clinical stage ${lp.clinical_stage ?? "early_clinical"}. ${lp.english_comfort && lp.english_comfort <= 2 ? "Use simpler language and define jargon." : ""}`
+      : "";
+
     const aiResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: { "Content-Type": "application/json", "Authorization": `Bearer ${LOVABLE_API_KEY}` },
@@ -79,6 +91,7 @@ serve(async (req) => {
         model: "google/gemini-3-flash-preview",
         messages: [
           { role: "system", content: SYSTEM_PROMPT },
+          ...(profileLine ? [{ role: "system", content: profileLine }] : []),
           { role: "user", content: `${lectureContext}Student question: ${question}` },
         ],
         max_tokens: 500,
