@@ -148,10 +148,8 @@ const LearningAssessment = () => {
       const profile = scoreProfile(answers);
       const { error } = await supabase
         .from("profiles")
-        .update({
-          learning_profile: profile as unknown as Record<string, unknown>,
-          learning_assessment_completed: true,
-        })
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        .update({ learning_profile: profile as any, learning_assessment_completed: true })
         .eq("user_id", userId);
       if (error) throw error;
       setDone(profile);
