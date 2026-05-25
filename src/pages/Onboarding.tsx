@@ -204,7 +204,7 @@ const Onboarding = () => {
   };
 
   const handleContinueToDashboard = () => {
-    navigate("/dashboard");
+    navigate("/learning-assessment");
   };
 
   const currentProgress = STEPS.find(s => s.id === currentStep)?.progress || 0;
