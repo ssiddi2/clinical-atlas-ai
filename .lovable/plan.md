@@ -1,64 +1,125 @@
 
+## Goal
 
-User asks an open-ended product question — "how could we make teaching sessions more interactive?" — not an implementation request. This is brainstorming/discussion. I'll respond with a focused, ranked list of concrete interactivity upgrades grounded in what's already built (Meet link + USMLE Whisperer + attendance + ATLAS) and what's a small lift vs. a big one. No code changes, no plan to execute — just ideas with effort estimates so the user can pick.
+Insert a dedicated **Learning Profile Assessment** stage into the student onboarding flow that captures *how* a student learns — not just biographical data — using validated instruments from medical-education research. Use the result to drive a `learning_profile` object that ATLAS, the curriculum engine, QBank, and study-plan widget read to tailor delivery.
 
----
+## Research Foundation
 
-# Ways to Make Teaching Sessions More Interactive
+The questionnaire blends four validated frameworks proven in medical-education literature, not the debunked "learning styles match" myth. We're measuring **how a student processes, paces, and self-regulates information** — variables that genuinely predict performance.
 
-Ranked by **impact ÷ effort**. Everything assumes your current stack: Google Meet for video, USMLE Whisperer for live quizzes, ATLAS for AI.
+1. **VARK (Fleming)** — sensory input preference (Visual / Aural / Read-Write / Kinesthetic). Used widely in med schools to vary presentation, not to gate content.
+2. **Kolb Experiential Learning Cycle** — Concrete Experience → Reflective Observation → Abstract Conceptualization → Active Experimentation. Maps to whether a student prefers case-first vs theory-first.
+3. **Motivated Strategies for Learning Questionnaire (MSLQ — Pintrich)** — measures self-regulation, metacognition, test anxiety, study effort. Strongest predictor of USMLE performance per multiple JAMA/Academic Medicine studies.
+4. **Cognitive Load & Pacing (Sweller / van Merriënboer)** — chunk size, spaced-repetition tolerance, intrinsic vs extraneous load preferences.
 
-## Tier 1 — High impact, ship in <1 day
+Plus 3 medical-context items: prior-knowledge baseline, language-of-instruction comfort, and clinical-exposure level (informs vignette difficulty).
 
-### 1. Live "Raise Hand" + Cold Call Wheel
-A side panel during a live lecture where students tap "I have an answer" or "I'm confused." You see a queue. One click = "Cold call Sarah" → her name flashes on her screen + a 30-sec mic prompt. Replaces the awkward "anyone? anyone?" silence on Meet.
+## Questionnaire Design (~18 questions, 4–5 min)
 
-### 2. Live Reactions + Confusion Meter
-Three buttons always visible to students during a live session: 👍 Got it · 🤔 Confused · 🐢 Slow down. Aggregated in real time on your dashboard as a single bar ("60% confused on this slide"). Zero friction, massive signal.
+Delivered as a **structured form** (not free-chat) after the conversational profile step but before document upload. Form is faster, more reliable for scoring, and the AI still wraps it warmly. Mix of Likert (1–5), multi-select, and 2 short scenario items.
 
-### 3. Student-Submitted Cases Mid-Lecture
-A "Submit a Patient" button. Student types: "I saw a 45M with sudden CP and ST elevations in II/III/aVF — what now?" You see submissions in a queue, pick one, screen-share it as a live teaching case. Turns passive students into contributors.
+**Section A — Input Preference (VARK, 4 Qs)**
+- "When learning a new disease, I understand it best when I…" (multi-select: diagram, lecture/podcast, textbook chapter, hands-on case)
+- "A confusing concept clicks for me when someone…" (4 options mapping to V/A/R/K)
+- "I retain pharmacology best via…" (mnemonic image / spoken explanation / written tables / patient case)
+- "If given 30 min to learn ECGs, I would…" (watch video / listen to lecture / read chapter / practice strips)
 
-### 4. Whisperer "Confidence Slider"
-After each USMLE Whisperer question, students rate confidence 0–100% before seeing the answer. You get a calibration heatmap: "Class is 80% confident but only 40% correct on troponin timing — they don't know they don't know." Gold for IMG teaching.
+**Section B — Processing Style (Kolb, 3 Qs)**
+- "I prefer to start a new topic with…" (real patient case ↔ underlying mechanism)
+- "After a lecture, I learn most by…" (reflecting/journaling ↔ immediately doing questions)
+- "I'd rather be given…" (a framework to apply ↔ examples to derive the rule from)
 
-## Tier 2 — High impact, 2–4 days
+**Section C — Self-Regulation (MSLQ subset, 5 Qs)**
+- Likert: "I set specific study goals each week."
+- Likert: "When I don't understand, I keep trying different strategies."
+- Likert: "I get anxious during timed tests."
+- Likert: "I review material at spaced intervals rather than cramming."
+- Likert: "I can study for 45+ min without losing focus."
 
-### 5. Live Differential Diagnosis Board
-Shared canvas where you reveal a chief complaint, then students drop diagnoses on a Bayesian probability ladder (high/intermediate/low). Class consensus updates live. You then walk through what data moves each Dx up or down. Mimics real morning report.
+**Section D — Pacing & Cognitive Load (3 Qs)**
+- Preferred lesson length: 5 / 15 / 30 / 60 min
+- Preferred chunk size: micro-cards ↔ long-form chapters
+- Tolerance for ambiguity: "I'm comfortable when a case has no single right answer." (Likert)
 
-### 6. ATLAS Co-Pilot in Lecture
-A slim sidebar where ATLAS listens to your Meet audio (transcript), and any student can quietly ask: "What's the difference between ARDS and cardiogenic pulmonary edema?" without interrupting you. ATLAS answers privately to that student, with a citation back to your lecture timestamp. Shy students ask 10x more questions.
+**Section E — Medical Context (3 Qs)**
+- Prior QBank exposure: none / UWorld / Amboss / Kaplan / other
+- Comfort with English clinical vocabulary (Likert 1–5)
+- Clinical exposure level: pre-clinical / early clinical / sub-I / post-grad
 
-### 7. Branching Case Mode
-Instead of linear slides, you build the case as a tree: "Pt presents with chest pain → vote: A) ECG B) Trop C) CXR." Class vote determines which branch you teach next. Same case, different path each session, never boring on the second teaching.
+## Scoring → `learning_profile` JSON
 
-### 8. Two-Minute Teach-Back
-At the end of each section, every student records a 2-min audio clip explaining the concept back. ATLAS auto-grades clarity + accuracy + flags misconceptions. You see who actually understood vs. nodded along.
+Stored on `profiles` as a single JSONB column. Computed client-side then validated server-side.
 
-## Tier 3 — Differentiator features, 1–2 weeks
+```json
+{
+  "vark": { "visual": 0.7, "aural": 0.2, "read": 0.4, "kinesthetic": 0.8, "dominant": "kinesthetic" },
+  "kolb_style": "accommodator",           
+  "self_regulation_score": 72,            
+  "test_anxiety": "moderate",
+  "preferred_session_min": 30,
+  "chunk_preference": "micro",
+  "ambiguity_tolerance": "high",
+  "english_comfort": 4,
+  "clinical_stage": "early_clinical",
+  "prior_qbank": ["uworld"],
+  "assessed_at": "2026-05-25T..."
+}
+```
 
-### 9. Virtual Patient Simulator (text-based)
-ATLAS roleplays a patient. Students take turns "interviewing" via chat in front of the class. You pause, freeze, teach. Cheap, runs on Gemini, infinitely scalable, no actor needed.
+## How Tailoring Actually Works
 
-### 10. Post-Lecture "60-Second Recap" Auto-Reels
-ATLAS turns each lecture's transcript + quiz misses into a 60-second TikTok-style vertical recap video the next morning. Students re-watch on the train. Drives retention + organic sharing.
+This is the part that matters — the profile must *do* something visible. Concrete hooks:
 
-### 11. Peer Teaching Slots
-Last 10 minutes of every lecture, 1 randomly-selected student presents a case they saw that week. You critique. Builds confidence + creates ownership.
+| Profile signal | Effect in product |
+|---|---|
+| `vark.dominant = visual` | Lessons open with `AnimatedDiagram` first; ATLAS uses ASCII/mermaid by default |
+| `vark.dominant = kinesthetic` | Curriculum routes student straight to QBank vignette after a 2-min intro instead of full lesson |
+| `kolb_style = diverger/accommodator` | Lessons lead with patient case; theory collapsed below |
+| `kolb_style = assimilator/converger` | Lessons lead with mechanism/framework; case at end |
+| `self_regulation_score < 50` | StudyPlanWidget adds daily check-ins + smaller goal chunks; weekly review nudges |
+| `test_anxiety = high` | LiveQuiz hides the timer by default; confidence slider de-emphasized; ATLAS adds reassurance scaffolding |
+| `preferred_session_min` | Curriculum learning-units auto-grouped to that length |
+| `chunk_preference = micro` | LearningUnit defaults to "Quick Notes" tab; long lessons split |
+| `english_comfort < 3` | ATLAS responses default to simpler vocabulary; medical terms get hover-definitions; UI hints to use language switcher |
+| `clinical_stage = pre-clinical` | QBank filters to lower-difficulty vignettes; virtual rounds gated until level up |
+| `ambiguity_tolerance = low` | Lessons surface clear algorithms first, edge-cases later |
 
-### 12. Live Pimp Mode (Optional, Opt-in)
-Old-school Socratic pimping but consensual: students opt in at session start, ATLAS picks one randomly per concept, asks 3 escalating questions in chat. Their answer (and your reaction) goes only to them. Game-ifies the dread.
+ATLAS receives the `learning_profile` in its system prompt for every chat, so tutoring style adapts automatically (e.g., "user is a kinesthetic learner with high test anxiety — lead with a case, avoid timed pressure language").
 
----
+## Implementation
 
-## My Top 3 to Build This Week
+### Database (1 migration)
+- Add `learning_profile JSONB` column to `profiles`
+- Add `learning_assessment_completed BOOLEAN DEFAULT false`
+- Drop the loose `learning_style` text field from the chat extractor (kept for back-compat, no new writes)
 
-If you want a single "wow moment" for launch, I'd ship in this order:
+### New files
+- `src/pages/LearningAssessment.tsx` — multi-step form (one section per screen, progress bar matching onboarding style)
+- `src/components/onboarding/LearningQuestionCard.tsx` — Likert / multi-select / scenario primitives
+- `src/lib/learningProfile.ts` — scoring functions (VARK weighting, Kolb quadrant mapping, MSLQ subscale aggregation)
+- `src/hooks/useLearningProfile.ts` — fetch + memoize profile for any component that wants to adapt UI
 
-1. **Confusion Meter + Reactions** (Tier 1 #2) — 4 hours, immediate behavior change
-2. **Whisperer Confidence Slider** (Tier 1 #4) — 3 hours, deepens what you already have
-3. **ATLAS Co-Pilot Sidebar** (Tier 2 #6) — 2 days, but this is the *unfair advantage* nobody else has
+### Edits
+- `src/pages/Onboarding.tsx` — add new step `learning_assessment` between `learning_preferences` and `document_upload`; route to `/onboarding/learning-assessment` when chat finishes the contact phase
+- `supabase/functions/onboarding-chat/index.ts` — remove the chat's `learning_style` question (replaced by the form); keep step-transition logic aware of the new gate
+- `supabase/functions/atlas-chat/index.ts` and `supabase/functions/lecture-copilot/index.ts` — load `learning_profile` and inject a short adaptation paragraph into system prompts
+- `src/components/dashboard/StudyPlanWidget.tsx` — read `self_regulation_score` and adjust nudges
+- `src/components/learning-unit/LearningUnitOverview.tsx` — reorder Case-vs-Theory blocks based on `kolb_style`
+- `src/components/qbank/QuestionCard.tsx` and `src/pages/QBankSession.tsx` — respect `test_anxiety` (hide/show timer toggle default) and `clinical_stage` (default difficulty filter)
 
-Want me to plan and build #1 + #2 right now (same-day ship), or go straight to the ATLAS Co-Pilot since that's the real moat?
+### UX
+- Visible as a fifth pill in the onboarding progress bar: **Learning Profile**.
+- Header copy: *"How you learn — 4 minutes. We use this to shape your lessons, QBank pacing, and ATLAS tutoring."*
+- After submission: brief animated result card showing dominant VARK + Kolb style + 2-line "what changes for you" summary, so the user sees immediate value. Then continues to document upload.
+- Re-takeable later from Profile page (link: "Retake learning assessment").
 
+## Out of Scope (ask if you want)
+- Adaptive difficulty algorithm that *learns* from QBank performance (this plan only seeds initial preferences)
+- A/B testing framework to measure whether tailoring improves outcomes
+- Exporting the learning profile to physicians/preceptors before a rotation
+- Multilingual translation of the assessment itself (English only for v1)
+
+## Open Questions
+1. **Form vs continued chat?** Plan assumes a structured form for scoring reliability. If you prefer the AI to *converse* through it (slower but warmer), say the word and I'll adapt.
+2. **Mandatory or skippable?** Plan makes it required to finish onboarding. Skip option = degraded personalization.
+3. **Retake cadence?** Plan exposes "Retake" anytime; we could also auto-prompt every 6 months.

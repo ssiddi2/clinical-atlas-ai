@@ -102,8 +102,31 @@ serve(async (req) => {
       );
     }
 
+    // Load the student's learning profile so ATLAS tailors its tutoring style.
+    const adminClient = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
+    );
+    const { data: profileRow } = await adminClient
+      .from("profiles")
+      .select("learning_profile")
+      .eq("user_id", userId)
+      .maybeSingle();
+    const lp: any = profileRow?.learning_profile;
+    const profileLine = lp
+      ? `STUDENT LEARNING PROFILE — adapt your tutoring accordingly:
+• Input preference: ${lp.vark?.dominant ?? "balanced"} (favor that modality first)
+• Processing style: ${lp.kolb_style ?? "balanced"} (${lp.kolb_style === "diverger" || lp.kolb_style === "accommodator" ? "lead with a case, theory after" : "lead with the framework, case after"})
+• Self-regulation: ${lp.self_regulation_score ?? 50}/100${lp.self_regulation_score < 50 ? " — break tasks into small explicit steps" : ""}
+• Test anxiety: ${lp.test_anxiety ?? "moderate"}${lp.test_anxiety === "high" ? " — avoid timed/pressure language, be reassuring" : ""}
+• Preferred session: ${lp.preferred_session_min ?? 30} min, ${lp.chunk_preference ?? "balanced"} chunks
+• English comfort: ${lp.english_comfort ?? 3}/5${lp.english_comfort <= 2 ? " — use simpler vocabulary and define jargon inline" : ""}
+• Clinical stage: ${lp.clinical_stage ?? "early_clinical"} (calibrate vignette difficulty accordingly)`
+      : "";
+
     const messages = [
       { role: "system", content: ATLAS_SYSTEM_PROMPT },
+      ...(profileLine ? [{ role: "system", content: profileLine }] : []),
       ...history.map((msg: { role: string; content: string }) => ({
         role: msg.role,
         content: msg.content,
