@@ -22,6 +22,7 @@ interface ProfileData {
   onboarding_completed: boolean;
   verification_status: string | null;
   weak_areas: string[] | null;
+  learning_assessment_completed?: boolean;
 }
 
 interface UpcomingLecture {
@@ -78,12 +79,18 @@ const Dashboard = () => {
   const loadProfileAndCheckAdmin = async (userId: string) => {
     // Fetch profile, admin check, and enrolled course IDs
     const [profileRes, adminRes, courseEnrollRes] = await Promise.all([
-      supabase.from("profiles").select("onboarding_completed, verification_status, weak_areas").eq("user_id", userId).maybeSingle(),
+      supabase.from("profiles").select("onboarding_completed, verification_status, weak_areas, learning_assessment_completed").eq("user_id", userId).maybeSingle(),
       supabase.rpc("has_role", { _user_id: userId, _role: "platform_admin" }),
       supabase.from("course_enrollments").select("course_id").eq("student_id", userId).eq("status", "approved"),
     ]);
     setProfile(profileRes.data);
     setIsAdmin(!!adminRes.data);
+
+    // Nudge students who finished onboarding but haven't taken the learning assessment.
+    if (profileRes.data?.onboarding_completed && !profileRes.data?.learning_assessment_completed && !adminRes.data) {
+      navigate("/learning-assessment");
+      return;
+    }
 
     const enrolledCourseIds = courseEnrollRes.data?.map((e: any) => e.course_id) || [];
 
