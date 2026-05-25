@@ -1030,6 +1030,8 @@ export type Database = {
           institution: string | null
           languages_spoken: string[] | null
           last_name: string | null
+          learning_assessment_completed: boolean
+          learning_profile: Json | null
           learning_style: string | null
           medical_school_type: string | null
           membership_tier: string
@@ -1070,6 +1072,8 @@ export type Database = {
           institution?: string | null
           languages_spoken?: string[] | null
           last_name?: string | null
+          learning_assessment_completed?: boolean
+          learning_profile?: Json | null
           learning_style?: string | null
           medical_school_type?: string | null
           membership_tier?: string
@@ -1110,6 +1114,8 @@ export type Database = {
           institution?: string | null
           languages_spoken?: string[] | null
           last_name?: string | null
+          learning_assessment_completed?: boolean
+          learning_profile?: Json | null
           learning_style?: string | null
           medical_school_type?: string | null
           membership_tier?: string
