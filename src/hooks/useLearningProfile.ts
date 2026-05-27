@@ -24,7 +24,7 @@ export function useLearningProfile() {
         .select("learning_profile")
         .eq("user_id", user.id)
         .maybeSingle();
-      const p = (data?.learning_profile ?? null) as LearningProfile | null;
+      const p = (data?.learning_profile ?? null) as unknown as LearningProfile | null;
       cached = { userId: user.id, profile: p };
       if (active) { setProfile(p); setLoading(false); }
     })();
