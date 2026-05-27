@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -71,7 +72,6 @@ const slideInRight = {
 
 const Landing = () => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const demoPlayerRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
   const { t } = useTranslation();
 
@@ -179,15 +179,6 @@ const Landing = () => {
                     <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                   </Link>
                 </Button>
-                <Button 
-                  size="lg" 
-                  variant="ghost" 
-                  className="text-sm px-6 py-5 rounded-full text-white/35 hover:text-white/50 hover:bg-white/[0.03] group font-normal"
-                  onClick={() => demoPlayerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })}
-                >
-                  <Play className="mr-2 h-3.5 w-3.5" />
-                  {t("hero.watchDemo")}
-                </Button>
               </div>
             </div>
           </div>
@@ -250,27 +241,11 @@ const Landing = () => {
                     <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                   </Link>
                 </Button>
-                <Button 
-                  size="lg" 
-                  variant="ghost" 
-                  className="text-sm px-6 py-5 rounded-full text-white/35 hover:text-white/50 hover:bg-white/[0.03] group font-normal"
-                  onClick={() => demoPlayerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })}
-                >
-                  <Play className="mr-2 h-3.5 w-3.5" />
-                  {t("hero.watchDemo")}
-                </Button>
               </motion.div>
             </div>
           </div>
         )}
 
-      </section>
-
-      {/* Inline Demo Player */}
-      <section className="relative py-12 md:py-20 bg-livemed-deep overflow-hidden">
-        <div className="relative">
-          <InlineDemoPlayer ref={demoPlayerRef} />
-        </div>
       </section>
 
       {/* Stats Section */}
