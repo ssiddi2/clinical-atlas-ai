@@ -1,10 +1,8 @@
-import { useRef } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { motion } from "framer-motion";
 import { useIsMobile } from "@/hooks/use-mobile";
-import InlineDemoPlayer from "@/components/InlineDemoPlayer";
 import HeroBackground from "@/components/HeroBackground";
 import jointCommissionBadge from "@/assets/joint-commission-badge.png";
 import { useTranslation } from "@/i18n/LanguageContext";
@@ -19,7 +17,6 @@ import {
   MessageSquare,
   CheckCircle,
   ArrowRight,
-  Play,
   Sparkles,
   Activity,
 } from "lucide-react";
