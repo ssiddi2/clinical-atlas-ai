@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -124,7 +124,7 @@ export default function LearningUnitOverview({ topicId, courseId, isInstructor }
       </Card>
     );
 
-    let orderedCards: React.ReactNode[];
+    let orderedCards: ReactNode[];
     if (adaptation?.caseFirst) {
       orderedCards = [examTrapsCard, quickNotesCard, explanationCard, instructorCard];
     } else if (adaptation?.preferredTab === "quick_notes") {
