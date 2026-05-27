@@ -236,3 +236,70 @@ export function profileTailoring(p: LearningProfile): string[] {
   if (p.english_comfort <= 2) out.push("ATLAS will use simpler phrasing and define jargon.");
   return out.slice(0, 3);
 }
+
+// ── Adaptation: derive concrete UI/UX settings from the profile ─────────
+// Pure function — used by hooks/components to tailor behaviour without
+// scattering profile branching across the app.
+
+export interface Adaptation {
+  caseFirst: boolean;                 // Kolb diverger/accommodator → lead with case
+  preferredTab: "explanation" | "quick_notes" | "questions";
+  hideTimerByDefault: boolean;        // test_anxiety high
+  recommendedQuestionCount: 5 | 10 | 20 | 40;
+  recommendedDifficulty: ("easy" | "medium" | "hard")[];
+  defaultMode: "tutor" | "timed";
+  dailyGoalQuestions: number;
+  sessionLengthMin: 5 | 15 | 30 | 60;
+  simplifyLanguage: boolean;          // english_comfort <= 2
+  showConfidenceSlider: boolean;      // off when anxiety high (reduces pressure)
+  rationale: string;                  // one-line "why" for the chip tooltip
+}
+
+export function deriveAdaptation(p: LearningProfile | null | undefined): Adaptation | null {
+  if (!p) return null;
+
+  const caseFirst = p.kolb_style === "diverger" || p.kolb_style === "accommodator";
+  const preferredTab: Adaptation["preferredTab"] =
+    p.vark.dominant === "kinesthetic" ? "questions"
+      : p.vark.dominant === "read" ? "quick_notes"
+      : "explanation";
+
+  const hideTimerByDefault = p.test_anxiety === "high";
+  const defaultMode: Adaptation["defaultMode"] = hideTimerByDefault ? "tutor" : "tutor";
+
+  // Question count scales with session length and regulation.
+  const baseByMin = { 5: 5, 15: 10, 30: 20, 60: 40 } as const;
+  let count = baseByMin[p.preferred_session_min] as Adaptation["recommendedQuestionCount"];
+  if (p.self_regulation_score < 40 && count > 10) count = 10;
+
+  // Difficulty by clinical stage.
+  const recommendedDifficulty: Adaptation["recommendedDifficulty"] =
+    p.clinical_stage === "pre_clinical" ? ["easy", "medium"]
+      : p.clinical_stage === "early_clinical" ? ["medium"]
+      : ["medium", "hard"];
+
+  const dailyGoalQuestions =
+    p.self_regulation_score >= 70 ? 30
+      : p.self_regulation_score >= 40 ? 20
+      : 10;
+
+  const rationaleBits: string[] = [];
+  if (caseFirst) rationaleBits.push("case-first");
+  rationaleBits.push(`${p.vark.dominant} learner`);
+  if (hideTimerByDefault) rationaleBits.push("timer off");
+  if (p.english_comfort <= 2) rationaleBits.push("simpler language");
+
+  return {
+    caseFirst,
+    preferredTab,
+    hideTimerByDefault,
+    recommendedQuestionCount: count,
+    recommendedDifficulty,
+    defaultMode,
+    dailyGoalQuestions,
+    sessionLengthMin: p.preferred_session_min,
+    simplifyLanguage: p.english_comfort <= 2,
+    showConfidenceSlider: p.test_anxiety !== "high",
+    rationale: rationaleBits.join(" • "),
+  };
+}
