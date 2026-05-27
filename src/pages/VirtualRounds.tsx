@@ -100,7 +100,7 @@ const VirtualRounds = () => {
 
     const [sessionsRes, enrollmentsRes, specialtiesRes] = await Promise.all([
       supabase
-        .from("rotation_sessions")
+        .from("rotation_sessions_public")
         .select("*")
         .in("status", ["upcoming", "live"])
         .order("scheduled_start", { ascending: true }),
