@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import livemedLogo from "@/assets/livemed-logo-full.png";
 import { useTranslation } from "@/i18n/LanguageContext";
+import AdaptedBadge from "@/components/learning/AdaptedBadge";
 
 interface Message {
   id: string;
@@ -395,7 +396,10 @@ const Atlas = () => {
             </div>
             <div>
               <h1 className="font-semibold text-sm md:text-base">ATLAS™</h1>
-              <p className="text-xs text-muted-foreground hidden sm:block">{t("atlas.aiProfessor")}</p>
+              <div className="flex items-center gap-2">
+                <p className="text-xs text-muted-foreground hidden sm:block">{t("atlas.aiProfessor")}</p>
+                <AdaptedBadge />
+              </div>
             </div>
           </div>
           <Link to="/dashboard" className="hidden md:block">
