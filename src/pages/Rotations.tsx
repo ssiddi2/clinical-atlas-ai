@@ -1,14 +1,35 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Stethoscope, Heart, Brain, Zap, Activity, Users, CheckCircle, Clock, Award, FileText, ArrowRight, Video, Globe } from "lucide-react";
+import { Stethoscope, Heart, Brain, Zap, Activity, Users, CheckCircle, Clock, Award, FileText, ArrowRight, Video, Globe, Lock } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { useTranslation } from "@/i18n/LanguageContext";
 import RotationApplicationModal from "@/components/rotations/RotationApplicationModal";
+import UpgradeToApplyDialog from "@/components/rotations/UpgradeToApplyDialog";
+import { supabase } from "@/integrations/supabase/client";
+import { useFeatureAccess } from "@/hooks/useFeatureAccess";
 
 const Rotations = () => {
   const { t } = useTranslation();
   const [applyFor, setApplyFor] = useState<{ id: string; title: string } | null>(null);
+  const [showUpgrade, setShowUpgrade] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
+  const { canAccessRotationExperience, loading: tierLoading } = useFeatureAccess(userId);
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => setUserId(data.user?.id ?? null));
+  }, []);
+
+  const handleApply = (rotation: { id: string; title: string }) => {
+    if (userId && !tierLoading && !canAccessRotationExperience) {
+      setShowUpgrade(true);
+      return;
+    }
+    setApplyFor(rotation);
+  };
+
+  const showClinicalBadge = !!userId && !tierLoading && !canAccessRotationExperience;
 
   const rotations = [
     { id: "internal-medicine", title: "Internal Medicine", icon: Stethoscope, duration: "8 weeks", cases: 40, description: "Master comprehensive adult medicine with complex multi-system cases, diagnostic reasoning, and evidence-based management.", topics: ["Hospital Medicine", "Ambulatory Care", "Critical Care", "Consultative Medicine"] },
@@ -43,7 +64,7 @@ const Rotations = () => {
               <span>{t("rotations.timezones")}</span>
             </div>
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button size="lg" className="gradient-livemed" onClick={() => setApplyFor({ id: rotations[0].id, title: rotations[0].title })}>
+              <Button size="lg" className="gradient-livemed" onClick={() => handleApply({ id: rotations[0].id, title: rotations[0].title })}>
                 Apply for a Rotation<ArrowRight className="ml-2 h-5 w-5" />
               </Button>
               <Button size="lg" variant="outline" asChild>
@@ -91,7 +112,12 @@ const Rotations = () => {
                       <div className="text-muted-foreground">{rotation.cases} {t("rotations.cases")}</div>
                     </div>
                   </div>
-                  <CardTitle>{rotation.title}</CardTitle>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <CardTitle>{rotation.title}</CardTitle>
+                    {showClinicalBadge && (
+                      <Badge variant="outline" className="text-xs gap-1"><Lock className="h-3 w-3" /> Clinical tier</Badge>
+                    )}
+                  </div>
                   <CardDescription>{rotation.description}</CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -103,8 +129,8 @@ const Rotations = () => {
                       </div>
                     ))}
                   </div>
-                  <Button variant="outline" className="w-full" onClick={() => setApplyFor({ id: rotation.id, title: rotation.title })}>
-                    Apply now<ArrowRight className="ml-2 h-4 w-4" />
+                  <Button variant="outline" className="w-full" onClick={() => handleApply({ id: rotation.id, title: rotation.title })}>
+                    {showClinicalBadge ? "Upgrade to apply" : "Apply now"}<ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </CardContent>
               </Card>
@@ -117,7 +143,7 @@ const Rotations = () => {
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold text-white mb-4">{t("rotations.readyStart")}</h2>
           <p className="text-lg text-white/80 max-w-2xl mx-auto mb-8">{t("rotations.readyStartDesc")}</p>
-          <Button size="lg" variant="secondary" onClick={() => setApplyFor({ id: rotations[0].id, title: rotations[0].title })}>
+          <Button size="lg" variant="secondary" onClick={() => handleApply({ id: rotations[0].id, title: rotations[0].title })}>
             Start your application<ArrowRight className="ml-2 h-5 w-5" />
           </Button>
         </div>
@@ -130,6 +156,8 @@ const Rotations = () => {
           rotation={applyFor}
         />
       )}
+
+      <UpgradeToApplyDialog open={showUpgrade} onOpenChange={setShowUpgrade} />
     </div>
   );
 };
