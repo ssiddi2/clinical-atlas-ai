@@ -9,6 +9,8 @@ import { ArrowLeft, CheckCircle2, XCircle, Sparkles, Loader2, Trophy } from "luc
 import { useToast } from "@/hooks/use-toast";
 import ReactionPanel from "@/components/classroom/ReactionPanel";
 import CopilotSidebar from "@/components/classroom/CopilotSidebar";
+import { useLearningProfile } from "@/hooks/useLearningProfile";
+import AdaptedBadge from "@/components/learning/AdaptedBadge";
 
 export default function LiveQuiz() {
   const { id } = useParams();
@@ -23,6 +25,8 @@ export default function LiveQuiz() {
   const [responses, setResponses] = useState<any[]>([]);
   const [questionStartTime, setQuestionStartTime] = useState(Date.now());
   const [confidence, setConfidence] = useState<number>(50);
+  const { adaptation } = useLearningProfile();
+  const showConfidence = adaptation?.showConfidenceSlider ?? true;
 
   useEffect(() => {
     (async () => {
@@ -151,6 +155,7 @@ export default function LiveQuiz() {
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Sparkles className="h-4 w-4 text-primary" />
               <span>Question {currentIdx + 1} of {total}</span>
+            <AdaptedBadge className="ml-2" />
             </div>
           </div>
 
@@ -197,7 +202,7 @@ export default function LiveQuiz() {
                 })}
               </div>
 
-              {!submitted && selected !== null && (
+              {!submitted && selected !== null && showConfidence && (
                 <div className="rounded-lg bg-card/80 border border-border/30 p-4 space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-semibold text-primary uppercase tracking-wide">How confident are you?</span>

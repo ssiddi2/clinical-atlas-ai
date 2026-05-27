@@ -11,12 +11,15 @@ import TestModeSelector from '@/components/qbank/TestModeSelector';
 import FilterPanel from '@/components/qbank/FilterPanel';
 import { supabase } from '@/integrations/supabase/client';
 import { useTranslation } from '@/i18n/LanguageContext';
+import { useLearningProfile } from '@/hooks/useLearningProfile';
+import AdaptedBadge from '@/components/learning/AdaptedBadge';
 
 export default function QBankCreate() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { createSession, isLoading } = useQBankSession();
   const { t } = useTranslation();
+  const { adaptation } = useLearningProfile();
 
   const [mode, setMode] = useState<'tutor' | 'timed'>('tutor');
   const [questionCount, setQuestionCount] = useState(20);
@@ -30,6 +33,16 @@ export default function QBankCreate() {
   });
   const [availableCount, setAvailableCount] = useState(0);
   const [isCheckingCount, setIsCheckingCount] = useState(false);
+  const [appliedAdaptation, setAppliedAdaptation] = useState(false);
+
+  // Apply learning-profile defaults once on first load.
+  useEffect(() => {
+    if (!adaptation || appliedAdaptation) return;
+    setMode(adaptation.defaultMode);
+    setQuestionCount(adaptation.recommendedQuestionCount);
+    setFilters((prev) => prev.difficulties.length ? prev : { ...prev, difficulties: adaptation.recommendedDifficulty });
+    setAppliedAdaptation(true);
+  }, [adaptation, appliedAdaptation]);
 
   // Set initial status from URL params
   useEffect(() => {
@@ -113,7 +126,15 @@ export default function QBankCreate() {
           <div className="lg:col-span-2 space-y-8">
             {/* Test Mode */}
             <section>
-              <h2 className="text-lg font-semibold text-foreground mb-4">{t("qbank.testMode")}</h2>
+              <div className="flex items-center gap-2 mb-4">
+                <h2 className="text-lg font-semibold text-foreground">{t("qbank.testMode")}</h2>
+                {adaptation && <AdaptedBadge />}
+              </div>
+              {adaptation?.hideTimerByDefault && (
+                <p className="text-xs text-muted-foreground mb-3">
+                  Tutor mode is preselected because you flagged high test anxiety — timer is off by default.
+                </p>
+              )}
               <TestModeSelector selectedMode={mode} onSelectMode={setMode} />
             </section>
 

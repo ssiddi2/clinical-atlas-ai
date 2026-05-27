@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -9,6 +9,8 @@ import { Label } from "@/components/ui/label";
 import { Save, Star, AlertTriangle, BookOpen, StickyNote } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import ReactMarkdown from "react-markdown";
+import AdaptedBadge from "@/components/learning/AdaptedBadge";
+import { useLearningProfile } from "@/hooks/useLearningProfile";
 
 interface Props {
   topicId: string;
@@ -45,6 +47,7 @@ export default function LearningUnitOverview({ topicId, courseId, isInstructor }
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [previewMode, setPreviewMode] = useState(false);
+  const { adaptation } = useLearningProfile();
 
   useEffect(() => {
     const load = async () => {
@@ -96,34 +99,54 @@ export default function LearningUnitOverview({ topicId, courseId, isInstructor }
 
   // Student view
   if (!isInstructor) {
+    // Build section list, then reorder based on adaptation:
+    // - case-first learners (Kolb diverger/accommodator) see Exam Traps (case-style) and Quick Notes before the Explanation
+    // - read-dominant learners see Quick Notes first
+    // - kinesthetic learners get a nudge toward the Questions tab
+    const explanationCard = content.explanation && (
+      <Card key="explanation"><CardHeader><CardTitle className="text-base flex items-center gap-2"><BookOpen className="h-4 w-4" />Explanation</CardTitle></CardHeader>
+        <CardContent className="prose prose-invert prose-sm max-w-none"><ReactMarkdown>{content.explanation}</ReactMarkdown></CardContent>
+      </Card>
+    );
+    const quickNotesCard = content.quick_notes && (
+      <Card key="quick" className="border-blue-500/20"><CardHeader><CardTitle className="text-base flex items-center gap-2"><StickyNote className="h-4 w-4 text-blue-400" />Quick Notes</CardTitle></CardHeader>
+        <CardContent className="prose prose-invert prose-sm max-w-none"><ReactMarkdown>{content.quick_notes}</ReactMarkdown></CardContent>
+      </Card>
+    );
+    const examTrapsCard = content.exam_traps && (
+      <Card key="traps" className="border-red-500/20"><CardHeader><CardTitle className="text-base flex items-center gap-2"><AlertTriangle className="h-4 w-4 text-red-400" />Exam Traps</CardTitle></CardHeader>
+        <CardContent className="prose prose-invert prose-sm max-w-none"><ReactMarkdown>{content.exam_traps}</ReactMarkdown></CardContent>
+      </Card>
+    );
+    const instructorCard = content.instructor_note && (
+      <Card key="note" className="border-primary/20"><CardHeader><CardTitle className="text-base">Instructor Note</CardTitle></CardHeader>
+        <CardContent className="prose prose-invert prose-sm max-w-none"><ReactMarkdown>{content.instructor_note}</ReactMarkdown></CardContent>
+      </Card>
+    );
+
+    let orderedCards: ReactNode[];
+    if (adaptation?.caseFirst) {
+      orderedCards = [examTrapsCard, quickNotesCard, explanationCard, instructorCard];
+    } else if (adaptation?.preferredTab === "quick_notes") {
+      orderedCards = [quickNotesCard, explanationCard, examTrapsCard, instructorCard];
+    } else {
+      orderedCards = [explanationCard, quickNotesCard, examTrapsCard, instructorCard];
+    }
+
     return (
       <div className="space-y-6">
-        <div className="flex gap-2 flex-wrap">
+        <div className="flex gap-2 flex-wrap items-center">
           {content.is_high_yield && <Badge className="bg-yellow-500/10 text-yellow-400 border-yellow-500/30"><Star className="h-3 w-3 mr-1 fill-yellow-400" />High Yield</Badge>}
           {content.is_important && <Badge className="bg-blue-500/10 text-blue-400 border-blue-500/30">Important</Badge>}
           {content.is_exam_focus && <Badge className="bg-red-500/10 text-red-400 border-red-500/30"><AlertTriangle className="h-3 w-3 mr-1" />Exam Focus</Badge>}
+          <AdaptedBadge />
         </div>
-
-        {content.explanation && (
-          <Card><CardHeader><CardTitle className="text-base flex items-center gap-2"><BookOpen className="h-4 w-4" />Explanation</CardTitle></CardHeader>
-            <CardContent className="prose prose-invert prose-sm max-w-none"><ReactMarkdown>{content.explanation}</ReactMarkdown></CardContent>
-          </Card>
+        {adaptation?.preferredTab === "questions" && (
+          <div className="rounded-lg border border-primary/20 bg-primary/5 px-3 py-2 text-xs text-muted-foreground">
+            You learn best by doing — jump to the <span className="text-primary font-medium">Questions</span> tab after a quick skim.
+          </div>
         )}
-        {content.quick_notes && (
-          <Card className="border-blue-500/20"><CardHeader><CardTitle className="text-base flex items-center gap-2"><StickyNote className="h-4 w-4 text-blue-400" />Quick Notes</CardTitle></CardHeader>
-            <CardContent className="prose prose-invert prose-sm max-w-none"><ReactMarkdown>{content.quick_notes}</ReactMarkdown></CardContent>
-          </Card>
-        )}
-        {content.exam_traps && (
-          <Card className="border-red-500/20"><CardHeader><CardTitle className="text-base flex items-center gap-2"><AlertTriangle className="h-4 w-4 text-red-400" />Exam Traps</CardTitle></CardHeader>
-            <CardContent className="prose prose-invert prose-sm max-w-none"><ReactMarkdown>{content.exam_traps}</ReactMarkdown></CardContent>
-          </Card>
-        )}
-        {content.instructor_note && (
-          <Card className="border-primary/20"><CardHeader><CardTitle className="text-base">Instructor Note</CardTitle></CardHeader>
-            <CardContent className="prose prose-invert prose-sm max-w-none"><ReactMarkdown>{content.instructor_note}</ReactMarkdown></CardContent>
-          </Card>
-        )}
+        {orderedCards}
         {!content.explanation && !content.quick_notes && !content.exam_traps && (
           <p className="text-muted-foreground text-center py-8">No content published for this unit yet.</p>
         )}
