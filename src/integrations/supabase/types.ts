@@ -1460,6 +1460,13 @@ export type Database = {
             referencedRelation: "rotation_sessions"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "rotation_case_notes_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "rotation_sessions_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
       rotation_enrollments: {
@@ -1520,6 +1527,13 @@ export type Database = {
             columns: ["session_id"]
             isOneToOne: false
             referencedRelation: "rotation_sessions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "rotation_enrollments_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "rotation_sessions_public"
             referencedColumns: ["id"]
           },
         ]
@@ -1864,7 +1878,65 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      rotation_sessions_public: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string | null
+          max_participants: number | null
+          physician_avatar_url: string | null
+          physician_credentials: string | null
+          physician_institution: string | null
+          physician_name: string | null
+          scheduled_end: string | null
+          scheduled_start: string | null
+          specialty_id: string | null
+          status: string | null
+          title: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string | null
+          max_participants?: number | null
+          physician_avatar_url?: string | null
+          physician_credentials?: string | null
+          physician_institution?: string | null
+          physician_name?: string | null
+          scheduled_end?: string | null
+          scheduled_start?: string | null
+          specialty_id?: string | null
+          status?: string | null
+          title?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string | null
+          max_participants?: number | null
+          physician_avatar_url?: string | null
+          physician_credentials?: string | null
+          physician_institution?: string | null
+          physician_name?: string | null
+          scheduled_end?: string | null
+          scheduled_start?: string | null
+          specialty_id?: string | null
+          status?: string | null
+          title?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rotation_sessions_specialty_id_fkey"
+            columns: ["specialty_id"]
+            isOneToOne: false
+            referencedRelation: "specialties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       has_role: {
@@ -1873,6 +1945,25 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      list_rotation_sessions_public: {
+        Args: never
+        Returns: {
+          created_at: string
+          description: string
+          id: string
+          max_participants: number
+          physician_avatar_url: string
+          physician_credentials: string
+          physician_institution: string
+          physician_name: string
+          scheduled_end: string
+          scheduled_start: string
+          specialty_id: string
+          status: string
+          title: string
+          updated_at: string
+        }[]
       }
       profile_self_update_safe: { Args: { _user_id: string }; Returns: boolean }
     }
