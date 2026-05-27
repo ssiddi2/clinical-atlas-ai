@@ -6,6 +6,8 @@ import { Progress } from "@/components/ui/progress";
 import { Sparkles, BookOpen, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "@/i18n/LanguageContext";
+import { useLearningProfile } from "@/hooks/useLearningProfile";
+import AdaptedBadge from "@/components/learning/AdaptedBadge";
 
 interface StudyPlanItem {
   specialty_id: string;
@@ -18,6 +20,7 @@ export default function StudyPlanWidget({ userId }: { userId: string | null }) {
   const { t } = useTranslation();
   const [plan, setPlan] = useState<StudyPlanItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const { adaptation } = useLearningProfile();
 
   useEffect(() => {
     if (!userId) return;
@@ -44,10 +47,18 @@ export default function StudyPlanWidget({ userId }: { userId: string | null }) {
   return (
     <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-accent/5">
       <CardHeader className="pb-2">
-        <CardTitle className="text-lg flex items-center gap-2">
-          <Sparkles className="h-5 w-5 text-primary" />
-          {t("studyPlan.title")}
-        </CardTitle>
+        <div className="flex items-center justify-between gap-2 flex-wrap">
+          <CardTitle className="text-lg flex items-center gap-2">
+            <Sparkles className="h-5 w-5 text-primary" />
+            {t("studyPlan.title")}
+          </CardTitle>
+          <AdaptedBadge />
+        </div>
+        {adaptation && (
+          <p className="text-xs text-muted-foreground mt-1">
+            {adaptation.dailyGoalQuestions} questions/day · {adaptation.sessionLengthMin}-min sessions
+          </p>
+        )}
       </CardHeader>
       <CardContent className="space-y-3">
         {plan.slice(0, 4).map((item, i) => (
