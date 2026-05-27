@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { useFeatureAccess } from "@/hooks/useFeatureAccess";
 import { Loader2, FileText, Send } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -21,6 +22,7 @@ export default function RotationApplicationModal({ open, onOpenChange, rotation 
   const [cv, setCv] = useState<File | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [authed, setAuthed] = useState<string | null>(null);
+  const { canAccessRotationExperience, loading: tierLoading } = useFeatureAccess(authed);
 
   useEffect(() => {
     if (!open) return;
@@ -28,6 +30,14 @@ export default function RotationApplicationModal({ open, onOpenChange, rotation 
     setReason("");
     setCv(null);
   }, [open]);
+
+  useEffect(() => {
+    if (!open || !authed || tierLoading) return;
+    if (!canAccessRotationExperience) {
+      toast({ title: "Clinical membership required", description: "Upgrade to Clinical to apply for rotations.", variant: "destructive" });
+      onOpenChange(false);
+    }
+  }, [open, authed, tierLoading, canAccessRotationExperience, onOpenChange, toast]);
 
   const submit = async () => {
     if (!authed) {
