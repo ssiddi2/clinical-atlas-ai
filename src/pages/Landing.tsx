@@ -142,6 +142,16 @@ const Landing = () => {
       <div ref={containerRef} className="flex flex-col bg-livemed-deep">
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden lcp-priority">
+        <video
+          className="absolute inset-0 w-full h-full object-cover z-0"
+          autoPlay
+          muted
+          loop
+          playsInline
+          aria-hidden="true"
+          src={heroVideo.url}
+        />
+        <div className="absolute inset-0 z-0 bg-livemed-deep/70" aria-hidden="true" />
         <HeroBackground />
         
         {isMobile ? (
