@@ -152,7 +152,14 @@ const Landing = () => {
           aria-hidden="true"
           src={heroVideo.url}
         />
-        <div className="absolute inset-0 z-[2] bg-livemed-deep/70" aria-hidden="true" />
+        <div
+          className="absolute inset-0 z-[2]"
+          aria-hidden="true"
+          style={{
+            background:
+              "radial-gradient(ellipse 60% 50% at 50% 50%, hsl(230 55% 6% / 0.92) 0%, hsl(230 55% 6% / 0.78) 60%, hsl(230 55% 6% / 0.6) 100%)",
+          }}
+        />
         
         {isMobile ? (
           <div className="container mx-auto px-4 relative z-10">
