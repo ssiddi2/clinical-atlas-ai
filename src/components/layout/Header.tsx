@@ -1,15 +1,17 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Sun, Moon } from "lucide-react";
 import { useState, useEffect, useCallback } from "react";
 import livemedLogoFull from "@/assets/livemed-logo-full.png.asset.json";
 import LanguageSwitcher from "./LanguageSwitcher";
+import { usePublicTheme } from "./PublicThemeProvider";
 import { useTranslation } from "@/i18n";
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { t } = useTranslation();
+  const { theme, toggle } = usePublicTheme();
 
   const navItems = [
     { label: t("nav.programs"), href: "/programs" },
@@ -64,6 +66,13 @@ const Header = () => {
 
         {/* Auth Buttons + Language Switcher */}
         <div className="hidden md:flex items-center gap-3">
+          <button
+            onClick={toggle}
+            aria-label="Toggle theme"
+            className="p-2 text-white/70 hover:text-white transition-colors"
+          >
+            {theme === "light" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
+          </button>
           <LanguageSwitcher />
           <Button 
             variant="ghost" 
@@ -113,6 +122,13 @@ const Header = () => {
                 <span className="text-white/40 text-sm">Language</span>
                 <LanguageSwitcher />
               </div>
+              <button
+                onClick={toggle}
+                className="flex items-center justify-between text-white/70 hover:text-white transition-colors"
+              >
+                <span className="text-white/40 text-sm">Theme</span>
+                {theme === "light" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
+              </button>
               <Button variant="ghost" className="justify-start text-white/70 hover:text-white hover:bg-transparent" asChild>
                 <Link to="/auth">{t("nav.signIn")}</Link>
               </Button>
