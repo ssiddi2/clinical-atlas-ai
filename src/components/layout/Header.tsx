@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
 import { useState, useEffect, useCallback } from "react";
-import livemedLogoFull from "@/assets/livemed-logo-full.png";
+import livemedLogoFull from "@/assets/livemed-logo-full.png.asset.json";
 import LanguageSwitcher from "./LanguageSwitcher";
 import { useTranslation } from "@/i18n";
 
@@ -39,7 +39,7 @@ const Header = () => {
         {/* Logo */}
         <Link to="/" className="flex items-center group flex-shrink-0">
           <img 
-            src={livemedLogoFull} 
+            src={livemedLogoFull.url} 
             alt="Livemed Academy" 
             className="h-8 md:h-11 transition-all duration-300 group-hover:opacity-80 object-contain"
             width="176"
