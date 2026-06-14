@@ -45,7 +45,7 @@ const Footer = forwardRef<HTMLElement>((props, ref) => {
           <div className="col-span-2 sm:col-span-3 md:col-span-1 mb-4 md:mb-0">
             <Link to="/" className="inline-block mb-4 md:mb-6 group">
               <img 
-                src={livemedLogoFull} 
+                src={theme === "light" ? livemedLogoLight.url : livemedLogoDark} 
                 alt="Livemed Academy" 
                 className="h-12 md:h-24 object-contain logo-glow transition-all duration-300 group-hover:scale-105"
                 width="192"
