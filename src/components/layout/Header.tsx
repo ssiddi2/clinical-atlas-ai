@@ -39,7 +39,7 @@ const Header = () => {
         {/* Logo */}
         <Link to="/" className="flex items-center group flex-shrink-0">
           <img 
-            src={livemedLogoFull} 
+            src={livemedLogoFull.url} 
             alt="Livemed Academy" 
             className="h-8 md:h-11 transition-all duration-300 group-hover:opacity-80 object-contain"
             width="176"
