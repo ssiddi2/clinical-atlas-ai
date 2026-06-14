@@ -618,3 +618,76 @@
     animation: milestone-pulse 1s ease-out 1;
   }
 }
+
+/* =========================================================
+   Light theme for public pages (mmglive.org aesthetic)
+   Scoped overrides of the dark hardcoded utilities.
+   ========================================================= */
+.theme-light { background: #ffffff; color: rgb(15 23 42); }
+
+/* Page & surface backgrounds */
+.theme-light [class~="bg-livemed-deep"],
+.theme-light [class~="bg-livemed-navy"] { background-color: #ffffff; }
+.theme-light [class*="hsl(230,50%,7%)"] { background-color: #f6f8fb; }
+.theme-light [class*="#030508"] {
+  background-color: rgb(255 255 255 / 0.85);
+  border-color: rgb(15 23 42 / 0.08);
+}
+
+/* Text */
+.theme-light [class~="text-white"] { color: rgb(15 23 42); }
+.theme-light [class~="text-white/90"] { color: rgb(15 23 42 / 0.92); }
+.theme-light [class~="text-white/80"] { color: rgb(15 23 42 / 0.82); }
+.theme-light [class~="text-white/70"] { color: rgb(15 23 42 / 0.7); }
+.theme-light [class~="text-white/60"] { color: rgb(15 23 42 / 0.62); }
+.theme-light [class~="text-white/50"] { color: rgb(15 23 42 / 0.55); }
+.theme-light [class~="text-white/45"] { color: rgb(15 23 42 / 0.5); }
+.theme-light [class~="text-white/40"] { color: rgb(15 23 42 / 0.48); }
+.theme-light [class~="text-white/35"] { color: rgb(15 23 42 / 0.45); }
+.theme-light [class~="text-white/30"] { color: rgb(15 23 42 / 0.42); }
+.theme-light [class~="text-white/25"] { color: rgb(15 23 42 / 0.38); }
+.theme-light [class~="text-white/15"] { color: rgb(15 23 42 / 0.25); }
+
+/* Subtle fills & borders */
+.theme-light [class~="bg-white/[0.06]"],
+.theme-light [class~="bg-white/[0.04]"],
+.theme-light [class~="bg-white/[0.03]"],
+.theme-light [class~="bg-white/[0.02]"],
+.theme-light [class~="bg-white/[0.015]"] { background-color: rgb(15 23 42 / 0.04); }
+.theme-light [class~="border-white/[0.12]"],
+.theme-light [class~="border-white/[0.08]"],
+.theme-light [class~="border-white/[0.06]"],
+.theme-light [class~="border-white/[0.04]"] { border-color: rgb(15 23 42 / 0.1); }
+
+/* Electric-blue accents */
+.theme-light [class~="text-gradient-livemed"] {
+  background-image: linear-gradient(135deg, #2563eb 0%, #1d4ed8 55%, #3b82f6 100%);
+}
+.theme-light [class~="text-livemed-cyan"],
+.theme-light [class~="text-livemed-cyan/60"] { color: #2563eb; }
+
+/* Header primary button (bg-white / text-black) -> blue */
+.theme-light [class~="bg-white"] { background-color: #2563eb; }
+.theme-light [class~="bg-white"]:hover { background-color: #1d4ed8; }
+.theme-light [class~="text-black"] { color: #ffffff; }
+
+/* Glass surfaces */
+.theme-light [class~="glass-card"],
+.theme-light [class~="glass-card-hover"] {
+  background: rgb(255 255 255 / 0.7);
+  border: 1px solid rgb(15 23 42 / 0.08);
+}
+
+/* White logo art -> dark for light header/footer */
+.theme-light header img,
+.theme-light footer img { filter: brightness(0); }
+
+/* Keep the video hero readable (re-assert light text on dark footage) */
+.theme-light [data-hero] [class~="text-white"] { color: rgb(255 255 255); }
+.theme-light [data-hero] [class~="text-white/90"] { color: rgb(255 255 255 / 0.9); }
+.theme-light [data-hero] [class~="text-white/70"] { color: rgb(255 255 255 / 0.7); }
+.theme-light [data-hero] [class~="text-white/45"] { color: rgb(255 255 255 / 0.45); }
+.theme-light [data-hero] [class~="glass-card-hover"] {
+  background: rgb(255 255 255 / 0.08);
+  border: 1px solid rgb(255 255 255 / 0.12);
+}
