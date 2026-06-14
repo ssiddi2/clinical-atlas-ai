@@ -7,6 +7,7 @@ import { useTranslation } from "@/i18n";
 
 const Footer = forwardRef<HTMLElement>((props, ref) => {
   const { t } = useTranslation();
+  const { theme } = usePublicTheme();
 
   const footerLinks = {
     [t("footer.programs")]: [
