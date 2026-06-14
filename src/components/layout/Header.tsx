@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
 import { useState, useEffect, useCallback } from "react";
-import livemedLogoFull from "@/assets/livemed-logo-full.png";
+import livemedLogoFull from "@/assets/livemed-logo-full.png.asset.json";
 import LanguageSwitcher from "./LanguageSwitcher";
 import { useTranslation } from "@/i18n";
 
