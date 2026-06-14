@@ -678,9 +678,7 @@
   border: 1px solid rgb(15 23 42 / 0.08);
 }
 
-/* White logo art -> dark for light header/footer */
-.theme-light header img,
-.theme-light footer img { filter: brightness(0); }
+/* Light theme logos are swapped at component level; no filter needed */
 
 /* Keep the video hero readable (re-assert light text on dark footage) */
 .theme-light [data-hero] [class~="text-white"] { color: rgb(255 255 255); }
