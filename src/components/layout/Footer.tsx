@@ -1,6 +1,8 @@
 import React, { forwardRef } from "react";
 import { Link } from "react-router-dom";
-import livemedLogoFull from "@/assets/livemed-logo-full.png";
+import livemedLogoDark from "@/assets/livemed-logo-full.png";
+import livemedLogoLight from "@/assets/livemed-logo-light.png.asset.json";
+import { usePublicTheme } from "./PublicThemeProvider";
 import { useTranslation } from "@/i18n";
 
 const Footer = forwardRef<HTMLElement>((props, ref) => {
