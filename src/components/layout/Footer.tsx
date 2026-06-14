@@ -1,10 +1,13 @@
 import React, { forwardRef } from "react";
 import { Link } from "react-router-dom";
-import livemedLogoFull from "@/assets/livemed-logo-full.png";
+import livemedLogoDark from "@/assets/livemed-logo-full.png";
+import livemedLogoLight from "@/assets/livemed-logo-light.png.asset.json";
+import { usePublicTheme } from "./PublicThemeProvider";
 import { useTranslation } from "@/i18n";
 
 const Footer = forwardRef<HTMLElement>((props, ref) => {
   const { t } = useTranslation();
+  const { theme } = usePublicTheme();
 
   const footerLinks = {
     [t("footer.programs")]: [
@@ -42,7 +45,7 @@ const Footer = forwardRef<HTMLElement>((props, ref) => {
           <div className="col-span-2 sm:col-span-3 md:col-span-1 mb-4 md:mb-0">
             <Link to="/" className="inline-block mb-4 md:mb-6 group">
               <img 
-                src={livemedLogoFull} 
+                src={theme === "light" ? livemedLogoLight.url : livemedLogoDark} 
                 alt="Livemed Academy" 
                 className="h-12 md:h-24 object-contain logo-glow transition-all duration-300 group-hover:scale-105"
                 width="192"
