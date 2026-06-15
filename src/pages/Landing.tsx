@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 import { useIsMobile } from "@/hooks/use-mobile";
 import HeroBackground from "@/components/HeroBackground";
 import jointCommissionBadge from "@/assets/joint-commission-badge.png";
-import heroVideo from "@/assets/hero-bg.mp4.asset.json";
+import heroVideo from "@/assets/hero-video.mp4.asset.json";
 import { useTranslation } from "@/i18n/LanguageContext";
 import {
   GraduationCap,
