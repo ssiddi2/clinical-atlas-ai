@@ -57,7 +57,7 @@ const Footer = forwardRef<HTMLElement>((props, ref) => {
           {/* Link Columns */}
           {Object.entries(footerLinks).map(([category, links]) => (
             <div key={category}>
-              <h4 className="font-semibold text-white/80 mb-5 text-xs uppercase tracking-wider">
+              <h4 className="font-semibold text-foreground mb-5 text-xs uppercase tracking-wider">
                 {category}
               </h4>
               <ul className="space-y-3">
@@ -65,7 +65,7 @@ const Footer = forwardRef<HTMLElement>((props, ref) => {
                   <li key={link.href}>
                     <Link
                       to={link.href}
-                      className="text-sm text-white/40 hover:text-white transition-colors duration-300"
+                      className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-300"
                     >
                       {link.label}
                     </Link>
@@ -80,7 +80,7 @@ const Footer = forwardRef<HTMLElement>((props, ref) => {
       {/* Legal Disclaimer */}
       <div className="border-t border-white/5 relative">
         <div className="container mx-auto px-4 md:px-6 py-4">
-          <p className="text-[10px] md:text-xs text-white/30 text-center max-w-4xl mx-auto leading-relaxed">
+          <p className="text-[10px] md:text-xs text-muted-foreground text-center max-w-4xl mx-auto leading-relaxed">
             {t("footer.disclaimer")}
           </p>
         </div>
@@ -89,19 +89,19 @@ const Footer = forwardRef<HTMLElement>((props, ref) => {
       {/* Bottom Bar */}
       <div className="border-t border-white/5 relative">
         <div className="container mx-auto px-4 md:px-6 py-4 md:py-6 flex flex-col sm:flex-row justify-between items-center gap-4">
-          <p className="text-xs text-white/30">
+          <p className="text-xs text-muted-foreground">
             {t("footer.copyright").replace("{year}", new Date().getFullYear().toString())}
           </p>
           <div className="flex items-center gap-6">
             <Link
               to="/terms"
-              className="text-xs text-white/30 hover:text-white/60 transition-colors"
+              className="text-xs text-muted-foreground hover:text-foreground transition-colors"
             >
               {t("footer.terms")}
             </Link>
             <Link
               to="/privacy"
-              className="text-xs text-white/30 hover:text-white/60 transition-colors"
+              className="text-xs text-muted-foreground hover:text-foreground transition-colors"
             >
               {t("footer.privacy")}
             </Link>
