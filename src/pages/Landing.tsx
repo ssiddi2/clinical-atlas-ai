@@ -141,7 +141,7 @@ const Landing = () => {
     <>
       <div ref={containerRef} className="flex flex-col bg-livemed-deep">
       {/* Hero Section */}
-      <section data-hero className="relative min-h-screen flex items-center justify-center overflow-hidden lcp-priority">
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden lcp-priority">
         <HeroBackground />
         <video
           className="absolute inset-0 w-full h-full object-cover z-[1]"
@@ -151,14 +151,14 @@ const Landing = () => {
           playsInline
           aria-hidden="true"
           src={heroVideo.url}
-          style={{ opacity: 0.6 }}
+          style={{ opacity: 0.28 }}
         />
         <div
           className="absolute inset-0 z-[2]"
           aria-hidden="true"
           style={{
             background:
-              "radial-gradient(ellipse 60% 50% at 50% 50%, hsl(230 55% 6% / 0.92) 0%, hsl(230 55% 6% / 0.78) 60%, hsl(230 55% 6% / 0.6) 100%)",
+              "radial-gradient(ellipse 70% 60% at 50% 50%, hsl(0 0% 100% / 0.78) 0%, hsl(0 0% 100% / 0.62) 55%, hsl(0 0% 100% / 0.5) 100%)",
           }}
         />
         
