@@ -1,13 +1,10 @@
 import React, { forwardRef } from "react";
 import { Link } from "react-router-dom";
-import livemedLogoDark from "@/assets/livemed-logo-full.png";
-import livemedLogoLight from "@/assets/livemed-logo-light.png.asset.json";
-import { usePublicTheme } from "./PublicThemeProvider";
+import livemedLogo from "@/assets/livemed-logo-light.png.asset.json";
 import { useTranslation } from "@/i18n";
 
 const Footer = forwardRef<HTMLElement>((props, ref) => {
   const { t } = useTranslation();
-  const { theme } = usePublicTheme();
 
   const footerLinks = {
     [t("footer.programs")]: [
@@ -35,9 +32,7 @@ const Footer = forwardRef<HTMLElement>((props, ref) => {
   };
 
   return (
-    <footer ref={ref} className="relative border-t border-white/5 bg-livemed-deep overflow-hidden">
-      {/* Subtle gradient overlay */}
-      <div className="absolute inset-0 bg-mesh-gradient opacity-30" />
+    <footer ref={ref} className="relative border-t border-border bg-secondary/40 overflow-hidden">
       
       <div className="container mx-auto px-4 md:px-6 py-10 md:py-16 relative">
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-6 md:gap-10">
@@ -45,16 +40,16 @@ const Footer = forwardRef<HTMLElement>((props, ref) => {
           <div className="col-span-2 sm:col-span-3 md:col-span-1 mb-4 md:mb-0">
             <Link to="/" className="inline-block mb-4 md:mb-6 group">
               <img 
-                src={theme === "light" ? livemedLogoLight.url : livemedLogoDark} 
+                src={livemedLogo.url} 
                 alt="Livemed Academy" 
-                className="h-12 md:h-24 object-contain logo-glow transition-all duration-300 group-hover:scale-105"
+                className="h-12 md:h-24 object-contain transition-all duration-300 group-hover:scale-105"
                 width="192"
                 height="96"
                 loading="lazy"
                 decoding="async"
               />
             </Link>
-            <p className="text-xs md:text-sm text-white/40 leading-relaxed max-w-[200px]">
+            <p className="text-xs md:text-sm text-muted-foreground leading-relaxed max-w-[200px]">
               {t("footer.division")}
             </p>
           </div>
