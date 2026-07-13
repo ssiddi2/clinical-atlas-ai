@@ -10,106 +10,98 @@
 
 @layer base {
   :root {
-    /* LIVEMED Brand Colors - Dark Futuristic Theme */
-    --background: 230 50% 8%;
-    --foreground: 210 40% 98%;
+    /* LIVEMED Brand Colors - Light Clinical Theme (livemedhealth.com) */
+    --background: 0 0% 100%;
+    --foreground: 222 47% 8%;
 
-    --card: 230 50% 10%;
-    --card-foreground: 210 40% 98%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 8%;
 
-    --popover: 230 50% 10%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 8%;
 
-    /* Primary: LIVEMED Navy - Deeper */
-    --primary: 217 91% 60%;
-    --primary-foreground: 230 50% 8%;
+    /* Primary: near-black pill buttons */
+    --primary: 222 47% 8%;
+    --primary-foreground: 0 0% 100%;
 
-    /* Secondary: Dark blue accent */
-    --secondary: 230 40% 15%;
-    --secondary-foreground: 210 40% 98%;
+    /* Secondary: light gray surface */
+    --secondary: 220 20% 96%;
+    --secondary-foreground: 222 47% 12%;
 
-    /* Muted tones - Dark */
-    --muted: 230 30% 15%;
-    --muted-foreground: 215 20% 55%;
+    /* Muted tones - Light */
+    --muted: 220 20% 96%;
+    --muted-foreground: 220 12% 42%;
 
-    /* Accent: LIVEMED bright blue from logo */
-    --accent: 200 100% 50%;
+    /* Accent: LIVEMED blue */
+    --accent: 222 100% 52%;
     --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 230 30% 18%;
-    --input: 230 30% 18%;
-    --ring: 217 91% 60%;
+    --border: 220 16% 90%;
+    --input: 220 16% 90%;
+    --ring: 222 100% 52%;
 
     --radius: 0.75rem;
 
-    /* Sidebar - LIVEMED styled */
-    --sidebar-background: 230 50% 6%;
-    --sidebar-foreground: 210 40% 98%;
-    --sidebar-primary: 217 91% 60%;
+    /* Sidebar - Light */
+    --sidebar-background: 220 24% 98%;
+    --sidebar-foreground: 222 47% 12%;
+    --sidebar-primary: 222 100% 52%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 230 40% 12%;
-    --sidebar-accent-foreground: 210 40% 98%;
-    --sidebar-border: 230 30% 15%;
-    --sidebar-ring: 217 91% 60%;
+    --sidebar-accent: 220 20% 94%;
+    --sidebar-accent-foreground: 222 47% 12%;
+    --sidebar-border: 220 16% 90%;
+    --sidebar-ring: 222 100% 52%;
 
-    /* LIVEMED Custom Tokens - Enhanced */
-    --livemed-navy: 230 50% 10%;
-    --livemed-navy-deep: 230 55% 6%;
-    --livemed-blue: 217 91% 60%;
-    --livemed-cyan: 190 95% 55%;
+    /* LIVEMED Custom Tokens - Light */
+    --livemed-navy: 0 0% 100%;
+    --livemed-navy-deep: 220 33% 98%;
+    --livemed-blue: 222 100% 52%;
+    --livemed-cyan: 210 95% 48%;
     --livemed-light-blue: 210 100% 96%;
-    --livemed-gradient-start: 200 100% 50%;
-    --livemed-gradient-end: 230 60% 22%;
-    --livemed-success: 160 84% 45%;
+    --livemed-gradient-start: 222 100% 52%;
+    --livemed-gradient-end: 210 95% 60%;
+    --livemed-success: 160 84% 39%;
     --livemed-warning: 38 92% 50%;
-    
-    /* Enhanced Shadows for Dark Theme */
-    --shadow-sm: 0 1px 2px 0 hsl(230 60% 5% / 0.3);
-    --shadow-md: 0 4px 6px -1px hsl(230 60% 5% / 0.4), 0 2px 4px -2px hsl(230 60% 5% / 0.3);
-    --shadow-lg: 0 10px 15px -3px hsl(230 60% 5% / 0.5), 0 4px 6px -4px hsl(230 60% 5% / 0.4);
-    --shadow-xl: 0 20px 25px -5px hsl(230 60% 5% / 0.5), 0 8px 10px -6px hsl(230 60% 5% / 0.4);
+
+    /* Soft neutral shadows for Light Theme */
+    --shadow-sm: 0 1px 2px 0 hsl(222 47% 8% / 0.06);
+    --shadow-md: 0 4px 6px -1px hsl(222 47% 8% / 0.08), 0 2px 4px -2px hsl(222 47% 8% / 0.06);
+    --shadow-lg: 0 10px 15px -3px hsl(222 47% 8% / 0.1), 0 4px 6px -4px hsl(222 47% 8% / 0.06);
+    --shadow-xl: 0 20px 25px -5px hsl(222 47% 8% / 0.12), 0 8px 10px -6px hsl(222 47% 8% / 0.08);
   }
 
+  /* Dark theme removed - app is light-only. Keep .dark == light as a safety net. */
   .dark {
-    --background: 230 50% 6%;
-    --foreground: 210 40% 98%;
-
-    --card: 230 50% 8%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 230 50% 8%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 217 91% 60%;
-    --primary-foreground: 230 50% 6%;
-
-    --secondary: 230 40% 12%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 230 30% 12%;
-    --muted-foreground: 215 20% 55%;
-
-    --accent: 200 100% 50%;
+    --background: 0 0% 100%;
+    --foreground: 222 47% 8%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 8%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 8%;
+    --primary: 222 47% 8%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 220 20% 96%;
+    --secondary-foreground: 222 47% 12%;
+    --muted: 220 20% 96%;
+    --muted-foreground: 220 12% 42%;
+    --accent: 222 100% 52%;
     --accent-foreground: 0 0% 100%;
-
-    --destructive: 0 62% 30%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 230 30% 15%;
-    --input: 230 30% 15%;
-    --ring: 217 91% 60%;
-
-    --sidebar-background: 230 50% 5%;
-    --sidebar-foreground: 210 40% 98%;
-    --sidebar-primary: 217 91% 60%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 220 16% 90%;
+    --input: 220 16% 90%;
+    --ring: 222 100% 52%;
+    --sidebar-background: 220 24% 98%;
+    --sidebar-foreground: 222 47% 12%;
+    --sidebar-primary: 222 100% 52%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 230 30% 10%;
-    --sidebar-accent-foreground: 210 40% 98%;
-    --sidebar-border: 230 30% 15%;
-    --sidebar-ring: 217 91% 60%;
+    --sidebar-accent: 220 20% 94%;
+    --sidebar-accent-foreground: 222 47% 12%;
+    --sidebar-border: 220 16% 90%;
+    --sidebar-ring: 222 100% 52%;
   }
 }
 
