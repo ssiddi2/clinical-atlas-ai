@@ -55,7 +55,7 @@ const orbs: Orb[] = [
     y: "70%",
     delay: 1,
     duration: 22,
-    colors: ["hsl(230, 60%, 35%)", "hsl(217, 91%, 60%)"],
+    colors: ["hsl(222, 100%, 70%)", "hsl(210, 95%, 75%)"],
     blur: 140,
     opacity: 0.05,
   },
