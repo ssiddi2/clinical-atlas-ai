@@ -25,7 +25,8 @@ import {
   Award,
   Info,
 } from "lucide-react";
-import livemedLogo from "@/assets/livemed-logo-full.png";
+import livemedLogoAsset from "@/assets/livemed-logo-light.png.asset.json";
+const livemedLogo = livemedLogoAsset.url;
 import { format, parseISO, isAfter, isBefore, addHours } from "date-fns";
 import { useTranslation } from "@/i18n/LanguageContext";
 

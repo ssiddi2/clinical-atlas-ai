@@ -10,7 +10,8 @@ import {
   PlayCircle, FileText, LogOut, Settings, Bell, ShieldCheck, Target,
   ClipboardCheck, Sparkles, Video, GraduationCap,
 } from "lucide-react";
-import livemedLogo from "@/assets/livemed-logo-full.png";
+import livemedLogoAsset from "@/assets/livemed-logo-light.png.asset.json";
+const livemedLogo = livemedLogoAsset.url;
 import NotificationBell from "@/components/notifications/NotificationBell";
 import VerificationBanner from "@/components/dashboard/VerificationBanner";
 import StudyPlanWidget from "@/components/dashboard/StudyPlanWidget";
