@@ -10,106 +10,98 @@
 
 @layer base {
   :root {
-    /* LIVEMED Brand Colors - Dark Futuristic Theme */
-    --background: 230 50% 8%;
-    --foreground: 210 40% 98%;
+    /* LIVEMED Brand Colors - Light Clinical Theme (livemedhealth.com) */
+    --background: 0 0% 100%;
+    --foreground: 222 47% 8%;
 
-    --card: 230 50% 10%;
-    --card-foreground: 210 40% 98%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 8%;
 
-    --popover: 230 50% 10%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 8%;
 
-    /* Primary: LIVEMED Navy - Deeper */
-    --primary: 217 91% 60%;
-    --primary-foreground: 230 50% 8%;
+    /* Primary: near-black pill buttons */
+    --primary: 222 47% 8%;
+    --primary-foreground: 0 0% 100%;
 
-    /* Secondary: Dark blue accent */
-    --secondary: 230 40% 15%;
-    --secondary-foreground: 210 40% 98%;
+    /* Secondary: light gray surface */
+    --secondary: 220 20% 96%;
+    --secondary-foreground: 222 47% 12%;
 
-    /* Muted tones - Dark */
-    --muted: 230 30% 15%;
-    --muted-foreground: 215 20% 55%;
+    /* Muted tones - Light */
+    --muted: 220 20% 96%;
+    --muted-foreground: 220 12% 42%;
 
-    /* Accent: LIVEMED bright blue from logo */
-    --accent: 200 100% 50%;
+    /* Accent: LIVEMED blue */
+    --accent: 222 100% 52%;
     --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 230 30% 18%;
-    --input: 230 30% 18%;
-    --ring: 217 91% 60%;
+    --border: 220 16% 90%;
+    --input: 220 16% 90%;
+    --ring: 222 100% 52%;
 
     --radius: 0.75rem;
 
-    /* Sidebar - LIVEMED styled */
-    --sidebar-background: 230 50% 6%;
-    --sidebar-foreground: 210 40% 98%;
-    --sidebar-primary: 217 91% 60%;
+    /* Sidebar - Light */
+    --sidebar-background: 220 24% 98%;
+    --sidebar-foreground: 222 47% 12%;
+    --sidebar-primary: 222 100% 52%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 230 40% 12%;
-    --sidebar-accent-foreground: 210 40% 98%;
-    --sidebar-border: 230 30% 15%;
-    --sidebar-ring: 217 91% 60%;
+    --sidebar-accent: 220 20% 94%;
+    --sidebar-accent-foreground: 222 47% 12%;
+    --sidebar-border: 220 16% 90%;
+    --sidebar-ring: 222 100% 52%;
 
-    /* LIVEMED Custom Tokens - Enhanced */
-    --livemed-navy: 230 50% 10%;
-    --livemed-navy-deep: 230 55% 6%;
-    --livemed-blue: 217 91% 60%;
-    --livemed-cyan: 190 95% 55%;
+    /* LIVEMED Custom Tokens - Light */
+    --livemed-navy: 0 0% 100%;
+    --livemed-navy-deep: 220 33% 98%;
+    --livemed-blue: 222 100% 52%;
+    --livemed-cyan: 210 95% 48%;
     --livemed-light-blue: 210 100% 96%;
-    --livemed-gradient-start: 200 100% 50%;
-    --livemed-gradient-end: 230 60% 22%;
-    --livemed-success: 160 84% 45%;
+    --livemed-gradient-start: 222 100% 52%;
+    --livemed-gradient-end: 210 95% 60%;
+    --livemed-success: 160 84% 39%;
     --livemed-warning: 38 92% 50%;
-    
-    /* Enhanced Shadows for Dark Theme */
-    --shadow-sm: 0 1px 2px 0 hsl(230 60% 5% / 0.3);
-    --shadow-md: 0 4px 6px -1px hsl(230 60% 5% / 0.4), 0 2px 4px -2px hsl(230 60% 5% / 0.3);
-    --shadow-lg: 0 10px 15px -3px hsl(230 60% 5% / 0.5), 0 4px 6px -4px hsl(230 60% 5% / 0.4);
-    --shadow-xl: 0 20px 25px -5px hsl(230 60% 5% / 0.5), 0 8px 10px -6px hsl(230 60% 5% / 0.4);
+
+    /* Soft neutral shadows for Light Theme */
+    --shadow-sm: 0 1px 2px 0 hsl(222 47% 8% / 0.06);
+    --shadow-md: 0 4px 6px -1px hsl(222 47% 8% / 0.08), 0 2px 4px -2px hsl(222 47% 8% / 0.06);
+    --shadow-lg: 0 10px 15px -3px hsl(222 47% 8% / 0.1), 0 4px 6px -4px hsl(222 47% 8% / 0.06);
+    --shadow-xl: 0 20px 25px -5px hsl(222 47% 8% / 0.12), 0 8px 10px -6px hsl(222 47% 8% / 0.08);
   }
 
+  /* Dark theme removed - app is light-only. Keep .dark == light as a safety net. */
   .dark {
-    --background: 230 50% 6%;
-    --foreground: 210 40% 98%;
-
-    --card: 230 50% 8%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 230 50% 8%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 217 91% 60%;
-    --primary-foreground: 230 50% 6%;
-
-    --secondary: 230 40% 12%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 230 30% 12%;
-    --muted-foreground: 215 20% 55%;
-
-    --accent: 200 100% 50%;
+    --background: 0 0% 100%;
+    --foreground: 222 47% 8%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 8%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 8%;
+    --primary: 222 47% 8%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 220 20% 96%;
+    --secondary-foreground: 222 47% 12%;
+    --muted: 220 20% 96%;
+    --muted-foreground: 220 12% 42%;
+    --accent: 222 100% 52%;
     --accent-foreground: 0 0% 100%;
-
-    --destructive: 0 62% 30%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 230 30% 15%;
-    --input: 230 30% 15%;
-    --ring: 217 91% 60%;
-
-    --sidebar-background: 230 50% 5%;
-    --sidebar-foreground: 210 40% 98%;
-    --sidebar-primary: 217 91% 60%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 220 16% 90%;
+    --input: 220 16% 90%;
+    --ring: 222 100% 52%;
+    --sidebar-background: 220 24% 98%;
+    --sidebar-foreground: 222 47% 12%;
+    --sidebar-primary: 222 100% 52%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 230 30% 10%;
-    --sidebar-accent-foreground: 210 40% 98%;
-    --sidebar-border: 230 30% 15%;
-    --sidebar-ring: 217 91% 60%;
+    --sidebar-accent: 220 20% 94%;
+    --sidebar-accent-foreground: 222 47% 12%;
+    --sidebar-border: 220 16% 90%;
+    --sidebar-ring: 222 100% 52%;
   }
 }
 
@@ -620,72 +612,69 @@
 }
 
 /* =========================================================
-   Light theme for public pages (mmglive.org aesthetic)
-   Scoped overrides of the dark hardcoded utilities.
+   Light-only theme (livemedhealth.com aesthetic)
+   Global overrides that neutralise the legacy dark hardcoded
+   utilities used across the app, so every page renders light.
+   Elements inside [data-hero] keep light text (they sit over video).
    ========================================================= */
-.theme-light { background: #ffffff; color: rgb(15 23 42); }
 
 /* Page & surface backgrounds */
-.theme-light [class~="bg-livemed-deep"],
-.theme-light [class~="bg-livemed-navy"] { background-color: #ffffff; }
-.theme-light [class*="hsl(230,50%,7%)"] { background-color: #f6f8fb; }
-.theme-light [class*="#030508"] {
-  background-color: rgb(255 255 255 / 0.85);
+:where([class~="bg-livemed-deep"], [class~="bg-livemed-navy"]):not([data-hero] *) { background-color: #ffffff; }
+[class*="#030508"]:not([data-hero] *) {
+  background-color: rgb(255 255 255 / 0.9);
   border-color: rgb(15 23 42 / 0.08);
 }
 
 /* Text */
-.theme-light [class~="text-white"] { color: rgb(15 23 42); }
-.theme-light [class~="text-white/90"] { color: rgb(15 23 42 / 0.92); }
-.theme-light [class~="text-white/80"] { color: rgb(15 23 42 / 0.82); }
-.theme-light [class~="text-white/70"] { color: rgb(15 23 42 / 0.7); }
-.theme-light [class~="text-white/60"] { color: rgb(15 23 42 / 0.62); }
-.theme-light [class~="text-white/50"] { color: rgb(15 23 42 / 0.55); }
-.theme-light [class~="text-white/45"] { color: rgb(15 23 42 / 0.5); }
-.theme-light [class~="text-white/40"] { color: rgb(15 23 42 / 0.48); }
-.theme-light [class~="text-white/35"] { color: rgb(15 23 42 / 0.45); }
-.theme-light [class~="text-white/30"] { color: rgb(15 23 42 / 0.42); }
-.theme-light [class~="text-white/25"] { color: rgb(15 23 42 / 0.38); }
-.theme-light [class~="text-white/15"] { color: rgb(15 23 42 / 0.25); }
+[class~="text-white"]:not([data-hero] *) { color: rgb(15 23 42); }
+[class~="text-white/90"]:not([data-hero] *) { color: rgb(15 23 42 / 0.92); }
+[class~="text-white/80"]:not([data-hero] *) { color: rgb(15 23 42 / 0.82); }
+[class~="text-white/70"]:not([data-hero] *) { color: rgb(15 23 42 / 0.7); }
+[class~="text-white/60"]:not([data-hero] *) { color: rgb(15 23 42 / 0.62); }
+[class~="text-white/50"]:not([data-hero] *) { color: rgb(15 23 42 / 0.55); }
+[class~="text-white/45"]:not([data-hero] *) { color: rgb(15 23 42 / 0.5); }
+[class~="text-white/40"]:not([data-hero] *) { color: rgb(15 23 42 / 0.48); }
+[class~="text-white/35"]:not([data-hero] *) { color: rgb(15 23 42 / 0.45); }
+[class~="text-white/30"]:not([data-hero] *) { color: rgb(15 23 42 / 0.42); }
+[class~="text-white/25"]:not([data-hero] *) { color: rgb(15 23 42 / 0.38); }
+[class~="text-white/15"]:not([data-hero] *) { color: rgb(15 23 42 / 0.25); }
 
 /* Subtle fills & borders */
-.theme-light [class~="bg-white/[0.06]"],
-.theme-light [class~="bg-white/[0.04]"],
-.theme-light [class~="bg-white/[0.03]"],
-.theme-light [class~="bg-white/[0.02]"],
-.theme-light [class~="bg-white/[0.015]"] { background-color: rgb(15 23 42 / 0.04); }
-.theme-light [class~="border-white/[0.12]"],
-.theme-light [class~="border-white/[0.08]"],
-.theme-light [class~="border-white/[0.06]"],
-.theme-light [class~="border-white/[0.04]"] { border-color: rgb(15 23 42 / 0.1); }
+:where([class~="bg-white/[0.06]"], [class~="bg-white/[0.04]"], [class~="bg-white/[0.03]"], [class~="bg-white/[0.02]"], [class~="bg-white/[0.015]"]):not([data-hero] *) { background-color: rgb(15 23 42 / 0.04); }
+:where([class~="border-white/[0.12]"], [class~="border-white/[0.08]"], [class~="border-white/[0.06]"], [class~="border-white/[0.04]"], [class~="border-white/5"], [class~="border-white/10"]):not([data-hero] *) { border-color: rgb(15 23 42 / 0.1); }
 
 /* Electric-blue accents */
-.theme-light [class~="text-gradient-livemed"] {
-  background-image: linear-gradient(135deg, #2563eb 0%, #1d4ed8 55%, #3b82f6 100%);
+[class~="text-gradient-livemed"] {
+  background-image: linear-gradient(135deg, hsl(222 100% 52%) 0%, hsl(214 90% 45%) 55%, hsl(210 95% 58%) 100%);
 }
-.theme-light [class~="text-livemed-cyan"],
-.theme-light [class~="text-livemed-cyan/60"] { color: #2563eb; }
+[class~="text-livemed-cyan"]:not([data-hero] *),
+[class~="text-livemed-cyan/60"]:not([data-hero] *) { color: hsl(222 100% 52%); }
 
-/* Header primary button (bg-white / text-black) -> blue */
-.theme-light [class~="bg-white"] { background-color: #2563eb; }
-.theme-light [class~="bg-white"]:hover { background-color: #1d4ed8; }
-.theme-light [class~="text-black"] { color: #ffffff; }
-
-/* Glass surfaces */
-.theme-light [class~="glass-card"],
-.theme-light [class~="glass-card-hover"] {
-  background: rgb(255 255 255 / 0.7);
+/* Glass surfaces -> clean white cards */
+[class~="glass-card"]:not([data-hero] *),
+[class~="glass-card-hover"]:not([data-hero] *),
+[class~="glass-effect"]:not([data-hero] *),
+[class~="glass-dark"]:not([data-hero] *),
+[class~="glass-subtle"]:not([data-hero] *),
+[class~="glass-card-premium"]:not([data-hero] *) {
+  background: #ffffff;
   border: 1px solid rgb(15 23 42 / 0.08);
+  box-shadow: var(--shadow-md);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 
-/* Light theme logos are swapped at component level; no filter needed */
+/* Kill dark-theme glows/text-shadows in light mode */
+[class~="logo-glow"], [class~="text-glow"], [class~="text-glow-strong"] {
+  filter: none;
+  text-shadow: none;
+}
 
-/* Keep the video hero readable (re-assert light text on dark footage) */
-.theme-light [data-hero] [class~="text-white"] { color: rgb(255 255 255); }
-.theme-light [data-hero] [class~="text-white/90"] { color: rgb(255 255 255 / 0.9); }
-.theme-light [data-hero] [class~="text-white/70"] { color: rgb(255 255 255 / 0.7); }
-.theme-light [data-hero] [class~="text-white/45"] { color: rgb(255 255 255 / 0.45); }
-.theme-light [data-hero] [class~="glass-card-hover"] {
+/* Hero content over video keeps white text */
+[data-hero] [class~="glass-card-hover"],
+[data-hero] [class~="glass-card"] {
   background: rgb(255 255 255 / 0.08);
-  border: 1px solid rgb(255 255 255 / 0.12);
+  border: 1px solid rgb(255 255 255 / 0.14);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }

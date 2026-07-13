@@ -1,60 +1,53 @@
-## Verdict: shippable today after a focused 2-hour cleanup pass
+# Redesign to match livemedhealth.com (light-only)
 
-The platform is structurally ready — 39 pages, 124 components, 37 lazy-loaded routes, no console noise, no TODOs, RLS enforced on every user table, sensitive admin work behind an edge function, sign-up + tier + rotation gates all wired. **Not a rewrite.** The remaining risks are tightly scoped and listed below in ship-priority order.
+Restyle the whole app — public marketing pages **and** the signed-in app — to match the livemedhealth.com look and feel. **No content changes**: all copy, translations, routes, data, and logic stay exactly as-is. This is purely visual/UX (colors, typography, spacing, components, layout rhythm).
 
-## P0 — Must fix before going live (blocks shipping)
+## Target design language (from livemedhealth.com)
 
-1. **Supabase security warnings (10 WARN)**
-   - 1 RLS policy uses `WITH CHECK (true)` on a write operation — too permissive, must be scoped.
-   - 4 SECURITY DEFINER functions are anon-executable, 4 are authenticated-executable. `has_role` and `profile_self_update_safe` only need to be callable internally → `REVOKE EXECUTE ... FROM anon, authenticated` and grant only to `service_role` + the policies that need them.
-   - 1 public storage bucket (`avatars`) allows directory listing — restrict the storage SELECT policy so listings require an object name match.
-   - Single migration handles all of the above.
+- **Light only.** White / near-white backgrounds (`#FFFFFF`, `#F6F8FB`), dark near-black text (`#0A0A0A`), soft gray borders.
+- **Accent:** vivid livemed blue (~`#0B5CFF` / `hsl(222 100% 52%)`) used for highlighted words, links, stat numbers, and secondary CTAs.
+- **CTAs:** solid black pill buttons with white text (primary) + ghost/outline pill (secondary), fully rounded.
+- **Nav:** centered floating rounded-pill header on a light surface, subtle shadow.
+- **Cards:** white with hairline borders, generous padding, soft shadows, `rounded-2xl`, minimal glow — replace the current glassmorphism/neon glow with clean elevation.
+- **Type:** tight, large grotesque display headings (kept on Inter with tighter tracking to approximate the reference), calm gray body text.
+- **Stat strips, badge chips, and section number labels** (e.g. "02 The Problem") styled as in the reference.
 
-2. **Demo/dev artefact removal**
-   - `seed-demo-data` edge function + `useSeedDemoData` hook are dev tooling. Keep the function but gate it: refuse to run unless the caller has `platform_admin` role (currently relies on a hardcoded demo-account check only).
+## Approach
 
-3. **Auth confirmation behavior verified**
-   - Confirm `auto_confirm_email = false` in Supabase Auth (per Core memory) so real students must verify email before sign-in. Already configured — just verify via `cloud_status` + `configure_auth` read before launch.
+The app is token-driven (shadcn + CSS variables), so most of the shift happens in `src/index.css` + `tailwind.config.ts`. Hardcoded dark utilities in ~34 files then need cleanup.
 
-## P1 — Code-bloat & hygiene cleanup (refactor pass)
+### 1. Design tokens (`src/index.css`)
+- Rewrite `:root` to the light palette: `--background` white, `--foreground` near-black, light `--card`, `--muted`, gray `--border/--input`, blue `--primary`... Set `--primary` to the black pill for buttons and introduce accent-blue token for highlights.
+- Collapse `.dark` to equal the light values (or remove dark usage) so nothing renders dark.
+- Replace dark-only utilities: glassmorphism (`.glass-*`), neon glows (`.shadow-glow*`, `.logo-glow`, `.text-glow*`), mesh/grid patterns, scrollbar colors — convert to light equivalents (clean shadows, light hairlines) so existing class names keep working without per-file edits where possible.
+- Keep Inter; tighten heading `letter-spacing`; keep responsive scale.
 
-Delete 7 unused files (confirmed 0 inbound imports):
-- `src/components/FloatingMedicalIcons.tsx`
-- `src/components/GlowRings.tsx`
-- `src/components/DNAHelix.tsx`
-- `src/components/demo/AtlasScene.tsx`
-- `src/components/demo/DashboardScene.tsx`
-- `src/components/demo/InstitutionalScene.tsx`
-- `src/components/demo/RotationScene.tsx`
+### 2. Remove the dark theme
+- Simplify `PublicThemeProvider` to always render light (drop the `theme-light` conditional and `localStorage`), or remove it from `PublicLayout`.
+- Remove the light/dark toggle buttons + `Sun`/`Moon` from `Header.tsx` (desktop and mobile).
+- Logo: always use the light-theme logo asset; drop the `theme === "light" ? ... : ...` conditionals in `Header.tsx` and `Footer.tsx`.
 
-Reconcile near-duplicates (keep one, delete the other after verifying admin pages use the canonical):
-- `PendingApplications.tsx` vs `PendingApprovals.tsx` — both render admin queues from `contact_inquiries` / pending profiles. Consolidate to one component with a `mode` prop.
+### 3. Public pages (restyle only)
+- `Header.tsx`: floating rounded-pill nav on white, black pill "Apply Now", ghost "Sign in", remove `bg-[#030508]` dark surfaces.
+- `Footer.tsx`: light surface, gray text, remove `bg-livemed-deep`/mesh; keep all links/columns.
+- `Landing.tsx`: light hero (keep hero video but with light overlay/treatment), blue-highlighted headline word, black pill CTAs, clean white stat cards + section-number labels; convert all `text-white`/dark utilities to tokens. Keep every section and all copy.
+- Same treatment for `Programs`, `Rotations`, `Institutions`, `About`, `Contact`, `Apply`, `Residency`, `CaseStudies`, `Assessments`, `VirtualRounds`, `Curriculum`.
 
-Strip hardcoded colors on the highest-offender pages (replace `bg-white`/`text-black`/etc with semantic tokens — design-system rule):
-- `src/pages/Landing.tsx` (91 instances — biggest offender, and the first page every student sees)
-- `src/pages/Dashboard.tsx` (8), `src/pages/Atlas.tsx` (4), `src/pages/Auth.tsx` (5), `src/pages/VirtualRounds.tsx` (5)
-- Scope: only the 5 highest-traffic pages today; defer the rest to post-launch.
+### 4. App (signed-in) pages
+- Restyle to the light system: `Dashboard`, `Atlas`, `QBank*`, `CourseDetail`, `ModuleView`, `DiagnosticAssessment`, `ScorePredictor`, `Auth`, classroom/qbank/dashboard/lesson components, and admin components.
+- Most already use semantic tokens, so they follow the token change automatically; the work is replacing hardcoded `bg-[#...]`, `text-white`, `bg-black`, and glass/glow classes with tokens.
+- shadcn overlays (`dialog`, `sheet`, `drawer`, `alert-dialog`) get their overlay/`bg-black` opacity checked for light mode.
 
-## P2 — Post-launch (do NOT block ship)
+### 5. Verification
+- Typecheck/build.
+- Playwright screenshots (desktop + mobile) of `/`, a couple public pages, `/auth`, and `/dashboard` to confirm the light look and no dark-on-dark or white-on-white regressions.
 
-- Large files (`DiagnosticAssessment` 908 LOC, `Landing` 666, `Assessments` 650) work fine but should be split into sub-components after launch. Not a user-facing risk.
-- Enable `strict: true` in `tsconfig.app.json` and burn down `any` usages incrementally.
-- Add E2E smoke test for the critical path: signup → pending-approval → admin approve → onboarding → learning assessment → dashboard.
+## Notes / trade-offs
+- This touches many files; I'll work token-first to minimize per-file churn, then sweep the ~34 files with hardcoded dark utilities.
+- Fonts stay on Inter (brand standard) tuned to approximate the reference rather than importing the exact proprietary face; I can swap in a closer grotesque if you want.
+- Signed-in pages will match the same light system but won't be pixel-identical to livemedhealth.com (which has no logged-in app) — they'll adopt its color/typography/card language.
 
-## What I will NOT touch in this pass
-
-- No DB schema changes beyond the security fixes.
-- No new features.
-- No restructuring of working pages (QBank, Atlas, Rotations, Curriculum) — they're tested and stable.
-- No design changes — stays dark theme, Inter, rounded-2xl per memory.
-
-## Execution order (single build cycle)
-
-1. **Migration**: tighten RLS write policy + revoke SECURITY DEFINER execute grants + restrict avatars bucket listing.
-2. **Edge function**: add `platform_admin` role check to `seed-demo-data`.
-3. **Delete** 7 unused asset components.
-4. **Consolidate** `PendingApplications` + `PendingApprovals` → one component.
-5. **Landing.tsx + Dashboard.tsx + Auth.tsx**: swap hardcoded colors for tokens.
-6. **Verify build passes**, then ship.
-
-Estimated diff: ~1 migration, ~10 file deletions/edits, no new dependencies. After approval I'll execute top-to-bottom in one pass.
+## Technical
+- Primary edits: `src/index.css`, `tailwind.config.ts`, `src/components/layout/{Header,Footer,PublicThemeProvider,PublicLayout}.tsx`.
+- Sweep files flagged for hardcoded dark utilities across `src/pages/*` and `src/components/*`.
+- No changes to i18n locale files, Supabase, routes, or business logic.

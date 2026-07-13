@@ -141,7 +141,7 @@ const Landing = () => {
     <>
       <div ref={containerRef} className="flex flex-col bg-livemed-deep">
       {/* Hero Section */}
-      <section data-hero className="relative min-h-screen flex items-center justify-center overflow-hidden lcp-priority">
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden lcp-priority">
         <HeroBackground />
         <video
           className="absolute inset-0 w-full h-full object-cover z-[1]"
@@ -151,14 +151,14 @@ const Landing = () => {
           playsInline
           aria-hidden="true"
           src={heroVideo.url}
-          style={{ opacity: 0.6 }}
+          style={{ opacity: 0.28 }}
         />
         <div
           className="absolute inset-0 z-[2]"
           aria-hidden="true"
           style={{
             background:
-              "radial-gradient(ellipse 60% 50% at 50% 50%, hsl(230 55% 6% / 0.92) 0%, hsl(230 55% 6% / 0.78) 60%, hsl(230 55% 6% / 0.6) 100%)",
+              "radial-gradient(ellipse 70% 60% at 50% 50%, hsl(0 0% 100% / 0.78) 0%, hsl(0 0% 100% / 0.62) 55%, hsl(0 0% 100% / 0.5) 100%)",
           }}
         />
         
@@ -375,7 +375,7 @@ const Landing = () => {
             {features.map((feature) => (
               <div
                 key={feature.title}
-                className="bg-[hsl(230,50%,7%)] p-7 md:p-10"
+                className="bg-card p-7 md:p-10"
               >
                 <div className="w-10 h-10 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center mb-5">
                   <feature.icon className="h-[18px] w-[18px] text-white/50" strokeWidth={1.5} />
@@ -582,7 +582,7 @@ const Landing = () => {
             ].map((testimonial, index) => (
               <div
                 key={index}
-                className="bg-[hsl(230,50%,7%)] p-7 md:p-10"
+                className="bg-card p-7 md:p-10"
               >
                 <div className="text-2xl text-white/15 mb-3 font-serif">"</div>
                 <p className="text-white/50 mb-5 md:mb-7 leading-relaxed text-sm md:text-base">
@@ -630,7 +630,7 @@ const Landing = () => {
           <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center px-4">
             <Button
               size="lg"
-              className="bg-white text-[hsl(230,50%,8%)] hover:bg-white/90 px-8 py-6 rounded-full font-semibold group text-sm md:text-base"
+              className="bg-primary text-primary-foreground hover:bg-primary/90 px-8 py-6 rounded-full font-semibold group text-sm md:text-base"
               asChild
             >
               <Link to="/institutions">
