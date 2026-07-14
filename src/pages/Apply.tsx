@@ -96,7 +96,7 @@ const Apply = () => {
     <div className="min-h-screen bg-livemed-deep">
       <header className="fixed top-0 left-0 right-0 z-50 bg-livemed-deep/80 backdrop-blur-xl border-b border-white/10">
         <div className="container mx-auto px-4 flex h-16 items-center justify-between">
-          <Link to="/"><img src={livemedLogo} alt="Livemed" className="h-10 object-contain" /></Link>
+          <Link to="/"><img src={livemedLogo} alt="Livemed Academy logo" className="h-10 object-contain" /></Link>
           <Button variant="ghost" className="text-white/60 hover:text-white" asChild>
             <Link to="/auth">{t("auth.alreadyHaveAccount")}</Link>
           </Button>
