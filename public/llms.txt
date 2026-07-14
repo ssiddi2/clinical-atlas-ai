@@ -1,0 +1,19 @@
+# Livemed Academy
+
+> Where AI meets medicine. A US-based medical education platform for International Medical Graduates offering virtual clinical rotations, USMLE prep, and residency readiness training.
+
+## Pages
+
+- [Home](/): Overview of Livemed Academy — AI-driven training for IMGs.
+- [Programs](/programs): Pre-clinical, clinical, residency prep, and CME programs.
+- [Rotations](/rotations): Virtual US clinical rotations across core specialties.
+- [Institutions](/institutions): Partnerships for medical schools and hospitals.
+- [About](/about): Mission, faculty, and JCo accreditation.
+- [Case Studies](/case-studies): Clinical case walkthroughs.
+- [Apply](/apply): Apply for admission to Livemed Academy.
+- [Contact](/contact): Reach the Livemed team.
+
+## Optional
+
+- [Terms](/terms)
+- [Privacy](/privacy)

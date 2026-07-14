@@ -77,6 +77,7 @@ const Rotations = () => {
 
       <section className="py-16 border-b border-border">
         <div className="container mx-auto px-4">
+          <h2 className="sr-only">{t("rotations.whatYouGet", "What you get")}</h2>
           <div className="grid md:grid-cols-4 gap-6">
             {features.map((feature) => (
               <div key={feature.title} className="flex items-start gap-3">
