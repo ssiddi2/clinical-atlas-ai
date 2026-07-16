@@ -86,7 +86,7 @@ const Auth = () => {
     });
 
     return () => subscription.unsubscribe();
-  }, [navigate, toast, t]);
+  }, [navigate, toast, t, searchParams]);
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
