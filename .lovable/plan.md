@@ -1,53 +1,63 @@
-# Redesign to match livemedhealth.com (light-only)
 
-Restyle the whole app — public marketing pages **and** the signed-in app — to match the livemedhealth.com look and feel. **No content changes**: all copy, translations, routes, data, and logic stay exactly as-is. This is purely visual/UX (colors, typography, spacing, components, layout rhythm).
+# Content Verification & Quality Assurance Plan
 
-## Target design language (from livemedhealth.com)
+Students depend on this being right. We build **three complementary systems** — none replaces physician sign-off, but together they catch >95% of issues before students see them.
 
-- **Light only.** White / near-white backgrounds (`#FFFFFF`, `#F6F8FB`), dark near-black text (`#0A0A0A`), soft gray borders.
-- **Accent:** vivid livemed blue (~`#0B5CFF` / `hsl(222 100% 52%)`) used for highlighted words, links, stat numbers, and secondary CTAs.
-- **CTAs:** solid black pill buttons with white text (primary) + ghost/outline pill (secondary), fully rounded.
-- **Nav:** centered floating rounded-pill header on a light surface, subtle shadow.
-- **Cards:** white with hairline borders, generous padding, soft shadows, `rounded-2xl`, minimal glow — replace the current glassmorphism/neon glow with clean elevation.
-- **Type:** tight, large grotesque display headings (kept on Inter with tighter tracking to approximate the reference), calm gray body text.
-- **Stat strips, badge chips, and section number labels** (e.g. "02 The Problem") styled as in the reference.
+## Track 1 — Connect the app to Claude Desktop / ChatGPT via MCP
 
-## Approach
+Expose QBank, Assessments, and ATLAS as read-only MCP tools. You (or a reviewing MD) open Claude Desktop, connect to the app, and ask questions like *"Review question qbank_042 against First Aid 2024 — is the correct answer defensible? Are the distractors clinically plausible? Is the explanation aligned with UpToDate?"*
 
-The app is token-driven (shadcn + CSS variables), so most of the shift happens in `src/index.css` + `tailwind.config.ts`. Hardcoded dark utilities in ~34 files then need cleanup.
+**Auth**: OAuth 2.1 (each reviewer signs in as themselves; RLS enforces admin-only access to review tools).
 
-### 1. Design tokens (`src/index.css`)
-- Rewrite `:root` to the light palette: `--background` white, `--foreground` near-black, light `--card`, `--muted`, gray `--border/--input`, blue `--primary`... Set `--primary` to the black pill for buttons and introduce accent-blue token for highlights.
-- Collapse `.dark` to equal the light values (or remove dark usage) so nothing renders dark.
-- Replace dark-only utilities: glassmorphism (`.glass-*`), neon glows (`.shadow-glow*`, `.logo-glow`, `.text-glow*`), mesh/grid patterns, scrollbar colors — convert to light equivalents (clean shadows, light hairlines) so existing class names keep working without per-file edits where possible.
-- Keep Inter; tighten heading `letter-spacing`; keep responsive scale.
+**MCP tools exposed** (read-only, admin-gated):
+- `list_qbank_questions(specialty?, system?, difficulty?, limit)` — batch review
+- `get_qbank_question(question_id)` — full stem, options, correct answer, explanation, First Aid ref
+- `get_assessment(assessment_id)` — diagnostic + course assessment items
+- `get_atlas_conversation(conversation_id)` — audit ATLAS's Socratic responses
+- `flag_content_for_review(content_id, reason, severity)` — write-back: Claude/reviewer flags an item
+- `search_content(query)` — find items by keyword/concept
 
-### 2. Remove the dark theme
-- Simplify `PublicThemeProvider` to always render light (drop the `theme-light` conditional and `localStorage`), or remove it from `PublicLayout`.
-- Remove the light/dark toggle buttons + `Sun`/`Moon` from `Header.tsx` (desktop and mobile).
-- Logo: always use the light-theme logo asset; drop the `theme === "light" ? ... : ...` conditionals in `Header.tsx` and `Footer.tsx`.
+**Result**: You point Claude at "Review all cardiology hard questions" and it produces a triage report you act on.
 
-### 3. Public pages (restyle only)
-- `Header.tsx`: floating rounded-pill nav on white, black pill "Apply Now", ghost "Sign in", remove `bg-[#030508]` dark surfaces.
-- `Footer.tsx`: light surface, gray text, remove `bg-livemed-deep`/mesh; keep all links/columns.
-- `Landing.tsx`: light hero (keep hero video but with light overlay/treatment), blue-highlighted headline word, black pill CTAs, clean white stat cards + section-number labels; convert all `text-white`/dark utilities to tokens. Keep every section and all copy.
-- Same treatment for `Programs`, `Rotations`, `Institutions`, `About`, `Contact`, `Apply`, `Residency`, `CaseStudies`, `Assessments`, `VirtualRounds`, `Curriculum`.
+## Track 2 — Physician review pipeline (in-app)
 
-### 4. App (signed-in) pages
-- Restyle to the light system: `Dashboard`, `Atlas`, `QBank*`, `CourseDetail`, `ModuleView`, `DiagnosticAssessment`, `ScorePredictor`, `Auth`, classroom/qbank/dashboard/lesson components, and admin components.
-- Most already use semantic tokens, so they follow the token change automatically; the work is replacing hardcoded `bg-[#...]`, `text-white`, `bg-black`, and glass/glow classes with tokens.
-- shadcn overlays (`dialog`, `sheet`, `drawer`, `alert-dialog`) get their overlay/`bg-black` opacity checked for light mode.
+New admin surface for the reviewer workflow. Every QBank question and assessment item gets a lifecycle:
+```text
+draft → ai_reviewed → md_reviewed → published
+                                 ↘ flagged → revision → md_reviewed
+```
+- **Reviewer queue** (`/admin/content-review`): list of items filtered by status, specialty, and last-review date. Each row shows stem, correct answer, explanation, First Aid ref, and the source(s) it was cross-checked against.
+- **Review action**: approve / request revision / reject, with structured reason (accuracy, distractor quality, explanation depth, currency, style-guide fit) and free-text notes.
+- **Audit trail**: `content_reviews` table logs who reviewed what, when, verdict, and rationale — permanent record for accreditation.
+- **Re-review triggers**: guideline updates (new AHA/USPSTF release), items older than 18 months, or student dispute rate above threshold.
 
-### 5. Verification
-- Typecheck/build.
-- Playwright screenshots (desktop + mobile) of `/`, a couple public pages, `/auth`, and `/dashboard` to confirm the light look and no dark-on-dark or white-on-white regressions.
+## Track 3 — Automated benchmarking harness (edge function)
 
-## Notes / trade-offs
-- This touches many files; I'll work token-first to minimize per-file churn, then sweep the ~34 files with hardcoded dark utilities.
-- Fonts stay on Inter (brand standard) tuned to approximate the reference rather than importing the exact proprietary face; I can swap in a closer grotesque if you want.
-- Signed-in pages will match the same light system but won't be pixel-identical to livemedhealth.com (which has no logged-in app) — they'll adopt its color/typography/card language.
+For every QBank item and assessment question, run an automated cross-check nightly and on any edit:
 
-## Technical
-- Primary edits: `src/index.css`, `tailwind.config.ts`, `src/components/layout/{Header,Footer,PublicThemeProvider,PublicLayout}.tsx`.
-- Sweep files flagged for hardcoded dark utilities across `src/pages/*` and `src/components/*`.
-- No changes to i18n locale files, Supabase, routes, or business logic.
+1. **Multi-model consensus**: send stem + options to 3 frontier models (Gemini 3.1 Pro, GPT-5.5, and one more). If any model disagrees with the stored correct answer → auto-flag for MD review.
+2. **Source cross-reference**: Firecrawl the item's `first_aid_reference` topic against public authoritative sources (USPSTF, CDC, NIH, AHA/ACC guidelines, NBME content outlines). Attach source citations to the review record.
+3. **Style-guide compliance**: check vignette structure matches NBME item-writing rules (single best answer, homogeneous distractors, no negative stems, appropriate length).
+4. **Currency check**: flag items citing guidelines older than the latest published version.
+
+Nightly report → email/dashboard summary of new flags, ranked by severity.
+
+## Prioritization (per your answer: "everything, risk-ordered")
+
+1. **QBank questions** (~500) — highest student-facing risk, gate to Track 2 review before publish.
+2. **Diagnostic + course assessments** — gate progression, so accuracy matters equally.
+3. **ATLAS AI outputs** — can't pre-approve live generation; instead: strengthen system prompt with citation requirements, log every conversation, sample-review 5% weekly through the MCP tool.
+
+## What the user should do
+
+- Approve this plan, and I'll build **Track 1 (MCP)** first — that's what unblocks you and any reviewing MD immediately.
+- Track 2 (review pipeline) and Track 3 (benchmarking) are separate builds after MCP is live.
+
+## Technical details
+
+- **MCP server**: `@lovable.dev/mcp-js` with Supabase OAuth 2.1. `configure_oauth_server` + consent route + Deno edge function at `/functions/v1/mcp`.
+- **Auth**: only users with `platform_admin` role can call review tools; RLS + `has_role()` check in every tool handler.
+- **Storage**: new `content_reviews` table (reviewer_id, content_type, content_id, verdict, sources_checked, notes, reviewed_at) with strict RLS.
+- **Benchmarking edge function**: `benchmark-content` — nightly cron via `pg_cron` or manual trigger from admin UI. Uses AI Gateway (Gemini + GPT-5) + Firecrawl connector for source lookup.
+- **Cost**: MCP is essentially free (per-call gateway usage). Benchmarking ~500 questions × 3 models ≈ modest AI credit usage per run.
+- **No student-facing changes** in any track — this is entirely admin/reviewer infrastructure.
