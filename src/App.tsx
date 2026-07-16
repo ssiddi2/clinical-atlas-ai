@@ -50,6 +50,7 @@ const Courses = lazy(() => import("./pages/Courses"));
 const CourseDetail = lazy(() => import("./pages/CourseDetail"));
 const LearningUnitPage = lazy(() => import("./pages/LearningUnitPage"));
 const LiveQuiz = lazy(() => import("./pages/LiveQuiz"));
+const OAuthConsent = lazy(() => import("./pages/OAuthConsent"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -175,6 +176,9 @@ const App = () => {
 
             {/* Admin Dashboard (platform_admin only) */}
             <Route path="/admin" element={<Admin />} />
+
+            {/* MCP OAuth consent (Claude Desktop, ChatGPT, Cursor) */}
+            <Route path="/.lovable/oauth/consent" element={<OAuthConsent />} />
 
             {/* Catch-all */}
             <Route path="*" element={<NotFound />} />
