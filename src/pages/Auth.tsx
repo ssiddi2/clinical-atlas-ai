@@ -33,6 +33,13 @@ const Auth = () => {
     const handleAuthRedirect = async (session: any) => {
       if (!session) return;
 
+      // Honor `next` param (used by MCP OAuth consent flow, invite links, etc.)
+      const nextParam = searchParams.get("next");
+      if (nextParam && nextParam.startsWith("/") && !nextParam.startsWith("//")) {
+        navigate(nextParam);
+        return;
+      }
+
       const { data: profile } = await supabase
         .from("profiles")
         .select("onboarding_completed, account_status")
