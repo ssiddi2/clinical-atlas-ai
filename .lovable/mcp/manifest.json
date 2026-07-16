@@ -1,0 +1,314 @@
+{
+  "version": 1,
+  "sdk_version": "0.22.2",
+  "path": "/functions/v1/mcp",
+  "auth": {
+    "type": "oauth",
+    "issuer": "https://sljalqmlkpjtvtzjwfgx.supabase.co/auth/v1",
+    "accepted_audiences": [
+      "authenticated"
+    ]
+  },
+  "mcp": {
+    "server": {
+      "name": "livemed-academy-review",
+      "version": "0.1.0",
+      "title": "Livemed Academy — Content Review"
+    },
+    "tools": [
+      {
+        "name": "list_qbank_questions",
+        "title": "List QBank questions",
+        "description": "List QBank vignettes for review. Filter by specialty, subject, system, difficulty. Returns id, question_id, subject, system, difficulty, stem preview.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "subject": {
+              "type": "string",
+              "description": "Filter by subject (e.g. 'Cardiology')."
+            },
+            "system": {
+              "type": "string",
+              "description": "Filter by organ system."
+            },
+            "difficulty": {
+              "type": "string",
+              "enum": [
+                "easy",
+                "medium",
+                "hard"
+              ]
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 25
+            },
+            "offset": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0
+            }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "get_qbank_question",
+        "title": "Get QBank question",
+        "description": "Fetch a full QBank vignette including stem, options, correct answer, explanation, First Aid reference. Use to review clinical accuracy against gold-standard sources.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "question_id": {
+              "type": "string",
+              "description": "The public question_id (e.g. 'QB-0042') or UUID."
+            }
+          },
+          "required": [
+            "question_id"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "search_content",
+        "title": "Search QBank content",
+        "description": "Full-text search QBank stems, explanations, and topics. Use to find items by concept, drug name, disease, or guideline.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "minLength": 2,
+              "description": "Search phrase."
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50,
+              "default": 15
+            }
+          },
+          "required": [
+            "query"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_atlas_conversations",
+        "title": "List recent ATLAS conversations",
+        "description": "List recent ATLAS AI tutor conversations for sampling review.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 25
+            }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "get_atlas_conversation",
+        "title": "Get ATLAS conversation",
+        "description": "Fetch a full ATLAS AI tutor conversation (Socratic dialogue) for review of pedagogy and clinical accuracy.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "conversation_id": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "required": [
+            "conversation_id"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "get_course_quiz",
+        "title": "Get course quiz",
+        "description": "Fetch a course quiz (assessment) with all its questions for accuracy review.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "quiz_id": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "required": [
+            "quiz_id"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "flag_content_for_review",
+        "title": "Flag content for review",
+        "description": "Log a review verdict on a QBank question, assessment item, ATLAS conversation, or course quiz. Records reviewer, verdict, severity, sources cross-checked, and notes to the content_reviews audit trail.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "idempotentHint": false,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "content_type": {
+              "type": "string",
+              "enum": [
+                "qbank_question",
+                "assessment_item",
+                "atlas_conversation",
+                "course_quiz"
+              ]
+            },
+            "content_id": {
+              "type": "string",
+              "description": "question_id, UUID, or conversation_id."
+            },
+            "verdict": {
+              "type": "string",
+              "enum": [
+                "approved",
+                "needs_revision",
+                "rejected",
+                "flagged"
+              ]
+            },
+            "severity": {
+              "type": "string",
+              "enum": [
+                "low",
+                "medium",
+                "high",
+                "critical"
+              ],
+              "default": "medium"
+            },
+            "reason": {
+              "type": "string",
+              "description": "Short category, e.g. 'incorrect answer', 'outdated guideline', 'weak distractors'."
+            },
+            "sources_checked": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "default": [],
+              "description": "Sources cross-referenced, e.g. ['First Aid 2024 p.312', 'UpToDate: STEMI', 'AHA 2023 guideline']."
+            },
+            "notes": {
+              "type": "string",
+              "description": "Detailed rationale."
+            }
+          },
+          "required": [
+            "content_type",
+            "content_id",
+            "verdict"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_content_reviews",
+        "title": "List content reviews",
+        "description": "List existing review records to check what has already been reviewed and by whom.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "content_type": {
+              "type": "string",
+              "enum": [
+                "qbank_question",
+                "assessment_item",
+                "atlas_conversation",
+                "course_quiz"
+              ]
+            },
+            "content_id": {
+              "type": "string"
+            },
+            "verdict": {
+              "type": "string",
+              "enum": [
+                "approved",
+                "needs_revision",
+                "rejected",
+                "flagged"
+              ]
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 25
+            }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}
