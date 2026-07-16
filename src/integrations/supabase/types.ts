@@ -162,6 +162,51 @@ export type Database = {
         }
         Relationships: []
       }
+      content_reviews: {
+        Row: {
+          content_id: string
+          content_type: string
+          created_at: string
+          id: string
+          notes: string | null
+          reason: string | null
+          reviewed_via: string
+          reviewer_id: string
+          severity: string
+          sources_checked: string[]
+          updated_at: string
+          verdict: string
+        }
+        Insert: {
+          content_id: string
+          content_type: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          reason?: string | null
+          reviewed_via?: string
+          reviewer_id: string
+          severity?: string
+          sources_checked?: string[]
+          updated_at?: string
+          verdict: string
+        }
+        Update: {
+          content_id?: string
+          content_type?: string
+          created_at?: string
+          id?: string
+          notes?: string | null
+          reason?: string | null
+          reviewed_via?: string
+          reviewer_id?: string
+          severity?: string
+          sources_checked?: string[]
+          updated_at?: string
+          verdict?: string
+        }
+        Relationships: []
+      }
       course_enrollments: {
         Row: {
           approved_at: string | null
