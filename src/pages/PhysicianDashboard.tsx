@@ -282,7 +282,7 @@ const PhysicianDashboard = () => {
                 </div>
               </CardContent>
             </Card>
-            <Card className="bg-card/50 border-border/30 hover:border-primary/30 transition-colors cursor-pointer" onClick={() => toast({ title: t("common.comingSoon"), description: t("physician.lorComingSoon") })}>
+            <Card className="bg-card/50 border-border/30 hover:border-primary/30 transition-colors cursor-pointer" onClick={() => navigate("/lor")}>
               <CardContent className="flex items-center gap-4 p-5">
                 <div className="p-3 rounded-xl bg-yellow-500/10 text-yellow-500"><BookOpen className="h-5 w-5" /></div>
                 <div>

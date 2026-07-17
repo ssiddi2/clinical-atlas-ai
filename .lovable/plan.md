@@ -1,47 +1,57 @@
-## ATLAS AI UX Rebuild — `src/pages/Atlas.tsx`
+## Goal
+Ensure every button, tab, link, and quick-action in the Admin, Student, Physician, and Settings (Profile) surfaces routes to a real, working page — no dead ends, no "coming soon" toasts on core flows, consistent AppShell headers everywhere.
 
-Rework the layout so students get a clean, stable chat surface with one fixed top bar and a well-behaved conversation history sidebar.
+## Audit Scope
 
-### 1. One fixed top bar
-- Replace the current two headers (sidebar's "Back to Dashboard" link + main chat area's separate header) with a single sticky top bar spanning full width.
-- Top bar contents, separated by vertical column dividers:
-  - Back button (ArrowLeft → `/dashboard`)
-  - `|` New Chat icon button (Plus, starts a new conversation)
-  - `|` ATLAS™ brand: gradient Brain icon + "ATLAS™" title + "AI Professor" subtitle + AdaptedBadge
-  - Right side: Livemed Academy logo (hidden on small screens)
-- Bar is `sticky top-0 z-40` with `bg-background` + border so it stays visible while asking questions.
-- Column dividers: `<div className="h-6 w-px bg-border" />`.
+### Student surfaces (from `/dashboard`)
+- Quick actions: Ask ATLAS, My Courses, Virtual Classroom, Curriculum, Live Rounds, Take Assessment, QBank, Score Predictor, Residency, Diagnostic
+- Learning Journey / StudyPlan widget links
+- Notifications, Profile/Settings menu
 
-### 2. Fixed sidebar (chat history)
-- Sidebar becomes a fixed-height column `h-[calc(100vh-56px)]` sitting directly under the top bar; only its internal list scrolls.
-- Remove the Back button and New Chat button from the sidebar (both moved into the top bar).
-- Remove `truncate` on conversation titles. Instead:
-  - Use `line-clamp-2` with `break-words` so long titles wrap below to a second line instead of showing "…".
-  - Row uses `items-start` + comfortable vertical padding so wrapped titles look intentional.
-- Sidebar does not move while messages stream — main chat scroll is isolated.
+### Physician surfaces (`/physician-dashboard`)
+- Create Course, Manage Courses, Invite students, Virtual Rounds tile
+- LOR tile currently shows "coming soon" toast → dead end
+- Confirm AppShell header is used (currently uses its own header — inconsistent with the rest of the app)
 
-### 3. Main chat area
-- Wrap in a fixed-height flex column `h-[calc(100vh-56px)]` so the composer stays pinned at the bottom and only the message list scrolls.
-- Keep existing empty state, suggested prompts, message bubbles, streaming cursor, and composer logic untouched.
+### Admin surfaces (`/admin`)
+- Tabs: Overview, Professors, Students, Courses, Applications, Rotation Apps, Verifications
+- Row actions inside each tab (approve/reject/edit/impersonate) — confirm each is wired to a working handler and refreshes state
+- Missing pieces to add if absent: Content Reviews tab (table exists), Contact Inquiries tab (table exists)
 
-### 4. Mobile behavior
-- On `<md`, hide the sidebar (as today) and keep the single fixed top bar.
-- The New Chat icon in the top bar replaces the sidebar's button on mobile.
+### Settings (`/profile`)
+- Currently a single page. Break into tabs: Account, Membership, Verification, Notifications, Security (change password / sign out).
+- Ensure "Upgrade" link `/pricing` resolves (route doesn't exist today → 404). Either add the route or point to `/apply`.
 
-### Technical notes
-- All changes scoped to `src/pages/Atlas.tsx`; no backend or other files.
-- Use existing tokens (`bg-background`, `border-border`, `gradient-livemed`) — no hardcoded colors.
-- No changes to streaming, Supabase calls, message rendering, or i18n keys.
+## Fix Plan
 
-```text
-┌─────────────────────────────────────────────────────────────┐
-│ ← │ + │ 🧠 ATLAS™  AI Professor · [Adapted]      [logo]   │  sticky
-├───────────────┬─────────────────────────────────────────────┤
-│ Conversation  │                                             │
-│ title that    │        Chat messages (scrolls)              │
-│ wraps to two  │                                             │
-│ lines cleanly │                                             │
-│               ├─────────────────────────────────────────────┤
-│ (scrolls)     │  [ textarea ............... ] [ Send ]      │
-└───────────────┴─────────────────────────────────────────────┘
-```
+1. **Route completeness pass**
+   - Add any missing routes referenced by buttons/links (e.g. `/pricing` → redirect to `/apply`, or create a stub Pricing page).
+   - Wire physician "LOR" tile to a real `/physician/lor` page (list + request flow) instead of a toast.
+   - Ensure NotFound page has a clear "Back to Dashboard" CTA (already exists — verify).
+
+2. **AppShell consistency**
+   - Wrap `PhysicianDashboard` and `Profile` in `AppShell` so header/logo/nav match Student + Admin.
+   - Remove duplicate inline headers.
+
+3. **Admin tab hardening**
+   - Verify each tab's list component (`ProfessorsList`, `StudentsList`, `CoursesList`, `ApplicationsList`, `RotationApplicationsList`, `VerificationsList`) renders, handles empty state, and every row action calls the `admin-actions` edge function and refetches.
+   - Add two new tabs backed by existing tables: **Content Reviews** (`content_reviews`) and **Contact Inquiries** (`contact_inquiries`) with read + status-update actions via `admin-actions`.
+
+4. **Student dashboard dead-end sweep**
+   - Confirm each quick-action target page loads for a student with no data (empty states, not blank screens).
+   - Fix any tile whose destination is missing or 404s.
+
+5. **Settings page redesign**
+   - Convert `/profile` to a tabbed Settings page: Account · Membership · Verification · Notifications · Security.
+   - Move sign-out and password change here. Wire notification preferences to `profiles` columns (add columns via migration only if missing).
+
+6. **Verification pass**
+   - Typecheck.
+   - Playwright smoke: log in as student/physician/admin demo accounts, click every top-level tile/tab, assert no 404 and no console errors.
+
+## Out of scope
+- New feature functionality beyond wiring existing tables/pages.
+- Visual redesign — only fixes to match existing light theme + AppShell.
+
+## Question before I start
+Do you want me to (a) implement all six steps above in one pass, or (b) start with the highest-impact ones (route completeness + Admin tabs + Settings tabs) and defer the physician LOR page and notification preferences to a follow-up?

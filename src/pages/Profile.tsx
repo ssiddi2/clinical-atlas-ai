@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
 import { Button } from "@/components/ui/button";
@@ -7,8 +7,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { Save, User as UserIcon } from "lucide-react";
+import { Save, User as UserIcon, Lock, CreditCard, LogOut } from "lucide-react";
 
 import { useTranslation } from "@/i18n";
 import AvatarUpload from "@/components/profile/AvatarUpload";
@@ -26,6 +27,8 @@ const Profile = () => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [newPassword, setNewPassword] = useState("");
+  const [changingPwd, setChangingPwd] = useState(false);
   const [profile, setProfile] = useState<ProfileData>({
     first_name: "", last_name: "", institution: "", country: "", year_of_study: null, program_level: null, avatar_url: null,
   });
@@ -70,6 +73,18 @@ const Profile = () => {
 
   const handleSignOut = async () => { await supabase.auth.signOut(); navigate("/"); };
 
+  const handleChangePassword = async () => {
+    if (newPassword.length < 8) {
+      toast({ title: t("common.error"), description: "Password must be at least 8 characters", variant: "destructive" });
+      return;
+    }
+    setChangingPwd(true);
+    const { error } = await supabase.auth.updateUser({ password: newPassword });
+    setChangingPwd(false);
+    if (error) toast({ title: t("common.error"), description: error.message, variant: "destructive" });
+    else { setNewPassword(""); toast({ title: t("common.success"), description: "Password updated" }); }
+  };
+
   if (loading) return <div className="min-h-screen flex items-center justify-center"><div className="animate-pulse text-muted-foreground">{t("common.loading")}</div></div>;
 
   const countries = ["United States", "Canada", "United Kingdom", "India", "Nigeria", "Pakistan", "Philippines", "Egypt", "Mexico", "Brazil", "Other"];
@@ -97,7 +112,15 @@ const Profile = () => {
           <p className="text-sm text-muted-foreground">{user?.email}</p>
         </div>
 
-        <Card>
+        <Tabs defaultValue="account" className="w-full">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="account"><UserIcon className="h-4 w-4 mr-2" />Account</TabsTrigger>
+            <TabsTrigger value="security"><Lock className="h-4 w-4 mr-2" />Security</TabsTrigger>
+            <TabsTrigger value="membership"><CreditCard className="h-4 w-4 mr-2" />Membership</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="account" className="mt-6">
+            <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2"><UserIcon className="h-5 w-5 text-accent" />{t("profile.personalInfo")}</CardTitle>
             <CardDescription>{t("profile.personalInfoDesc")}</CardDescription>
@@ -135,23 +158,53 @@ const Profile = () => {
               <Save className="mr-2 h-4 w-4" />{saving ? t("profile.saving") : t("profile.saveChanges")}
             </Button>
           </CardContent>
-        </Card>
+            </Card>
+          </TabsContent>
 
-        <Card className="mt-6">
-          <CardHeader><CardTitle>{t("profile.account")}</CardTitle></CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex justify-between items-center py-2 border-b border-border">
-              <div><p className="font-medium">{t("auth.email")}</p><p className="text-sm text-muted-foreground">{user?.email}</p></div>
-            </div>
-            <div className="flex justify-between items-center py-2 border-b border-border">
-              <div><p className="font-medium">{t("profile.memberSince")}</p><p className="text-sm text-muted-foreground">{user?.created_at ? new Date(user.created_at).toLocaleDateString() : "N/A"}</p></div>
-            </div>
-            <div className="flex justify-between items-center py-2">
-              <div><p className="font-medium">{t("profile.subscription")}</p><p className="text-sm text-muted-foreground">{t("profile.freeTrial")}</p></div>
-              <Button variant="outline" size="sm" asChild><Link to="/pricing">{t("profile.upgrade")}</Link></Button>
-            </div>
-          </CardContent>
-        </Card>
+          <TabsContent value="security" className="mt-6 space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2"><Lock className="h-5 w-5 text-accent" />Change Password</CardTitle>
+                <CardDescription>Update your account password. Use at least 8 characters.</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="new_password">New Password</Label>
+                  <Input id="new_password" type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder="••••••••" />
+                </div>
+                <Button onClick={handleChangePassword} disabled={changingPwd || !newPassword} className="w-full">
+                  {changingPwd ? "Updating..." : "Update Password"}
+                </Button>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader><CardTitle>Sign Out</CardTitle><CardDescription>End your session on this device.</CardDescription></CardHeader>
+              <CardContent>
+                <Button variant="outline" onClick={handleSignOut} className="w-full">
+                  <LogOut className="mr-2 h-4 w-4" /> Sign Out
+                </Button>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="membership" className="mt-6">
+            <Card>
+              <CardHeader><CardTitle>{t("profile.account")}</CardTitle></CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex justify-between items-center py-2 border-b border-border">
+                  <div><p className="font-medium">{t("auth.email")}</p><p className="text-sm text-muted-foreground">{user?.email}</p></div>
+                </div>
+                <div className="flex justify-between items-center py-2 border-b border-border">
+                  <div><p className="font-medium">{t("profile.memberSince")}</p><p className="text-sm text-muted-foreground">{user?.created_at ? new Date(user.created_at).toLocaleDateString() : "N/A"}</p></div>
+                </div>
+                <div className="flex justify-between items-center py-2">
+                  <div><p className="font-medium">{t("profile.subscription")}</p><p className="text-sm text-muted-foreground">{t("profile.freeTrial")}</p></div>
+                  <Button variant="outline" size="sm" onClick={() => navigate("/apply")}>{t("profile.upgrade")}</Button>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
       </main>
     </AppShell>
   );
