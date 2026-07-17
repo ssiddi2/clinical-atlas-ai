@@ -218,17 +218,22 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Top Navigation */}
-      <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur">
+      <header className="sticky top-0 z-50 border-b border-border/70 bg-background/85 backdrop-blur-xl">
         <div className="container mx-auto px-4 md:px-6 flex h-16 items-center justify-between gap-8">
           <div className="flex items-center gap-6">
             <Link to="/dashboard" className="flex items-center">
               <img src={livemedLogo} alt="Livemed Academy" className="h-8 object-contain" />
             </Link>
-            <nav className="hidden md:flex items-center gap-4">
-              <Link to="/curriculum" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">{t("dashboard.curriculum")}</Link>
+            <nav className="hidden md:flex items-center gap-3">
+              <Link
+                to="/curriculum"
+                className="text-sm font-medium text-foreground/70 hover:text-foreground transition-colors rounded-md px-2 py-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                {t("dashboard.curriculum")}
+              </Link>
               <Link
                 to="/atlas"
-                className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold text-white bg-gradient-to-r from-blue-500 to-violet-500 shadow-sm hover:opacity-90 transition-opacity"
+                className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold text-white bg-gradient-to-r from-blue-500 to-violet-500 shadow-sm hover:shadow-md hover:brightness-110 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               >
                 <Sparkles className="h-3.5 w-3.5" />
                 ATLAS™
@@ -236,7 +241,7 @@ const Dashboard = () => {
             </nav>
           </div>
 
-          <nav className="hidden lg:flex items-center gap-8">
+          <nav className="hidden lg:flex items-center gap-7">
             {[
               { icon: GraduationCap, label: t("courses.myCourses") || "My Courses", href: "/courses" },
               { icon: Video, label: t("dashboard.virtualClassroom"), href: "/virtual-classroom" },
@@ -246,7 +251,7 @@ const Dashboard = () => {
               <Link
                 key={item.label}
                 to={item.href}
-                className="group flex flex-col items-center gap-1 text-muted-foreground hover:text-primary transition-colors"
+                className="group flex flex-col items-center gap-1 text-foreground/60 hover:text-primary transition-colors rounded-md px-2 py-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 <item.icon className="h-5 w-5" />
                 <span className="text-[11px] font-medium leading-none">{item.label}</span>
@@ -262,12 +267,15 @@ const Dashboard = () => {
               </Button>
             )}
             <NotificationBell userId={user?.id || null} />
-            <Button variant="ghost" size="icon" onClick={() => navigate("/profile")}>
+            <Button variant="ghost" size="icon" aria-label="Profile settings" onClick={() => navigate("/profile")}>
               <Settings className="h-5 w-5" />
             </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="flex items-center gap-2 pl-1 pr-3 py-1 rounded-full border border-border hover:border-primary/40 hover:bg-muted/50 transition-colors">
+                <button
+                  aria-label="Account menu"
+                  className="flex items-center gap-2 pl-1 pr-3 py-1 rounded-full border border-border hover:border-primary/40 hover:bg-muted/50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                >
                   <Avatar className="h-8 w-8">
                     <AvatarImage src={user?.user_metadata?.avatar_url} />
                     <AvatarFallback className="text-xs font-semibold">
@@ -293,74 +301,82 @@ const Dashboard = () => {
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto py-8">
+      <main className="container mx-auto px-4 md:px-6 py-10 md:py-12 space-y-10 md:space-y-12">
         <VerificationBanner 
           status={profile?.verification_status as 'pending' | 'verified' | 'rejected' | null}
           onboardingCompleted={profile?.onboarding_completed || false}
         />
 
         {/* Welcome Section */}
-        <div className="mb-8">
-          <h1 className="text-4xl md:text-5xl font-bold mb-2 tracking-tight">
+        <div>
+          <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground">
             {t("dashboard.welcomeBack").replace("{name}", firstName)} <span aria-hidden>👋</span>
           </h1>
-          <p className="text-muted-foreground">{t("dashboard.continueJourney")}</p>
+          <p className="mt-2 text-[15px] text-muted-foreground">{t("dashboard.continueJourney")}</p>
         </div>
 
         {/* Quick Actions */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4 mb-8">
-          {quickActions.map((action) => (
-            <Link key={action.label} to={action.href}>
-              <Card className="hover:shadow-livemed transition-all duration-300 hover:-translate-y-1 cursor-pointer h-full rounded-2xl">
-                <CardContent className="p-5 flex items-center gap-3">
-                  <div className={`w-11 h-11 rounded-xl ${action.color} flex items-center justify-center flex-shrink-0 shadow-sm`}>
-                    <action.icon className="h-5 w-5 text-white" strokeWidth={2.25} />
-                  </div>
-                  <span className="font-semibold text-[15px] leading-tight flex-1">{action.label}</span>
-                  <ChevronRight className="h-5 w-5 text-muted-foreground flex-shrink-0" />
-                </CardContent>
-              </Card>
-            </Link>
-          ))}
-        </div>
+        <section aria-label="Quick actions">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+            {quickActions.map((action) => (
+              <Link
+                key={action.label}
+                to={action.href}
+                className="group rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                aria-label={action.label}
+              >
+                <Card className="h-full rounded-2xl border-border/70 shadow-sm hover:shadow-md hover:border-border transition-all duration-200 group-hover:-translate-y-0.5">
+                  <CardContent className="p-4 flex items-center gap-3">
+                    <div className={`w-10 h-10 rounded-xl ${action.color} flex items-center justify-center flex-shrink-0`}>
+                      <action.icon className="h-[18px] w-[18px] text-white" strokeWidth={2.25} />
+                    </div>
+                    <span className="font-semibold text-[14px] leading-tight flex-1 text-foreground">{action.label}</span>
+                    <ChevronRight className="h-4 w-4 text-muted-foreground/70 group-hover:text-foreground group-hover:translate-x-0.5 transition-all flex-shrink-0" />
+                  </CardContent>
+                </Card>
+              </Link>
+            ))}
+          </div>
+        </section>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
-          <div className="lg:col-span-2 space-y-6 md:space-y-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2 space-y-6">
             {/* Diagnostic Assessment Promotion */}
             {!hasTakenDiagnostic && (
-              <Card className="overflow-hidden">
-                <CardContent className="p-6 flex items-start gap-6">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-3">
-                      <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center flex-shrink-0">
+              <Card className="relative overflow-hidden rounded-2xl border-primary/15 shadow-md bg-gradient-to-br from-primary/[0.06] via-background to-background">
+                <div aria-hidden className="pointer-events-none absolute -top-24 -right-16 w-72 h-72 rounded-full bg-primary/10 blur-3xl" />
+                <CardContent className="relative p-6 md:p-8 flex items-start gap-6">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="w-12 h-12 rounded-2xl bg-primary flex items-center justify-center flex-shrink-0 shadow-sm ring-4 ring-primary/10">
                         <Target className="h-6 w-6 text-white" />
                       </div>
-                      <div>
+                      <div className="min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <h3 className="text-xl font-bold">{t("dashboard.diagnostic.title")}</h3>
-                          <span className="px-2.5 py-0.5 text-xs font-semibold bg-primary text-primary-foreground rounded-full">{t("dashboard.diagnostic.recommended")}</span>
+                          <h2 className="text-xl md:text-[22px] font-bold tracking-tight text-foreground">{t("dashboard.diagnostic.title")}</h2>
+                          <span className="px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide bg-primary text-primary-foreground rounded-full">{t("dashboard.diagnostic.recommended")}</span>
                         </div>
-                        <p className="text-sm text-muted-foreground">{t("dashboard.diagnostic.personalize")}</p>
+                        <p className="text-sm text-muted-foreground mt-0.5">{t("dashboard.diagnostic.personalize")}</p>
                       </div>
                     </div>
-                    <p className="text-sm text-muted-foreground mb-5 leading-relaxed">{t("dashboard.diagnostic.description")}</p>
-                    <div className="flex flex-wrap items-center gap-4">
-                      <Button className="bg-primary hover:bg-primary/90" asChild>
+                    <p className="text-[15px] text-foreground/75 mb-6 leading-relaxed max-w-xl">{t("dashboard.diagnostic.description")}</p>
+                    <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
+                      <Button size="lg" className="bg-primary hover:bg-primary/90 shadow-sm h-11 px-6 text-[14px] font-semibold" asChild>
                         <Link to="/diagnostic">
                           {t("dashboard.diagnostic.start")}
                           <ChevronRight className="ml-1 h-4 w-4" />
                         </Link>
                       </Button>
-                      <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                        <span className="flex items-center gap-1.5"><Sparkles className="h-3.5 w-3.5" />{t("dashboard.diagnostic.duration")}</span>
-                        <span className="flex items-center gap-1.5"><Target className="h-3.5 w-3.5" />{t("dashboard.diagnostic.personalizedPlan")}</span>
+                      <div className="flex items-center gap-5 text-xs text-muted-foreground">
+                        <span className="flex items-center gap-1.5"><Sparkles className="h-3.5 w-3.5" aria-hidden />{t("dashboard.diagnostic.duration")}</span>
+                        <span className="flex items-center gap-1.5"><Target className="h-3.5 w-3.5" aria-hidden />{t("dashboard.diagnostic.personalizedPlan")}</span>
                       </div>
                     </div>
                   </div>
-                  <div className="hidden sm:flex w-44 h-44 rounded-2xl bg-primary/5 items-center justify-center flex-shrink-0 relative">
+                  <div aria-hidden className="hidden md:flex w-40 h-40 rounded-2xl bg-primary/5 border border-primary/10 items-center justify-center flex-shrink-0 relative">
                     <ClipboardCheck className="h-20 w-20 text-primary" strokeWidth={1.5} />
-                    <div className="absolute bottom-4 right-4 w-14 h-14 rounded-full bg-white shadow-md flex items-center justify-center">
-                      <Target className="h-8 w-8 text-primary" strokeWidth={2} />
+                    <div className="absolute bottom-3 right-3 w-12 h-12 rounded-full bg-background shadow-md flex items-center justify-center ring-1 ring-border">
+                      <Target className="h-7 w-7 text-primary" strokeWidth={2} />
                     </div>
                   </div>
                 </CardContent>
@@ -368,36 +384,39 @@ const Dashboard = () => {
             )}
 
             {/* Continue Learning Card */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <BookOpen className="h-5 w-5 text-primary" />
+            <Card className="rounded-2xl border-border/70 shadow-sm">
+              <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-2 text-base font-semibold">
+                  <BookOpen className="h-4 w-4 text-primary" />
                   {t("dashboard.continueWhereLeft")}
                 </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="pt-0">
                 {continueLearning ? (
-                  <Link to={`/courses/${continueLearning.courseId}/topic/${continueLearning.topicId}`} className="flex items-center gap-4 p-4 bg-muted/50 rounded-lg hover:bg-muted/70 transition-colors">
-                    <div className="w-16 h-16 rounded-lg gradient-livemed flex items-center justify-center flex-shrink-0">
-                      <PlayCircle className="h-8 w-8 text-white" />
+                  <Link
+                    to={`/courses/${continueLearning.courseId}/topic/${continueLearning.topicId}`}
+                    className="flex items-center gap-4 p-4 bg-muted/40 hover:bg-muted/60 rounded-xl transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  >
+                    <div className="w-14 h-14 rounded-xl gradient-livemed flex items-center justify-center flex-shrink-0 shadow-sm">
+                      <PlayCircle className="h-7 w-7 text-white" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold mb-1">{continueLearning.courseTitle}: {continueLearning.topicTitle}</h3>
-                      <p className="text-sm text-muted-foreground mb-2">In progress</p>
+                      <h3 className="font-semibold text-sm text-foreground truncate">{continueLearning.courseTitle}: {continueLearning.topicTitle}</h3>
+                      <p className="text-xs text-muted-foreground mt-0.5 mb-2">In progress · {continueLearning.progress}%</p>
                       <Progress value={continueLearning.progress} className="h-2" />
                     </div>
                     <Button className="gradient-livemed flex-shrink-0">{t("dashboard.resume")}</Button>
                   </Link>
                 ) : (
-                  <div className="flex items-center gap-4 p-5 bg-muted/40 rounded-xl">
-                    <div className="w-14 h-14 rounded-xl bg-background border border-border flex items-center justify-center flex-shrink-0">
-                      <BookOpen className="h-6 w-6 text-muted-foreground/60" />
+                  <div className="flex items-center gap-4 p-5 bg-muted/30 rounded-xl border border-dashed border-border">
+                    <div className="w-12 h-12 rounded-xl bg-background border border-border flex items-center justify-center flex-shrink-0">
+                      <BookOpen className="h-5 w-5 text-muted-foreground" />
                     </div>
-                    <div className="flex-1">
-                      <p className="font-semibold text-sm mb-0.5">No courses enrolled yet.</p>
-                      <p className="text-muted-foreground text-sm">Contact your admin to get enrolled in a course.</p>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold text-sm text-foreground">No courses enrolled yet</p>
+                      <p className="text-xs text-muted-foreground mt-0.5">Contact your admin to get enrolled in a course.</p>
                     </div>
-                    <Button variant="outline" asChild className="border-primary text-primary hover:bg-primary/5 hover:text-primary">
+                    <Button variant="outline" size="sm" asChild className="border-primary/40 text-primary hover:bg-primary/5 hover:text-primary flex-shrink-0">
                       <Link to="/courses">Browse Courses</Link>
                     </Button>
                   </div>
@@ -408,37 +427,47 @@ const Dashboard = () => {
           </div>
 
           {/* Sidebar */}
-          <div className="space-y-8">
-            <Card>
-              <CardHeader>
+          <div className="space-y-6">
+            <Card className="rounded-2xl border-border/70 shadow-sm">
+              <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
-                  <CardTitle className="flex items-center gap-2">
-                    <Calendar className="h-5 w-5 text-primary" />
+                  <CardTitle className="flex items-center gap-2 text-base font-semibold">
+                    <Calendar className="h-4 w-4 text-primary" />
                     {t("dashboard.upcoming")}
                   </CardTitle>
-                  <Link to="/virtual-classroom" className="text-xs font-medium text-primary hover:underline">View All</Link>
+                  <Link
+                    to="/virtual-classroom"
+                    className="text-xs font-medium text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"
+                  >
+                    View All
+                  </Link>
                 </div>
               </CardHeader>
-              <CardContent>
+              <CardContent className="pt-0">
                 {upcomingItems.length > 0 ? (
-                  <div className="space-y-4">
+                  <ul className="space-y-1 -mx-2">
                     {upcomingItems.map((item, idx) => (
-                      <Link key={idx} to={item.href} className="flex items-start gap-3 pb-4 border-b border-border last:border-0 last:pb-0 hover:bg-muted/50 rounded-lg p-2 -mx-2 transition-colors">
-                        <div className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${item.type === t("common.live") ? 'bg-livemed-success animate-pulse' : 'bg-accent'}`} />
-                        <div>
-                          <p className="font-medium text-sm">{item.title}</p>
-                          <p className="text-xs text-muted-foreground">{item.time}</p>
-                          <span className={`inline-block mt-1 text-xs px-2 py-0.5 rounded ${item.type === t("common.live") ? 'bg-livemed-success/20 text-livemed-success' : 'bg-muted'}`}>{item.type}</span>
-                        </div>
-                      </Link>
+                      <li key={idx}>
+                        <Link
+                          to={item.href}
+                          className="flex items-start gap-3 hover:bg-muted/50 rounded-lg p-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                        >
+                          <div className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${item.type === t("common.live") ? 'bg-livemed-success animate-pulse' : 'bg-accent'}`} aria-hidden />
+                          <div className="min-w-0">
+                            <p className="font-medium text-sm text-foreground truncate">{item.title}</p>
+                            <p className="text-xs text-muted-foreground mt-0.5">{item.time}</p>
+                            <span className={`inline-block mt-1.5 text-[11px] font-medium px-2 py-0.5 rounded ${item.type === t("common.live") ? 'bg-livemed-success/15 text-livemed-success' : 'bg-muted text-foreground/70'}`}>{item.type}</span>
+                          </div>
+                        </Link>
+                      </li>
                     ))}
-                  </div>
+                  </ul>
                 ) : (
-                  <div className="flex flex-col items-center justify-center py-6 text-center">
-                    <div className="w-20 h-20 rounded-2xl bg-primary/5 flex items-center justify-center mb-3">
-                      <CalendarCheck className="h-10 w-10 text-primary/60" strokeWidth={1.5} />
+                  <div className="flex flex-col items-center justify-center py-8 text-center">
+                    <div className="w-16 h-16 rounded-2xl bg-primary/5 border border-primary/10 flex items-center justify-center mb-3">
+                      <CalendarCheck className="h-8 w-8 text-primary/70" strokeWidth={1.5} aria-hidden />
                     </div>
-                    <p className="font-semibold text-sm">No upcoming sessions</p>
+                    <p className="font-semibold text-sm text-foreground">No upcoming sessions</p>
                     <p className="text-xs text-muted-foreground mt-1">You're all caught up!</p>
                   </div>
                 )}
@@ -450,7 +479,7 @@ const Dashboard = () => {
         </div>
 
         {/* Learning Journey — full width below main grid */}
-        <div className="mt-8 space-y-6">
+        <div className="space-y-6">
           <LearningJourney userId={user?.id || null} />
           <StudyPlanWidget userId={user?.id || null} />
         </div>

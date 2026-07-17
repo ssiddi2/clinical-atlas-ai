@@ -76,15 +76,15 @@ export default function LearningJourney({ userId }: Props) {
   ];
 
   return (
-    <Card className="rounded-2xl bg-gradient-to-br from-slate-50 to-white">
-      <CardContent className="p-6">
-        <div className="flex items-start justify-between mb-5 flex-wrap gap-3">
+    <Card className="rounded-2xl border-border/70 shadow-sm bg-gradient-to-br from-slate-50/70 to-background">
+      <CardContent className="p-6 md:p-7">
+        <div className="flex items-start justify-between mb-6 flex-wrap gap-3">
           <div>
-            <h3 className="text-lg font-bold">Your Learning Journey</h3>
-            <p className="text-sm text-muted-foreground">Track your progress and achievements</p>
+            <h3 className="text-base font-semibold text-foreground">Your Learning Journey</h3>
+            <p className="text-sm text-muted-foreground mt-0.5">Track your progress and achievements</p>
           </div>
           <Select value={range} onValueChange={setRange}>
-            <SelectTrigger className="w-32 h-9"><SelectValue /></SelectTrigger>
+            <SelectTrigger className="w-32 h-9" aria-label="Time range"><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="week">This Week</SelectItem>
               <SelectItem value="month">This Month</SelectItem>
@@ -94,13 +94,13 @@ export default function LearningJourney({ userId }: Props) {
         </div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {items.map((it) => (
-            <div key={it.label} className="rounded-xl bg-white border border-border p-4 flex items-center gap-3">
-              <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${it.color}`}>
-                <it.icon className="h-5 w-5" />
+            <div key={it.label} className="rounded-xl bg-background border border-border/70 p-4 flex items-center gap-3 hover:border-border hover:shadow-sm transition-all">
+              <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${it.color}`}>
+                <it.icon className="h-5 w-5" aria-hidden />
               </div>
-              <div>
-                <div className="text-2xl font-bold leading-none">{it.value}</div>
-                <div className="text-xs text-muted-foreground mt-1">{it.label}</div>
+              <div className="min-w-0">
+                <div className="text-2xl font-bold leading-none tracking-tight text-foreground">{it.value}</div>
+                <div className="text-xs text-muted-foreground mt-1.5">{it.label}</div>
               </div>
             </div>
           ))}
