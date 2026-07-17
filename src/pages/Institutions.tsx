@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Building2, Globe, GraduationCap, TrendingUp, Shield, Users, BarChart3, CheckCircle, ArrowRight, BookOpen, Award } from "lucide-react";
 import { useTranslation } from "@/i18n/LanguageContext";
 

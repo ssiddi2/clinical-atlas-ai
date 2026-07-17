@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Stethoscope, Heart, Brain, Zap, Activity, Users, CheckCircle, Clock, Award, FileText, ArrowRight, Video, Globe, Lock } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useTranslation } from "@/i18n/LanguageContext";
