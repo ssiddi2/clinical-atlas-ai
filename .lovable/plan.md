@@ -1,78 +1,56 @@
-# Fix visual polish issues on Landing + Institutions
+# Stats redesign + ribbon contrast fix + testimonial soft palette
 
-Scope: styling only. No content, copy, IA, or functionality changes.
+Scope: styling only. No content or functionality changes.
 
-## 1. Landing hero — contrast
+## 1. Root cause of the "black text" on Most Popular / Recommended
 
-Hero currently layers a white radial wash (55% → 22%) over the video, then paints title/subtitle in `text-white/90` and `text-white/45`. On the near-white wash the white text nearly disappears — that's the "bad contrast" the user sees.
+The ribbon uses `bg-brand text-white`, but the global `text-white*` → dark-navy override in `src/index.css` (lines ~664–675) only exempts a fixed list of brand surfaces (`.cta-surface`, `.btn-brand`, `.tile-accent`, `.bg-brand-gradient`, `.bg-section-dark`, `[data-brand-surface]`). The program-card ribbon sits inside `.lm-card`, so its `text-white` gets forced to dark navy — that's the unreadable "black on blue" the user sees.
 
-Fix in `src/pages/Landing.tsx` hero (both mobile + desktop branches):
-- Headline line 1: `text-white/90` → `text-ink` (near-black).
-- Headline line 2: keep `text-gradient-livemed` (already high contrast on white).
-- Subtitle: `text-white/45` → `text-soft`.
-- "Enrolling" pill: swap `glass-card-hover` + `text-white/70` for `chip chip-brand` so it reads on the light wash.
-- Keep the video + wash, but tighten the wash to `hsl(0 0% 100% / 0.72) → 0.45` so text has a solid backdrop.
+Fix: force white via Tailwind's important modifier so it beats the override, and use a solid `bg-brand`:
+- `className="inline-flex items-center rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider bg-brand !text-white shadow-sm"`
+- Add a soft glow: `shadow-[0_4px_12px_-4px_rgba(0,64,221,0.45)]` so the pill lifts off the card.
 
-## 2. Stats section — declutter
+## 2. Stats section — cooler palette + animation
 
-`cta-surface` card + separate Joint Commission block currently render as two heavy stacked slabs with lots of vertical padding.
+Currently the stats sit inside a solid blue `cta-surface` slab which feels heavy and mono-blue.
 
-Fix in Landing stats section:
-- Reduce card padding: `p-8 md:p-14` → `p-8 md:p-10`.
-- Reduce grid divider weight: `bg-white/15` → `bg-white/10`, inner tiles `bg-white/[0.06]` → `bg-transparent`, cell padding `p-6 md:p-10 lg:p-12` → `p-6 md:p-8`.
-- Reduce gap between stats card and JCo block: `mt-16 md:mt-24` → `mt-10 md:mt-14`.
-- Slim JCo block: `p-8 md:p-12` → `p-6 md:p-10`, badge `h-20 md:h-28` → `h-16 md:h-20`.
-- Section vertical rhythm: `py-16 md:py-24` → `py-14 md:py-20`.
+Redesign in `src/pages/Landing.tsx` stats section:
+- Replace `cta-surface` wrapper with a cool slate/blue-grey surface: `bg-gradient-to-br from-slate-50 via-blue-50/60 to-slate-100 border border-slate-200/70 shadow-[0_20px_60px_-30px_rgba(15,23,42,0.15)]`.
+- Grid divider: `bg-white/10` → `bg-slate-200/70`, cells `bg-transparent`.
+- Numerals: `text-white` → `text-gradient-livemed` (blue gradient on light bg — much cooler feel, and readable).
+- Labels: `text-white/70` → `text-slate-500`.
+- Specialties caption: `text-white/70` → `text-slate-500`.
 
-## 3. "Programs for Every Stage" — capsule + card layout
+Add lightweight animations (using existing framer-motion already imported):
+- Number counter: each stat value fades+slides in with a stagger (already have `staggerContainer` + `fadeInScale`). Wrap each numeral in a `motion.span` with a slight `y: 12 → 0` + `opacity 0 → 1`, `duration: 0.5`, staggered by 0.1s.
+- On the whole card: add a slow gradient shimmer via a `::before`-style overlay using Tailwind's existing `animate-shimmer` utility (already defined in index.css line 458) layered at low opacity over the card background — gives a subtle "alive" feel without being noisy.
+- Optional pulse on the "Live" chip (already animated in css); leave as-is.
 
-Currently the "Most Popular" / "Recommended" chip is a `chip chip-brand` pill absolutely positioned inside the card at `top-3.5 right-3.5`. It overlaps the year chip below and looks crowded on small cards.
+## 3. Testimonial — softer color palette
 
-Fix each program card:
-- Move the popular/recommended pill out of absolute positioning into a normal header row at the top of the card (`flex items-center justify-between mb-4`) with the year chip on the left and the ribbon chip on the right; render an empty spacer when neither ribbon applies so all four cards align.
-- Give the ribbon its own visual weight: replace `chip chip-brand` with a smaller `.chip` variant using solid brand background + white text (uppercase, tracking-wider, `px-2.5 py-1`, `rounded-full`) — inline classes only.
-- Card padding tightened: `p-6 md:p-8` → `p-6 md:p-7`.
-- Ensure equal card heights via existing `h-full`.
+Currently the testimonial card is a plain `lm-card` (white) with hard blue avatar tile and small quote glyph.
 
-## 4. Testimonials — add image inside circle
-
-The avatar circle currently shows the first initial only. Replace with a real image while keeping the initial as a fallback:
-- Add a small avatar dataset (three names → local placeholder / seeded avatar URL using `https://api.dicebear.com/7.x/initials/svg?seed=<name>` so nothing new is bundled).
-- Circle keeps `tile-accent` background as fallback, adds an `<img>` (`object-cover`, `rounded-full`) inside; `onError` reveals the initial fallback.
-- Circle size `w-8 h-8` → `w-10 h-10` for legibility.
-
-## 5. Ghost-button contrast on white default
-
-`Partner With Livemed` secondary CTA and Institutions hero's `variant="outline"` buttons currently render as pure white in default state because shadcn's `variant="outline"` uses `border-input bg-background text-foreground`, and the `text-white` override inside `.cta-surface` (from index.css) forces white text but the background stays transparent — so a plain-white surface shows an invisible label until hover.
-
-Fix on both usage sites (`Landing.tsx` Institution CTA, `Institutions.tsx` hero):
-- Replace `variant="outline"` with no variant + explicit classes: `bg-white/10 border border-white/40 text-white hover:bg-white/20 backdrop-blur-sm`.
-- This gives a visible translucent chip on the blue surface, keeps the white label readable, and drops the shadcn outline defaults that were causing the "white on white" state.
-
-Applies to:
-- Landing → "Contact Sales" button (line ~635).
-- Institutions → hero "View Case Studies" button (line ~57).
-
-## 6. Institutions — "Ready to Transform" heading color + global spacing pass
-
-- The `Ready to Transform Your Institution?` heading inherits `text-white` inside `cta-surface` (fine), but the surrounding text renders muted; change heading to explicit `text-white` and description to `text-white/85` for stronger hierarchy.
-- Also fix the `Rapid Implementation` section step numbers — they currently use `gradient-livemed` circles with `text-white` numerals which are legible; leave numerals but bump size `w-10 h-10` → `w-11 h-11` and step title `font-semibold` → `font-semibold text-base` for consistency.
-
-Global spacing normalization (styling only, per-section class edits):
-- Public pages currently mix `py-16 md:py-24`, `py-20 md:py-28`, `py-24 md:py-32`. Standardize on two rhythms:
-  - Hero: `py-16 md:py-24`
-  - Content sections: `py-16 md:py-24` (was `py-20`/`py-24 md:py-32` in several places)
-- Container gutters: unify to `px-4 md:px-6`.
-- Files touched: `src/pages/Landing.tsx`, `src/pages/Institutions.tsx`, `src/pages/Programs.tsx`, `src/pages/Rotations.tsx`, `src/pages/Contact.tsx`.
+Soften in Landing testimonials section:
+- Card background: use a warm-neutral tint per card that alternates gently — `bg-gradient-to-br from-slate-50 to-white`, `bg-gradient-to-br from-blue-50/40 to-white`, `bg-gradient-to-br from-indigo-50/40 to-white`. Keeps them cohesive but each feels distinct.
+- Border: `border border-slate-200/60`.
+- Quote glyph `text-brand/30` → `text-slate-300`.
+- Quote text `text-foreground/80` → `text-slate-700`.
+- Avatar circle: drop the hard `tile-accent` (bright blue) for a soft gradient `bg-gradient-to-br from-blue-100 to-indigo-100 text-blue-700 ring-1 ring-white`. Keep the dicebear image on top.
+- Name/role: `text-slate-800` / `text-slate-500`.
+- Divider line: `border-border` → `border-slate-100`.
+- Add gentle hover: `hover:shadow-[0_20px_60px_-30px_rgba(15,23,42,0.18)] transition-shadow duration-300`.
 
 ## Out of scope
 
-- No copy, routes, i18n, dashboard, header/footer, or functionality changes.
+- No copy, routes, i18n, functionality, or dashboard changes.
+- No changes to other sections or pages beyond the three items above.
 - No new dependencies.
-- Visual-regression snapshots will need refreshing with `bun run test:visual:update` after the pass.
+
+## Files touched
+
+- `src/pages/Landing.tsx` — stats redesign, ribbon fix in Programs cards, testimonial recolor.
 
 ## Verification
 
-- Manual check at `/` and `/institutions`: hero text legible, stats block feels lighter, program cards balanced, testimonials show avatars, all "Contact Sales" / "View Case Studies" buttons show visible label in default state, `Ready to Transform` heading clearly white on blue.
-- `tsgo` typecheck stays green (className-only edits + one image URL).
-- Refresh visual snapshots after approval.
+- Manual check at `/`: stats card is cool slate/blue with animated numerals, "Most Popular" / "Recommended" pills clearly show white text on brand blue, testimonials look softer and calmer.
+- `tsgo` typecheck stays green (className-only edits).
