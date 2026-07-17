@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Stethoscope, Heart, Brain, Zap, Activity, Users, CheckCircle, Clock, Award, FileText, ArrowRight, Video, Globe, Lock } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useTranslation } from "@/i18n/LanguageContext";
@@ -49,22 +48,22 @@ const Rotations = () => {
 
   return (
     <div className="flex-1">
-      <section className="relative py-20 md:py-28 overflow-hidden">
+      <section className="relative py-20 md:py-28 overflow-hidden bg-section-glow">
         <div className="absolute inset-0 gradient-livemed-light" />
         <div className="container mx-auto px-4 relative">
           <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 bg-accent/10 text-accent px-4 py-2 rounded-full text-sm font-medium mb-6">
+            <div className="chip chip-brand mb-6">
               <Video className="h-4 w-4" />
               {t("rotations.badge")}
             </div>
-            <h1 className="text-4xl md:text-5xl font-bold mb-6">{t("rotations.title")}</h1>
-            <p className="text-lg text-muted-foreground mb-4">{t("rotations.subtitle")}</p>
-            <div className="flex items-center gap-2 text-sm text-muted-foreground mb-8">
+            <h1 className="font-display text-4xl md:text-5xl font-bold mb-6">{t("rotations.title")}</h1>
+            <p className="text-lg text-soft mb-4">{t("rotations.subtitle")}</p>
+            <div className="flex items-center gap-2 text-sm text-soft mb-8">
               <Globe className="h-4 w-4" />
               <span>{t("rotations.timezones")}</span>
             </div>
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button size="lg" className="gradient-livemed" onClick={() => handleApply({ id: rotations[0].id, title: rotations[0].title })}>
+              <Button size="lg" className="btn-brand" onClick={() => handleApply({ id: rotations[0].id, title: rotations[0].title })}>
                 Apply for a Rotation<ArrowRight className="ml-2 h-5 w-5" />
               </Button>
               <Button size="lg" variant="outline" asChild>
@@ -75,7 +74,7 @@ const Rotations = () => {
         </div>
       </section>
 
-      <section className="py-16 border-b border-border">
+      <section className="py-16 border-b border-border bg-section-tinted">
         <div className="container mx-auto px-4">
           <h2 className="sr-only">{t("rotations.whatYouGet", "What you get")}</h2>
           <div className="grid md:grid-cols-4 gap-6">
@@ -97,13 +96,13 @@ const Rotations = () => {
       <section className="py-20">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">{t("rotations.available")}</h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">{t("rotations.availableDesc")}</p>
+            <h2 className="font-display text-3xl font-bold mb-4">{t("rotations.available")}</h2>
+            <p className="text-soft max-w-2xl mx-auto">{t("rotations.availableDesc")}</p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {rotations.map((rotation) => (
-              <Card key={rotation.id} className="hover:shadow-livemed transition-all duration-300 group">
-                <CardHeader>
+              <article key={rotation.id} className="lm-card lm-card-interactive p-6 group">
+                <div className="mb-4">
                   <div className="flex items-center justify-between mb-2">
                     <div className="w-12 h-12 rounded-xl gradient-livemed flex items-center justify-center group-hover:scale-110 transition-transform">
                       <rotation.icon className="h-6 w-6 text-white" />
@@ -114,14 +113,14 @@ const Rotations = () => {
                     </div>
                   </div>
                   <div className="flex items-center gap-2 flex-wrap">
-                    <CardTitle>{rotation.title}</CardTitle>
+                    <h3 className="text-lg font-semibold">{rotation.title}</h3>
                     {showClinicalBadge && (
                       <Badge variant="outline" className="text-xs gap-1"><Lock className="h-3 w-3" /> Clinical tier</Badge>
                     )}
                   </div>
-                  <CardDescription>{rotation.description}</CardDescription>
-                </CardHeader>
-                <CardContent>
+                  <p className="text-sm text-soft mt-2">{rotation.description}</p>
+                </div>
+                <div>
                   <div className="space-y-2 mb-4">
                     {rotation.topics.map((topic) => (
                       <div key={topic} className="flex items-center gap-2 text-sm">
@@ -133,20 +132,22 @@ const Rotations = () => {
                   <Button variant="outline" className="w-full" onClick={() => handleApply({ id: rotation.id, title: rotation.title })}>
                     {showClinicalBadge ? "Upgrade to apply" : "Apply now"}<ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
-                </CardContent>
-              </Card>
+                </div>
+              </article>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="py-20 gradient-livemed">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold text-white mb-4">{t("rotations.readyStart")}</h2>
-          <p className="text-lg text-white/80 max-w-2xl mx-auto mb-8">{t("rotations.readyStartDesc")}</p>
-          <Button size="lg" variant="secondary" onClick={() => handleApply({ id: rotations[0].id, title: rotations[0].title })}>
-            Start your application<ArrowRight className="ml-2 h-5 w-5" />
-          </Button>
+      <section className="py-16">
+        <div className="container mx-auto px-4">
+          <div className="cta-surface rounded-[32px] p-12 md:p-16 text-center max-w-5xl mx-auto">
+            <h2 className="font-display text-3xl md:text-4xl font-bold text-white mb-4">{t("rotations.readyStart")}</h2>
+            <p className="text-lg text-white/80 max-w-2xl mx-auto mb-8">{t("rotations.readyStartDesc")}</p>
+            <Button size="lg" variant="secondary" className="bg-white text-primary hover:bg-white/90" onClick={() => handleApply({ id: rotations[0].id, title: rotations[0].title })}>
+              Start your application<ArrowRight className="ml-2 h-5 w-5" />
+            </Button>
+          </div>
         </div>
       </section>
 
