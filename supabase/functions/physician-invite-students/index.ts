@@ -175,46 +175,34 @@ serve(async (req) => {
           }, { onConflict: "user_id,role" });
         }
 
-        // Auto-enroll in course (approved)
-        const { error: enrollErr } = await supabase
+        // Create pending invitation (student must accept)
+        const { data: existingEnroll } = await supabase
           .from("course_enrollments")
-          .upsert({
+          .select("id, status")
+          .eq("course_id", courseId)
+          .eq("student_id", userId)
+          .maybeSingle();
+
+        if (!existingEnroll) {
+          await supabase.from("course_enrollments").insert({
             course_id: courseId,
             student_id: userId,
-            status: "approved",
-            approved_at: new Date().toISOString(),
-          }, { onConflict: "course_id,student_id" });
-
-        if (enrollErr) {
-          // try insert without onConflict if no unique constraint
-          const { data: existingEnroll } = await supabase
+            status: "invited",
+          });
+        } else if (existingEnroll.status === "declined" || existingEnroll.status === "pending") {
+          await supabase
             .from("course_enrollments")
-            .select("id")
-            .eq("course_id", courseId)
-            .eq("student_id", userId)
-            .maybeSingle();
-          if (!existingEnroll) {
-            await supabase.from("course_enrollments").insert({
-              course_id: courseId,
-              student_id: userId,
-              status: "approved",
-              approved_at: new Date().toISOString(),
-            });
-          } else {
-            await supabase
-              .from("course_enrollments")
-              .update({ status: "approved", approved_at: new Date().toISOString() })
-              .eq("id", existingEnroll.id);
-          }
+            .update({ status: "invited", approved_at: null })
+            .eq("id", existingEnroll.id);
         }
 
-        // Notify the student
+        // Notify the student with an actionable invitation
         await supabase.from("notifications").insert({
           user_id: userId,
-          title: `Welcome to ${course.title}`,
-          message: `You've been enrolled in ${course.title} by your instructor.`,
+          title: `Course invitation: ${course.title}`,
+          message: `Your instructor has invited you to join ${course.title}. Open the course to accept or decline.`,
           type: "info",
-          link: `/courses/${courseId}?welcome=1`,
+          link: `/courses/${courseId}?invite=1`,
         });
 
         results[results.length - 1] = results[results.length - 1] || { email, success: true };
