@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Loader2, ShieldAlert } from "lucide-react";
 
@@ -16,11 +15,6 @@ const AdminContentReviews = () => {
   };
 
   useEffect(() => { load(); }, []);
-
-  const setStatus = async (id: string, status: string) => {
-    await supabase.from("content_reviews").update({ status }).eq("id", id);
-    load();
-  };
 
   if (loading) return <div className="flex justify-center py-8"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>;
 
@@ -41,15 +35,12 @@ const AdminContentReviews = () => {
                 <Badge variant="outline">{r.content_type}</Badge>
                 <Badge variant={r.verdict === "accurate" ? "secondary" : "destructive"}>{r.verdict}</Badge>
                 {r.severity && <Badge variant="outline">Severity: {r.severity}</Badge>}
-                <Badge>{r.status || "open"}</Badge>
+                {r.reviewed_via && <Badge variant="outline">via {r.reviewed_via}</Badge>}
               </div>
               <p className="text-sm text-muted-foreground">Content ID: {r.content_id}</p>
+              {r.reason && <p className="text-sm mt-1">Reason: {r.reason}</p>}
               {r.notes && <p className="text-sm mt-2 whitespace-pre-wrap">{r.notes}</p>}
               <p className="text-xs text-muted-foreground mt-2">{r.created_at ? new Date(r.created_at).toLocaleString() : ""}</p>
-            </div>
-            <div className="flex flex-col gap-2 shrink-0">
-              {r.status !== "resolved" && <Button size="sm" onClick={() => setStatus(r.id, "resolved")}>Resolve</Button>}
-              {r.status !== "dismissed" && <Button size="sm" variant="outline" onClick={() => setStatus(r.id, "dismissed")}>Dismiss</Button>}
             </div>
           </div>
         </div>
