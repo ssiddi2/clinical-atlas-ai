@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
 import { Button } from "@/components/ui/button";
@@ -17,8 +17,7 @@ import AdminStudents from "@/components/admin/AdminStudents";
 import AdminCourses from "@/components/admin/AdminCourses";
 import RotationApplications from "@/components/admin/RotationApplications";
 import { Database } from "@/integrations/supabase/types";
-import livemedLogoAsset from "@/assets/livemed-logo-light.png.asset.json";
-const livemedLogo = livemedLogoAsset.url;
+import AppShell from "@/components/layout/AppShell";
 
 type Profile = Database["public"]["Tables"]["profiles"]["Row"];
 type StudentDocument = Database["public"]["Tables"]["student_documents"]["Row"];
@@ -108,17 +107,16 @@ const Admin = () => {
   const studentCount = roles.filter((r) => r.role === "student").length;
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur">
-        <div className="container mx-auto flex h-16 items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Link to="/dashboard">
-              <img src={livemedLogo} alt="Livemed" style={{ height: '80px', width: 'auto' }} className="object-contain" />
-            </Link>
-            <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary">
+    <AppShell>
+      <main className="container mx-auto px-4 md:px-6 py-8">
+        <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary mb-2">
               <ShieldCheck className="h-4 w-4" />
-              <span className="text-sm font-medium">Admin Dashboard</span>
+              <span className="text-sm font-medium">Admin</span>
             </div>
+            <h1 className="text-3xl font-bold mb-1">Admin Dashboard</h1>
+            <p className="text-muted-foreground">Manage users, courses, enrollments, and verifications</p>
           </div>
           <div className="flex items-center gap-2">
             <CreateUserModal onUserCreated={loadData} />
@@ -126,13 +124,6 @@ const Admin = () => {
               <ArrowLeft className="mr-2 h-4 w-4" />Back to Dashboard
             </Button>
           </div>
-        </div>
-      </header>
-
-      <main className="container mx-auto py-8">
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold mb-1">Admin Dashboard</h1>
-          <p className="text-muted-foreground">Manage users, courses, enrollments, and verifications</p>
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab}>
@@ -203,7 +194,7 @@ const Admin = () => {
           </TabsContent>
         </Tabs>
       </main>
-    </div>
+    </AppShell>
   );
 };
 
