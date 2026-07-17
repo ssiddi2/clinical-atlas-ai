@@ -1,63 +1,68 @@
+# Align Programs, Rotations, Institutions, Contact with the New Livemed design system
 
-# Content Verification & Quality Assurance Plan
+Landing was already reworked to use the New Livemed tokens (`.lm-card`, `.glass`, `.cta-surface`, `.chip`, `.bg-section-*`, brand gradient buttons). The four pages above still use the pre-migration patterns and reference `.gradient-livemed-light`, which no longer exists — so their heroes render as flat white and their CTA cards look nothing like Landing's CTA. This plan is styling-only. No copy, sections, routes, functionality, or i18n keys change.
 
-Students depend on this being right. We build **three complementary systems** — none replaces physician sign-off, but together they catch >95% of issues before students see them.
+## Diagnosis
 
-## Track 1 — Connect the app to Claude Desktop / ChatGPT via MCP
+- `.gradient-livemed-light` is used on `Programs`, `Rotations`, `Contact`, `About` hero backgrounds but is **not defined** in `src/index.css` → the intended tinted hero backdrop is missing.
+- Hero blocks are plain centered `h1 + muted p` — no eyebrow chip, no brand-tone framing, no rhythm break vs. the sections below.
+- CTA blocks use `Card` / `section` with the raw `gradient-livemed` fill. Landing's equivalent CTA uses `.cta-surface` (radial glow + dot pattern + brand gradient + inset highlights).
+- Feature / benefit cards use raw shadcn `Card` with default radius and shadow — Landing uses the unified `.lm-card` with 20 / 28px radius and the paired shadow tokens.
 
-Expose QBank, Assessments, and ATLAS as read-only MCP tools. You (or a reviewing MD) open Claude Desktop, connect to the app, and ask questions like *"Review question qbank_042 against First Aid 2024 — is the correct answer defensible? Are the distractors clinically plausible? Is the explanation aligned with UpToDate?"*
+## Changes
 
-**Auth**: OAuth 2.1 (each reviewer signs in as themselves; RLS enforces admin-only access to review tools).
+### 1. Add the missing hero backdrop utility to `src/index.css`
+Introduce `.gradient-livemed-light` inside the New Livemed utilities block so the existing markup on all four pages instantly picks up the correct subtle brand wash:
 
-**MCP tools exposed** (read-only, admin-gated):
-- `list_qbank_questions(specialty?, system?, difficulty?, limit)` — batch review
-- `get_qbank_question(question_id)` — full stem, options, correct answer, explanation, First Aid ref
-- `get_assessment(assessment_id)` — diagnostic + course assessment items
-- `get_atlas_conversation(conversation_id)` — audit ATLAS's Socratic responses
-- `flag_content_for_review(content_id, reason, severity)` — write-back: Claude/reviewer flags an item
-- `search_content(query)` — find items by keyword/concept
-
-**Result**: You point Claude at "Review all cardiology hard questions" and it produces a triage report you act on.
-
-## Track 2 — Physician review pipeline (in-app)
-
-New admin surface for the reviewer workflow. Every QBank question and assessment item gets a lifecycle:
-```text
-draft → ai_reviewed → md_reviewed → published
-                                 ↘ flagged → revision → md_reviewed
+```css
+.gradient-livemed-light {
+  background:
+    radial-gradient(60% 80% at 80% 0%, color-mix(in oklab, var(--brand-3) 14%, transparent), transparent 60%),
+    linear-gradient(180deg, hsl(var(--background)), var(--surface-tint));
+}
 ```
-- **Reviewer queue** (`/admin/content-review`): list of items filtered by status, specialty, and last-review date. Each row shows stem, correct answer, explanation, First Aid ref, and the source(s) it was cross-checked against.
-- **Review action**: approve / request revision / reject, with structured reason (accuracy, distractor quality, explanation depth, currency, style-guide fit) and free-text notes.
-- **Audit trail**: `content_reviews` table logs who reviewed what, when, verdict, and rationale — permanent record for accreditation.
-- **Re-review triggers**: guideline updates (new AHA/USPSTF release), items older than 18 months, or student dispute rate above threshold.
 
-## Track 3 — Automated benchmarking harness (edge function)
+This mirrors `.bg-section-glow` and matches the tint used on Landing's hero fadeout.
 
-For every QBank item and assessment question, run an automated cross-check nightly and on any edit:
+### 2. `src/pages/Programs.tsx`
+- Hero section: keep `<h1>` copy; add a `.chip chip-brand` eyebrow above the title (translated key already exists as `programs.page.subtitle` — reuse when appropriate, otherwise reuse `nav.programs`). Wrap heading in `font-display`, use the standard body class for the paragraph.
+- Tab program cards: swap the outer wrapper `Card` for `<div className="lm-card-lg">` where the large program panel lives; keep small stat cards as `<div className="lm-card">`. Icon tile keeps `gradient-livemed` (already retuned to brand).
+- Bottom "Ready" CTA (line ~245–265): convert the `Card` to a `<section className="cta-surface rounded-[28px] p-10 md:p-14 text-center">` matching Landing's CTA. The button becomes the outline-on-brand pill variant used elsewhere.
+- Add `bg-section-tinted` alternation for the middle Tabs section.
 
-1. **Multi-model consensus**: send stem + options to 3 frontier models (Gemini 3.1 Pro, GPT-5.5, and one more). If any model disagrees with the stored correct answer → auto-flag for MD review.
-2. **Source cross-reference**: Firecrawl the item's `first_aid_reference` topic against public authoritative sources (USPSTF, CDC, NIH, AHA/ACC guidelines, NBME content outlines). Attach source citations to the review record.
-3. **Style-guide compliance**: check vignette structure matches NBME item-writing rules (single best answer, homogeneous distractors, no negative stems, appropriate length).
-4. **Currency check**: flag items citing guidelines older than the latest published version.
+### 3. `src/pages/Rotations.tsx`
+- Hero: chip eyebrow + `font-display` title, keep the existing `.gradient-livemed-light` backdrop (now that it exists).
+- Rotation cards: `Card` → `<article className="lm-card lm-card-interactive">`; icon tile keeps `gradient-livemed` fill.
+- Bottom `<section className="py-20 gradient-livemed">` → `<section className="cta-surface rounded-[32px] my-20 mx-4 md:mx-8 p-12 md:p-16 text-center">` so the CTA becomes a floating brand block instead of a full-bleed slab. Container wrapper reduces to `max-w-5xl`.
+- Buttons on the CTA get `variant="secondary"` with `bg-white text-brand hover:bg-white/90` to preserve contrast on the brand surface.
 
-Nightly report → email/dashboard summary of new flags, ranked by severity.
+### 4. `src/pages/Institutions.tsx`
+- Hero (`gradient-livemed` full-bleed): replace fill with `cta-surface` styling so the hero reads as the signature brand block (matches how Landing frames its dark CTAs). The inline pill (`bg-white/10 text-white`) is preserved but its container becomes the `cta-surface` treatment.
+- Stat tiles: wrap each stat in `<div className="lm-card text-center">` using `stat-value` / `stat-label` typography.
+- Benefit grid: `Card` → `<article className="lm-card lm-card-interactive">`. Icon chip keeps `gradient-livemed`.
+- Steps section stays as a numbered list but each row wraps in `.hairline` divider using the shared border token.
+- Bottom "Ready to transform" `Card`: → `cta-surface`.
 
-## Prioritization (per your answer: "everything, risk-ordered")
+### 5. `src/pages/Contact.tsx`
+- Success state card: replace check-circle callout with `.lm-card-lg` + `tile-accent` for the circle.
+- Hero: chip eyebrow + `font-display` title on top of the now-real `.gradient-livemed-light`.
+- Right-column info `<Card className="gradient-livemed text-white">` (Livemed contact info): → `cta-surface` rounded card, so it reads as the branded sidebar callout instead of a solid blue tile.
+- Form card: wrap the shadcn `Card` in `.glass-strong` styling by adding `className="glass-strong rounded-3xl p-6 md:p-8"` on the outer wrapper (keeps form fields intact).
+- Submit button: `gradient-livemed` → `btn-brand rounded-full`.
 
-1. **QBank questions** (~500) — highest student-facing risk, gate to Track 2 review before publish.
-2. **Diagnostic + course assessments** — gate progression, so accuracy matters equally.
-3. **ATLAS AI outputs** — can't pre-approve live generation; instead: strengthen system prompt with citation requirements, log every conversation, sample-review 5% weekly through the MCP tool.
+### 6. Global consistency touches (styling-only)
+- Wrap each page's outermost `main` sections with alternating `bg-section-default` / `bg-section-tinted` (max 3 alternations per page) so the section rhythm matches Landing.
+- Where a page uses `text-muted-foreground` for lede paragraphs directly under `h1`, swap to `text-soft` so the color tone lines up with Landing.
+- No other pages, components, or shared UI are touched.
 
-## What the user should do
+## Verification
 
-- Approve this plan, and I'll build **Track 1 (MCP)** first — that's what unblocks you and any reviewing MD immediately.
-- Track 2 (review pipeline) and Track 3 (benchmarking) are separate builds after MCP is live.
+- Manual eyeball at `/programs`, `/rotations`, `/institutions`, `/contact` against `/` for hero, CTA, and card treatment parity.
+- Run `bun run test:visual:update` to refresh the four page baselines + design-system swatch snapshots; then `bun run test:visual` should be green.
+- Confirm no console errors or missing i18n keys were introduced (the change is purely className-level).
 
-## Technical details
+## Out of scope
 
-- **MCP server**: `@lovable.dev/mcp-js` with Supabase OAuth 2.1. `configure_oauth_server` + consent route + Deno edge function at `/functions/v1/mcp`.
-- **Auth**: only users with `platform_admin` role can call review tools; RLS + `has_role()` check in every tool handler.
-- **Storage**: new `content_reviews` table (reviewer_id, content_type, content_id, verdict, sources_checked, notes, reviewed_at) with strict RLS.
-- **Benchmarking edge function**: `benchmark-content` — nightly cron via `pg_cron` or manual trigger from admin UI. Uses AI Gateway (Gemini + GPT-5) + Firecrawl connector for source lookup.
-- **Cost**: MCP is essentially free (per-call gateway usage). Benchmarking ~500 questions × 3 models ≈ modest AI credit usage per run.
-- **No student-facing changes** in any track — this is entirely admin/reviewer infrastructure.
+- No changes to copy, i18n keys, routes, layout components, `Header`, `Footer`, forms behavior, or backend.
+- Dashboard / auth / admin surfaces are untouched.
+- Landing.tsx is untouched.
