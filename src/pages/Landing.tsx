@@ -157,19 +157,19 @@ const Landing = () => {
           aria-hidden="true"
           style={{
             background:
-              "radial-gradient(ellipse 70% 60% at 50% 50%, hsl(0 0% 100% / 0.55) 0%, hsl(0 0% 100% / 0.35) 55%, hsl(0 0% 100% / 0.22) 100%)",
+              "radial-gradient(ellipse 70% 60% at 50% 50%, hsl(0 0% 100% / 0.85) 0%, hsl(0 0% 100% / 0.7) 55%, hsl(0 0% 100% / 0.45) 100%)",
           }}
         />
         
         {isMobile ? (
           <div className="container mx-auto px-4 relative z-10">
             <div className="max-w-4xl mx-auto text-center">
-              <div className="inline-flex items-center gap-2 glass-card-hover px-4 py-2 rounded-full text-xs mb-6">
+              <div className="chip chip-brand mb-6">
                 <span className="relative flex h-2 w-2">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-livemed-success opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-livemed-success"></span>
                 </span>
-                <span className="text-white/70 font-medium">{t("hero.enrolling")}</span>
+                <span className="font-medium">{t("hero.enrolling")}</span>
               </div>
 
               <div className="text-xl sm:text-2xl font-semibold text-gradient-livemed mb-4 tracking-wide">
@@ -177,12 +177,12 @@ const Landing = () => {
               </div>
 
               <h1 className="relative text-4xl sm:text-5xl font-semibold tracking-[-0.025em] mb-4 leading-[1.1]">
-                <span className="text-white/90">{t("hero.titleLine1")}</span>
+                <span className="text-ink">{t("hero.titleLine1")}</span>
                 <br />
                 <span className="text-gradient-livemed">{t("hero.titleLine2")}</span>
               </h1>
 
-              <p className="text-lg text-white/45 mb-8 max-w-xl mx-auto leading-relaxed font-light tracking-tight">
+              <p className="text-lg text-soft mb-8 max-w-xl mx-auto leading-relaxed font-light tracking-tight">
                 {t("hero.subtitle")}
               </p>
 
@@ -205,13 +205,13 @@ const Landing = () => {
             <div className="max-w-4xl mx-auto text-center">
               <motion.div 
                 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.2 }}
-                className="inline-flex items-center gap-2 glass-card-hover px-5 py-2.5 rounded-full text-sm mb-10"
+                className="chip chip-brand mb-10"
               >
                 <span className="relative flex h-2 w-2">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-livemed-success opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-livemed-success"></span>
                 </span>
-                <span className="text-white/70 font-medium">{t("hero.enrolling")}</span>
+                <span className="font-medium">{t("hero.enrolling")}</span>
               </motion.div>
 
               <motion.div 
@@ -233,14 +233,14 @@ const Landing = () => {
                 initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
                 className="relative text-5xl md:text-6xl lg:text-7xl xl:text-[96px] font-semibold tracking-[-0.025em] mb-6 leading-[1.1]"
               >
-                <span className="text-white/90">{t("hero.titleLine1")}</span>
+                <span className="text-ink">{t("hero.titleLine1")}</span>
                 <br />
                 <span className="text-gradient-livemed">{t("hero.titleLine2")}</span>
               </motion.h1>
 
               <motion.p 
                 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.5 }}
-                className="text-xl lg:text-2xl text-white/45 mb-14 max-w-xl mx-auto leading-relaxed font-light tracking-tight"
+                className="text-xl lg:text-2xl text-soft mb-14 max-w-xl mx-auto leading-relaxed font-light tracking-tight"
               >
                 {t("hero.subtitle")}
               </motion.p>
@@ -267,15 +267,15 @@ const Landing = () => {
       </section>
 
       {/* Stats Section */}
-      <section className="relative py-16 md:py-24 overflow-hidden">
+      <section className="relative py-14 md:py-20 overflow-hidden">
         <div className="container mx-auto px-4 md:px-6 relative">
-          <div className="cta-surface rounded-[32px] p-8 md:p-14 max-w-6xl mx-auto">
+          <div className="cta-surface rounded-[32px] p-8 md:p-10 max-w-6xl mx-auto">
           {noAnim ? (
-            <div className="grid grid-cols-3 gap-px bg-white/15 rounded-2xl overflow-hidden">
+            <div className="grid grid-cols-3 gap-px bg-white/10 rounded-2xl overflow-hidden">
               {stats.map((stat) => (
                 <div 
                   key={stat.label} 
-                  className="p-6 md:p-10 lg:p-12 text-center bg-white/[0.06]"
+                  className="p-6 md:p-8 text-center bg-transparent"
                 >
                   <div className="text-3xl sm:text-4xl md:text-5xl font-bold mb-2 md:mb-3 text-white">
                     {stat.value}
@@ -292,13 +292,13 @@ const Landing = () => {
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true, margin: "-100px" }}
-              className="grid grid-cols-3 gap-px bg-white/15 rounded-2xl overflow-hidden"
+              className="grid grid-cols-3 gap-px bg-white/10 rounded-2xl overflow-hidden"
             >
               {stats.map((stat) => (
                 <motion.div 
                   key={stat.label} 
                   variants={fadeInScale}
-                  className="p-6 md:p-10 lg:p-12 text-center bg-white/[0.06]"
+                  className="p-6 md:p-8 text-center bg-transparent"
                 >
                   <div className="text-3xl sm:text-4xl md:text-5xl font-bold mb-2 md:mb-3 text-white">
                     {stat.value}
@@ -317,12 +317,12 @@ const Landing = () => {
           </div>
 
           {/* Joint Commission Accreditation Badge */}
-          <div className="mt-16 md:mt-24 max-w-2xl mx-auto">
-            <div className="glass-strong rounded-3xl p-8 md:p-12 flex flex-col items-center text-center">
+          <div className="mt-10 md:mt-14 max-w-2xl mx-auto">
+            <div className="glass-strong rounded-3xl p-6 md:p-10 flex flex-col items-center text-center">
                <img 
                  src={jointCommissionBadge} 
                  alt="The Joint Commission - National Quality Approval" 
-                 className="h-20 md:h-28 w-auto object-contain mb-8"
+                 className="h-16 md:h-20 w-auto object-contain mb-6"
                  width="128"
                  height="128"
                  loading="lazy"
@@ -412,16 +412,22 @@ const Landing = () => {
             {programs.map((program) => (
               <div key={program.title}>
                 <Link to={program.href} className="block h-full">
-                  <article className="lm-card lm-card-interactive h-full group relative overflow-hidden p-6 md:p-8">
-                    {program.title === t("programs.clinical") && (
-                      <div className="absolute top-3.5 right-3.5 text-[10px] font-medium uppercase tracking-wider chip chip-brand">{t("programs.mostPopular")}</div>
-                    )}
-                    {program.title === t("programs.residencyPrep") && (
-                      <div className="absolute top-3.5 right-3.5 text-[10px] font-medium uppercase tracking-wider chip chip-brand">{t("programs.recommended")}</div>
-                    )}
-                    <div className="chip mb-4">
-                      <Activity className="h-3 w-3" />
-                      {program.years}
+                  <article className="lm-card lm-card-interactive h-full group relative overflow-hidden p-6 md:p-7">
+                    <div className="flex items-center justify-between gap-2 mb-4 min-h-[28px]">
+                      <div className="chip">
+                        <Activity className="h-3 w-3" />
+                        {program.years}
+                      </div>
+                      {program.title === t("programs.clinical") && (
+                        <span className="inline-flex items-center rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider bg-brand text-white">
+                          {t("programs.mostPopular")}
+                        </span>
+                      )}
+                      {program.title === t("programs.residencyPrep") && (
+                        <span className="inline-flex items-center rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider bg-brand text-white">
+                          {t("programs.recommended")}
+                        </span>
+                      )}
                     </div>
                     <h3 className="font-display font-medium text-lg md:text-xl mb-2 md:mb-3 tracking-tight">
                       {program.title}
@@ -583,8 +589,14 @@ const Landing = () => {
                   {testimonial.quote}
                 </p>
                 <div className="border-t border-border pt-5 flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full tile-accent flex items-center justify-center text-xs font-medium text-white">
-                    {testimonial.name.charAt(0)}
+                  <div className="w-10 h-10 rounded-full tile-accent flex items-center justify-center text-xs font-medium text-white overflow-hidden">
+                    <img
+                      src={`https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(testimonial.name)}&backgroundType=gradientLinear`}
+                      alt=""
+                      className="w-full h-full object-cover"
+                      loading="lazy"
+                      onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
+                    />
                   </div>
                   <div>
                     <p className="font-medium text-sm md:text-base">{testimonial.name}</p>
@@ -634,8 +646,7 @@ const Landing = () => {
               </Button>
               <Button
                 size="lg"
-                variant="outline"
-                className="px-6 py-5 rounded-full border-white/40 text-white hover:bg-white/10 text-sm md:text-base font-medium"
+                className="px-6 py-5 rounded-full bg-white/10 border border-white/40 text-white hover:bg-white/20 backdrop-blur-sm text-sm md:text-base font-medium"
                 asChild
               >
                 <Link to="/contact">{t("cta.contactSales")}</Link>
