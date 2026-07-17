@@ -387,7 +387,7 @@ const Dashboard = () => {
           <StudyPlanWidget userId={user?.id || null} />
         </div>
       </main>
-    </div>
+    </AppShell>
   );
 };
 
