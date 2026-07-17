@@ -460,10 +460,13 @@ const Dashboard = () => {
           <div className="space-y-8">
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Calendar className="h-5 w-5 text-accent" />
-                  {t("dashboard.upcoming")}
-                </CardTitle>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="flex items-center gap-2">
+                    <Calendar className="h-5 w-5 text-primary" />
+                    {t("dashboard.upcoming")}
+                  </CardTitle>
+                  <Link to="/virtual-classroom" className="text-xs font-medium text-primary hover:underline">View All</Link>
+                </div>
               </CardHeader>
               <CardContent>
                 {upcomingItems.length > 0 ? (
@@ -480,12 +483,16 @@ const Dashboard = () => {
                     ))}
                   </div>
                 ) : (
-                  <p className="text-muted-foreground text-sm">No upcoming sessions</p>
+                  <div className="flex flex-col items-center justify-center py-6 text-center">
+                    <div className="w-20 h-20 rounded-2xl bg-primary/5 flex items-center justify-center mb-3">
+                      <CalendarCheck className="h-10 w-10 text-primary/60" strokeWidth={1.5} />
+                    </div>
+                    <p className="font-semibold text-sm">No upcoming sessions</p>
+                    <p className="text-xs text-muted-foreground mt-1">You're all caught up!</p>
+                  </div>
                 )}
               </CardContent>
             </Card>
-
-            <StudyPlanWidget userId={user?.id || null} />
 
             <MatchReadyWidgetWrapper userId={user?.id || null} />
 
@@ -503,6 +510,11 @@ const Dashboard = () => {
               </CardContent>
             </Card>
           </div>
+        </div>
+
+        {/* Learning Journey — full width below main grid */}
+        <div className="mt-8">
+          <StudyPlanWidget userId={user?.id || null} />
         </div>
       </main>
     </div>
