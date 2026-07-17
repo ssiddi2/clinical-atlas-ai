@@ -10,98 +10,126 @@
 
 @layer base {
   :root {
-    /* LIVEMED Brand Colors - Light Clinical Theme (livemedhealth.com) */
-    --background: 0 0% 100%;
-    --foreground: 222 47% 8%;
+    /* LIVEMED Brand Colors — synced with livemedhealth.com "New Livemed" design system.
+       All shadcn tokens remain in HSL (Tailwind v3 config assumes HSL). */
+    --background: 220 33% 99%;           /* #FAFBFD warmed off-white */
+    --foreground: 240 4% 5%;             /* #0B0B0C ink */
 
     --card: 0 0% 100%;
-    --card-foreground: 222 47% 8%;
+    --card-foreground: 240 4% 5%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 8%;
+    --popover-foreground: 240 4% 5%;
 
-    /* Primary: near-black pill buttons */
-    --primary: 222 47% 8%;
+    /* Primary: LiveMed Deep Blue (#0040DD) */
+    --primary: 224 100% 43%;
     --primary-foreground: 0 0% 100%;
 
-    /* Secondary: light gray surface */
-    --secondary: 220 20% 96%;
-    --secondary-foreground: 222 47% 12%;
+    /* Secondary / Muted: Cloud Tint (#EEF4FE) */
+    --secondary: 214 88% 96%;
+    --secondary-foreground: 240 4% 5%;
 
-    /* Muted tones - Light */
-    --muted: 220 20% 96%;
-    --muted-foreground: 220 12% 42%;
+    --muted: 214 88% 96%;
+    --muted-foreground: 215 19% 27%;     /* #334155 slate */
 
-    /* Accent: LIVEMED blue */
-    --accent: 222 100% 52%;
+    /* Accent: Bright Blue (#0A84FF) */
+    --accent: 211 100% 52%;
     --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 72% 51%;
+    --destructive: 0 84% 60%;            /* #EF4444 */
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 16% 90%;
-    --input: 220 16% 90%;
-    --ring: 222 100% 52%;
+    --border: 220 20% 92%;
+    --input: 220 20% 92%;
+    --ring: 211 100% 52%;
 
-    --radius: 0.75rem;
+    --radius: 1rem;
+
+    /* Brand palette (hex mirrors for utilities that need exact values) */
+    --brand: #0040DD;
+    --brand-2: #0A84FF;
+    --brand-3: #4DA3FF;
+    --brand-4: #7AB8FF;
+    --ink: #06122B;
+    --surface: #EAF1FC;
+    --surface-tint: #F2F6FD;
+    --soft: #334155;
+    --softer: #64748b;
+    --verified: #1F9D57;
+
+    /* Card system */
+    --card-radius: 20px;
+    --card-radius-lg: 28px;
+    --card-pad: clamp(1.25rem, 2vw, 1.75rem);
+    --card-pad-lg: clamp(1.75rem, 3vw, 2.5rem);
+    --card-border: rgba(11,11,12,0.07);
+    --card-shadow-sm: 0 1px 0 rgba(255,255,255,0.6) inset, 0 2px 8px -3px rgba(11,11,12,0.06);
+    --card-shadow: 0 1px 0 rgba(255,255,255,0.7) inset, 0 8px 24px -10px rgba(11,11,12,0.10);
+    --card-shadow-lg: 0 1px 0 rgba(255,255,255,0.8) inset, 0 24px 60px -22px rgba(11,11,12,0.18);
+    --card-shadow-hover: 0 1px 0 rgba(255,255,255,0.8) inset, 0 28px 70px -22px rgba(10,132,255,0.22);
+
+    /* Motion */
+    --ease-out: cubic-bezier(.2,.7,.2,1);
+    --dur-micro: 180ms;
+    --dur-macro: 320ms;
 
     /* Sidebar - Light */
-    --sidebar-background: 220 24% 98%;
-    --sidebar-foreground: 222 47% 12%;
-    --sidebar-primary: 222 100% 52%;
+    --sidebar-background: 215 71% 97%;
+    --sidebar-foreground: 240 4% 5%;
+    --sidebar-primary: 224 100% 43%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 20% 94%;
-    --sidebar-accent-foreground: 222 47% 12%;
-    --sidebar-border: 220 16% 90%;
-    --sidebar-ring: 222 100% 52%;
+    --sidebar-accent: 214 88% 96%;
+    --sidebar-accent-foreground: 240 4% 5%;
+    --sidebar-border: 220 20% 92%;
+    --sidebar-ring: 211 100% 52%;
 
-    /* LIVEMED Custom Tokens - Light */
+    /* Legacy livemed-* tokens (retuned to the new brand palette) */
     --livemed-navy: 0 0% 100%;
-    --livemed-navy-deep: 220 33% 98%;
-    --livemed-blue: 222 100% 52%;
-    --livemed-cyan: 210 95% 48%;
-    --livemed-light-blue: 210 100% 96%;
-    --livemed-gradient-start: 222 100% 52%;
-    --livemed-gradient-end: 210 95% 60%;
-    --livemed-success: 160 84% 39%;
+    --livemed-navy-deep: 215 71% 97%;
+    --livemed-blue: 224 100% 43%;        /* Deep Blue */
+    --livemed-cyan: 211 100% 52%;        /* Bright Blue */
+    --livemed-light-blue: 214 88% 96%;
+    --livemed-gradient-start: 211 100% 52%;
+    --livemed-gradient-end: 224 100% 43%;
+    --livemed-success: 145 67% 37%;      /* #1F9D57 verified */
     --livemed-warning: 38 92% 50%;
 
-    /* Soft neutral shadows for Light Theme */
-    --shadow-sm: 0 1px 2px 0 hsl(222 47% 8% / 0.06);
-    --shadow-md: 0 4px 6px -1px hsl(222 47% 8% / 0.08), 0 2px 4px -2px hsl(222 47% 8% / 0.06);
-    --shadow-lg: 0 10px 15px -3px hsl(222 47% 8% / 0.1), 0 4px 6px -4px hsl(222 47% 8% / 0.06);
-    --shadow-xl: 0 20px 25px -5px hsl(222 47% 8% / 0.12), 0 8px 10px -6px hsl(222 47% 8% / 0.08);
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 rgba(11,11,12,0.06);
+    --shadow-md: 0 4px 6px -1px rgba(11,11,12,0.08), 0 2px 4px -2px rgba(11,11,12,0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(11,11,12,0.10), 0 4px 6px -4px rgba(11,11,12,0.06);
+    --shadow-xl: 0 20px 25px -5px rgba(11,11,12,0.12), 0 8px 10px -6px rgba(11,11,12,0.08);
   }
 
   /* Dark theme removed - app is light-only. Keep .dark == light as a safety net. */
   .dark {
-    --background: 0 0% 100%;
-    --foreground: 222 47% 8%;
+    --background: 220 33% 99%;
+    --foreground: 240 4% 5%;
     --card: 0 0% 100%;
-    --card-foreground: 222 47% 8%;
+    --card-foreground: 240 4% 5%;
     --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 8%;
-    --primary: 222 47% 8%;
+    --popover-foreground: 240 4% 5%;
+    --primary: 224 100% 43%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 220 20% 96%;
-    --secondary-foreground: 222 47% 12%;
-    --muted: 220 20% 96%;
-    --muted-foreground: 220 12% 42%;
-    --accent: 222 100% 52%;
+    --secondary: 214 88% 96%;
+    --secondary-foreground: 240 4% 5%;
+    --muted: 214 88% 96%;
+    --muted-foreground: 215 19% 27%;
+    --accent: 211 100% 52%;
     --accent-foreground: 0 0% 100%;
-    --destructive: 0 72% 51%;
+    --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
-    --border: 220 16% 90%;
-    --input: 220 16% 90%;
-    --ring: 222 100% 52%;
-    --sidebar-background: 220 24% 98%;
-    --sidebar-foreground: 222 47% 12%;
-    --sidebar-primary: 222 100% 52%;
+    --border: 220 20% 92%;
+    --input: 220 20% 92%;
+    --ring: 211 100% 52%;
+    --sidebar-background: 215 71% 97%;
+    --sidebar-foreground: 240 4% 5%;
+    --sidebar-primary: 224 100% 43%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 20% 94%;
-    --sidebar-accent-foreground: 222 47% 12%;
-    --sidebar-border: 220 16% 90%;
-    --sidebar-ring: 222 100% 52%;
+    --sidebar-accent: 214 88% 96%;
+    --sidebar-accent-foreground: 240 4% 5%;
+    --sidebar-border: 220 20% 92%;
+    --sidebar-ring: 211 100% 52%;
   }
 }
 
@@ -677,4 +705,184 @@
   border: 1px solid rgb(255 255 255 / 0.14);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
+}
+
+/* =========================================================
+   New Livemed design-system utilities (ported)
+   Mirrors classes from livemedhealth.com so components share
+   the same look. Typography is intentionally left untouched.
+   ========================================================= */
+@layer utilities {
+  /* Text helpers */
+  .text-soft   { color: var(--soft); }
+  .text-softer { color: var(--softer); }
+  .text-verified { color: var(--verified); }
+  .text-brand   { color: var(--brand); }
+  .text-brand-2 { color: var(--brand-2); }
+
+  .text-gradient {
+    background: linear-gradient(161deg, #0A84FF 0%, #0040DD 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+
+  /* Eyebrow / section number */
+  .eyebrow, .sec-num {
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--softer);
+  }
+
+  /* Chip / badge */
+  .chip {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    padding: 0.3rem 0.65rem; border-radius: 999px;
+    font-size: 12px; font-weight: 500;
+    color: var(--soft);
+    background: color-mix(in oklab, var(--surface) 70%, #ffffff);
+    border: 1px solid rgba(11,11,12,0.08);
+  }
+  .chip-brand {
+    color: var(--brand);
+    background: color-mix(in oklab, var(--brand) 8%, #ffffff);
+    border-color: color-mix(in oklab, var(--brand) 20%, transparent);
+  }
+  .chip-dot::before {
+    content: ""; width: 6px; height: 6px; border-radius: 999px;
+    background: var(--verified);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--verified) 18%, transparent);
+  }
+
+  /* Glass surfaces */
+  .glass {
+    background: rgba(255,255,255,0.72);
+    border: 1px solid rgba(11,11,12,0.06);
+    backdrop-filter: blur(20px) saturate(140%);
+    -webkit-backdrop-filter: blur(20px) saturate(140%);
+    box-shadow: 0 1px 0 rgba(255,255,255,0.6) inset, 0 8px 30px -18px rgba(11,11,12,0.18);
+  }
+  .glass-strong {
+    background: linear-gradient(180deg, rgba(255,255,255,0.94), rgba(238,244,254,0.85));
+    border: 1px solid rgba(11,11,12,0.06);
+    backdrop-filter: blur(24px) saturate(160%);
+    -webkit-backdrop-filter: blur(24px) saturate(160%);
+    box-shadow: 0 1px 0 rgba(255,255,255,0.8) inset, 0 18px 60px -28px rgba(10,132,255,0.30);
+  }
+  .hairline { border: 1px solid rgba(11,11,12,0.08); }
+
+  /* Section surfaces */
+  .bg-section-default { background: hsl(var(--background)); }
+  .bg-section-tinted  {
+    background: var(--surface-tint);
+    border-top: 1px solid rgba(11,11,12,0.05);
+    border-bottom: 1px solid rgba(11,11,12,0.05);
+  }
+  .bg-section-soft {
+    background: var(--surface);
+    border-top: 1px solid rgba(11,11,12,0.06);
+    border-bottom: 1px solid rgba(11,11,12,0.06);
+  }
+  .bg-section-glow {
+    background:
+      radial-gradient(60% 80% at 80% 0%, color-mix(in oklab, var(--brand-3) 14%, transparent), transparent 60%),
+      linear-gradient(180deg, hsl(var(--background)), var(--surface-tint));
+  }
+  .bg-section-glow-rev {
+    background:
+      radial-gradient(70% 90% at 0% 100%, color-mix(in oklab, var(--brand-4) 12%, transparent), transparent 60%),
+      linear-gradient(180deg, var(--surface-tint), hsl(var(--background)));
+  }
+  .bg-section-dark {
+    background: linear-gradient(180deg, var(--ink) 0%, #0a1a3a 60%, var(--ink) 100%);
+    color: #fff;
+  }
+
+  /* Unified card system (Livemed) — namespaced .lm-card to avoid clashing
+     with any existing .card selectors from shadcn variants. */
+  .lm-card {
+    background: hsl(var(--card));
+    border: 1px solid var(--card-border);
+    border-radius: var(--card-radius);
+    padding: var(--card-pad);
+    box-shadow: var(--card-shadow);
+    transition:
+      transform .35s var(--ease-out),
+      box-shadow .35s ease,
+      border-color .35s ease;
+  }
+  .lm-card-lg {
+    background: hsl(var(--card));
+    border: 1px solid var(--card-border);
+    border-radius: var(--card-radius-lg);
+    padding: var(--card-pad-lg);
+    box-shadow: var(--card-shadow-lg);
+  }
+  .lm-card-interactive { cursor: pointer; }
+  .lm-card-interactive:hover {
+    transform: translateY(-3px);
+    border-color: color-mix(in oklab, var(--brand) 25%, var(--card-border));
+    box-shadow: var(--card-shadow-hover);
+  }
+
+  /* Lift hover */
+  .lift { transition: transform .4s var(--ease-out), box-shadow .4s ease, border-color .4s ease; }
+  .lift:hover { transform: translateY(-3px); box-shadow: 0 24px 60px -28px rgba(10,132,255,0.45); }
+
+  /* Brand button */
+  .btn-brand,
+  .bg-brand-gradient {
+    background: linear-gradient(161deg, #0A84FF 0%, #0040DD 100%);
+    color: #ffffff;
+    box-shadow: 0 14px 40px -14px rgba(10,132,255,0.55);
+    transition: filter var(--dur-micro) var(--ease-out),
+                box-shadow var(--dur-macro) var(--ease-out),
+                transform var(--dur-micro) var(--ease-out);
+  }
+  .btn-brand:hover,
+  .bg-brand-gradient:hover {
+    filter: brightness(1.06);
+    box-shadow: 0 20px 56px -14px rgba(10,132,255,0.72);
+    transform: translateY(-1px);
+  }
+  .btn-brand:active,
+  .bg-brand-gradient:active { transform: translateY(0); }
+
+  /* Accent tile (icon chips) */
+  .tile-accent {
+    background: linear-gradient(140deg, #0A84FF 0%, #0040DD 100%);
+    color: #ffffff;
+    border: 1px solid rgba(255,255,255,0.18);
+    box-shadow: 0 24px 70px -24px rgba(10,132,255,0.55);
+  }
+
+  /* Premium CTA surface */
+  .cta-surface {
+    position: relative;
+    background:
+      radial-gradient(60% 80% at 85% 0%, color-mix(in oklab, var(--brand-3) 32%, transparent), transparent 60%),
+      radial-gradient(70% 90% at 0% 100%, color-mix(in oklab, var(--brand-4) 22%, transparent), transparent 65%),
+      linear-gradient(161deg, var(--brand-2) 0%, var(--brand) 100%);
+    color: #fff;
+    box-shadow:
+      0 50px 120px -40px rgba(10,132,255,0.55),
+      0 0 0 1px rgba(255,255,255,0.08) inset,
+      0 1px 0 rgba(255,255,255,0.18) inset;
+  }
+  .cta-surface::after {
+    content: "";
+    position: absolute; inset: 0;
+    background-image: radial-gradient(rgba(255,255,255,0.55) 1px, transparent 1px);
+    background-size: 22px 22px;
+    mask-image: radial-gradient(ellipse at center, black 25%, transparent 70%);
+    opacity: 0.08;
+    pointer-events: none;
+  }
+
+  /* Retune legacy .gradient-livemed to the New Livemed signature gradient */
+  .gradient-livemed {
+    background: linear-gradient(161deg, #0A84FF 0%, #0040DD 100%) !important;
+  }
+  .gradient-livemed-subtle {
+    background: linear-gradient(135deg, rgba(10,132,255,0.14) 0%, rgba(0,64,221,0.08) 100%);
+  }
 }
