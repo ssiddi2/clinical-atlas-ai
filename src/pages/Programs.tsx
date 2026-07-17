@@ -130,7 +130,7 @@ const Programs = () => {
         {/* Hero */}
         <section className="relative py-20 md:py-28 overflow-hidden bg-section-glow">
           <div className="absolute inset-0 gradient-livemed-light" />
-          <div className="container mx-auto px-4 relative">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 relative">
             <div className="max-w-3xl mx-auto text-center">
               <span className="chip chip-brand mb-6">{t("nav.programs", "Programs")}</span>
               <h1 className="font-display text-4xl md:text-5xl font-bold mb-6 mt-4">
@@ -145,7 +145,7 @@ const Programs = () => {
 
         {/* Programs Tabs */}
         <section className="py-20 bg-section-tinted">
-          <div className="container mx-auto px-4">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
             <Tabs defaultValue="pre-clinical" className="w-full">
               <TabsList className="grid w-full max-w-2xl mx-auto grid-cols-4 mb-12">
                 <TabsTrigger value="pre-clinical">{t("programs.preClinical")}</TabsTrigger>
@@ -246,7 +246,7 @@ const Programs = () => {
 
         {/* CTA */}
         <section className="py-20">
-          <div className="container mx-auto px-4">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
             <div className="cta-surface rounded-[28px] p-10 md:p-14 text-center max-w-5xl mx-auto">
               <h2 className="font-display text-3xl md:text-4xl font-bold text-white mb-4">{t("programs.page.notSure")}</h2>
               <p className="text-lg text-white/80 max-w-2xl mx-auto mb-8">

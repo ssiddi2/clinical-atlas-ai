@@ -203,7 +203,7 @@ const LearningAssessment = () => {
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b border-border/40">
-        <div className="container mx-auto px-4 py-4 flex items-center gap-3">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-4 flex items-center gap-3">
           <Brain className="h-5 w-5 text-primary" />
           <div>
             <h1 className="text-base font-semibold leading-tight">Learning Profile</h1>
@@ -214,7 +214,7 @@ const LearningAssessment = () => {
         </div>
       </header>
 
-      <div className="container mx-auto px-4 py-6 max-w-2xl">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-6 max-w-2xl">
         <div className="mb-6 space-y-2">
           <div className="flex justify-between text-xs text-muted-foreground">
             <span>

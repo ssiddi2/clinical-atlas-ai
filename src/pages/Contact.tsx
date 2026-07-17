@@ -60,7 +60,7 @@ const Contact = () => {
     return (
       <main className="flex-1">
         <section className="py-20 md:py-32">
-          <div className="container mx-auto px-4">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
             <div className="lm-card-lg max-w-lg mx-auto text-center p-12">
               <div className="w-20 h-20 rounded-full tile-accent flex items-center justify-center mx-auto mb-6">
                 <CheckCircle className="h-10 w-10 text-white" />
@@ -81,7 +81,7 @@ const Contact = () => {
     <main className="flex-1">
       <section className="relative py-20 md:py-28 overflow-hidden bg-section-glow">
         <div className="absolute inset-0 gradient-livemed-light" />
-        <div className="container mx-auto px-4 relative">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 relative">
           <div className="max-w-3xl mx-auto text-center">
             <span className="chip chip-brand mb-6">{t("nav.contact", "Contact")}</span>
             <h1 className="font-display text-4xl md:text-5xl font-bold mb-6 mt-4">{t("contact.title")}</h1>
@@ -91,7 +91,7 @@ const Contact = () => {
       </section>
 
       <section className="py-20">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
           <div className="grid lg:grid-cols-3 gap-12 max-w-6xl mx-auto">
             <div className="lg:col-span-1 space-y-6">
               <div>

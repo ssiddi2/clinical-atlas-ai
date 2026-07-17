@@ -451,7 +451,7 @@ const RotationExperience = () => {
 
   return (
     <main className="flex-1 py-8">
-      <div className="container mx-auto px-4 max-w-4xl">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 max-w-4xl">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">

@@ -50,7 +50,7 @@ const Rotations = () => {
     <div className="flex-1">
       <section className="relative py-20 md:py-28 overflow-hidden bg-section-glow">
         <div className="absolute inset-0 gradient-livemed-light" />
-        <div className="container mx-auto px-4 relative">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 relative">
           <div className="max-w-3xl">
             <div className="chip chip-brand mb-6">
               <Video className="h-4 w-4" />
@@ -75,7 +75,7 @@ const Rotations = () => {
       </section>
 
       <section className="py-16 border-b border-border bg-section-tinted">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
           <h2 className="sr-only">{t("rotations.whatYouGet", "What you get")}</h2>
           <div className="grid md:grid-cols-4 gap-6">
             {features.map((feature) => (
@@ -94,7 +94,7 @@ const Rotations = () => {
       </section>
 
       <section className="py-20">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
           <div className="text-center mb-12">
             <h2 className="font-display text-3xl font-bold mb-4">{t("rotations.available")}</h2>
             <p className="text-soft max-w-2xl mx-auto">{t("rotations.availableDesc")}</p>
@@ -140,7 +140,7 @@ const Rotations = () => {
       </section>
 
       <section className="py-16">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
           <div className="cta-surface rounded-[32px] p-12 md:p-16 text-center max-w-5xl mx-auto">
             <h2 className="font-display text-3xl md:text-4xl font-bold text-white mb-4">{t("rotations.readyStart")}</h2>
             <p className="text-lg text-white/80 max-w-2xl mx-auto mb-8">{t("rotations.readyStartDesc")}</p>

@@ -152,7 +152,7 @@ export default function QBankPerformance() {
     return (
       <div className="min-h-screen bg-background">
         <div className="border-b border-border bg-card/50">
-          <div className="container mx-auto px-4 py-4">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-4">
             <div className="flex items-center gap-4">
               <Button variant="ghost" size="icon" onClick={() => navigate('/qbank')}>
                 <ArrowLeft className="h-5 w-5" />
@@ -161,7 +161,7 @@ export default function QBankPerformance() {
             </div>
           </div>
         </div>
-        <div className="container mx-auto px-4 py-16 text-center">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-16 text-center">
           <BookOpen className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
           <h2 className="text-xl font-semibold text-foreground mb-2">No Data Yet</h2>
           <p className="text-muted-foreground mb-6">Complete some practice questions to see your performance analytics.</p>
@@ -199,7 +199,7 @@ export default function QBankPerformance() {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <div className="border-b border-border bg-card/50">
-        <div className="container mx-auto px-4 py-4">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <Button variant="ghost" size="icon" onClick={() => navigate('/qbank')}>
@@ -214,7 +214,7 @@ export default function QBankPerformance() {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-8">
         {/* Overview Stats */}
         <div className="grid md:grid-cols-4 gap-4 mb-8">
           <Card className="p-6">

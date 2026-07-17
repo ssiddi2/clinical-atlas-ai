@@ -6,7 +6,7 @@ const Privacy = () => {
   return (
     <div className="flex-1">
       <section className="py-20">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
           <div className="max-w-3xl mx-auto prose prose-neutral dark:prose-invert">
             <h1 className="text-4xl font-bold mb-8">{t("privacy.title")}</h1>
             <p className="text-muted-foreground mb-8">{t("privacy.lastUpdated")}</p>

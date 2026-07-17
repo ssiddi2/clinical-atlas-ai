@@ -73,7 +73,7 @@ export default function QBank() {
   return (
     <div className="min-h-screen bg-background">
       <div className="bg-gradient-to-b from-primary/10 to-background border-b border-border">
-        <div className="container mx-auto px-4 py-12">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-12">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold text-foreground mb-2">{t("qbank.title")}</h1>
@@ -88,7 +88,7 @@ export default function QBank() {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-8">
         <div className="grid md:grid-cols-4 gap-4 mb-8">
           <Card className="p-6">
             <div className="flex items-center gap-4">

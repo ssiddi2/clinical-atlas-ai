@@ -162,7 +162,7 @@ const Landing = () => {
         />
         
         {isMobile ? (
-          <div className="container mx-auto px-4 relative z-10">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 relative z-10">
             <div className="max-w-4xl mx-auto text-center">
               <div className="chip chip-brand mb-6">
                 <span className="relative flex h-2 w-2">
