@@ -108,7 +108,7 @@ const Admin = () => {
   return (
     <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 flex h-16 items-center justify-between">
+        <div className="container mx-auto flex h-16 items-center justify-between">
           <div className="flex items-center gap-4">
             <Link to="/dashboard">
               <img src={livemedLogo} alt="Livemed" style={{ height: '80px', width: 'auto' }} className="object-contain" />
@@ -127,7 +127,7 @@ const Admin = () => {
         </div>
       </header>
 
-      <main className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-8">
+      <main className="container mx-auto py-8">
         <div className="mb-6">
           <h1 className="text-3xl font-bold mb-1">Admin Dashboard</h1>
           <p className="text-muted-foreground">Manage users, courses, enrollments, and verifications</p>

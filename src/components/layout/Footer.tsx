@@ -34,7 +34,7 @@ const Footer = forwardRef<HTMLElement>((props, ref) => {
   return (
     <footer ref={ref} className="relative border-t border-border bg-secondary/40 overflow-hidden">
       
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-10 md:py-16 relative">
+      <div className="container mx-auto py-10 md:py-16 relative">
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-6 md:gap-10">
           {/* Brand Column */}
           <div className="col-span-2 sm:col-span-3 md:col-span-1 mb-4 md:mb-0">
@@ -79,7 +79,7 @@ const Footer = forwardRef<HTMLElement>((props, ref) => {
 
       {/* Legal Disclaimer */}
       <div className="border-t border-white/5 relative">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-4">
+        <div className="container mx-auto py-4">
           <p className="text-[10px] md:text-xs text-muted-foreground text-center max-w-4xl mx-auto leading-relaxed">
             {t("footer.disclaimer")}
           </p>
@@ -88,7 +88,7 @@ const Footer = forwardRef<HTMLElement>((props, ref) => {
 
       {/* Bottom Bar */}
       <div className="border-t border-white/5 relative">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-4 md:py-6 flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div className="container mx-auto py-4 md:py-6 flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="text-xs text-muted-foreground">
             {t("footer.copyright").replace("{year}", new Date().getFullYear().toString())}
           </p>

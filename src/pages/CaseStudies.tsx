@@ -95,7 +95,7 @@ const CaseStudies = () => {
       {/* Hero Section */}
       <section className="relative py-24 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-accent/10" />
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 relative z-10">
+        <div className="container mx-auto relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -135,7 +135,7 @@ const CaseStudies = () => {
 
       {/* Case Studies Grid */}
       <section className="py-20 bg-muted/30">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
+        <div className="container mx-auto">
           <div className="grid gap-8">
             {caseStudies.map((study, index) => (
               <motion.div
@@ -220,7 +220,7 @@ const CaseStudies = () => {
 
       {/* CTA Section */}
       <section className="py-20 bg-gradient-to-br from-primary to-primary/80">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 text-center">
+        <div className="container mx-auto text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}

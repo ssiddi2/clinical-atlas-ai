@@ -191,7 +191,7 @@ const VirtualRounds = () => {
       <div className="min-h-screen bg-background">
         {/* Header */}
         <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 flex h-16 items-center justify-between">
+          <div className="container mx-auto flex h-16 items-center justify-between">
             <div className="flex items-center gap-4">
               <Link to="/dashboard" className="text-muted-foreground hover:text-foreground">
                 <ArrowLeft className="h-5 w-5" />
@@ -207,7 +207,7 @@ const VirtualRounds = () => {
           </div>
         </header>
         
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-8">
+        <div className="container mx-auto py-8">
           <UpgradePrompt feature="virtualRounds" />
         </div>
       </div>
@@ -218,7 +218,7 @@ const VirtualRounds = () => {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 flex h-16 items-center justify-between">
+        <div className="container mx-auto flex h-16 items-center justify-between">
           <div className="flex items-center gap-4">
             <Link to="/dashboard" className="text-muted-foreground hover:text-foreground">
               <ArrowLeft className="h-5 w-5" />
@@ -234,7 +234,7 @@ const VirtualRounds = () => {
         </div>
       </header>
 
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-6 md:py-8">
+      <div className="container mx-auto py-6 md:py-8">
         {/* Hero Banner */}
         <div className="mb-6 md:mb-8 p-4 md:p-6 rounded-2xl gradient-livemed text-white">
           <div className="flex flex-col md:flex-row items-start gap-4">
