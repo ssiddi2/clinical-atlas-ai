@@ -729,6 +729,7 @@
   [class*="bg-emerald-"],[class*="bg-green-"],[class*="bg-teal-"],[class*="bg-cyan-"],
   [class*="bg-amber-"],[class*="bg-orange-"],[class*="bg-yellow-"],
   [class*="bg-rose-"],[class*="bg-red-"],[class*="bg-pink-"],[class*="bg-fuchsia-"],
+  [class*="bg-slate-"],[class*="bg-gray-"],[class*="bg-zinc-"],[class*="bg-neutral-"],[class*="bg-stone-"],
   .bg-primary,.bg-destructive,.bg-secondary,
   [class*="bg-gradient-"]
 ) [class~="text-white"],
