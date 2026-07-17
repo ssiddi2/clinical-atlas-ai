@@ -137,7 +137,7 @@ const Institutions = () => {
               </div>
             </div>
             <div className="cta-surface rounded-[28px] p-8 md:p-10 text-white">
-              <GraduationCap className="h-12 w-12 mb-6 opacity-80" />
+              <GraduationCap className="h-12 w-12 mb-6 text-white" />
               <h3 className="font-display text-2xl font-bold mb-4 text-white">{t("institutions.readyTransform")}</h3>
               <p className="text-white/85 mb-6">{t("institutions.readyTransformDesc")}</p>
               <Button size="lg" variant="secondary" className="w-full bg-white text-primary hover:bg-white/90" asChild>
