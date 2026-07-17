@@ -16,9 +16,11 @@ const VerificationBanner = ({ status, onboardingCompleted }: VerificationBannerP
   // Show complete profile banner if onboarding not done
   if (!onboardingCompleted) {
     return (
-      <div className="bg-primary/10 border border-primary/20 rounded-lg p-4 mb-6">
+      <div className="bg-primary/10 border border-primary/20 rounded-2xl p-4 mb-6">
         <div className="flex items-start gap-3">
-          <AlertCircle className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+          <span className="w-9 h-9 rounded-xl bg-primary text-white flex items-center justify-center shadow-sm flex-shrink-0">
+            <AlertCircle className="h-[18px] w-[18px]" />
+          </span>
           <div className="flex-1">
             <h4 className="font-medium text-sm mb-1">{t("dashboard.verification.completeProfile")}</h4>
             <p className="text-sm text-muted-foreground mb-3">
@@ -38,7 +40,9 @@ const VerificationBanner = ({ status, onboardingCompleted }: VerificationBannerP
     return (
       <div className="bg-orange-50 border border-orange-200 rounded-2xl p-5 mb-8">
         <div className="flex items-start gap-4">
-          <AlertCircle className="h-6 w-6 text-orange-500 flex-shrink-0 mt-0.5" />
+          <span className="w-10 h-10 rounded-xl bg-orange-500 text-white flex items-center justify-center shadow-sm flex-shrink-0">
+            <AlertCircle className="h-5 w-5" />
+          </span>
           <div className="flex-1">
             <h4 className="font-semibold text-base mb-1">{t("dashboard.verification.pending")}</h4>
             <p className="text-sm text-muted-foreground">
@@ -56,9 +60,11 @@ const VerificationBanner = ({ status, onboardingCompleted }: VerificationBannerP
   // Rejected
   if (status === 'rejected') {
     return (
-      <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4 mb-6">
+      <div className="bg-destructive/10 border border-destructive/20 rounded-2xl p-4 mb-6">
         <div className="flex items-start gap-3">
-          <XCircle className="h-5 w-5 text-destructive flex-shrink-0 mt-0.5" />
+          <span className="w-9 h-9 rounded-xl bg-destructive text-white flex items-center justify-center shadow-sm flex-shrink-0">
+            <XCircle className="h-[18px] w-[18px]" />
+          </span>
           <div className="flex-1">
             <h4 className="font-medium text-sm mb-1">{t("dashboard.verification.failed")}</h4>
             <p className="text-sm text-muted-foreground mb-3">
