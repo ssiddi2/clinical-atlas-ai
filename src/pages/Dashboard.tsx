@@ -218,6 +218,28 @@ const Dashboard = () => {
           <p className="mt-1.5 text-[15px] text-muted-foreground">{t("dashboard.continueJourney")}</p>
         </div>
 
+        {pendingInvitesCount > 0 && (
+          <Link
+            to="/invitations"
+            className="block rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+          >
+            <Card className="rounded-2xl border-primary/30 bg-primary/[0.04] hover:bg-primary/[0.06] transition-colors">
+              <CardContent className="p-4 flex items-center gap-4">
+                <div className="w-11 h-11 rounded-xl bg-primary flex items-center justify-center shadow-sm">
+                  <Mail className="h-5 w-5 text-white" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-semibold text-foreground">
+                    {pendingInvitesCount} pending course invitation{pendingInvitesCount > 1 ? "s" : ""}
+                  </p>
+                  <p className="text-sm text-muted-foreground">Accept or decline to unlock lectures and materials.</p>
+                </div>
+                <ChevronRight className="h-5 w-5 text-muted-foreground" />
+              </CardContent>
+            </Card>
+          </Link>
+        )}
+
         {/* Quick Actions */}
         <section aria-label="Quick actions">
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
