@@ -134,6 +134,35 @@ const CourseDetail = () => {
 
   const pending = enrollments.filter(e => e.status === "pending");
   const approved = enrollments.filter(e => e.status === "approved");
+  const myInvite = enrollments.find(e => e.student_id === currentUserId && e.status === "invited");
+
+  const respondInvite = async (accept: boolean) => {
+    if (!myInvite) return;
+    setRespondingInvite(true);
+    try {
+      const updates: any = accept
+        ? { status: "approved", approved_at: new Date().toISOString() }
+        : { status: "declined" };
+      const { error } = await supabase
+        .from("course_enrollments")
+        .update(updates)
+        .eq("id", myInvite.id);
+      if (error) throw error;
+      toast({
+        title: accept ? "Invitation accepted" : "Invitation declined",
+        description: accept ? `You're now enrolled in ${course.title}.` : "The instructor has been notified.",
+      });
+      if (accept) {
+        await loadData();
+      } else {
+        navigate("/dashboard");
+      }
+    } catch (err: any) {
+      toast({ title: "Error", description: err.message, variant: "destructive" });
+    } finally {
+      setRespondingInvite(false);
+    }
+  };
 
   return (
     <AppShell>
@@ -156,6 +185,28 @@ const CourseDetail = () => {
             </Button>
           )}
         </div>
+
+        {/* Invitation banner */}
+        {myInvite && (
+          <Card className="border-primary/40 bg-primary/5">
+            <CardContent className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center gap-4">
+              <div className="flex-1">
+                <p className="text-sm font-semibold text-foreground">You've been invited to join this course</p>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  Accept to unlock lectures, materials, and quizzes. You can decline if this isn't for you.
+                </p>
+              </div>
+              <div className="flex gap-2">
+                <Button size="sm" disabled={respondingInvite} onClick={() => respondInvite(true)}>
+                  <CheckCircle2 className="h-4 w-4 mr-1" /> Accept
+                </Button>
+                <Button size="sm" variant="outline" disabled={respondingInvite} onClick={() => respondInvite(false)}>
+                  <XCircle className="h-4 w-4 mr-1" /> Decline
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Stats */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
