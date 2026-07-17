@@ -39,8 +39,8 @@ const CourseDetail = () => {
     const { data: { session } } = await supabase.auth.getSession();
     const user = session?.user;
     if (!user) {
-      const redirect = `/courses/${id}${window.location.search}`;
-      navigate(`/auth?redirect=${encodeURIComponent(redirect)}`);
+      const next = `/courses/${id}${window.location.search}`;
+      navigate(`/auth?next=${encodeURIComponent(next)}`);
       return;
     }
 
