@@ -18,6 +18,7 @@ import AdminCourses from "@/components/admin/AdminCourses";
 import RotationApplications from "@/components/admin/RotationApplications";
 import AdminContentReviews from "@/components/admin/AdminContentReviews";
 import AdminContactInquiries from "@/components/admin/AdminContactInquiries";
+import EnrollmentAuditLog from "@/components/courses/EnrollmentAuditLog";
 import { Database } from "@/integrations/supabase/types";
 import AppShell from "@/components/layout/AppShell";
 
@@ -139,6 +140,7 @@ const Admin = () => {
             <TabsTrigger value="verifications">Verifications</TabsTrigger>
             <TabsTrigger value="inquiries">Inquiries</TabsTrigger>
             <TabsTrigger value="reviews">Content Reviews</TabsTrigger>
+            <TabsTrigger value="activity">Activity Log</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview">
@@ -208,6 +210,14 @@ const Admin = () => {
             <div className="bg-card rounded-lg border p-6">
               <h2 className="text-xl font-semibold mb-4">Content Reviews Audit Trail</h2>
               <AdminContentReviews />
+            </div>
+          </TabsContent>
+
+          <TabsContent value="activity">
+            <div className="bg-card rounded-lg border p-6">
+              <h2 className="text-xl font-semibold mb-1">Enrollment Activity Log</h2>
+              <p className="text-sm text-muted-foreground mb-4">Every invitation, resend, accept, decline, revoke and enrollment change across all courses.</p>
+              <EnrollmentAuditLog limit={200} />
             </div>
           </TabsContent>
         </Tabs>

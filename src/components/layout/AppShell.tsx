@@ -17,6 +17,7 @@ import {
   ShieldCheck,
   Sparkles,
   ChevronDown,
+  Mail,
 } from "lucide-react";
 import NotificationBell from "@/components/notifications/NotificationBell";
 import { useTranslation } from "@/i18n";
@@ -39,6 +40,7 @@ const AppShell = ({ children, headerOnly = false }: AppShellProps) => {
   const { t } = useTranslation();
   const [user, setUser] = useState<User | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [pendingInvites, setPendingInvites] = useState(0);
 
   useEffect(() => {
     let mounted = true;
@@ -48,17 +50,40 @@ const AppShell = ({ children, headerOnly = false }: AppShellProps) => {
       setUser(u);
       if (!u) {
         setIsAdmin(false);
+        setPendingInvites(0);
         return;
       }
       const { data } = await supabase.rpc("has_role", { _user_id: u.id, _role: "platform_admin" });
       if (mounted) setIsAdmin(!!data);
+      const { count } = await supabase
+        .from("course_enrollments")
+        .select("id", { count: "exact", head: true })
+        .eq("student_id", u.id)
+        .eq("status", "invited");
+      if (mounted) setPendingInvites(count || 0);
     };
 
     supabase.auth.getSession().then(({ data }) => bootstrap(data.session?.user ?? null));
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => {
       bootstrap(session?.user ?? null);
     });
-    return () => { mounted = false; subscription.unsubscribe(); };
+
+    // Realtime: keep the invitations badge in sync
+    const chan = supabase
+      .channel("appshell-invites")
+      .on("postgres_changes", { event: "*", schema: "public", table: "course_enrollments" }, async () => {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session?.user) return;
+        const { count } = await supabase
+          .from("course_enrollments")
+          .select("id", { count: "exact", head: true })
+          .eq("student_id", session.user.id)
+          .eq("status", "invited");
+        if (mounted) setPendingInvites(count || 0);
+      })
+      .subscribe();
+
+    return () => { mounted = false; subscription.unsubscribe(); supabase.removeChannel(chan); };
   }, []);
 
   const handleSignOut = async () => {
@@ -89,6 +114,20 @@ const AppShell = ({ children, headerOnly = false }: AppShellProps) => {
               <span className="hidden sm:inline">{t("dashboard.admin")}</span>
             </Button>
           )}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate("/invitations")}
+            className="rounded-full bg-muted/60 hover:bg-muted relative"
+            aria-label="Course invitations"
+          >
+            <Mail className="h-4 w-4" />
+            {pendingInvites > 0 && (
+              <span className="ml-1 inline-flex items-center justify-center h-5 min-w-5 px-1.5 rounded-full bg-primary text-primary-foreground text-[11px] font-semibold">
+                {pendingInvites}
+              </span>
+            )}
+          </Button>
           <div className="rounded-full bg-muted/60 hover:bg-muted transition-colors">
             <NotificationBell userId={user?.id || null} />
           </div>
@@ -120,6 +159,14 @@ const AppShell = ({ children, headerOnly = false }: AppShellProps) => {
             <DropdownMenuContent align="end" className="w-44">
               <DropdownMenuItem onClick={() => navigate("/settings")}>
                 <Settings className="h-4 w-4 mr-2" /> Settings
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate("/invitations")}>
+                <Mail className="h-4 w-4 mr-2" /> Invitations
+                {pendingInvites > 0 && (
+                  <span className="ml-auto inline-flex items-center justify-center h-5 min-w-5 px-1.5 rounded-full bg-primary text-primary-foreground text-[11px] font-semibold">
+                    {pendingInvites}
+                  </span>
+                )}
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={handleSignOut}>

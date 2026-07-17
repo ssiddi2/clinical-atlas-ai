@@ -52,6 +52,7 @@ const LearningUnitPage = lazy(() => import("./pages/LearningUnitPage"));
 const LiveQuiz = lazy(() => import("./pages/LiveQuiz"));
 const OAuthConsent = lazy(() => import("./pages/OAuthConsent"));
 const LORRequests = lazy(() => import("./pages/LORRequests"));
+const Invitations = lazy(() => import("./pages/Invitations"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -181,6 +182,9 @@ const App = () => {
 
             {/* Physician Letters of Recommendation */}
             <Route path="/lor" element={<LORRequests />} />
+
+            {/* Student course invitations */}
+            <Route path="/invitations" element={<Invitations />} />
 
             {/* Legacy /pricing redirect to /apply handled via NotFound; provide alias */}
             <Route path="/pricing" element={<Apply />} />
