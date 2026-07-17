@@ -36,6 +36,8 @@ export default defineConfig({
       animations: "disabled",
       caret: "hide",
       scale: "css",
+      // Full-page captures of long marketing pages can take a while.
+      timeout: 30_000,
     },
   },
   projects: [
