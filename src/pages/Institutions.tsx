@@ -44,7 +44,7 @@ const Institutions = () => {
                 <Button size="lg" variant="secondary" className="bg-white text-primary hover:bg-white/90" asChild>
                   <Link to="/contact">{t("institutions.requestDemo")}<ArrowRight className="ml-2 h-5 w-5" /></Link>
                 </Button>
-                <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10" asChild>
+                <Button size="lg" className="bg-white/10 border border-white/40 text-white hover:bg-white/20 backdrop-blur-sm" asChild>
                   <Link to="/case-studies">{t("institutions.viewCaseStudies")}</Link>
                 </Button>
               </div>
@@ -138,8 +138,8 @@ const Institutions = () => {
             </div>
             <div className="cta-surface rounded-[28px] p-8 md:p-10 text-white">
               <GraduationCap className="h-12 w-12 mb-6 opacity-80" />
-              <h3 className="font-display text-2xl font-bold mb-4">{t("institutions.readyTransform")}</h3>
-              <p className="text-white/80 mb-6">{t("institutions.readyTransformDesc")}</p>
+              <h3 className="font-display text-2xl font-bold mb-4 text-white">{t("institutions.readyTransform")}</h3>
+              <p className="text-white/85 mb-6">{t("institutions.readyTransformDesc")}</p>
               <Button size="lg" variant="secondary" className="w-full bg-white text-primary hover:bg-white/90" asChild>
                 <Link to="/contact">{t("institutions.scheduleConsultation")}<ArrowRight className="ml-2 h-5 w-5" /></Link>
               </Button>
