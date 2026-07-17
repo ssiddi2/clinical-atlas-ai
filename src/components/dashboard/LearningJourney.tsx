@@ -96,7 +96,7 @@ export default function LearningJourney({ userId }: Props) {
           {items.map((it) => (
             <div key={it.label} className="rounded-xl bg-background border border-border/70 p-4 flex items-center gap-3 hover:border-border hover:shadow-sm transition-all">
               <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${it.color}`}>
-                <it.icon className="h-5 w-5" aria-hidden />
+                <it.icon className="h-5 w-5 text-white" strokeWidth={2.25} aria-hidden />
               </div>
               <div className="min-w-0">
                 <div className="text-2xl font-bold leading-none tracking-tight text-foreground">{it.value}</div>
