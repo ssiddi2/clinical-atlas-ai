@@ -1,56 +1,72 @@
-# Stats redesign + ribbon contrast fix + testimonial soft palette
+# Premium container width + horizontal spacing refinement
 
-Scope: styling only. No content or functionality changes.
+Goal: content sits comfortably centered — never edge-to-edge — matching the Stripe / Linear / Vercel gutter feel. Structure, components, typography, colors, and functionality stay untouched.
 
-## 1. Root cause of the "black text" on Most Popular / Recommended
+## Target sizing
 
-The ribbon uses `bg-brand text-white`, but the global `text-white*` → dark-navy override in `src/index.css` (lines ~664–675) only exempts a fixed list of brand surfaces (`.cta-surface`, `.btn-brand`, `.tile-accent`, `.bg-brand-gradient`, `.bg-section-dark`, `[data-brand-surface]`). The program-card ribbon sits inside `.lm-card`, so its `text-white` gets forced to dark navy — that's the unreadable "black on blue" the user sees.
+Benchmarks (measured on their marketing pages):
+- Stripe: ~1080px content, 24–96px side gutter
+- Linear: ~1024px content, 24–80px side gutter
+- Vercel: ~1200px content, 24–96px side gutter
+- Notion marketing: ~1150px content, 32–96px side gutter
 
-Fix: force white via Tailwind's important modifier so it beats the override, and use a solid `bg-brand`:
-- `className="inline-flex items-center rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider bg-brand !text-white shadow-sm"`
-- Add a soft glow: `shadow-[0_4px_12px_-4px_rgba(0,64,221,0.45)]` so the pill lifts off the card.
+Adopt a **single global rule** that matches this:
 
-## 2. Stats section — cooler palette + animation
+| Viewport | Side padding | Effective max content |
+| --- | --- | --- |
+| < 640px (mobile) | 20px | viewport − 40 |
+| 640–1023px (sm/md) | 32px | viewport − 64 |
+| 1024–1279px (lg) | 48px | viewport − 96 |
+| 1280–1535px (xl) | 64px | 1120px |
+| ≥ 1536px (2xl) | 96px | **1120px** (capped) |
 
-Currently the stats sit inside a solid blue `cta-surface` slab which feels heavy and mono-blue.
+Result: on a 1440px monitor the content block is 1120px with ~160px of whitespace per side. On a 1920px monitor it stays at 1120px centered — never stretched.
 
-Redesign in `src/pages/Landing.tsx` stats section:
-- Replace `cta-surface` wrapper with a cool slate/blue-grey surface: `bg-gradient-to-br from-slate-50 via-blue-50/60 to-slate-100 border border-slate-200/70 shadow-[0_20px_60px_-30px_rgba(15,23,42,0.15)]`.
-- Grid divider: `bg-white/10` → `bg-slate-200/70`, cells `bg-transparent`.
-- Numerals: `text-white` → `text-gradient-livemed` (blue gradient on light bg — much cooler feel, and readable).
-- Labels: `text-white/70` → `text-slate-500`.
-- Specialties caption: `text-white/70` → `text-slate-500`.
+## Implementation
 
-Add lightweight animations (using existing framer-motion already imported):
-- Number counter: each stat value fades+slides in with a stagger (already have `staggerContainer` + `fadeInScale`). Wrap each numeral in a `motion.span` with a slight `y: 12 → 0` + `opacity 0 → 1`, `duration: 0.5`, staggered by 0.1s.
-- On the whole card: add a slow gradient shimmer via a `::before`-style overlay using Tailwind's existing `animate-shimmer` utility (already defined in index.css line 458) layered at low opacity over the card background — gives a subtle "alive" feel without being noisy.
-- Optional pulse on the "Live" chip (already animated in css); leave as-is.
+Single edit to `tailwind.config.ts` — nothing else changes.
 
-## 3. Testimonial — softer color palette
+```ts
+container: {
+  center: true,
+  padding: {
+    DEFAULT: "1.25rem",   // 20px
+    sm: "2rem",           // 32px
+    lg: "3rem",           // 48px
+    xl: "4rem",           // 64px
+    "2xl": "6rem",        // 96px
+  },
+  screens: {
+    // Cap the container at 1120px starting at the xl breakpoint,
+    // so it never stretches on wide monitors.
+    xl: "1120px",
+    "2xl": "1120px",
+  },
+},
+```
 
-Currently the testimonial card is a plain `lm-card` (white) with hard blue avatar tile and small quote glyph.
+This is enough on its own because every page wrapper was normalized in the previous turn to `container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12`. Those utility paddings are close to but slightly less than the new container defaults on the same breakpoints. To make the config the single source of truth (and stop utility classes from fighting the container), also do one global find/replace:
 
-Soften in Landing testimonials section:
-- Card background: use a warm-neutral tint per card that alternates gently — `bg-gradient-to-br from-slate-50 to-white`, `bg-gradient-to-br from-blue-50/40 to-white`, `bg-gradient-to-br from-indigo-50/40 to-white`. Keeps them cohesive but each feels distinct.
-- Border: `border border-slate-200/60`.
-- Quote glyph `text-brand/30` → `text-slate-300`.
-- Quote text `text-foreground/80` → `text-slate-700`.
-- Avatar circle: drop the hard `tile-accent` (bright blue) for a soft gradient `bg-gradient-to-br from-blue-100 to-indigo-100 text-blue-700 ring-1 ring-white`. Keep the dicebear image on top.
-- Name/role: `text-slate-800` / `text-slate-500`.
-- Divider line: `border-border` → `border-slate-100`.
-- Add gentle hover: `hover:shadow-[0_20px_60px_-30px_rgba(15,23,42,0.18)] transition-shadow duration-300`.
+- `container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12` → `container mx-auto`
 
-## Out of scope
-
-- No copy, routes, i18n, functionality, or dashboard changes.
-- No changes to other sections or pages beyond the three items above.
-- No new dependencies.
+That's a mechanical sed across `src/` — no structural change, just letting the container config own the horizontal padding so every page follows the exact same rules. Header pill (`Header.tsx`) keeps its own `px-4 md:px-6` since it's a floating rounded nav bar with intentionally tighter padding, not a content container.
 
 ## Files touched
 
-- `src/pages/Landing.tsx` — stats redesign, ribbon fix in Programs cards, testimonial recolor.
+1. `tailwind.config.ts` — container padding + max-width refinement (the change above)
+2. All page/layout files under `src/pages/` and `src/components/layout/Footer.tsx` — remove the redundant `px-*` utilities from `container mx-auto` wrappers so the container config governs consistently
+
+## Explicitly out of scope
+
+- No component, typography, color, gradient, animation, or copy changes
+- No structural or layout changes inside sections (grids, cards, hero, etc. stay identical)
+- No changes to non-container wrappers (`max-w-2xl`, `max-w-4xl`, inner card padding, etc.)
+- Header floating nav pill keeps its current inner padding — it isn't a page container
 
 ## Verification
 
-- Manual check at `/`: stats card is cool slate/blue with animated numerals, "Most Popular" / "Recommended" pills clearly show white text on brand blue, testimonials look softer and calmer.
-- `tsgo` typecheck stays green (className-only edits).
+- Load `/`, `/programs`, `/rotations`, `/institutions`, `/contact`, `/dashboard` at 1280, 1440, 1920 CSS px:
+  - Content column stays ≤ 1120px, centered
+  - Side whitespace grows with viewport, never touches 0
+- At 375px mobile: 20px padding on both sides, no horizontal scroll
+- No visual regression inside sections — only the outer gutter changes
