@@ -245,6 +245,13 @@
     background: linear-gradient(135deg, hsl(var(--livemed-blue) / 0.2) 0%, hsl(var(--livemed-cyan) / 0.1) 100%);
   }
 
+  .gradient-livemed-light {
+    background:
+      radial-gradient(60% 80% at 80% 0%, hsl(var(--livemed-blue) / 0.14), transparent 60%),
+      radial-gradient(50% 70% at 10% 10%, hsl(var(--livemed-cyan) / 0.10), transparent 60%),
+      linear-gradient(180deg, hsl(var(--background)), hsl(var(--muted) / 0.6));
+  }
+
   .gradient-livemed-dark {
     background: linear-gradient(180deg, hsl(var(--livemed-navy)) 0%, hsl(var(--livemed-navy-deep)) 100%);
   }
