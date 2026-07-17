@@ -38,8 +38,20 @@ const NotificationBell = ({ userId }: { userId: string | null }) => {
 
   useEffect(() => {
     loadNotifications();
-    const interval = setInterval(loadNotifications, 60000);
-    return () => clearInterval(interval);
+    if (!userId) return;
+    const channel = supabase
+      .channel(`notifications:${userId}`)
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "notifications", filter: `user_id=eq.${userId}` },
+        (payload) => {
+          setNotifications((prev) => [payload.new as Notification, ...prev].slice(0, 20));
+        }
+      )
+      .subscribe();
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [userId]);
 
   const unreadCount = notifications.filter((n) => !n.is_read).length;
