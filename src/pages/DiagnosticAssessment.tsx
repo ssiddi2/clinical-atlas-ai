@@ -34,8 +34,7 @@ import {
 } from "lucide-react";
 
 import { useTranslation } from "@/i18n/LanguageContext";
-import livemedLogoAsset from "@/assets/livemed-logo-light.png.asset.json";
-const livemedLogo = livemedLogoAsset.url;
+import AppShell from "@/components/layout/AppShell";
 
 interface DiagnosticQuestion {
   id: number;
@@ -505,38 +504,24 @@ const DiagnosticAssessment = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur">
-        <div className="container mx-auto flex h-16 items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Link to="/dashboard" className="text-muted-foreground hover:text-foreground">
-              <ArrowLeft className="h-5 w-5" />
-            </Link>
+    <AppShell>
+      {assessmentStarted && !assessmentComplete && (
+        <div className="sticky top-14 z-40 border-b border-border bg-background/95 backdrop-blur">
+          <div className="container mx-auto flex h-10 items-center justify-between px-4 md:px-6 text-sm">
             <div className="flex items-center gap-2">
-              <ClipboardCheck className="h-5 w-5 text-accent" />
-              <h1 className="font-semibold">Diagnostic Assessment</h1>
+              <ClipboardCheck className="h-4 w-4 text-accent" />
+              <span className="font-medium">Diagnostic Assessment</span>
             </div>
-          </div>
-          
-          {assessmentStarted && !assessmentComplete && (
-            <div className="flex items-center gap-2 text-sm">
+            <div className="flex items-center gap-2">
               <Clock className="h-4 w-4" />
               <span className={timeRemaining < 300 ? "text-destructive font-bold" : ""}>
                 {formatTime(timeRemaining)}
               </span>
             </div>
-          )}
-          
-          <Link to="/dashboard">
-            <img src={livemedLogo} alt="Livemed" className="h-10 md:h-16 object-contain" />
-          </Link>
-        </div>
-        {assessmentStarted && !assessmentComplete && (
+          </div>
           <Progress value={((currentQuestion + 1) / diagnosticQuestions.length) * 100} className="h-1" />
-        )}
-      </header>
-
+        </div>
+      )}
       <div className="container mx-auto py-6 md:py-8 max-w-4xl">
         {/* Start Screen */}
         {!assessmentStarted && !assessmentComplete && (
@@ -903,7 +888,7 @@ const DiagnosticAssessment = () => {
           </div>
         )}
       </div>
-    </div>
+    </AppShell>
   );
 };
 

@@ -8,6 +8,7 @@ import { Card } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { supabase } from '@/integrations/supabase/client';
 import { useTranslation } from '@/i18n';
+import AppShell from '@/components/layout/AppShell';
 
 interface SessionStats {
   totalSessions: number;
@@ -71,7 +72,7 @@ export default function QBank() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <AppShell>
       <div className="bg-gradient-to-b from-primary/10 to-background border-b border-border">
         <div className="container mx-auto py-12">
           <div className="flex items-center justify-between">
@@ -224,6 +225,6 @@ export default function QBank() {
           </div>
         </div>
       </div>
-    </div>
+    </AppShell>
   );
 }

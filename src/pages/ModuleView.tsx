@@ -21,8 +21,7 @@ import {
   MessageSquare,
   Award,
 } from "lucide-react";
-import livemedLogoAsset from "@/assets/livemed-logo-light.png.asset.json";
-const livemedLogo = livemedLogoAsset.url;
+import AppShell from "@/components/layout/AppShell";
 
 interface Module {
   id: string;
@@ -340,31 +339,21 @@ const ModuleView = () => {
   if (!module) return null;
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur">
-        <div className="container mx-auto flex h-16 items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Link to="/curriculum" className="text-muted-foreground hover:text-foreground">
-              <ArrowLeft className="h-5 w-5" />
-            </Link>
-            <div>
-              <h1 className="font-semibold text-sm">{module.title}</h1>
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <Clock className="h-3 w-3" />
-                <span>{module.duration_minutes} min</span>
-                <span>•</span>
-                <span>{progress}% complete</span>
-              </div>
-            </div>
+    <AppShell>
+      <div className="sticky top-14 z-40 border-b border-border bg-background/95 backdrop-blur">
+        <div className="container mx-auto flex h-10 items-center justify-between px-4 md:px-6">
+          <div className="min-w-0">
+            <h1 className="truncate font-semibold text-sm">{module.title}</h1>
           </div>
-          <Link to="/dashboard">
-            <img src={livemedLogo} alt="Livemed" style={{ height: '80px', width: 'auto' }} className="object-contain" />
-          </Link>
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <Clock className="h-3 w-3" />
+            <span>{module.duration_minutes} min</span>
+            <span>•</span>
+            <span>{progress}% complete</span>
+          </div>
         </div>
         <Progress value={progress} className="h-1" />
-      </header>
-
+      </div>
       <div className="container mx-auto py-8 max-w-4xl">
         {/* Lesson Content */}
         {!isQuiz && lessonSections.length > 0 && (
@@ -603,7 +592,7 @@ const ModuleView = () => {
           </Card>
         )}
       </div>
-    </div>
+    </AppShell>
   );
 };
 

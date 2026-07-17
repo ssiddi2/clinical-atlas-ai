@@ -7,27 +7,17 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Progress } from "@/components/ui/progress";
 import {
   BookOpen, Stethoscope, Calendar, MessageSquare,
-  PlayCircle, FileText, LogOut, Settings, ShieldCheck, Target,
-  ClipboardCheck, Sparkles, Video, GraduationCap, ChevronRight, ChevronDown,
+  PlayCircle, FileText, Target,
+  ClipboardCheck, Sparkles, Video, GraduationCap, ChevronRight,
   CalendarCheck,
 } from "lucide-react";
-import livemedLogoAsset from "@/assets/livemed-logo-light.png.asset.json";
-const livemedLogo = livemedLogoAsset.url;
-import NotificationBell from "@/components/notifications/NotificationBell";
+import AppShell from "@/components/layout/AppShell";
 import VerificationBanner from "@/components/dashboard/VerificationBanner";
 import StudyPlanWidget from "@/components/dashboard/StudyPlanWidget";
 import LearningJourney from "@/components/dashboard/LearningJourney";
 import { MatchReadyWidget } from "@/components/score/MatchReadyWidget";
 import { useScorePredictor } from "@/hooks/useScorePredictor";
 import { useTranslation } from "@/i18n";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 
 interface ProfileData {
   onboarding_completed: boolean;
@@ -64,7 +54,6 @@ const Dashboard = () => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<ProfileData | null>(null);
-  const [isAdmin, setIsAdmin] = useState(false);
   const [upcomingLectures, setUpcomingLectures] = useState<UpcomingLecture[]>([]);
   const [courseProgressData, setCourseProgressData] = useState<CourseProgress[]>([]);
   const [continueLearning, setContinueLearning] = useState<ContinueLearningData | null>(null);
@@ -95,7 +84,6 @@ const Dashboard = () => {
       supabase.from("course_enrollments").select("course_id").eq("student_id", userId).eq("status", "approved"),
     ]);
     setProfile(profileRes.data);
-    setIsAdmin(!!adminRes.data);
 
     // Nudge students who finished onboarding but haven't taken the learning assessment.
     if (profileRes.data?.onboarding_completed && !profileRes.data?.learning_assessment_completed && !adminRes.data) {
@@ -181,11 +169,6 @@ const Dashboard = () => {
     }
   };
 
-  const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    navigate("/");
-  };
-
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -216,81 +199,7 @@ const Dashboard = () => {
     : [];
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Top Navigation */}
-      <header className="sticky top-0 z-50 border-b border-border/70 bg-background/85 backdrop-blur-xl">
-        <div className="container mx-auto px-4 md:px-6 flex h-14 items-center justify-between gap-8">
-          <div className="flex items-center gap-4">
-            <Link to="/dashboard" className="flex items-center">
-              <img src={livemedLogo} alt="Livemed Academy" className="h-8 object-contain" />
-            </Link>
-            <nav className="hidden md:flex items-center gap-3">
-              <Link
-                to="/curriculum"
-                className="text-sm font-medium text-foreground/70 hover:text-foreground transition-colors rounded-md px-2 py-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              >
-                {t("dashboard.curriculum")}
-              </Link>
-              <Link
-                to="/atlas"
-                className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold text-white bg-gradient-to-r from-blue-500 to-violet-500 shadow-sm hover:shadow-md hover:brightness-110 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-              >
-                <Sparkles className="h-3.5 w-3.5" />
-                ATLAS™
-              </Link>
-            </nav>
-          </div>
-
-
-          <div className="flex items-center gap-1.5">
-            {isAdmin && (
-              <Button variant="ghost" size="sm" onClick={() => navigate("/admin")} className="text-primary rounded-full">
-                <ShieldCheck className="h-5 w-5 mr-1" />
-                <span className="hidden sm:inline">{t("dashboard.admin")}</span>
-              </Button>
-            )}
-            <div className="rounded-full bg-muted/60 hover:bg-muted transition-colors">
-              <NotificationBell userId={user?.id || null} />
-            </div>
-            <Button
-              variant="ghost"
-              size="icon"
-              aria-label="Profile settings"
-              onClick={() => navigate("/profile")}
-              className="rounded-full bg-muted/60 hover:bg-muted text-foreground/80"
-            >
-              <Settings className="h-4 w-4" />
-            </Button>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button
-                  aria-label="Account menu"
-                  className="flex items-center gap-2 pl-1 pr-3 py-1 rounded-full border border-border hover:border-primary/40 hover:bg-muted/50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                >
-                  <Avatar className="h-8 w-8">
-                    <AvatarImage src={user?.user_metadata?.avatar_url} />
-                    <AvatarFallback className="text-xs font-semibold">
-                      {firstName.slice(0, 2).toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-                  <span className="text-sm font-medium hidden sm:inline">{firstName}</span>
-                  <ChevronDown className="h-4 w-4 text-muted-foreground" />
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-44">
-                <DropdownMenuItem onClick={() => navigate("/profile")}>
-                  <Settings className="h-4 w-4 mr-2" /> Profile
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleSignOut}>
-                  <LogOut className="h-4 w-4 mr-2" /> Sign out
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        </div>
-      </header>
-
+    <AppShell>
       {/* Main Content */}
       <main className="container mx-auto px-4 md:px-6 py-8 md:py-10 space-y-8">
         <VerificationBanner 
@@ -478,7 +387,7 @@ const Dashboard = () => {
           <StudyPlanWidget userId={user?.id || null} />
         </div>
       </main>
-    </div>
+    </AppShell>
   );
 };
 

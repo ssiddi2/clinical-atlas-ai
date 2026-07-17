@@ -12,8 +12,7 @@ import {
 } from "lucide-react";
 
 import { useTranslation } from "@/i18n/LanguageContext";
-import livemedLogoAsset from "@/assets/livemed-logo-light.png.asset.json";
-const livemedLogo = livemedLogoAsset.url;
+import AppShell from "@/components/layout/AppShell";
 
 interface EnrolledCourse {
   id: string;
@@ -139,24 +138,7 @@ const Curriculum = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur">
-        <div className="container mx-auto flex h-16 items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Link to="/dashboard" className="text-muted-foreground hover:text-foreground">
-              <ArrowLeft className="h-5 w-5" />
-            </Link>
-            <div className="flex items-center gap-2">
-              <BookOpen className="h-5 w-5 text-accent" />
-              <h1 className="font-semibold">{t("curriculum.title")}</h1>
-            </div>
-          </div>
-          <Link to="/dashboard">
-            <img src={livemedLogo} alt="Livemed" className="h-10 md:h-16 object-contain" />
-          </Link>
-        </div>
-      </header>
-
+    <AppShell>
       <div className="container mx-auto py-6 md:py-8">
         {courses.length === 0 ? (
           <Card className="bg-card/50 border-border/30">
@@ -243,7 +225,7 @@ const Curriculum = () => {
           </>
         )}
       </div>
-    </div>
+    </AppShell>
   );
 };
 
