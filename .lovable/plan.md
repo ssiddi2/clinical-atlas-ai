@@ -1,33 +1,70 @@
 ## Goal
-Refine `src/pages/Dashboard.tsx` so the student dashboard visually matches the attached reference exactly. No backend or data changes — presentation only.
+Rebuild the student dashboard so it exactly matches the attached reference — colors, spacing, illustrations, and section presence. Fix the parts that drifted in the last pass and remove sections that don't exist in the reference. Ensure responsive behavior at desktop/tablet/mobile.
 
-## Reference layout (from screenshot)
-1. **Header** — logo left, "Curriculum" + "ATLAS™" small links next to it, centered nav with icon-above-label items (My Courses, Virtual Classroom, Live Rounds, Assessments), right side: bell (with red count badge), settings gear, user pill (avatar + name + chevron).
-2. **Verification Pending banner** — soft amber background, orange alert icon, bold title + description, "View Status" outlined button on the right.
-3. **Welcome heading** — large bold `Welcome back, Dr. Sarah! 👋` with muted subline.
-4. **Quick action tiles (6)** — white cards with rounded colored square icon on the left, label wrapping to 2 lines, small chevron on the right. Colors: Ask ATLAS (blue), My Courses (purple), Virtual Classroom (green), Curriculum (amber), Live Rounds (red), Take Assessment (orange).
-5. **Two-column grid**:
-   - Left (2/3):
-     - **Take Your Diagnostic Assessment** card — dark blue circular target icon, title with blue "Recommended" pill, description, blue "Start Diagnostic" button + `~40 minutes` and `Personalized plan` meta, illustration on the right (clipboard + target).
-     - **Continue Where You Left Off** card — book icon title, inner light-gray panel with empty state ("No courses enrolled yet…") + outlined "Browse Courses" button.
-     - **Your Learning Journey** stat strip below with "This Week" selector.
-   - Right (1/3):
-     - **Upcoming** card — calendar icon, "View All" link, empty state illustration + "No upcoming sessions / You're all caught up!".
-     - **MATCH Ready™** card — lock icon, description, progress bar `0 of 25 questions … 0%`, full-width blue "Start Practice Assessment" button.
+## Precise diffs vs the reference (what to correct)
 
-## Changes to `src/pages/Dashboard.tsx`
-- **Header**: keep functionality; restyle desktop nav items as icon-above-label (stack `icon` + `text-xs`), add the "Curriculum / ATLAS™" secondary links directly to the right of the logo, and replace the bare Settings/LogOut icons on the right with: `NotificationBell`, gear button, and a user pill (`Avatar + first name + ChevronDown`) that opens a small dropdown containing Profile / Sign out. Reduce logo height to `h-8`.
-- **Quick actions**: change grid to 6 equal columns on `lg`, taller cards, colored `rounded-xl` icon tile (44px), label as 2-line `font-semibold text-sm`, `ChevronRight` on the right. Update color mapping to match reference (blue / purple / green / amber / red / orange).
-- **Diagnostic card**: switch to white card with subtle border (drop gradient background), add right-side illustration slot (use existing lucide icons composed: `ClipboardCheck` + `Target` inside a light-blue rounded panel) sized `~180px`, move "Recommended" pill inline with title as solid blue pill, ensure meta row uses muted icons.
-- **Upcoming card** (currently in right column further down): move it up so it sits directly beside the Diagnostic card. Add "View All" link in header. Render empty state with calendar illustration + two-line copy when `upcomingLectures` is empty.
-- **Continue Where You Left Off**: wrap empty state in nested `bg-muted/40 rounded-xl` panel with book icon avatar; primary CTA becomes outlined "Browse Courses" linking to `/courses`.
-- **MATCH Ready**: keep `MatchReadyWidget` but ensure it sits directly under Upcoming in the right column (already the case) and matches reference styling (verify progress row + full-width blue button; adjust wrapper only if needed).
-- **Learning Journey**: keep existing widget; ensure it renders full-width below the two-column grid with the "This Week" selector visible.
-- Ensure horizontal padding follows the site container rules (no changes to `tailwind.config.ts`).
+### Header
+- Nav icons are OUTLINED rounded squares with a small text label underneath — match reference sizing (icon tile ~36px, label `text-[11px]`, muted foreground). Currently close but the tiles read too heavy — reduce border weight and use `text-muted-foreground` with `hover:text-primary` only, no background fill.
+- Bell shows a red count badge (currently a subtle badge). Keep `NotificationBell` as-is — it already handles counts; verify styling matches.
+- User pill: circular avatar + first-name + chevron in a full pill (border, `rounded-full`). Confirm avatar size 32px and pill has subtle border. Already implemented — keep.
+
+### Verification banner (`src/components/dashboard/VerificationBanner.tsx`)
+- Reference background is soft cream/peach, not amber-yellow. Change to `bg-orange-50 border-orange-200`.
+- Icon is orange `AlertCircle` in matching orange color (`text-orange-500`), no filled circle background.
+- Title bolder (`font-semibold text-base`), description on two lines.
+- "View Status" button = outlined orange (`border-orange-300 text-orange-600 hover:bg-orange-100`).
+- Increase padding to `p-5` and radius `rounded-2xl`.
+
+### Welcome heading
+- Reference is very large — `text-4xl md:text-5xl font-bold`, tracking-tight, with waving hand emoji inline. Already `text-4xl` — bump to `md:text-5xl` and tighten spacing.
+
+### Quick action tiles
+- Reference tiles are BIG cards: `p-5`, icon tile `w-12 h-12 rounded-2xl`, label wraps to 2 lines (`font-semibold text-base leading-tight`), chevron `h-5 w-5 text-muted-foreground` on the right. Card border `rounded-2xl`.
+- Colors already correct.
+- Grid: 2 cols mobile, 3 cols tablet, 6 cols desktop — keep.
+
+### Left column
+1. **Diagnostic card** — reference:
+   - White card, `rounded-2xl`, subtle border.
+   - Header row: dark navy circle (`bg-primary`) with a concentric "target" icon (use `Target` — increase strokeWidth). Title + solid blue "Recommended" pill.
+   - Subline "Personalize your learning journey".
+   - Paragraph description.
+   - Solid blue `Start Diagnostic →` button with tighter arrow icon.
+   - Meta row with muted clock + target icons.
+   - RIGHT illustration: soft light-blue rounded panel with clipboard + target composition — keep current composition but scale up (`w-52 h-52`), use `text-primary` and add a small check bubble.
+2. **Continue Where You Left Off** — reference:
+   - Card header shows a small BLUE OPEN-BOOK icon (use `BookOpen` with `text-primary`) + title.
+   - Inner empty state: light gray `bg-slate-50 rounded-xl p-5` with book-icon avatar in a soft rounded tile on the left, two-line copy, and OUTLINED blue "Browse Courses" button on the right (`variant="outline" border-primary text-primary rounded-lg`).
+
+### Right column (sidebar)
+1. **Upcoming card** — matches reference (calendar icon, View All link, empty-state illustration + two-line copy). Already implemented — verify spacing.
+2. **MATCH Ready** — already `MatchReadyWidgetWrapper`. Verify visual against reference and adjust wrapper padding if needed.
+3. **REMOVE** the extra "Join Live Rounds" gradient card currently in the sidebar — not in the reference.
+
+### Bottom section
+- **REMOVE** the "ATLAS Chat Preview" card from the left column — not in the reference.
+- **Replace** `StudyPlanWidget` (which renders nothing without a plan) with a new **Learning Journey stat strip** matching the reference:
+  - Card header: title "Your Learning Journey" + subtitle "Track your progress and achievements", "This Week" select on the right.
+  - Body: 4-column grid of stat tiles (Study Time / Questions Answered / Topics Covered / Streak) each with a colored icon (blue/blue/green/purple), big number, unit label.
+  - Data source: fetch quick counts from existing tables — `question_attempts` for questions answered; if the queries are non-trivial, render zero-state numbers (matches reference which shows near-empty state).
+  - New file: `src/components/dashboard/LearningJourney.tsx`.
+  - Keep `StudyPlanWidget` mount only when a plan exists — render it BELOW the Learning Journey (non-blocking; it self-hides when empty).
+
+### Responsive rules
+- `grid-cols-1 lg:grid-cols-3` for the main split; stack on mobile.
+- Quick actions `grid-cols-2 md:grid-cols-3 lg:grid-cols-6`.
+- Learning Journey stats `grid-cols-2 md:grid-cols-4`.
+- Header center-icon nav hides below `lg`; on mobile keep logo + right cluster (bell/gear/user).
+- All cards use `rounded-2xl`, section spacing `gap-6 lg:gap-8`, main content `container mx-auto py-8`.
+
+## Files to modify
+- `src/pages/Dashboard.tsx` — apply header, quick-action, diagnostic, continue, sidebar, and section removals above.
+- `src/components/dashboard/VerificationBanner.tsx` — recolor pending banner.
+- `src/components/dashboard/LearningJourney.tsx` — NEW widget.
 
 ## Out of scope
-- No changes to data fetching, routing, RLS, i18n keys, or other pages (physician dashboard, admin, etc.).
-- No new assets — reuse `lucide-react` icons for illustrations.
+- No changes to physician/admin dashboards, RLS, i18n keys, or other pages.
 
 ## Verification
-After edits, run the Playwright visual check against `/dashboard` at 1280×1800 with the demo student session and compare to the reference screenshot; iterate on spacing/colors only if visible mismatches remain.
+- Type-check with `tsgo`.
+- Screenshot `/dashboard` at 1440 and 390 widths via Playwright with the demo student session and compare side-by-side with the reference. Iterate on spacing until visually aligned.

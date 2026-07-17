@@ -6,8 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import {
-  BookOpen, Brain, Stethoscope, Award, TrendingUp, Calendar, MessageSquare,
-  PlayCircle, FileText, LogOut, Settings, Bell, ShieldCheck, Target,
+  BookOpen, Stethoscope, Calendar, MessageSquare,
+  PlayCircle, FileText, LogOut, Settings, ShieldCheck, Target,
   ClipboardCheck, Sparkles, Video, GraduationCap, ChevronRight, ChevronDown,
   CalendarCheck,
 } from "lucide-react";
@@ -16,6 +16,7 @@ const livemedLogo = livemedLogoAsset.url;
 import NotificationBell from "@/components/notifications/NotificationBell";
 import VerificationBanner from "@/components/dashboard/VerificationBanner";
 import StudyPlanWidget from "@/components/dashboard/StudyPlanWidget";
+import LearningJourney from "@/components/dashboard/LearningJourney";
 import { MatchReadyWidget } from "@/components/score/MatchReadyWidget";
 import { useScorePredictor } from "@/hooks/useScorePredictor";
 import { useTranslation } from "@/i18n";
@@ -296,7 +297,7 @@ const Dashboard = () => {
 
         {/* Welcome Section */}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2 tracking-tight">
+          <h1 className="text-4xl md:text-5xl font-bold mb-2 tracking-tight">
             {t("dashboard.welcomeBack").replace("{name}", firstName)} <span aria-hidden>👋</span>
           </h1>
           <p className="text-muted-foreground">{t("dashboard.continueJourney")}</p>
@@ -306,13 +307,13 @@ const Dashboard = () => {
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4 mb-8">
           {quickActions.map((action) => (
             <Link key={action.label} to={action.href}>
-              <Card className="hover:shadow-livemed transition-all duration-300 hover:-translate-y-1 cursor-pointer h-full">
-                <CardContent className="p-4 flex items-center gap-3">
-                  <div className={`w-11 h-11 rounded-xl ${action.color} flex items-center justify-center flex-shrink-0 shadow-sm`}>
-                    <action.icon className="h-5 w-5 text-white" />
+              <Card className="hover:shadow-livemed transition-all duration-300 hover:-translate-y-1 cursor-pointer h-full rounded-2xl">
+                <CardContent className="p-5 flex items-center gap-3">
+                  <div className={`w-12 h-12 rounded-2xl ${action.color} flex items-center justify-center flex-shrink-0 shadow-sm`}>
+                    <action.icon className="h-6 w-6 text-white" />
                   </div>
-                  <span className="font-semibold text-sm leading-tight flex-1">{action.label}</span>
-                  <ChevronRight className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                  <span className="font-semibold text-[15px] leading-tight flex-1">{action.label}</span>
+                  <ChevronRight className="h-5 w-5 text-muted-foreground flex-shrink-0" />
                 </CardContent>
               </Card>
             </Link>
@@ -400,60 +401,6 @@ const Dashboard = () => {
               </CardContent>
             </Card>
 
-            {/* Progress Overview */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <TrendingUp className="h-5 w-5 text-accent" />
-                  {t("dashboard.yourProgress")}
-                </CardTitle>
-                <CardDescription>{t("dashboard.competencyBySystem")}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                {courseProgressData.length > 0 ? (
-                  <div className="space-y-4">
-                    {courseProgressData.map((item) => (
-                      <div key={item.courseTitle} className="space-y-2">
-                        <div className="flex justify-between text-sm">
-                          <span className="font-medium">{item.courseTitle}</span>
-                          <span className="text-muted-foreground">
-                            {item.progress}% ({item.completedTopics}/{item.totalTopics} topics)
-                          </span>
-                        </div>
-                        <Progress value={item.progress} className="h-2" />
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-muted-foreground text-sm">No course progress yet. Enroll in a course to start tracking your progress.</p>
-                )}
-              </CardContent>
-            </Card>
-
-            {/* ATLAS Chat Preview */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Brain className="h-5 w-5 text-accent" />
-                  {t("dashboard.askAtlasTitle")}
-                </CardTitle>
-                <CardDescription>{t("dashboard.aiReady")}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="bg-muted/50 rounded-lg p-4 mb-4">
-                  <p className="text-sm text-muted-foreground italic">
-                    "I noticed you're studying heart failure. Would you like me to explain the 
-                    pathophysiology of HFrEF vs HFpEF, or should we review the treatment algorithm?"
-                  </p>
-                </div>
-                <Button variant="outline" className="w-full" asChild>
-                  <Link to="/atlas">
-                    <MessageSquare className="mr-2 h-4 w-4" />
-                    {t("dashboard.startConversation")}
-                  </Link>
-                </Button>
-              </CardContent>
-            </Card>
           </div>
 
           {/* Sidebar */}
@@ -495,25 +442,12 @@ const Dashboard = () => {
             </Card>
 
             <MatchReadyWidgetWrapper userId={user?.id || null} />
-
-            <Card className="gradient-livemed text-white">
-              <CardContent className="p-6">
-                <Stethoscope className="h-8 w-8 mb-4 opacity-80" />
-                <h3 className="font-semibold text-lg mb-2">{t("dashboard.joinLiveRounds")}</h3>
-                <p className="text-sm text-white/80 mb-4">{t("dashboard.joinLiveRoundsDesc")}</p>
-                <Button variant="secondary" className="w-full" asChild>
-                  <Link to="/virtual-rounds">{t("dashboard.viewSessions")}</Link>
-                </Button>
-                <Button variant="ghost" className="w-full mt-2 text-white/80 hover:text-white hover:bg-white/10" asChild>
-                  <Link to="/rotation-experience">{t("dashboard.practiceCases")}</Link>
-                </Button>
-              </CardContent>
-            </Card>
           </div>
         </div>
 
         {/* Learning Journey — full width below main grid */}
-        <div className="mt-8">
+        <div className="mt-8 space-y-6">
+          <LearningJourney userId={user?.id || null} />
           <StudyPlanWidget userId={user?.id || null} />
         </div>
       </main>
