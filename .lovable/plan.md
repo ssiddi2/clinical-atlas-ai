@@ -1,24 +1,19 @@
-## Goal
-When a physician invites a student (or triggers any classroom/course event), the student's bell should update in real time and clicking the notification should land them on the correct action page.
+## Root cause
 
-## Current state (verified)
-- `notifications` table is in the `supabase_realtime` publication — `NotificationBell` already subscribes via `postgres_changes` filtered by `user_id`, so new rows arrive instantly (no 60s poll).
-- The invite edge function writes a notification with `link: /courses/${courseId}`. That route (`/courses/:id`) exists and loads `CourseDetail.tsx` for the enrolled student.
-- Triggers on `virtual_classrooms`, `course_materials`, `course_quizzes` fan out to `notifications` for all approved enrollees with links to `/virtual-classroom` or `/courses/:id` (both routed).
-- `NotificationBell.handleClick` marks read + `navigate(n.link)` + closes the popover.
+Notification links point to `/courses/:id`. In `src/pages/CourseDetail.tsx`, when the course row can't be loaded (RLS blocks read for a not-yet-approved enrollee, or the id doesn't resolve), the component returns `null` at line 100:
 
-## Gaps to fix
-1. **Invite deep-link is too generic.** `/courses/:id` opens the course overview but doesn't scream "you were just invited". Change the invite notification link to `/courses/${courseId}?welcome=1` and have `CourseDetail.tsx` show a one-time toast "You've been enrolled by {instructor}" when the flag is present.
-2. **Navigation guard on invited students.** When a freshly-invited student clicks the bell before their session hydrates, `CourseDetail.loadData()` bounces them to `/auth`. Wait for `getSession()` (not just `getUser()`) and, if missing, redirect back to the same course URL after login instead of losing the deep link.
-3. **Lecture-live notifications land on `/virtual-classroom` list.** If the payload row carries a classroom id, deep-link to `/virtual-classroom?lectureId={id}` and auto-scroll/highlight that card so "join now" is one click, not a scan.
-4. **Realtime resiliency in the bell.** Add a `SUBSCRIBED` status check + one-time refetch on reconnect so a dropped socket (tab sleep, network blip) doesn't silently stop delivering.
+```
+if (!course) return null;
+```
 
-## Out of scope
-Email/push channels, dashboard "Upcoming from your instructors" strip (already listed as layer 2 in `.lovable/plan.md`).
+React Router happily mounts the route and the page renders a blank white screen. Same failure mode exists in `VirtualClassroom.tsx` (the other notification target). Auth redirect via `?next=` is already wired correctly.
 
-## Files to touch
-- `src/components/notifications/NotificationBell.tsx` — reconnect refetch, keep existing realtime channel.
-- `src/pages/CourseDetail.tsx` — session-safe redirect, `?welcome=1` toast.
-- `src/pages/VirtualClassroom.tsx` — read `?lectureId=` and scroll/highlight.
-- `supabase/functions/physician-invite-students/index.ts` — append `?welcome=1` to the notification link.
-- Migration: update `tg_notify_virtual_classroom` to include `?lectureId=NEW.id` in the link.
+## Fix
+
+1. **`src/pages/CourseDetail.tsx`** — replace `if (!course) return null;` with an `AppShell`-wrapped fallback: a card explaining the course can't be opened (either not enrolled yet, awaiting approval, or removed) plus a "Back to Dashboard" button. Also add a try/catch around `loadData` so a thrown error shows the same fallback instead of leaving `loading=true` forever.
+
+2. **`src/pages/VirtualClassroom.tsx`** — audit the equivalent early-return and apply the same fallback pattern so `?lectureId=...` notifications never render blank.
+
+3. **`src/components/notifications/NotificationBell.tsx`** — guard `handleClick` so a malformed link (empty string, external URL) falls back to `/dashboard` instead of navigating to a non-route.
+
+No schema or notification-trigger changes needed.
