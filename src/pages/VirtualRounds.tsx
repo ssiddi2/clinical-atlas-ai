@@ -456,7 +456,7 @@ const VirtualRounds = () => {
           </Card>
         </div>
       </div>
-    </div>
+    </AppShell>
   );
 };
 
