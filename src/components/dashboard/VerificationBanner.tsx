@@ -36,15 +36,18 @@ const VerificationBanner = ({ status, onboardingCompleted }: VerificationBannerP
   // Pending verification
   if (status === 'pending') {
     return (
-      <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-4 mb-6">
-        <div className="flex items-start gap-3">
-          <Clock className="h-5 w-5 text-amber-500 flex-shrink-0 mt-0.5" />
+      <div className="bg-amber-50 border border-amber-200 rounded-2xl p-5 mb-8">
+        <div className="flex items-start gap-4">
+          <AlertCircle className="h-6 w-6 text-amber-500 flex-shrink-0 mt-0.5" />
           <div className="flex-1">
-            <h4 className="font-medium text-sm mb-1">{t("dashboard.verification.pending")}</h4>
+            <h4 className="font-semibold text-base mb-1">{t("dashboard.verification.pending")}</h4>
             <p className="text-sm text-muted-foreground">
               {t("dashboard.verification.pendingDesc")}
             </p>
           </div>
+          <Button asChild size="sm" variant="outline" className="border-amber-300 text-amber-700 hover:bg-amber-100 hover:text-amber-800">
+            <Link to="/profile">View Status</Link>
+          </Button>
         </div>
       </div>
     );
