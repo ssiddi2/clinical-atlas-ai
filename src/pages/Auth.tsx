@@ -33,59 +33,62 @@ const Auth = () => {
   const [signupRole, setSignupRole] = useState<"student" | "physician">("student");
 
   useEffect(() => {
+    let redirecting = false;
+
     const handleAuthRedirect = async (session: any) => {
-      if (!session) return;
+      if (!session || redirecting) return;
+      redirecting = true;
 
       // Honor `next` param (used by MCP OAuth consent flow, invite links, etc.)
       const nextParam = searchParams.get("next");
       if (nextParam && nextParam.startsWith("/") && !nextParam.startsWith("//")) {
-        navigate(nextParam);
+        navigate(nextParam, { replace: true });
         return;
       }
 
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("onboarding_completed, account_status")
-        .eq("user_id", session.user.id)
-        .single();
+      // Parallelize profile + roles fetch
+      const [{ data: profile }, { data: roles }] = await Promise.all([
+        supabase
+          .from("profiles")
+          .select("onboarding_completed, account_status")
+          .eq("user_id", session.user.id)
+          .maybeSingle(),
+        supabase
+          .from("user_roles")
+          .select("role")
+          .eq("user_id", session.user.id),
+      ]);
 
-      // Check role for routing
-      const { data: roles } = await supabase
-        .from("user_roles")
-        .select("role")
-        .eq("user_id", session.user.id);
+      const isPhysician = roles?.some((r: any) => r.role === "physician" || r.role === "faculty");
+      const isAdmin = roles?.some((r: any) => r.role === "platform_admin");
 
-      const isPhysician = roles?.some(r => r.role === "physician" || r.role === "faculty");
-      const isAdmin = roles?.some(r => r.role === "platform_admin");
-
-      // Admins and physicians skip pending approval check
       if (!isPhysician && !isAdmin && profile?.account_status === "pending_approval") {
-        navigate("/pending-approval");
+        navigate("/pending-approval", { replace: true });
         return;
       }
       if (profile?.account_status === "suspended") {
         toast({ title: t("auth.accountSuspended"), description: t("auth.accountSuspendedDesc"), variant: "destructive" });
         await supabase.auth.signOut();
+        redirecting = false;
         return;
       }
 
-      if (isAdmin) {
-        navigate("/admin");
-      } else if (isPhysician) {
-        navigate("/physician-dashboard");
-      } else if (profile?.onboarding_completed) {
-        navigate("/dashboard");
-      } else {
-        navigate("/onboarding");
-      }
+      if (isAdmin) navigate("/admin", { replace: true });
+      else if (isPhysician) navigate("/physician-dashboard", { replace: true });
+      else if (profile?.onboarding_completed) navigate("/dashboard", { replace: true });
+      else navigate("/onboarding", { replace: true });
     };
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (session) await handleAuthRedirect(session);
+    // Register listener first — never await inside the callback.
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session) {
+        setTimeout(() => { handleAuthRedirect(session); }, 0);
+      }
     });
 
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
-      if (session) await handleAuthRedirect(session);
+    // Initial session check
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) handleAuthRedirect(session);
     });
 
     return () => subscription.unsubscribe();
