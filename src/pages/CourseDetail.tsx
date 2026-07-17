@@ -28,6 +28,8 @@ const CourseDetail = () => {
   const [enrollments, setEnrollments] = useState<any[]>([]);
   const [lectures, setLectures] = useState<any[]>([]);
   const [isInstructor, setIsInstructor] = useState(false);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [respondingInvite, setRespondingInvite] = useState(false);
   const [loading, setLoading] = useState(true);
   const [showEditCourse, setShowEditCourse] = useState(false);
   const [showCreateLecture, setShowCreateLecture] = useState(false);
@@ -44,6 +46,7 @@ const CourseDetail = () => {
         navigate(`/auth?next=${encodeURIComponent(next)}`);
         return;
       }
+      setCurrentUserId(user.id);
 
       const [courseRes, enrollRes, lecturesRes] = await Promise.all([
         supabase.from("courses").select("*, specialties(name)").eq("id", id!).maybeSingle(),
