@@ -219,8 +219,8 @@ const Dashboard = () => {
     <div className="min-h-screen bg-background">
       {/* Top Navigation */}
       <header className="sticky top-0 z-50 border-b border-border/70 bg-background/85 backdrop-blur-xl">
-        <div className="container mx-auto px-4 md:px-6 flex h-16 items-center justify-between gap-8">
-          <div className="flex items-center gap-6">
+        <div className="container mx-auto px-4 md:px-6 flex h-14 items-center justify-between gap-8">
+          <div className="flex items-center gap-4">
             <Link to="/dashboard" className="flex items-center">
               <img src={livemedLogo} alt="Livemed Academy" className="h-8 object-contain" />
             </Link>
@@ -242,16 +242,24 @@ const Dashboard = () => {
           </div>
 
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5">
             {isAdmin && (
-              <Button variant="ghost" size="sm" onClick={() => navigate("/admin")} className="text-primary">
+              <Button variant="ghost" size="sm" onClick={() => navigate("/admin")} className="text-primary rounded-full">
                 <ShieldCheck className="h-5 w-5 mr-1" />
                 <span className="hidden sm:inline">{t("dashboard.admin")}</span>
               </Button>
             )}
-            <NotificationBell userId={user?.id || null} />
-            <Button variant="ghost" size="icon" aria-label="Profile settings" onClick={() => navigate("/profile")}>
-              <Settings className="h-5 w-5" />
+            <div className="rounded-full bg-muted/60 hover:bg-muted transition-colors">
+              <NotificationBell userId={user?.id || null} />
+            </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label="Profile settings"
+              onClick={() => navigate("/profile")}
+              className="rounded-full bg-muted/60 hover:bg-muted text-foreground/80"
+            >
+              <Settings className="h-4 w-4" />
             </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -284,7 +292,7 @@ const Dashboard = () => {
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 md:px-6 py-10 md:py-12 space-y-10 md:space-y-12">
+      <main className="container mx-auto px-4 md:px-6 py-8 md:py-10 space-y-8">
         <VerificationBanner 
           status={profile?.verification_status as 'pending' | 'verified' | 'rejected' | null}
           onboardingCompleted={profile?.onboarding_completed || false}
@@ -292,15 +300,15 @@ const Dashboard = () => {
 
         {/* Welcome Section */}
         <div>
-          <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground">
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-foreground">
             {t("dashboard.welcomeBack").replace("{name}", firstName)} <span aria-hidden>👋</span>
           </h1>
-          <p className="mt-2 text-[15px] text-muted-foreground">{t("dashboard.continueJourney")}</p>
+          <p className="mt-1.5 text-[15px] text-muted-foreground">{t("dashboard.continueJourney")}</p>
         </div>
 
         {/* Quick Actions */}
         <section aria-label="Quick actions">
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
             {quickActions.map((action) => (
               <Link
                 key={action.label}
@@ -309,9 +317,9 @@ const Dashboard = () => {
                 aria-label={action.label}
               >
                 <Card className="h-full rounded-2xl border-border/70 shadow-sm hover:shadow-md hover:border-border transition-all duration-200 group-hover:-translate-y-0.5">
-                  <CardContent className="p-4 flex items-center gap-3">
-                    <div className={`w-10 h-10 rounded-xl ${action.color} flex items-center justify-center flex-shrink-0`}>
-                      <action.icon className="h-[18px] w-[18px] text-white" strokeWidth={2.25} />
+                  <CardContent className="p-4 flex items-center gap-3.5">
+                    <div className={`w-11 h-11 rounded-xl ${action.color} flex items-center justify-center flex-shrink-0 shadow-sm`}>
+                      <action.icon className="h-5 w-5 text-white" strokeWidth={2.25} />
                     </div>
                     <span className="font-semibold text-[14px] leading-tight flex-1 text-foreground">{action.label}</span>
                   </CardContent>
@@ -321,14 +329,14 @@ const Dashboard = () => {
           </div>
         </section>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 space-y-6">
+        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_360px] gap-6">
+          <div className="space-y-6 min-w-0">
             {/* Diagnostic Assessment Promotion */}
             {!hasTakenDiagnostic && (
               <Card className="relative overflow-hidden rounded-2xl border-primary/15 shadow-md bg-gradient-to-br from-primary/[0.06] via-background to-background">
                 <div aria-hidden className="pointer-events-none absolute -top-24 -right-16 w-72 h-72 rounded-full bg-primary/10 blur-3xl" />
                 <CardContent className="relative p-6 md:p-8 flex items-start gap-6">
-                  <div className="flex-1 min-w-0">
+                  <div className="flex-1 min-w-0 max-w-lg">
                     <div className="flex items-center gap-3 mb-4">
                       <div className="w-12 h-12 rounded-2xl bg-primary flex items-center justify-center flex-shrink-0 shadow-sm ring-4 ring-primary/10">
                         <Target className="h-6 w-6 text-white" />
@@ -355,8 +363,8 @@ const Dashboard = () => {
                       </div>
                     </div>
                   </div>
-                  <div aria-hidden className="hidden md:flex w-40 h-40 rounded-2xl bg-primary/5 border border-primary/10 items-center justify-center flex-shrink-0 relative">
-                    <ClipboardCheck className="h-20 w-20 text-primary" strokeWidth={1.5} />
+                  <div aria-hidden className="hidden md:flex w-44 h-44 rounded-2xl bg-gradient-to-br from-primary to-primary/70 items-center justify-center flex-shrink-0 relative shadow-lg shadow-primary/20">
+                    <ClipboardCheck className="h-20 w-20 text-white" strokeWidth={1.5} />
                     <div className="absolute bottom-3 right-3 w-12 h-12 rounded-full bg-background shadow-md flex items-center justify-center ring-1 ring-border">
                       <Target className="h-7 w-7 text-primary" strokeWidth={2} />
                     </div>
@@ -368,8 +376,10 @@ const Dashboard = () => {
             {/* Continue Learning Card */}
             <Card className="rounded-2xl border-border/70 shadow-sm">
               <CardHeader className="pb-3">
-                <CardTitle className="flex items-center gap-2 text-base font-semibold">
-                  <BookOpen className="h-4 w-4 text-primary" />
+                <CardTitle className="flex items-center gap-2.5 text-base font-semibold">
+                  <span className="w-9 h-9 rounded-xl bg-blue-500 text-white flex items-center justify-center shadow-sm">
+                    <BookOpen className="h-4.5 w-4.5" />
+                  </span>
                   {t("dashboard.continueWhereLeft")}
                 </CardTitle>
               </CardHeader>
@@ -391,8 +401,8 @@ const Dashboard = () => {
                   </Link>
                 ) : (
                   <div className="flex items-center gap-4 p-5 bg-muted/30 rounded-xl border border-dashed border-border">
-                    <div className="w-12 h-12 rounded-xl bg-background border border-border flex items-center justify-center flex-shrink-0">
-                      <BookOpen className="h-5 w-5 text-muted-foreground" />
+                    <div className="w-12 h-12 rounded-xl bg-slate-500 flex items-center justify-center flex-shrink-0 shadow-sm">
+                      <BookOpen className="h-5 w-5 text-white" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="font-semibold text-sm text-foreground">No courses enrolled yet</p>
@@ -410,11 +420,13 @@ const Dashboard = () => {
 
           {/* Sidebar */}
           <div className="space-y-6">
-            <Card className="rounded-2xl border-border/70 shadow-sm">
+            <Card className="rounded-2xl border-border/70 shadow-sm min-h-[220px]">
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
-                  <CardTitle className="flex items-center gap-2 text-base font-semibold">
-                    <Calendar className="h-4 w-4 text-primary" />
+                  <CardTitle className="flex items-center gap-2.5 text-base font-semibold">
+                    <span className="w-9 h-9 rounded-xl bg-violet-500 text-white flex items-center justify-center shadow-sm">
+                      <Calendar className="h-4.5 w-4.5" />
+                    </span>
                     {t("dashboard.upcoming")}
                   </CardTitle>
                   <Link
@@ -446,8 +458,8 @@ const Dashboard = () => {
                   </ul>
                 ) : (
                   <div className="flex flex-col items-center justify-center py-8 text-center">
-                    <div className="w-16 h-16 rounded-2xl bg-primary/5 border border-primary/10 flex items-center justify-center mb-3">
-                      <CalendarCheck className="h-8 w-8 text-primary/70" strokeWidth={1.5} aria-hidden />
+                    <div className="w-16 h-16 rounded-2xl bg-emerald-500 flex items-center justify-center mb-3 shadow-sm">
+                      <CalendarCheck className="h-8 w-8 text-white" strokeWidth={1.5} aria-hidden />
                     </div>
                     <p className="font-semibold text-sm text-foreground">No upcoming sessions</p>
                     <p className="text-xs text-muted-foreground mt-1">You're all caught up!</p>
