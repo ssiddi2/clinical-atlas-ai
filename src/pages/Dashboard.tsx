@@ -9,7 +9,7 @@ import {
   BookOpen, Stethoscope, Calendar, MessageSquare,
   PlayCircle, FileText, Target,
   ClipboardCheck, Sparkles, Video, GraduationCap, ChevronRight,
-  CalendarCheck,
+  CalendarCheck, Mail,
 } from "lucide-react";
 import AppShell from "@/components/layout/AppShell";
 import VerificationBanner from "@/components/dashboard/VerificationBanner";
@@ -57,6 +57,7 @@ const Dashboard = () => {
   const [upcomingLectures, setUpcomingLectures] = useState<UpcomingLecture[]>([]);
   const [courseProgressData, setCourseProgressData] = useState<CourseProgress[]>([]);
   const [continueLearning, setContinueLearning] = useState<ContinueLearningData | null>(null);
+  const [pendingInvitesCount, setPendingInvitesCount] = useState(0);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
@@ -78,12 +79,14 @@ const Dashboard = () => {
 
   const loadProfileAndCheckAdmin = async (userId: string) => {
     // Fetch profile, admin check, and enrolled course IDs
-    const [profileRes, adminRes, courseEnrollRes] = await Promise.all([
+    const [profileRes, adminRes, courseEnrollRes, invitesRes] = await Promise.all([
       supabase.from("profiles").select("onboarding_completed, verification_status, weak_areas, learning_assessment_completed").eq("user_id", userId).maybeSingle(),
       supabase.rpc("has_role", { _user_id: userId, _role: "platform_admin" }),
       supabase.from("course_enrollments").select("course_id").eq("student_id", userId).eq("status", "approved"),
+      supabase.from("course_enrollments").select("id", { count: "exact", head: true }).eq("student_id", userId).eq("status", "invited"),
     ]);
     setProfile(profileRes.data);
+    setPendingInvitesCount(invitesRes.count || 0);
 
     // Nudge students who finished onboarding but haven't taken the learning assessment.
     if (profileRes.data?.onboarding_completed && !profileRes.data?.learning_assessment_completed && !adminRes.data) {
