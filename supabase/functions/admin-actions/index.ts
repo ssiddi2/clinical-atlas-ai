@@ -51,7 +51,32 @@ serve(async (req) => {
       });
     }
 
-    const { action, userId, documentIds, rejectionReason, newStatus } = await req.json();
+    const { action, userId, userIds, documentIds, rejectionReason, newStatus } = await req.json();
+
+    // list_emails supports a batch fetch and doesn't need userId
+    if (action === "list_emails") {
+      const ids: string[] = Array.isArray(userIds) ? userIds.filter((x) => typeof x === "string") : [];
+      if (ids.length === 0) {
+        return new Response(JSON.stringify({ emails: {} }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      // auth.admin.listUsers is paginated; fetch up to 1000 users to build a map.
+      const map: Record<string, string> = {};
+      let page = 1;
+      while (page <= 10) {
+        const { data, error } = await supabase.auth.admin.listUsers({ page, perPage: 1000 });
+        if (error) break;
+        for (const u of data.users) {
+          if (u.email && ids.includes(u.id)) map[u.id] = u.email;
+        }
+        if (!data.users || data.users.length < 1000) break;
+        page++;
+      }
+      return new Response(JSON.stringify({ emails: map }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
 
     if (!action || !userId) {
       return new Response(JSON.stringify({ error: "action and userId are required" }), {
