@@ -36,21 +36,22 @@ const CourseDetail = () => {
   useEffect(() => { if (id) loadData(); }, [id]);
 
   const loadData = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    const user = session?.user;
-    if (!user) {
-      const next = `/courses/${id}${window.location.search}`;
-      navigate(`/auth?next=${encodeURIComponent(next)}`);
-      return;
-    }
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const user = session?.user;
+      if (!user) {
+        const next = `/courses/${id}${window.location.search}`;
+        navigate(`/auth?next=${encodeURIComponent(next)}`);
+        return;
+      }
 
-    const [courseRes, enrollRes, lecturesRes] = await Promise.all([
-      supabase.from("courses").select("*, specialties(name)").eq("id", id!).single(),
-      supabase.from("course_enrollments").select("*, profiles:student_id(first_name, last_name, user_id)").eq("course_id", id!),
-      supabase.from("virtual_classrooms").select("*").eq("course_id", id!).order("scheduled_start"),
-    ]);
+      const [courseRes, enrollRes, lecturesRes] = await Promise.all([
+        supabase.from("courses").select("*, specialties(name)").eq("id", id!).maybeSingle(),
+        supabase.from("course_enrollments").select("*, profiles:student_id(first_name, last_name, user_id)").eq("course_id", id!),
+        supabase.from("virtual_classrooms").select("*").eq("course_id", id!).order("scheduled_start"),
+      ]);
 
-    if (courseRes.data) {
+      if (courseRes.data) {
       setCourse(courseRes.data);
       setIsInstructor(courseRes.data.instructor_id === user.id);
       if (searchParams.get("welcome") === "1") {
@@ -61,10 +62,14 @@ const CourseDetail = () => {
         searchParams.delete("welcome");
         setSearchParams(searchParams, { replace: true });
       }
+      }
+      if (enrollRes.data) setEnrollments(enrollRes.data);
+      if (lecturesRes.data) setLectures(lecturesRes.data);
+    } catch (err) {
+      console.error("Failed to load course:", err);
+    } finally {
+      setLoading(false);
     }
-    if (enrollRes.data) setEnrollments(enrollRes.data);
-    if (lecturesRes.data) setLectures(lecturesRes.data);
-    setLoading(false);
   };
 
   const handleEnrollmentAction = async (enrollmentId: string, status: string) => {
@@ -97,7 +102,32 @@ const CourseDetail = () => {
     );
   }
 
-  if (!course) return null;
+  if (!course) {
+    return (
+      <AppShell>
+        <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+          <Card>
+            <CardHeader>
+              <CardTitle>Course unavailable</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-sm text-muted-foreground">
+                We couldn't open this course. It may have been removed, or your enrollment is still pending approval by the instructor.
+              </p>
+              <div className="flex gap-2">
+                <Button onClick={() => navigate("/dashboard")}>
+                  <ArrowLeft className="h-4 w-4 mr-1" /> Back to Dashboard
+                </Button>
+                <Button variant="outline" onClick={() => navigate("/courses")}>
+                  Browse Courses
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </AppShell>
+    );
+  }
 
   const pending = enrollments.filter(e => e.status === "pending");
   const approved = enrollments.filter(e => e.status === "approved");
