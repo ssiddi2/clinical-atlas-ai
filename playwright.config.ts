@@ -1,5 +1,14 @@
 import { defineConfig, devices } from "@playwright/test";
 
+// Optional override: point `@playwright/test` at a system-installed Chromium.
+// Useful inside sandboxes / CI runners where the bundled browser can't be
+// downloaded or is missing shared libs. Set PW_CHROMIUM_PATH=/bin/chromium
+// (or similar) to opt in. Falls back to Playwright's bundled browser.
+const chromiumExecutablePath = process.env.PW_CHROMIUM_PATH;
+const launchOverride = chromiumExecutablePath
+  ? { launchOptions: { executablePath: chromiumExecutablePath } }
+  : {};
+
 /**
  * Visual regression tests for the design system.
  * Run: `bunx playwright test` (compares against baselines)
@@ -32,11 +41,15 @@ export default defineConfig({
   projects: [
     {
       name: "desktop-chromium",
-      use: { ...devices["Desktop Chrome"], viewport: { width: 1280, height: 900 } },
+      use: {
+        ...devices["Desktop Chrome"],
+        viewport: { width: 1280, height: 900 },
+        ...launchOverride,
+      },
     },
     {
       name: "mobile-chromium",
-      use: { ...devices["Pixel 7"] },
+      use: { ...devices["Pixel 7"], ...launchOverride },
     },
   ],
   webServer: {
