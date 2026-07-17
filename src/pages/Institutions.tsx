@@ -31,34 +31,34 @@ const Institutions = () => {
 
   return (
     <main className="flex-1">
-      <section className="relative py-20 md:py-28 overflow-hidden">
-        <div className="absolute inset-0 gradient-livemed" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(255,255,255,0.1),transparent_50%)]" />
-        <div className="container mx-auto px-4 relative">
-          <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 bg-white/10 text-white px-4 py-2 rounded-full text-sm font-medium mb-6">
-              <Building2 className="h-4 w-4" />
-              {t("institutions.badge")}
-            </div>
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">{t("institutions.title")}</h1>
-            <p className="text-lg text-white/80 mb-8">{t("institutions.subtitle")}</p>
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Button size="lg" variant="secondary" asChild>
-                <Link to="/contact">{t("institutions.requestDemo")}<ArrowRight className="ml-2 h-5 w-5" /></Link>
-              </Button>
-              <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10" asChild>
-                <Link to="/case-studies">{t("institutions.viewCaseStudies")}</Link>
-              </Button>
+      <section className="relative py-16 md:py-20 overflow-hidden">
+        <div className="container mx-auto px-4">
+          <div className="cta-surface rounded-[32px] p-10 md:p-16 max-w-6xl mx-auto">
+            <div className="max-w-3xl">
+              <div className="inline-flex items-center gap-2 bg-white/10 text-white px-4 py-2 rounded-full text-sm font-medium mb-6">
+                <Building2 className="h-4 w-4" />
+                {t("institutions.badge")}
+              </div>
+              <h1 className="font-display text-4xl md:text-5xl font-bold text-white mb-6">{t("institutions.title")}</h1>
+              <p className="text-lg text-white/80 mb-8">{t("institutions.subtitle")}</p>
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Button size="lg" variant="secondary" className="bg-white text-primary hover:bg-white/90" asChild>
+                  <Link to="/contact">{t("institutions.requestDemo")}<ArrowRight className="ml-2 h-5 w-5" /></Link>
+                </Button>
+                <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10" asChild>
+                  <Link to="/case-studies">{t("institutions.viewCaseStudies")}</Link>
+                </Button>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="py-12 border-b border-border">
+      <section className="py-12 border-b border-border bg-section-tinted">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {stats.map((stat) => (
-              <div key={stat.label} className="text-center">
+              <div key={stat.label} className="lm-card text-center p-6">
                 <div className="text-3xl md:text-4xl font-bold text-gradient-livemed mb-2">{stat.value}</div>
                 <div className="text-sm text-muted-foreground">{stat.label}</div>
               </div>
@@ -70,48 +70,42 @@ const Institutions = () => {
       <section className="py-20">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">{t("institutions.whyChoose")}</h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">{t("institutions.whyChooseDesc")}</p>
+            <h2 className="font-display text-3xl md:text-4xl font-bold mb-4">{t("institutions.whyChoose")}</h2>
+            <p className="text-lg text-soft max-w-2xl mx-auto">{t("institutions.whyChooseDesc")}</p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {benefits.map((benefit) => (
-              <Card key={benefit.title} className="hover:shadow-livemed transition-all duration-300">
-                <CardContent className="p-6">
-                  <div className="w-12 h-12 rounded-xl gradient-livemed flex items-center justify-center mb-4">
-                    <benefit.icon className="h-6 w-6 text-white" />
-                  </div>
-                  <h3 className="font-semibold text-lg mb-2">{benefit.title}</h3>
-                  <p className="text-sm text-muted-foreground">{benefit.description}</p>
-                </CardContent>
-              </Card>
+              <article key={benefit.title} className="lm-card lm-card-interactive p-6">
+                <div className="w-12 h-12 rounded-xl gradient-livemed flex items-center justify-center mb-4">
+                  <benefit.icon className="h-6 w-6 text-white" />
+                </div>
+                <h3 className="font-semibold text-lg mb-2">{benefit.title}</h3>
+                <p className="text-sm text-soft">{benefit.description}</p>
+              </article>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="py-20 bg-muted/30">
+      <section className="py-20 bg-section-tinted">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">{t("institutions.solutions")}</h2>
+            <h2 className="font-display text-3xl md:text-4xl font-bold mb-4">{t("institutions.solutions")}</h2>
           </div>
           <div className="grid md:grid-cols-3 gap-6">
             {useCases.map((useCase) => (
-              <Card key={useCase.title} className="h-full">
-                <CardHeader>
-                  <CardTitle>{useCase.title}</CardTitle>
-                  <CardDescription>{useCase.description}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2">
-                    {useCase.features.map((feature) => (
-                      <div key={feature} className="flex items-center gap-2 text-sm">
-                        <CheckCircle className="h-4 w-4 text-accent" />
-                        <span className="text-muted-foreground">{feature}</span>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
+              <article key={useCase.title} className="lm-card p-6 h-full">
+                <h3 className="text-lg font-semibold mb-2">{useCase.title}</h3>
+                <p className="text-sm text-soft mb-4">{useCase.description}</p>
+                <div className="space-y-2">
+                  {useCase.features.map((feature) => (
+                    <div key={feature} className="flex items-center gap-2 text-sm">
+                      <CheckCircle className="h-4 w-4 text-accent" />
+                      <span className="text-muted-foreground">{feature}</span>
+                    </div>
+                  ))}
+                </div>
+              </article>
             ))}
           </div>
         </div>
@@ -121,8 +115,8 @@ const Institutions = () => {
         <div className="container mx-auto px-4">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
-              <h2 className="text-3xl font-bold mb-6">{t("institutions.rapidImplementation")}</h2>
-              <p className="text-lg text-muted-foreground mb-8">{t("institutions.rapidDesc")}</p>
+              <h2 className="font-display text-3xl font-bold mb-6">{t("institutions.rapidImplementation")}</h2>
+              <p className="text-lg text-soft mb-8">{t("institutions.rapidDesc")}</p>
               <div className="space-y-6">
                 {[
                   { step: "1", title: t("institutions.discovery"), description: t("institutions.discoveryDesc") },
@@ -143,16 +137,14 @@ const Institutions = () => {
                 ))}
               </div>
             </div>
-            <Card className="gradient-livemed text-white">
-              <CardContent className="p-8">
-                <GraduationCap className="h-12 w-12 mb-6 opacity-80" />
-                <h3 className="text-2xl font-bold mb-4">{t("institutions.readyTransform")}</h3>
-                <p className="text-white/80 mb-6">{t("institutions.readyTransformDesc")}</p>
-                <Button size="lg" variant="secondary" className="w-full" asChild>
-                  <Link to="/contact">{t("institutions.scheduleConsultation")}<ArrowRight className="ml-2 h-5 w-5" /></Link>
-                </Button>
-              </CardContent>
-            </Card>
+            <div className="cta-surface rounded-[28px] p-8 md:p-10 text-white">
+              <GraduationCap className="h-12 w-12 mb-6 opacity-80" />
+              <h3 className="font-display text-2xl font-bold mb-4">{t("institutions.readyTransform")}</h3>
+              <p className="text-white/80 mb-6">{t("institutions.readyTransformDesc")}</p>
+              <Button size="lg" variant="secondary" className="w-full bg-white text-primary hover:bg-white/90" asChild>
+                <Link to="/contact">{t("institutions.scheduleConsultation")}<ArrowRight className="ml-2 h-5 w-5" /></Link>
+              </Button>
+            </div>
           </div>
         </div>
       </section>
