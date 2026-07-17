@@ -21,7 +21,8 @@ import {
   MessageSquare,
   Award,
 } from "lucide-react";
-import livemedLogo from "@/assets/livemed-logo-full.png";
+import livemedLogoAsset from "@/assets/livemed-logo-light.png.asset.json";
+const livemedLogo = livemedLogoAsset.url;
 
 interface Module {
   id: string;

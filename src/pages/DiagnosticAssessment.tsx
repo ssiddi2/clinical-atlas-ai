@@ -32,8 +32,10 @@ import {
   Activity,
   Stethoscope,
 } from "lucide-react";
-import livemedLogo from "@/assets/livemed-logo-full.png";
+
 import { useTranslation } from "@/i18n/LanguageContext";
+import livemedLogoAsset from "@/assets/livemed-logo-light.png.asset.json";
+const livemedLogo = livemedLogoAsset.url;
 
 interface DiagnosticQuestion {
   id: number;

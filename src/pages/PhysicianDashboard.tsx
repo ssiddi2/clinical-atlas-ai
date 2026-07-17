@@ -8,7 +8,7 @@ import {
   LogOut, Plus, Video, Users, Calendar, BookOpen, Clock, CheckCircle2,
   Play, Settings, Bell, GraduationCap, UserPlus,
 } from "lucide-react";
-import livemedLogo from "@/assets/livemed-logo-full.png";
+
 import CreateLectureModal from "@/components/classroom/CreateLectureModal";
 import CreateCourseModal from "@/components/courses/CreateCourseModal";
 import LectureCard from "@/components/classroom/LectureCard";
@@ -17,6 +17,8 @@ import InviteStudentsModal from "@/components/physician/InviteStudentsModal";
 import { useTranslation } from "@/i18n/LanguageContext";
 import { useToast } from "@/hooks/use-toast";
 import NotificationBell from "@/components/notifications/NotificationBell";
+import livemedLogoAsset from "@/assets/livemed-logo-light.png.asset.json";
+const livemedLogo = livemedLogoAsset.url;
 
 const PhysicianDashboard = () => {
   const navigate = useNavigate();
