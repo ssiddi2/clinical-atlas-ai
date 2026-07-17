@@ -1991,6 +1991,22 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_classroom_enrolled: {
+        Args: { _classroom_id: string; _user_id: string }
+        Returns: boolean
+      }
+      is_classroom_instructor: {
+        Args: { _classroom_id: string; _user_id: string }
+        Returns: boolean
+      }
+      is_course_enrolled: {
+        Args: { _course_id: string; _user_id: string }
+        Returns: boolean
+      }
+      is_course_instructor: {
+        Args: { _course_id: string; _user_id: string }
+        Returns: boolean
+      }
       list_rotation_sessions_public: {
         Args: never
         Returns: {
