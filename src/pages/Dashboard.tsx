@@ -219,14 +219,20 @@ const Dashboard = () => {
     <div className="min-h-screen bg-background">
       {/* Top Navigation */}
       <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur">
-        <div className="container mx-auto flex h-16 items-center justify-between gap-6">
+        <div className="container mx-auto px-4 md:px-6 flex h-16 items-center justify-between gap-8">
           <div className="flex items-center gap-6">
             <Link to="/dashboard" className="flex items-center">
               <img src={livemedLogo} alt="Livemed Academy" className="h-8 object-contain" />
             </Link>
-            <nav className="hidden md:flex items-center gap-5">
-              <Link to="/curriculum" className="text-sm font-medium text-muted-foreground hover:text-primary">{t("dashboard.curriculum")}</Link>
-              <Link to="/atlas" className="text-sm font-medium text-muted-foreground hover:text-primary">ATLAS™</Link>
+            <nav className="hidden md:flex items-center gap-4">
+              <Link to="/curriculum" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">{t("dashboard.curriculum")}</Link>
+              <Link
+                to="/atlas"
+                className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold text-white bg-gradient-to-r from-blue-500 to-violet-500 shadow-sm hover:opacity-90 transition-opacity"
+              >
+                <Sparkles className="h-3.5 w-3.5" />
+                ATLAS™
+              </Link>
             </nav>
           </div>
 
@@ -242,9 +248,7 @@ const Dashboard = () => {
                 to={item.href}
                 className="group flex flex-col items-center gap-1 text-muted-foreground hover:text-primary transition-colors"
               >
-                <div className="w-9 h-9 rounded-lg border border-border flex items-center justify-center group-hover:border-primary group-hover:bg-primary/5 transition-colors">
-                  <item.icon className="h-4 w-4" />
-                </div>
+                <item.icon className="h-5 w-5" />
                 <span className="text-[11px] font-medium leading-none">{item.label}</span>
               </Link>
             ))}
@@ -309,8 +313,8 @@ const Dashboard = () => {
             <Link key={action.label} to={action.href}>
               <Card className="hover:shadow-livemed transition-all duration-300 hover:-translate-y-1 cursor-pointer h-full rounded-2xl">
                 <CardContent className="p-5 flex items-center gap-3">
-                  <div className={`w-12 h-12 rounded-2xl ${action.color} flex items-center justify-center flex-shrink-0 shadow-sm`}>
-                    <action.icon className="h-6 w-6 text-white" />
+                  <div className={`w-11 h-11 rounded-xl ${action.color} flex items-center justify-center flex-shrink-0 shadow-sm`}>
+                    <action.icon className="h-5 w-5 text-white" strokeWidth={2.25} />
                   </div>
                   <span className="font-semibold text-[15px] leading-tight flex-1">{action.label}</span>
                   <ChevronRight className="h-5 w-5 text-muted-foreground flex-shrink-0" />
