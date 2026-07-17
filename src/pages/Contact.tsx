@@ -62,18 +62,16 @@ const Contact = () => {
       <main className="flex-1">
         <section className="py-20 md:py-32">
           <div className="container mx-auto px-4">
-            <Card className="max-w-lg mx-auto text-center">
-              <CardContent className="p-12">
-                <div className="w-20 h-20 rounded-full gradient-livemed flex items-center justify-center mx-auto mb-6">
-                  <CheckCircle className="h-10 w-10 text-white" />
-                </div>
-                <h2 className="text-2xl font-bold mb-4">{t("contact.messageReceived")}</h2>
-                <p className="text-muted-foreground mb-8">{t("contact.thankYou")}</p>
-                <Button onClick={() => { setIsSubmitted(false); setFormData({ name: "", email: "", organization: "", role: "", inquiryType: "", message: "" }); }} variant="outline">
-                  {t("contact.sendAnother")}
-                </Button>
-              </CardContent>
-            </Card>
+            <div className="lm-card-lg max-w-lg mx-auto text-center p-12">
+              <div className="w-20 h-20 rounded-full tile-accent flex items-center justify-center mx-auto mb-6">
+                <CheckCircle className="h-10 w-10 text-white" />
+              </div>
+              <h2 className="font-display text-2xl font-bold mb-4">{t("contact.messageReceived")}</h2>
+              <p className="text-soft mb-8">{t("contact.thankYou")}</p>
+              <Button onClick={() => { setIsSubmitted(false); setFormData({ name: "", email: "", organization: "", role: "", inquiryType: "", message: "" }); }} variant="outline">
+                {t("contact.sendAnother")}
+              </Button>
+            </div>
           </div>
         </section>
       </main>
@@ -82,12 +80,13 @@ const Contact = () => {
 
   return (
     <main className="flex-1">
-      <section className="relative py-20 md:py-28 overflow-hidden">
+      <section className="relative py-20 md:py-28 overflow-hidden bg-section-glow">
         <div className="absolute inset-0 gradient-livemed-light" />
         <div className="container mx-auto px-4 relative">
           <div className="max-w-3xl mx-auto text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-6">{t("contact.title")}</h1>
-            <p className="text-lg text-muted-foreground">{t("contact.subtitle")}</p>
+            <span className="chip chip-brand mb-6">{t("nav.contact", "Contact")}</span>
+            <h1 className="font-display text-4xl md:text-5xl font-bold mb-6 mt-4">{t("contact.title")}</h1>
+            <p className="text-lg text-soft">{t("contact.subtitle")}</p>
           </div>
         </div>
       </section>
@@ -97,45 +96,40 @@ const Contact = () => {
           <div className="grid lg:grid-cols-3 gap-12 max-w-6xl mx-auto">
             <div className="lg:col-span-1 space-y-6">
               <div>
-                <h2 className="text-2xl font-bold mb-4">{t("contact.getInTouch")}</h2>
-                <p className="text-muted-foreground">{t("contact.getInTouchDesc")}</p>
+                <h2 className="font-display text-2xl font-bold mb-4">{t("contact.getInTouch")}</h2>
+                <p className="text-soft">{t("contact.getInTouchDesc")}</p>
               </div>
               <div className="space-y-4">
                 {contactInfo.map((info) => (
-                  <Card key={info.title}>
-                    <CardContent className="p-4 flex items-start gap-4">
-                      <div className="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center flex-shrink-0">
-                        <info.icon className="h-5 w-5 text-accent" />
-                      </div>
-                      <div>
-                        <h3 className="font-medium">{info.title}</h3>
-                        <p className="text-sm font-medium text-foreground">{info.value}</p>
-                        <p className="text-xs text-muted-foreground">{info.description}</p>
-                      </div>
-                    </CardContent>
-                  </Card>
+                  <div key={info.title} className="lm-card p-4 flex items-start gap-4">
+                    <div className="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center flex-shrink-0">
+                      <info.icon className="h-5 w-5 text-accent" />
+                    </div>
+                    <div>
+                      <h3 className="font-medium">{info.title}</h3>
+                      <p className="text-sm font-medium text-foreground">{info.value}</p>
+                      <p className="text-xs text-muted-foreground">{info.description}</p>
+                    </div>
+                  </div>
                 ))}
               </div>
-              <Card className="gradient-livemed text-white">
-                <CardContent className="p-6">
-                  <h3 className="font-semibold mb-3">{t("contact.lookingSpecific")}</h3>
-                  <ul className="space-y-2 text-sm text-white/80">
-                    <li>• <a href="/pricing" className="hover:text-white underline">{t("contact.viewPricing")}</a></li>
-                    <li>• <a href="/programs" className="hover:text-white underline">{t("contact.explorePrograms")}</a></li>
-                    <li>• <a href="/institutions" className="hover:text-white underline">{t("contact.institutionalPartnerships")}</a></li>
-                  </ul>
-                </CardContent>
-              </Card>
+              <div className="cta-surface rounded-[24px] p-6 text-white">
+                <h3 className="font-semibold mb-3">{t("contact.lookingSpecific")}</h3>
+                <ul className="space-y-2 text-sm text-white/80">
+                  <li>• <a href="/pricing" className="hover:text-white underline">{t("contact.viewPricing")}</a></li>
+                  <li>• <a href="/programs" className="hover:text-white underline">{t("contact.explorePrograms")}</a></li>
+                  <li>• <a href="/institutions" className="hover:text-white underline">{t("contact.institutionalPartnerships")}</a></li>
+                </ul>
+              </div>
             </div>
 
             <div className="lg:col-span-2">
-              <Card>
-                <CardHeader>
-                  <CardTitle>{t("contact.sendMessage")}</CardTitle>
-                  <CardDescription>{t("contact.sendMessageDesc")}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="lm-card-lg p-6 md:p-8">
+                <div className="mb-6">
+                  <h3 className="font-display text-xl font-semibold mb-1">{t("contact.sendMessage")}</h3>
+                  <p className="text-sm text-soft">{t("contact.sendMessageDesc")}</p>
+                </div>
+                <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="grid md:grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label htmlFor="name">{t("contact.fullName")} *</Label>
@@ -169,7 +163,7 @@ const Contact = () => {
                       <Label htmlFor="message">{t("contact.message")} *</Label>
                       <Textarea id="message" placeholder={t("contact.messagePlaceholder")} rows={5} value={formData.message} onChange={(e) => handleInputChange("message", e.target.value)} required />
                     </div>
-                    <Button type="submit" size="lg" className="w-full gradient-livemed" disabled={isSubmitting}>
+                    <Button type="submit" size="lg" className="w-full btn-brand" disabled={isSubmitting}>
                       {isSubmitting ? t("contact.sending") : t("contact.sendBtn")}
                     </Button>
                     <p className="text-xs text-muted-foreground text-center">
@@ -177,8 +171,7 @@ const Contact = () => {
                       <a href="/privacy" className="underline hover:text-foreground">{t("auth.privacyPolicy")}</a>.
                     </p>
                   </form>
-                </CardContent>
-              </Card>
+              </div>
             </div>
           </div>
         </div>
