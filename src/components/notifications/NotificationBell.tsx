@@ -84,10 +84,9 @@ const NotificationBell = ({ userId }: { userId: string | null }) => {
 
   const handleClick = (n: Notification) => {
     markAsRead(n.id);
-    if (n.link) {
-      navigate(n.link);
-      setOpen(false);
-    }
+    setOpen(false);
+    const link = n.link && n.link.startsWith("/") && !n.link.startsWith("//") ? n.link : "/dashboard";
+    navigate(link);
   };
 
   const timeAgo = (dateStr: string) => {
