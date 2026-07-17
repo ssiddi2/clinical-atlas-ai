@@ -16,6 +16,8 @@ import AdminProfessors from "@/components/admin/AdminProfessors";
 import AdminStudents from "@/components/admin/AdminStudents";
 import AdminCourses from "@/components/admin/AdminCourses";
 import RotationApplications from "@/components/admin/RotationApplications";
+import AdminContentReviews from "@/components/admin/AdminContentReviews";
+import AdminContactInquiries from "@/components/admin/AdminContactInquiries";
 import { Database } from "@/integrations/supabase/types";
 import AppShell from "@/components/layout/AppShell";
 
@@ -135,6 +137,8 @@ const Admin = () => {
             <TabsTrigger value="applications">Applications</TabsTrigger>
             <TabsTrigger value="rotations">Rotation Apps</TabsTrigger>
             <TabsTrigger value="verifications">Verifications</TabsTrigger>
+            <TabsTrigger value="inquiries">Inquiries</TabsTrigger>
+            <TabsTrigger value="reviews">Content Reviews</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview">
@@ -190,6 +194,20 @@ const Admin = () => {
             <div className="bg-card rounded-lg border p-6">
               <h2 className="text-xl font-semibold mb-4">Document Verification Queue</h2>
               <PendingVerifications profiles={profiles} onRefresh={loadData} />
+            </div>
+          </TabsContent>
+
+          <TabsContent value="inquiries">
+            <div className="bg-card rounded-lg border p-6">
+              <h2 className="text-xl font-semibold mb-4">Contact Inquiries</h2>
+              <AdminContactInquiries />
+            </div>
+          </TabsContent>
+
+          <TabsContent value="reviews">
+            <div className="bg-card rounded-lg border p-6">
+              <h2 className="text-xl font-semibold mb-4">Content Reviews Audit Trail</h2>
+              <AdminContentReviews />
             </div>
           </TabsContent>
         </Tabs>
