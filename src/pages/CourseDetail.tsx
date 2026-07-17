@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, Users, Calendar, CheckCircle2, XCircle, Clock, Video, BookOpen, FileText, ClipboardCheck, BarChart3, Edit2, Plus, Layers } from "lucide-react";
+import { ArrowLeft, Users, Calendar, CheckCircle2, XCircle, Clock, Video, BookOpen, FileText, ClipboardCheck, BarChart3, Edit2, Plus, Layers, Mail, RefreshCw, Ban, History } from "lucide-react";
 import { useTranslation } from "@/i18n/LanguageContext";
 import { useToast } from "@/hooks/use-toast";
 import LectureCard from "@/components/classroom/LectureCard";
@@ -17,6 +17,8 @@ import EditCourseModal from "@/components/courses/EditCourseModal";
 import CreateLectureModal from "@/components/classroom/CreateLectureModal";
 import StudentProfileView from "@/components/courses/StudentProfileView";
 import AppShell from "@/components/layout/AppShell";
+import EnrollmentAuditLog from "@/components/courses/EnrollmentAuditLog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 
 const CourseDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -34,8 +36,22 @@ const CourseDetail = () => {
   const [showEditCourse, setShowEditCourse] = useState(false);
   const [showCreateLecture, setShowCreateLecture] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState<string | null>(null);
+  const [busyEnrollment, setBusyEnrollment] = useState<string | null>(null);
+  const [revokeTarget, setRevokeTarget] = useState<any | null>(null);
 
-  useEffect(() => { if (id) loadData(); }, [id]);
+  useEffect(() => {
+    if (!id) return;
+    loadData();
+    const channel = supabase
+      .channel(`course-detail-${id}`)
+      .on("postgres_changes", {
+        event: "*", schema: "public", table: "course_enrollments",
+        filter: `course_id=eq.${id}`,
+      }, () => loadData())
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
 
   const loadData = async () => {
     try {
@@ -134,6 +150,7 @@ const CourseDetail = () => {
 
   const pending = enrollments.filter(e => e.status === "pending");
   const approved = enrollments.filter(e => e.status === "approved");
+  const invited = enrollments.filter(e => e.status === "invited");
   const myInvite = enrollments.find(e => e.student_id === currentUserId && e.status === "invited");
 
   const respondInvite = async (accept: boolean) => {
@@ -161,6 +178,29 @@ const CourseDetail = () => {
       toast({ title: "Error", description: err.message, variant: "destructive" });
     } finally {
       setRespondingInvite(false);
+    }
+  };
+
+  const callInviteAction = async (action: "resend" | "revoke", enrollmentId: string) => {
+    setBusyEnrollment(enrollmentId);
+    try {
+      const { data, error } = await supabase.functions.invoke("physician-invite-students", {
+        body: { action, courseId: id, enrollmentId },
+      });
+      if (error) throw error;
+      if ((data as any)?.error) throw new Error((data as any).error);
+      toast({
+        title: action === "resend" ? "Invitation resent" : "Invitation revoked",
+        description: action === "resend"
+          ? "The student was notified again."
+          : "The student has been notified.",
+      });
+      await loadData();
+    } catch (e: any) {
+      toast({ title: "Error", description: e.message, variant: "destructive" });
+    } finally {
+      setBusyEnrollment(null);
+      setRevokeTarget(null);
     }
   };
 
@@ -230,7 +270,7 @@ const CourseDetail = () => {
 
         {/* Tabs */}
         <Tabs defaultValue="curriculum" className="w-full">
-          <TabsList className="grid w-full grid-cols-6">
+          <TabsList className="grid w-full grid-cols-7">
             <TabsTrigger value="curriculum" className="flex items-center gap-1.5 text-xs">
               <Layers className="h-3.5 w-3.5" /> Curriculum
             </TabsTrigger>
@@ -248,6 +288,9 @@ const CourseDetail = () => {
             </TabsTrigger>
             <TabsTrigger value="analytics" className="flex items-center gap-1.5 text-xs">
               <BarChart3 className="h-3.5 w-3.5" /> Analytics
+            </TabsTrigger>
+            <TabsTrigger value="activity" className="flex items-center gap-1.5 text-xs">
+              <History className="h-3.5 w-3.5" /> Activity
             </TabsTrigger>
           </TabsList>
 
@@ -334,6 +377,43 @@ const CourseDetail = () => {
 
           {/* Students Tab */}
           <TabsContent value="students">
+            {/* Invited (awaiting response) */}
+            {isInstructor && invited.length > 0 && (
+              <Card className="border-primary/30 mb-4">
+                <CardHeader>
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <Mail className="h-5 w-5 text-primary" />
+                    Invited — awaiting response ({invited.length})
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {invited.map((e: any) => (
+                    <div key={e.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-3 bg-muted/30 rounded-lg">
+                      <div className="min-w-0">
+                        <p className="font-medium text-foreground truncate">
+                          {e.profiles?.first_name || ""} {e.profiles?.last_name || t("courses.unknownStudent")}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          Invited {new Date(e.enrolled_at).toLocaleDateString()}
+                        </p>
+                      </div>
+                      <div className="flex gap-2 shrink-0">
+                        <Button size="sm" variant="outline" disabled={busyEnrollment === e.id}
+                          onClick={() => callInviteAction("resend", e.id)}>
+                          <RefreshCw className="h-3.5 w-3.5 mr-1" /> Resend
+                        </Button>
+                        <Button size="sm" variant="outline" className="text-destructive"
+                          disabled={busyEnrollment === e.id}
+                          onClick={() => setRevokeTarget(e)}>
+                          <Ban className="h-3.5 w-3.5 mr-1" /> Revoke
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </CardContent>
+              </Card>
+            )}
+
             {/* Pending */}
             {isInstructor && pending.length > 0 && (
               <Card className="border-yellow-500/30 mb-4">
@@ -423,8 +503,45 @@ const CourseDetail = () => {
               </CardContent>
             </Card>
           </TabsContent>
+
+          {/* Activity Tab */}
+          <TabsContent value="activity">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <History className="h-5 w-5 text-primary" />
+                  Enrollment activity
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <EnrollmentAuditLog
+                  courseId={id!}
+                  studentId={isInstructor ? undefined : currentUserId ?? undefined}
+                  limit={100}
+                />
+              </CardContent>
+            </Card>
+          </TabsContent>
         </Tabs>
       </div>
+
+      {/* Revoke confirmation */}
+      <AlertDialog open={!!revokeTarget} onOpenChange={(o) => !o && setRevokeTarget(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Revoke invitation?</AlertDialogTitle>
+            <AlertDialogDescription>
+              The student will be notified that the invitation has been withdrawn. You can invite them again later.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={() => revokeTarget && callInviteAction("revoke", revokeTarget.id)}>
+              Revoke
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Modals */}
       {isInstructor && course && (
