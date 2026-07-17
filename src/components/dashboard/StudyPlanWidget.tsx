@@ -50,7 +50,7 @@ export default function StudyPlanWidget({ userId }: { userId: string | null }) {
         <div className="flex items-center justify-between gap-2 flex-wrap">
           <CardTitle className="text-lg flex items-center gap-2">
             <span className="w-9 h-9 rounded-xl bg-amber-500 text-white flex items-center justify-center shadow-sm">
-              <Sparkles className="h-[18px] w-[18px]" />
+              <Sparkles className="h-[18px] w-[18px] text-white" />
             </span>
             {t("studyPlan.title")}
           </CardTitle>
