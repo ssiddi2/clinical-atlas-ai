@@ -198,6 +198,18 @@ const VirtualRounds = () => {
   return (
     <AppShell>
       <div className="container mx-auto py-6 md:py-8">
+        <div className="flex items-center gap-4 mb-6">
+          <Button variant="ghost" size="icon" onClick={() => navigate("/dashboard")}>
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+          <div>
+            <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
+              <Video className="h-6 w-6 text-primary" />
+              Live Rounds
+            </h1>
+            <p className="text-muted-foreground text-sm mt-1">Join live telemedicine rounds with US physicians</p>
+          </div>
+        </div>
         {/* Hero Banner */}
         <div className="mb-6 md:mb-8 p-4 md:p-6 rounded-2xl gradient-livemed text-white">
           <div className="flex flex-col md:flex-row items-start gap-4">
