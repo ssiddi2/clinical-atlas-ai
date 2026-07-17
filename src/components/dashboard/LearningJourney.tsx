@@ -69,10 +69,10 @@ export default function LearningJourney({ userId }: Props) {
   }, [userId, range]);
 
   const items = [
-    { icon: Clock, label: "Study Time", value: `${stats.studyMinutes}m`, color: "bg-blue-100 text-blue-600" },
-    { icon: CheckCircle2, label: "Questions Answered", value: `${stats.questionsAnswered}`, color: "bg-sky-100 text-sky-600" },
-    { icon: BookOpen, label: "Topics Covered", value: `${stats.topicsCovered}`, color: "bg-emerald-100 text-emerald-600" },
-    { icon: Flame, label: "Streak", value: `${stats.streak}`, color: "bg-violet-100 text-violet-600" },
+    { icon: Clock, label: "Study Time", value: `${stats.studyMinutes}m`, color: "bg-blue-500 text-white" },
+    { icon: CheckCircle2, label: "Questions Answered", value: `${stats.questionsAnswered}`, color: "bg-sky-500 text-white" },
+    { icon: BookOpen, label: "Topics Covered", value: `${stats.topicsCovered}`, color: "bg-emerald-500 text-white" },
+    { icon: Flame, label: "Streak", value: `${stats.streak}`, color: "bg-violet-500 text-white" },
   ];
 
   return (
