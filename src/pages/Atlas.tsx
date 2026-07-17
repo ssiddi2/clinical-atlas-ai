@@ -353,51 +353,28 @@ const Atlas = () => {
   return (
     <div className="h-screen flex flex-col bg-background">
       {/* Unified Top Bar */}
-      <header className="sticky top-0 z-40 h-14 flex items-center gap-2 md:gap-3 px-3 md:px-4 border-b border-border bg-background">
+      <header className="sticky top-0 z-40 h-14 flex items-center px-3 md:px-4 border-b border-border bg-background">
         <Link
           to="/dashboard"
           aria-label={t("atlas.backToDashboard")}
-          className="inline-flex items-center justify-center h-9 w-9 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-        >
-          <ArrowLeft className="h-5 w-5" />
-        </Link>
-        <div className="h-6 w-px bg-border" />
-        <button
-          onClick={createNewConversation}
-          aria-label={t("atlas.newConversation")}
-          title={t("atlas.newConversation")}
           className="inline-flex items-center gap-1.5 h-9 px-2.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
         >
-          <Plus className="h-5 w-5" />
-          <span className="text-sm font-medium hidden sm:inline">{t("atlas.newConversation")}</span>
-        </button>
-        <div className="h-6 w-px bg-border" />
-        <div className="flex items-center gap-2 md:gap-3 min-w-0">
-          <div className="w-8 h-8 md:w-9 md:h-9 rounded-full gradient-livemed flex items-center justify-center flex-shrink-0">
-            <Brain className="h-4 w-4 md:h-5 md:w-5 text-white" />
-          </div>
-          <div className="min-w-0">
-            <h1 className="font-semibold text-sm md:text-base leading-tight">ATLAS™</h1>
-            <div className="flex items-center gap-2">
-              <p className="text-xs text-muted-foreground hidden sm:block">{t("atlas.aiProfessor")}</p>
-              <AdaptedBadge />
-            </div>
-          </div>
-        </div>
-        <div className="ml-auto hidden md:flex items-center">
-          <Link to="/dashboard">
-            <img src={livemedLogo} alt="Livemed Academy" className="h-8 object-contain" />
-          </Link>
-        </div>
+          <ArrowLeft className="h-5 w-5" />
+          <span className="text-sm font-medium">{t("atlas.backToDashboard")}</span>
+        </Link>
       </header>
 
       {/* Body: sidebar + chat */}
       <div className="flex-1 flex min-h-0">
         {/* Sidebar */}
         <aside className="hidden md:flex w-72 border-r border-border flex-col bg-muted/30 h-full">
-          <div className="px-4 py-3 border-b border-border">
+          <div className="px-4 py-3 border-b border-border space-y-3">
+            <Button onClick={createNewConversation} className="w-full gradient-livemed">
+              <Plus className="h-4 w-4 mr-2" />
+              {t("atlas.newConversation")}
+            </Button>
             <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-              {t("atlas.newConversation")}s
+              Chat History
             </p>
           </div>
           <ScrollArea className="flex-1">
