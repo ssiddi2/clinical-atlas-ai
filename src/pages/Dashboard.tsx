@@ -241,23 +241,6 @@ const Dashboard = () => {
             </nav>
           </div>
 
-          <nav className="hidden lg:flex items-center gap-7">
-            {[
-              { icon: GraduationCap, label: t("courses.myCourses") || "My Courses", href: "/courses" },
-              { icon: Video, label: t("dashboard.virtualClassroom"), href: "/virtual-classroom" },
-              { icon: Stethoscope, label: t("dashboard.liveRounds"), href: "/virtual-rounds" },
-              { icon: FileText, label: t("footer.assessments"), href: "/assessments" },
-            ].map((item) => (
-              <Link
-                key={item.label}
-                to={item.href}
-                className="group flex flex-col items-center gap-1 text-foreground/60 hover:text-primary transition-colors rounded-md px-2 py-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              >
-                <item.icon className="h-5 w-5" />
-                <span className="text-[11px] font-medium leading-none">{item.label}</span>
-              </Link>
-            ))}
-          </nav>
 
           <div className="flex items-center gap-2">
             {isAdmin && (
@@ -331,7 +314,6 @@ const Dashboard = () => {
                       <action.icon className="h-[18px] w-[18px] text-white" strokeWidth={2.25} />
                     </div>
                     <span className="font-semibold text-[14px] leading-tight flex-1 text-foreground">{action.label}</span>
-                    <ChevronRight className="h-4 w-4 text-muted-foreground/70 group-hover:text-foreground group-hover:translate-x-0.5 transition-all flex-shrink-0" />
                   </CardContent>
                 </Card>
               </Link>
