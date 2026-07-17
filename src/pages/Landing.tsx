@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { useIsMobile } from "@/hooks/use-mobile";
 import HeroBackground from "@/components/HeroBackground";
-import jointCommissionBadge from "@/assets/joint-commission-badge.png";
+import jointCommissionBadge from "@/assets/joint-commission-badge.png.asset.json";
 import heroVideo from "@/assets/hero-video.mp4.asset.json";
 import { useTranslation } from "@/i18n/LanguageContext";
 import {
@@ -275,11 +275,9 @@ const Landing = () => {
             {/* Accreditation header */}
             <div className="relative flex flex-col md:flex-row items-center md:items-center gap-5 md:gap-7 text-center md:text-left">
               <img
-                src={jointCommissionBadge}
+                src={jointCommissionBadge.url}
                 alt="The Joint Commission - National Quality Approval"
-                className="h-16 md:h-20 w-auto object-contain shrink-0"
-                width="128"
-                height="128"
+                className="h-24 md:h-28 lg:h-32 w-auto object-contain shrink-0 drop-shadow-md"
                 loading="lazy"
                 decoding="async"
               />
