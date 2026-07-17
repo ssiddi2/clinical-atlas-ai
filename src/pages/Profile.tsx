@@ -34,15 +34,23 @@ const Profile = () => {
   });
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      setUser(session?.user ?? null);
-      if (!session) navigate("/auth");
-    });
+    let mounted = true;
+    // Check session first so we don't bounce to /auth on a transient null from
+    // the initial onAuthStateChange event.
     supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-      if (!session) navigate("/auth");
+      if (!mounted) return;
+      if (!session) {
+        navigate("/auth");
+        return;
+      }
+      setUser(session.user);
     });
-    return () => subscription.unsubscribe();
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!mounted) return;
+      setUser(session?.user ?? null);
+      if (_event === "SIGNED_OUT") navigate("/auth");
+    });
+    return () => { mounted = false; subscription.unsubscribe(); };
   }, [navigate]);
 
   useEffect(() => { if (user) loadProfile(); }, [user]);
@@ -112,6 +120,7 @@ const Profile = () => {
           <p className="text-sm text-muted-foreground">{user?.email}</p>
         </div>
 
+        <h1 className="sr-only">Settings</h1>
         <Tabs defaultValue="account" className="w-full">
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="account"><UserIcon className="h-4 w-4 mr-2" />Account</TabsTrigger>
@@ -122,40 +131,40 @@ const Profile = () => {
           <TabsContent value="account" className="mt-6">
             <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2"><UserIcon className="h-5 w-5 text-accent" />{t("profile.personalInfo")}</CardTitle>
-            <CardDescription>{t("profile.personalInfoDesc")}</CardDescription>
+            <CardTitle className="flex items-center gap-2"><UserIcon className="h-5 w-5 text-accent" />Personal Information</CardTitle>
+            <CardDescription>Update your name, institution, and training details.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2"><Label htmlFor="first_name">{t("profile.firstName")}</Label><Input id="first_name" value={profile.first_name} onChange={(e) => setProfile({ ...profile, first_name: e.target.value })} /></div>
-              <div className="space-y-2"><Label htmlFor="last_name">{t("profile.lastName")}</Label><Input id="last_name" value={profile.last_name} onChange={(e) => setProfile({ ...profile, last_name: e.target.value })} /></div>
+              <div className="space-y-2"><Label htmlFor="first_name">First Name</Label><Input id="first_name" value={profile.first_name} onChange={(e) => setProfile({ ...profile, first_name: e.target.value })} /></div>
+              <div className="space-y-2"><Label htmlFor="last_name">Last Name</Label><Input id="last_name" value={profile.last_name} onChange={(e) => setProfile({ ...profile, last_name: e.target.value })} /></div>
             </div>
-            <div className="space-y-2"><Label htmlFor="institution">{t("profile.institution")}</Label><Input id="institution" value={profile.institution} onChange={(e) => setProfile({ ...profile, institution: e.target.value })} /></div>
+            <div className="space-y-2"><Label htmlFor="institution">Institution</Label><Input id="institution" value={profile.institution} onChange={(e) => setProfile({ ...profile, institution: e.target.value })} /></div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="country">{t("profile.country")}</Label>
+                <Label htmlFor="country">Country</Label>
                 <Select value={profile.country} onValueChange={(v) => setProfile({ ...profile, country: v })}>
-                  <SelectTrigger><SelectValue placeholder={t("profile.selectCountry")} /></SelectTrigger>
+                  <SelectTrigger><SelectValue placeholder="Select country" /></SelectTrigger>
                   <SelectContent>{countries.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="year_of_study">{t("profile.yearOfStudy")}</Label>
+                <Label htmlFor="year_of_study">Year of Study</Label>
                 <Select value={profile.year_of_study?.toString() || ""} onValueChange={(v) => setProfile({ ...profile, year_of_study: parseInt(v) })}>
-                  <SelectTrigger><SelectValue placeholder={t("profile.selectYear")} /></SelectTrigger>
+                  <SelectTrigger><SelectValue placeholder="Select year" /></SelectTrigger>
                   <SelectContent>{[1,2,3,4,5,6].map((y) => <SelectItem key={y} value={y.toString()}>Year {y}</SelectItem>)}</SelectContent>
                 </Select>
               </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="program_level">{t("profile.programLevel")}</Label>
+              <Label htmlFor="program_level">Program Level</Label>
               <Select value={profile.program_level || ""} onValueChange={(v) => setProfile({ ...profile, program_level: v })}>
-                <SelectTrigger><SelectValue placeholder={t("profile.selectProgram")} /></SelectTrigger>
+                <SelectTrigger><SelectValue placeholder="Select program" /></SelectTrigger>
                 <SelectContent>{programLevels.map((l) => <SelectItem key={l.value} value={l.value}>{l.label}</SelectItem>)}</SelectContent>
               </Select>
             </div>
             <Button onClick={handleSave} disabled={saving} className="w-full gradient-livemed">
-              <Save className="mr-2 h-4 w-4" />{saving ? t("profile.saving") : t("profile.saveChanges")}
+              <Save className="mr-2 h-4 w-4" />{saving ? "Saving…" : "Save Changes"}
             </Button>
           </CardContent>
             </Card>
@@ -189,17 +198,17 @@ const Profile = () => {
 
           <TabsContent value="membership" className="mt-6">
             <Card>
-              <CardHeader><CardTitle>{t("profile.account")}</CardTitle></CardHeader>
+              <CardHeader><CardTitle>Account</CardTitle></CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex justify-between items-center py-2 border-b border-border">
-                  <div><p className="font-medium">{t("auth.email")}</p><p className="text-sm text-muted-foreground">{user?.email}</p></div>
+                  <div><p className="font-medium">Email</p><p className="text-sm text-muted-foreground">{user?.email}</p></div>
                 </div>
                 <div className="flex justify-between items-center py-2 border-b border-border">
-                  <div><p className="font-medium">{t("profile.memberSince")}</p><p className="text-sm text-muted-foreground">{user?.created_at ? new Date(user.created_at).toLocaleDateString() : "N/A"}</p></div>
+                  <div><p className="font-medium">Member Since</p><p className="text-sm text-muted-foreground">{user?.created_at ? new Date(user.created_at).toLocaleDateString() : "N/A"}</p></div>
                 </div>
                 <div className="flex justify-between items-center py-2">
-                  <div><p className="font-medium">{t("profile.subscription")}</p><p className="text-sm text-muted-foreground">{t("profile.freeTrial")}</p></div>
-                  <Button variant="outline" size="sm" onClick={() => navigate("/apply")}>{t("profile.upgrade")}</Button>
+                  <div><p className="font-medium">Subscription</p><p className="text-sm text-muted-foreground">Free Trial</p></div>
+                  <Button variant="outline" size="sm" onClick={() => navigate("/apply")}>Upgrade</Button>
                 </div>
               </CardContent>
             </Card>
