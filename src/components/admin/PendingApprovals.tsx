@@ -9,7 +9,7 @@ type Profile = Database["public"]["Tables"]["profiles"]["Row"];
 type StudentDocument = Database["public"]["Tables"]["student_documents"]["Row"];
 
 interface PendingApprovalsProps {
-  profiles: (Profile & { documents: StudentDocument[] })[];
+  profiles: (Profile & { documents: StudentDocument[]; email?: string | null })[];
   onRefresh: () => Promise<void>;
 }
 
@@ -99,8 +99,11 @@ const PendingApprovals = ({ profiles, onRefresh }: PendingApprovalsProps) => {
               </p>
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Mail className="h-3 w-3" />
-                <span>{profile.institution || "No institution"}</span>
+                <span className="truncate max-w-[280px]">{profile.email || "Email unavailable"}</span>
               </div>
+              {profile.institution && (
+                <p className="text-xs text-muted-foreground mt-0.5">{profile.institution}</p>
+              )}
               <p className="text-xs text-muted-foreground mt-1">
                 Signed up: {new Date(profile.created_at).toLocaleDateString()}
               </p>
