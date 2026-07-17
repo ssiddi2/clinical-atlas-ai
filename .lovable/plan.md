@@ -1,38 +1,24 @@
 ## Goal
-When a physician a student is enrolled with schedules a lecture, invites them, or posts an activity, the student should find out without hunting through the app.
+When a physician invites a student (or triggers any classroom/course event), the student's bell should update in real time and clicking the notification should land them on the correct action page.
 
 ## Current state (verified)
-- `virtual_classrooms` + `classroom_enrollments` already exist; students see lectures for courses they're enrolled in via `VirtualClassroom.tsx`.
-- A `notifications` table + `NotificationBell` (polls every 60s, shows unread badge, deep-links via `link`) is already wired into `AppShell`. Nothing writes to it today for classroom events.
-- Physician invites go through `physician-invite-students` edge function (email only, no in-app signal).
+- `notifications` table is in the `supabase_realtime` publication — `NotificationBell` already subscribes via `postgres_changes` filtered by `user_id`, so new rows arrive instantly (no 60s poll).
+- The invite edge function writes a notification with `link: /courses/${courseId}`. That route (`/courses/:id`) exists and loads `CourseDetail.tsx` for the enrolled student.
+- Triggers on `virtual_classrooms`, `course_materials`, `course_quizzes` fan out to `notifications` for all approved enrollees with links to `/virtual-classroom` or `/courses/:id` (both routed).
+- `NotificationBell.handleClick` marks read + `navigate(n.link)` + closes the popover.
 
-## Proposed awareness layers (in order of impact)
+## Gaps to fix
+1. **Invite deep-link is too generic.** `/courses/:id` opens the course overview but doesn't scream "you were just invited". Change the invite notification link to `/courses/${courseId}?welcome=1` and have `CourseDetail.tsx` show a one-time toast "You've been enrolled by {instructor}" when the flag is present.
+2. **Navigation guard on invited students.** When a freshly-invited student clicks the bell before their session hydrates, `CourseDetail.loadData()` bounces them to `/auth`. Wait for `getSession()` (not just `getUser()`) and, if missing, redirect back to the same course URL after login instead of losing the deep link.
+3. **Lecture-live notifications land on `/virtual-classroom` list.** If the payload row carries a classroom id, deep-link to `/virtual-classroom?lectureId={id}` and auto-scroll/highlight that card so "join now" is one click, not a scan.
+4. **Realtime resiliency in the bell.** Add a `SUBSCRIBED` status check + one-time refetch on reconnect so a dropped socket (tab sleep, network blip) doesn't silently stop delivering.
 
-### 1. In-app notifications (primary)
-Auto-insert a row into `notifications` for every enrolled student when:
-- a physician **creates** a `virtual_classrooms` row → "New lecture scheduled: {title} on {date}"
-- a lecture goes **live** (status → `live`) → "{title} is live now — join"
-- a lecture is **edited** (time change) → "Lecture rescheduled: {title}"
-- a physician **invites** a student (physician-invite-students) → "{Dr. X} invited you"
-- a new **course material** or **quiz** is added to a course they're enrolled in
+## Out of scope
+Email/push channels, dashboard "Upcoming from your instructors" strip (already listed as layer 2 in `.lovable/plan.md`).
 
-Implementation: Postgres triggers on `virtual_classrooms`, `course_materials`, `course_quizzes` that fan out to `notifications` for every approved enrollee. Each notification carries a `link` (e.g. `/virtual-classroom`, `/courses/{id}`) so clicking the bell jumps straight there.
-
-Bell already polls — students see the red badge within 60s. Optionally tighten to Realtime subscription on `notifications` for instant updates.
-
-### 2. Dashboard "Upcoming from your instructors" strip
-Small card on `Dashboard.tsx` listing the next 1–3 lectures from courses the student is enrolled in, with a Join/Remind button. Uses existing `virtual_classrooms` query — no new data.
-
-### 3. Email (secondary, for high-signal events)
-Reuse Resend infra to email on: new lecture scheduled, lecture starting in 15 min, direct invite. Keep it opt-out in Profile → Notifications.
-
-### 4. Browser push (optional, later)
-Web Push for "lecture going live now." Requires service worker + subscription table. Flag as a follow-up unless you want it now.
-
-## Technical notes
-- One migration adds three `AFTER INSERT/UPDATE` triggers + a `SECURITY DEFINER` helper `notify_course_enrollees(course_id, title, message, link)` that inserts N rows into `notifications`.
-- Switch `NotificationBell` from 60s polling to a Realtime channel on `notifications` filtered by `user_id` for instant delivery.
-- Physician invite edge function also inserts a notification row (not just email) when the invitee already has an account.
-
-## Scope question
-Want me to build layers **1 + 2** now (biggest UX win, no new infra), and defer email + push? Or include email in this pass?
+## Files to touch
+- `src/components/notifications/NotificationBell.tsx` — reconnect refetch, keep existing realtime channel.
+- `src/pages/CourseDetail.tsx` — session-safe redirect, `?welcome=1` toast.
+- `src/pages/VirtualClassroom.tsx` — read `?lectureId=` and scroll/highlight.
+- `supabase/functions/physician-invite-students/index.ts` — append `?welcome=1` to the notification link.
+- Migration: update `tg_notify_virtual_classroom` to include `?lectureId=NEW.id` in the link.
