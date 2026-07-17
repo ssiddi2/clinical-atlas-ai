@@ -29,8 +29,8 @@ const VirtualClassroom = () => {
     const { data: { session } } = await supabase.auth.getSession();
     const user = session?.user;
     if (!user) {
-      const redirect = `/virtual-classroom${window.location.search}`;
-      navigate(`/auth?redirect=${encodeURIComponent(redirect)}`);
+      const next = `/virtual-classroom${window.location.search}`;
+      navigate(`/auth?next=${encodeURIComponent(next)}`);
       return;
     }
 
