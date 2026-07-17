@@ -115,7 +115,7 @@ const Contact = () => {
               <div className="cta-surface rounded-[24px] p-6 text-white">
                 <h3 className="font-semibold mb-3 !text-white">{t("contact.lookingSpecific")}</h3>
                 <ul className="space-y-2 text-sm text-white/80">
-                  <li>• <a href="/pricing" className="hover:text-white underline">{t("contact.viewPricing")}</a></li>
+                  <li>• <a href="/apply" className="hover:text-white underline">{t("contact.viewPricing")}</a></li>
                   <li>• <a href="/programs" className="hover:text-white underline">{t("contact.explorePrograms")}</a></li>
                   <li>• <a href="/institutions" className="hover:text-white underline">{t("contact.institutionalPartnerships")}</a></li>
                 </ul>
