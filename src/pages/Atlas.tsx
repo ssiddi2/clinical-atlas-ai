@@ -351,65 +351,81 @@ const Atlas = () => {
   ];
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row bg-background">
-      {/* Sidebar */}
-      <aside className="hidden md:flex w-72 border-r border-border flex-col bg-muted/30">
-        <div className="p-4 border-b border-border">
-          <Link to="/dashboard" className="flex items-center gap-2 text-muted-foreground hover:text-foreground mb-4">
-            <ArrowLeft className="h-4 w-4" />
-            <span className="text-sm">{t("atlas.backToDashboard")}</span>
-          </Link>
-          <Button onClick={createNewConversation} className="w-full gradient-livemed">
-            <Plus className="h-4 w-4 mr-2" />
-            {t("atlas.newConversation")}
-          </Button>
+    <div className="h-screen flex flex-col bg-background">
+      {/* Unified Top Bar */}
+      <header className="sticky top-0 z-40 h-14 flex items-center gap-2 md:gap-3 px-3 md:px-4 border-b border-border bg-background">
+        <Link
+          to="/dashboard"
+          aria-label={t("atlas.backToDashboard")}
+          className="inline-flex items-center justify-center h-9 w-9 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+        >
+          <ArrowLeft className="h-5 w-5" />
+        </Link>
+        <div className="h-6 w-px bg-border" />
+        <button
+          onClick={createNewConversation}
+          aria-label={t("atlas.newConversation")}
+          title={t("atlas.newConversation")}
+          className="inline-flex items-center justify-center h-9 w-9 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+        >
+          <Plus className="h-5 w-5" />
+        </button>
+        <div className="h-6 w-px bg-border" />
+        <div className="flex items-center gap-2 md:gap-3 min-w-0">
+          <div className="w-8 h-8 md:w-9 md:h-9 rounded-full gradient-livemed flex items-center justify-center flex-shrink-0">
+            <Brain className="h-4 w-4 md:h-5 md:w-5 text-white" />
+          </div>
+          <div className="min-w-0">
+            <h1 className="font-semibold text-sm md:text-base leading-tight">ATLAS™</h1>
+            <div className="flex items-center gap-2">
+              <p className="text-xs text-muted-foreground hidden sm:block">{t("atlas.aiProfessor")}</p>
+              <AdaptedBadge />
+            </div>
+          </div>
         </div>
-        <ScrollArea className="flex-1">
-          <div className="p-2 space-y-1">
-            {conversations.map((conv) => (
-              <button
-                key={conv.id}
-                onClick={() => setCurrentConversation(conv.id)}
-                className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
-                  currentConversation === conv.id
-                    ? "bg-accent text-accent-foreground"
-                    : "hover:bg-muted text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                <div className="flex items-center gap-2">
-                  <MessageSquare className="h-4 w-4 flex-shrink-0" />
-                  <span className="truncate">{conv.title || "New Conversation"}</span>
-                </div>
-              </button>
-            ))}
-          </div>
-        </ScrollArea>
-      </aside>
-
-      {/* Main Chat Area */}
-      <div className="flex-1 flex flex-col min-w-0">
-        <header className="border-b border-border px-3 md:px-4 py-3 flex items-center justify-between bg-background">
-          <div className="flex items-center gap-2 md:gap-3">
-            <Link to="/dashboard" className="md:hidden text-muted-foreground">
-              <ArrowLeft className="h-5 w-5" />
-            </Link>
-            <div className="w-8 h-8 md:w-10 md:h-10 rounded-full gradient-livemed flex items-center justify-center">
-              <Brain className="h-4 w-4 md:h-5 md:w-5 text-white" />
-            </div>
-            <div>
-              <h1 className="font-semibold text-sm md:text-base">ATLAS™</h1>
-              <div className="flex items-center gap-2">
-                <p className="text-xs text-muted-foreground hidden sm:block">{t("atlas.aiProfessor")}</p>
-                <AdaptedBadge />
-              </div>
-            </div>
-          </div>
-          <Link to="/dashboard" className="hidden md:block">
-            <img src={livemedLogo} alt="Livemed Academy" className="h-10 md:h-16 object-contain" />
+        <div className="ml-auto hidden md:flex items-center">
+          <Link to="/dashboard">
+            <img src={livemedLogo} alt="Livemed Academy" className="h-8 object-contain" />
           </Link>
-        </header>
+        </div>
+      </header>
 
-        <ScrollArea className="flex-1 p-3 md:p-4">
+      {/* Body: sidebar + chat */}
+      <div className="flex-1 flex min-h-0">
+        {/* Sidebar */}
+        <aside className="hidden md:flex w-72 border-r border-border flex-col bg-muted/30 h-full">
+          <div className="px-4 py-3 border-b border-border">
+            <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+              {t("atlas.newConversation")}s
+            </p>
+          </div>
+          <ScrollArea className="flex-1">
+            <div className="p-2 space-y-1">
+              {conversations.map((conv) => (
+                <button
+                  key={conv.id}
+                  onClick={() => setCurrentConversation(conv.id)}
+                  className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
+                    currentConversation === conv.id
+                      ? "bg-accent text-accent-foreground"
+                      : "hover:bg-muted text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  <div className="flex items-start gap-2">
+                    <MessageSquare className="h-4 w-4 flex-shrink-0 mt-0.5" />
+                    <span className="line-clamp-2 break-words leading-snug">
+                      {conv.title || "New Conversation"}
+                    </span>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </ScrollArea>
+        </aside>
+
+        {/* Main Chat Area */}
+        <div className="flex-1 flex flex-col min-w-0 h-full">
+          <ScrollArea className="flex-1 p-3 md:p-4">
           {messages.length === 0 ? (
             <div className="h-full flex flex-col items-center justify-center text-center p-4 md:p-8">
               <div className="w-16 h-16 md:w-20 md:h-20 rounded-full gradient-livemed flex items-center justify-center mb-4 md:mb-6">
@@ -477,9 +493,9 @@ const Atlas = () => {
               <div ref={messagesEndRef} />
             </div>
           )}
-        </ScrollArea>
+          </ScrollArea>
 
-        <div className="border-t border-border p-4 bg-background">
+          <div className="border-t border-border p-4 bg-background">
           <div className="max-w-3xl mx-auto">
             <div className="relative">
               <Textarea
@@ -503,7 +519,7 @@ const Atlas = () => {
             <p className="text-xs text-muted-foreground mt-2 text-center">
               ATLAS uses Socratic teaching methodology. Always verify clinical information with authoritative sources.
             </p>
-          </div>
+            </div>
         </div>
       </div>
     </div>
