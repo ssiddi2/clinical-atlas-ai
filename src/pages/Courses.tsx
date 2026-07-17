@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { ArrowLeft, BookOpen, Search, GraduationCap } from "lucide-react";
 import CourseCard from "@/components/courses/CourseCard";
 import { useTranslation } from "@/i18n/LanguageContext";
+import AppShell from "@/components/layout/AppShell";
 
 const Courses = () => {
   const navigate = useNavigate();
@@ -71,7 +72,7 @@ const Courses = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <AppShell>
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon" onClick={() => navigate("/dashboard")}>
@@ -112,7 +113,7 @@ const Courses = () => {
           </div>
         )}
       </div>
-    </div>
+    </AppShell>
   );
 };
 
