@@ -323,34 +323,39 @@ const Dashboard = () => {
           <div className="lg:col-span-2 space-y-6 md:space-y-8">
             {/* Diagnostic Assessment Promotion */}
             {!hasTakenDiagnostic && (
-              <Card className="border-accent/30 bg-gradient-to-br from-accent/5 to-primary/5 overflow-hidden relative">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-accent/10 to-transparent rounded-bl-full" />
-                <CardHeader className="pb-2">
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className="w-10 h-10 rounded-lg gradient-livemed flex items-center justify-center">
-                      <Target className="h-5 w-5 text-white" />
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <CardTitle className="text-lg">{t("dashboard.diagnostic.title")}</CardTitle>
-                        <span className="px-2 py-0.5 text-xs font-medium bg-accent text-accent-foreground rounded-full">{t("dashboard.diagnostic.recommended")}</span>
+              <Card className="overflow-hidden">
+                <CardContent className="p-6 flex items-start gap-6">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center flex-shrink-0">
+                        <Target className="h-6 w-6 text-white" />
                       </div>
-                      <CardDescription>{t("dashboard.diagnostic.personalize")}</CardDescription>
+                      <div>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <h3 className="text-xl font-bold">{t("dashboard.diagnostic.title")}</h3>
+                          <span className="px-2.5 py-0.5 text-xs font-semibold bg-primary text-primary-foreground rounded-full">{t("dashboard.diagnostic.recommended")}</span>
+                        </div>
+                        <p className="text-sm text-muted-foreground">{t("dashboard.diagnostic.personalize")}</p>
+                      </div>
+                    </div>
+                    <p className="text-sm text-muted-foreground mb-5 leading-relaxed">{t("dashboard.diagnostic.description")}</p>
+                    <div className="flex flex-wrap items-center gap-4">
+                      <Button className="bg-primary hover:bg-primary/90" asChild>
+                        <Link to="/diagnostic">
+                          {t("dashboard.diagnostic.start")}
+                          <ChevronRight className="ml-1 h-4 w-4" />
+                        </Link>
+                      </Button>
+                      <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                        <span className="flex items-center gap-1.5"><Sparkles className="h-3.5 w-3.5" />{t("dashboard.diagnostic.duration")}</span>
+                        <span className="flex items-center gap-1.5"><Target className="h-3.5 w-3.5" />{t("dashboard.diagnostic.personalizedPlan")}</span>
+                      </div>
                     </div>
                   </div>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground mb-4">{t("dashboard.diagnostic.description")}</p>
-                  <div className="flex flex-wrap items-center gap-3">
-                    <Button className="gradient-livemed" asChild>
-                      <Link to="/diagnostic">
-                        <ClipboardCheck className="mr-2 h-4 w-4" />
-                        {t("dashboard.diagnostic.start")}
-                      </Link>
-                    </Button>
-                    <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                      <span className="flex items-center gap-1"><Sparkles className="h-3 w-3" />{t("dashboard.diagnostic.duration")}</span>
-                      <span className="flex items-center gap-1"><Target className="h-3 w-3" />{t("dashboard.diagnostic.personalizedPlan")}</span>
+                  <div className="hidden sm:flex w-44 h-44 rounded-2xl bg-primary/5 items-center justify-center flex-shrink-0 relative">
+                    <ClipboardCheck className="h-20 w-20 text-primary" strokeWidth={1.5} />
+                    <div className="absolute bottom-4 right-4 w-14 h-14 rounded-full bg-white shadow-md flex items-center justify-center">
+                      <Target className="h-8 w-8 text-primary" strokeWidth={2} />
                     </div>
                   </div>
                 </CardContent>
@@ -361,7 +366,7 @@ const Dashboard = () => {
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <BookOpen className="h-5 w-5 text-accent" />
+                  <BookOpen className="h-5 w-5 text-primary" />
                   {t("dashboard.continueWhereLeft")}
                 </CardTitle>
               </CardHeader>
@@ -379,13 +384,17 @@ const Dashboard = () => {
                     <Button className="gradient-livemed flex-shrink-0">{t("dashboard.resume")}</Button>
                   </Link>
                 ) : (
-                  <div className="flex items-center gap-4 p-4 bg-muted/50 rounded-lg">
-                    <div className="w-16 h-16 rounded-lg bg-muted flex items-center justify-center flex-shrink-0">
-                      <BookOpen className="h-8 w-8 text-muted-foreground/50" />
+                  <div className="flex items-center gap-4 p-5 bg-muted/40 rounded-xl">
+                    <div className="w-14 h-14 rounded-xl bg-background border border-border flex items-center justify-center flex-shrink-0">
+                      <BookOpen className="h-6 w-6 text-muted-foreground/60" />
                     </div>
                     <div className="flex-1">
-                      <p className="text-muted-foreground text-sm">No courses enrolled yet. Contact your admin to get enrolled in a course.</p>
+                      <p className="font-semibold text-sm mb-0.5">No courses enrolled yet.</p>
+                      <p className="text-muted-foreground text-sm">Contact your admin to get enrolled in a course.</p>
                     </div>
+                    <Button variant="outline" asChild className="border-primary text-primary hover:bg-primary/5 hover:text-primary">
+                      <Link to="/courses">Browse Courses</Link>
+                    </Button>
                   </div>
                 )}
               </CardContent>
