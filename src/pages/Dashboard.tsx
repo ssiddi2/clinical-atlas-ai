@@ -7,27 +7,17 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Progress } from "@/components/ui/progress";
 import {
   BookOpen, Stethoscope, Calendar, MessageSquare,
-  PlayCircle, FileText, LogOut, Settings, ShieldCheck, Target,
-  ClipboardCheck, Sparkles, Video, GraduationCap, ChevronRight, ChevronDown,
+  PlayCircle, FileText, Target,
+  ClipboardCheck, Video, GraduationCap, ChevronRight,
   CalendarCheck,
 } from "lucide-react";
-import livemedLogoAsset from "@/assets/livemed-logo-light.png.asset.json";
-const livemedLogo = livemedLogoAsset.url;
-import NotificationBell from "@/components/notifications/NotificationBell";
+import AppShell from "@/components/layout/AppShell";
 import VerificationBanner from "@/components/dashboard/VerificationBanner";
 import StudyPlanWidget from "@/components/dashboard/StudyPlanWidget";
 import LearningJourney from "@/components/dashboard/LearningJourney";
 import { MatchReadyWidget } from "@/components/score/MatchReadyWidget";
 import { useScorePredictor } from "@/hooks/useScorePredictor";
 import { useTranslation } from "@/i18n";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 
 interface ProfileData {
   onboarding_completed: boolean;
@@ -64,7 +54,6 @@ const Dashboard = () => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<ProfileData | null>(null);
-  const [isAdmin, setIsAdmin] = useState(false);
   const [upcomingLectures, setUpcomingLectures] = useState<UpcomingLecture[]>([]);
   const [courseProgressData, setCourseProgressData] = useState<CourseProgress[]>([]);
   const [continueLearning, setContinueLearning] = useState<ContinueLearningData | null>(null);
@@ -95,7 +84,6 @@ const Dashboard = () => {
       supabase.from("course_enrollments").select("course_id").eq("student_id", userId).eq("status", "approved"),
     ]);
     setProfile(profileRes.data);
-    setIsAdmin(!!adminRes.data);
 
     // Nudge students who finished onboarding but haven't taken the learning assessment.
     if (profileRes.data?.onboarding_completed && !profileRes.data?.learning_assessment_completed && !adminRes.data) {
