@@ -522,6 +522,7 @@ const Atlas = () => {
             </div>
         </div>
       </div>
+      </div>
     </div>
   );
 };
