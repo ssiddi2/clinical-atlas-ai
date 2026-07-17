@@ -10,67 +10,95 @@
 
 @layer base {
   :root {
-    /* LIVEMED Brand Colors - Light Clinical Theme (livemedhealth.com) */
-    --background: 0 0% 100%;
-    --foreground: 222 47% 8%;
+    /* LIVEMED Brand Colors — synced with livemedhealth.com "New Livemed" design system.
+       All shadcn tokens remain in HSL (Tailwind v3 config assumes HSL). */
+    --background: 220 33% 99%;           /* #FAFBFD warmed off-white */
+    --foreground: 240 4% 5%;             /* #0B0B0C ink */
 
     --card: 0 0% 100%;
-    --card-foreground: 222 47% 8%;
+    --card-foreground: 240 4% 5%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 8%;
+    --popover-foreground: 240 4% 5%;
 
-    /* Primary: near-black pill buttons */
-    --primary: 222 47% 8%;
+    /* Primary: LiveMed Deep Blue (#0040DD) */
+    --primary: 224 100% 43%;
     --primary-foreground: 0 0% 100%;
 
-    /* Secondary: light gray surface */
-    --secondary: 220 20% 96%;
-    --secondary-foreground: 222 47% 12%;
+    /* Secondary / Muted: Cloud Tint (#EEF4FE) */
+    --secondary: 214 88% 96%;
+    --secondary-foreground: 240 4% 5%;
 
-    /* Muted tones - Light */
-    --muted: 220 20% 96%;
-    --muted-foreground: 220 12% 42%;
+    --muted: 214 88% 96%;
+    --muted-foreground: 215 19% 27%;     /* #334155 slate */
 
-    /* Accent: LIVEMED blue */
-    --accent: 222 100% 52%;
+    /* Accent: Bright Blue (#0A84FF) */
+    --accent: 211 100% 52%;
     --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 72% 51%;
+    --destructive: 0 84% 60%;            /* #EF4444 */
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 16% 90%;
-    --input: 220 16% 90%;
-    --ring: 222 100% 52%;
+    --border: 240 4% 5%;                 /* used at 8% opacity via HSLA in tokens */
+    --input: 240 4% 5%;
+    --ring: 211 100% 52%;
 
-    --radius: 0.75rem;
+    --radius: 1rem;
+
+    /* Brand palette (hex mirrors for utilities that need exact values) */
+    --brand: #0040DD;
+    --brand-2: #0A84FF;
+    --brand-3: #4DA3FF;
+    --brand-4: #7AB8FF;
+    --ink: #06122B;
+    --surface: #EAF1FC;
+    --surface-tint: #F2F6FD;
+    --soft: #334155;
+    --softer: #64748b;
+    --verified: #1F9D57;
+
+    /* Card system */
+    --card-radius: 20px;
+    --card-radius-lg: 28px;
+    --card-pad: clamp(1.25rem, 2vw, 1.75rem);
+    --card-pad-lg: clamp(1.75rem, 3vw, 2.5rem);
+    --card-border: rgba(11,11,12,0.07);
+    --card-shadow-sm: 0 1px 0 rgba(255,255,255,0.6) inset, 0 2px 8px -3px rgba(11,11,12,0.06);
+    --card-shadow: 0 1px 0 rgba(255,255,255,0.7) inset, 0 8px 24px -10px rgba(11,11,12,0.10);
+    --card-shadow-lg: 0 1px 0 rgba(255,255,255,0.8) inset, 0 24px 60px -22px rgba(11,11,12,0.18);
+    --card-shadow-hover: 0 1px 0 rgba(255,255,255,0.8) inset, 0 28px 70px -22px rgba(10,132,255,0.22);
+
+    /* Motion */
+    --ease-out: cubic-bezier(.2,.7,.2,1);
+    --dur-micro: 180ms;
+    --dur-macro: 320ms;
 
     /* Sidebar - Light */
-    --sidebar-background: 220 24% 98%;
-    --sidebar-foreground: 222 47% 12%;
-    --sidebar-primary: 222 100% 52%;
+    --sidebar-background: 215 71% 97%;
+    --sidebar-foreground: 240 4% 5%;
+    --sidebar-primary: 224 100% 43%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 20% 94%;
-    --sidebar-accent-foreground: 222 47% 12%;
-    --sidebar-border: 220 16% 90%;
-    --sidebar-ring: 222 100% 52%;
+    --sidebar-accent: 214 88% 96%;
+    --sidebar-accent-foreground: 240 4% 5%;
+    --sidebar-border: 240 4% 5%;
+    --sidebar-ring: 211 100% 52%;
 
-    /* LIVEMED Custom Tokens - Light */
+    /* Legacy livemed-* tokens (retuned to the new brand palette) */
     --livemed-navy: 0 0% 100%;
-    --livemed-navy-deep: 220 33% 98%;
-    --livemed-blue: 222 100% 52%;
-    --livemed-cyan: 210 95% 48%;
-    --livemed-light-blue: 210 100% 96%;
-    --livemed-gradient-start: 222 100% 52%;
-    --livemed-gradient-end: 210 95% 60%;
-    --livemed-success: 160 84% 39%;
+    --livemed-navy-deep: 215 71% 97%;
+    --livemed-blue: 224 100% 43%;        /* Deep Blue */
+    --livemed-cyan: 211 100% 52%;        /* Bright Blue */
+    --livemed-light-blue: 214 88% 96%;
+    --livemed-gradient-start: 211 100% 52%;
+    --livemed-gradient-end: 224 100% 43%;
+    --livemed-success: 145 67% 37%;      /* #1F9D57 verified */
     --livemed-warning: 38 92% 50%;
 
-    /* Soft neutral shadows for Light Theme */
-    --shadow-sm: 0 1px 2px 0 hsl(222 47% 8% / 0.06);
-    --shadow-md: 0 4px 6px -1px hsl(222 47% 8% / 0.08), 0 2px 4px -2px hsl(222 47% 8% / 0.06);
-    --shadow-lg: 0 10px 15px -3px hsl(222 47% 8% / 0.1), 0 4px 6px -4px hsl(222 47% 8% / 0.06);
-    --shadow-xl: 0 20px 25px -5px hsl(222 47% 8% / 0.12), 0 8px 10px -6px hsl(222 47% 8% / 0.08);
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 rgba(11,11,12,0.06);
+    --shadow-md: 0 4px 6px -1px rgba(11,11,12,0.08), 0 2px 4px -2px rgba(11,11,12,0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(11,11,12,0.10), 0 4px 6px -4px rgba(11,11,12,0.06);
+    --shadow-xl: 0 20px 25px -5px rgba(11,11,12,0.12), 0 8px 10px -6px rgba(11,11,12,0.08);
   }
 
   /* Dark theme removed - app is light-only. Keep .dark == light as a safety net. */
