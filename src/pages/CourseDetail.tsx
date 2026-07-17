@@ -16,6 +16,7 @@ import CourseAnalytics from "@/components/courses/CourseAnalytics";
 import EditCourseModal from "@/components/courses/EditCourseModal";
 import CreateLectureModal from "@/components/classroom/CreateLectureModal";
 import StudentProfileView from "@/components/courses/StudentProfileView";
+import AppShell from "@/components/layout/AppShell";
 
 const CourseDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -88,7 +89,7 @@ const CourseDetail = () => {
   const approved = enrollments.filter(e => e.status === "approved");
 
   return (
-    <div className="min-h-screen bg-background">
+    <AppShell>
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
         {/* Header */}
         <div className="flex items-center gap-4">
@@ -354,7 +355,7 @@ const CourseDetail = () => {
           courseId={id!}
         />
       )}
-    </div>
+    </AppShell>
   );
 };
 
