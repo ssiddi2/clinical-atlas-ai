@@ -103,33 +103,33 @@
 
   /* Dark theme removed - app is light-only. Keep .dark == light as a safety net. */
   .dark {
-    --background: 0 0% 100%;
-    --foreground: 222 47% 8%;
+    --background: 220 33% 99%;
+    --foreground: 240 4% 5%;
     --card: 0 0% 100%;
-    --card-foreground: 222 47% 8%;
+    --card-foreground: 240 4% 5%;
     --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 8%;
-    --primary: 222 47% 8%;
+    --popover-foreground: 240 4% 5%;
+    --primary: 224 100% 43%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 220 20% 96%;
-    --secondary-foreground: 222 47% 12%;
-    --muted: 220 20% 96%;
-    --muted-foreground: 220 12% 42%;
-    --accent: 222 100% 52%;
+    --secondary: 214 88% 96%;
+    --secondary-foreground: 240 4% 5%;
+    --muted: 214 88% 96%;
+    --muted-foreground: 215 19% 27%;
+    --accent: 211 100% 52%;
     --accent-foreground: 0 0% 100%;
-    --destructive: 0 72% 51%;
+    --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
-    --border: 220 16% 90%;
-    --input: 220 16% 90%;
-    --ring: 222 100% 52%;
-    --sidebar-background: 220 24% 98%;
-    --sidebar-foreground: 222 47% 12%;
-    --sidebar-primary: 222 100% 52%;
+    --border: 240 4% 5%;
+    --input: 240 4% 5%;
+    --ring: 211 100% 52%;
+    --sidebar-background: 215 71% 97%;
+    --sidebar-foreground: 240 4% 5%;
+    --sidebar-primary: 224 100% 43%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 20% 94%;
-    --sidebar-accent-foreground: 222 47% 12%;
-    --sidebar-border: 220 16% 90%;
-    --sidebar-ring: 222 100% 52%;
+    --sidebar-accent: 214 88% 96%;
+    --sidebar-accent-foreground: 240 4% 5%;
+    --sidebar-border: 240 4% 5%;
+    --sidebar-ring: 211 100% 52%;
   }
 }
 
