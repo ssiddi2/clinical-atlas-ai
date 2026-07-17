@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -21,6 +21,7 @@ import AppShell from "@/components/layout/AppShell";
 const CourseDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { t } = useTranslation();
   const { toast } = useToast();
   const [course, setCourse] = useState<any>(null);
@@ -35,8 +36,13 @@ const CourseDetail = () => {
   useEffect(() => { if (id) loadData(); }, [id]);
 
   const loadData = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) { navigate("/auth"); return; }
+    const { data: { session } } = await supabase.auth.getSession();
+    const user = session?.user;
+    if (!user) {
+      const next = `/courses/${id}${window.location.search}`;
+      navigate(`/auth?next=${encodeURIComponent(next)}`);
+      return;
+    }
 
     const [courseRes, enrollRes, lecturesRes] = await Promise.all([
       supabase.from("courses").select("*, specialties(name)").eq("id", id!).single(),
@@ -47,6 +53,14 @@ const CourseDetail = () => {
     if (courseRes.data) {
       setCourse(courseRes.data);
       setIsInstructor(courseRes.data.instructor_id === user.id);
+      if (searchParams.get("welcome") === "1") {
+        toast({
+          title: "You've been enrolled",
+          description: `Welcome to ${courseRes.data.title}. Explore your lectures and materials below.`,
+        });
+        searchParams.delete("welcome");
+        setSearchParams(searchParams, { replace: true });
+      }
     }
     if (enrollRes.data) setEnrollments(enrollRes.data);
     if (lecturesRes.data) setLectures(lecturesRes.data);

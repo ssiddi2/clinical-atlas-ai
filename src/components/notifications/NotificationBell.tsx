@@ -48,8 +48,19 @@ const NotificationBell = ({ userId }: { userId: string | null }) => {
           setNotifications((prev) => [payload.new as Notification, ...prev].slice(0, 20));
         }
       )
-      .subscribe();
+      .subscribe((status) => {
+        if (status === "SUBSCRIBED") {
+          loadNotifications();
+        }
+      });
+
+    const onVisible = () => {
+      if (document.visibilityState === "visible") loadNotifications();
+    };
+    document.addEventListener("visibilitychange", onVisible);
+
     return () => {
+      document.removeEventListener("visibilitychange", onVisible);
       supabase.removeChannel(channel);
     };
   }, [userId]);

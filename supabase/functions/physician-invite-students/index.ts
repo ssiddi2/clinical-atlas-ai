@@ -214,7 +214,7 @@ serve(async (req) => {
           title: `Welcome to ${course.title}`,
           message: `You've been enrolled in ${course.title} by your instructor.`,
           type: "info",
-          link: `/courses/${courseId}`,
+          link: `/courses/${courseId}?welcome=1`,
         });
 
         results[results.length - 1] = results[results.length - 1] || { email, success: true };

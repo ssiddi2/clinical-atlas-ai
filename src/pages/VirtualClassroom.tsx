@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -12,20 +12,27 @@ import AppShell from "@/components/layout/AppShell";
 
 const VirtualClassroom = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { t } = useTranslation();
   const [classrooms, setClassrooms] = useState<any[]>([]);
   const [enrollments, setEnrollments] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [tab, setTab] = useState("upcoming");
+  const highlightId = searchParams.get("lectureId");
 
   useEffect(() => {
     loadData();
   }, []);
 
   const loadData = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) { navigate("/auth"); return; }
+    const { data: { session } } = await supabase.auth.getSession();
+    const user = session?.user;
+    if (!user) {
+      const next = `/virtual-classroom${window.location.search}`;
+      navigate(`/auth?next=${encodeURIComponent(next)}`);
+      return;
+    }
 
     // Get student's approved course enrollments
     const { data: courseEnrollData } = await supabase
@@ -57,6 +64,25 @@ const VirtualClassroom = () => {
     if (classEnrollData) setEnrollments(new Set(classEnrollData.map(e => e.classroom_id)));
     setLoading(false);
   };
+
+  useEffect(() => {
+    if (!highlightId || loading || classrooms.length === 0) return;
+    const target = classrooms.find(c => c.id === highlightId);
+    if (!target) return;
+    if (target.status === "live") setTab("live");
+    else if (target.status === "scheduled") setTab("upcoming");
+    else setTab("all");
+    setTimeout(() => {
+      const el = document.getElementById(`lecture-${highlightId}`);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+        el.classList.add("ring-2", "ring-primary", "ring-offset-2", "rounded-lg");
+        setTimeout(() => {
+          el.classList.remove("ring-2", "ring-primary", "ring-offset-2", "rounded-lg");
+        }, 3000);
+      }
+    }, 200);
+  }, [highlightId, loading, classrooms]);
 
   const filtered = classrooms.filter(c => {
     const matchesSearch = !search || c.title.toLowerCase().includes(search.toLowerCase());
@@ -124,12 +150,13 @@ const VirtualClassroom = () => {
             ) : (
               <div className="grid gap-4 md:grid-cols-2">
                 {filtered.map(lecture => (
-                  <LectureCard
-                    key={lecture.id}
-                    lecture={lecture}
-                    isEnrolled={enrollments.has(lecture.id)}
-                    onRefresh={loadData}
-                  />
+                  <div key={lecture.id} id={`lecture-${lecture.id}`} className="transition-all">
+                    <LectureCard
+                      lecture={lecture}
+                      isEnrolled={enrollments.has(lecture.id)}
+                      onRefresh={loadData}
+                    />
+                  </div>
                 ))}
               </div>
             )}
