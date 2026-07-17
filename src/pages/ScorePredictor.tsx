@@ -21,7 +21,8 @@ import { TopicHeatmap } from '@/components/score/TopicHeatmap';
 import { ScoreHistory } from '@/components/score/ScoreHistory';
 import { ContributingFactors } from '@/components/score/ContributingFactors';
 import { PeerComparison } from '@/components/score/PeerComparison';
-import livemedLogo from '@/assets/livemed-logo.png';
+import livemedLogoAsset from "@/assets/livemed-logo-light.png.asset.json";
+const livemedLogo = livemedLogoAsset.url;
 import { useTranslation } from '@/i18n/LanguageContext';
 
 const MINIMUM_QUESTIONS = 25;
