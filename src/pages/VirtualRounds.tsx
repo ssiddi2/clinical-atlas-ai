@@ -25,8 +25,7 @@ import {
   Award,
   Info,
 } from "lucide-react";
-import livemedLogoAsset from "@/assets/livemed-logo-light.png.asset.json";
-const livemedLogo = livemedLogoAsset.url;
+import AppShell from "@/components/layout/AppShell";
 import { format, parseISO, isAfter, isBefore, addHours } from "date-fns";
 import { useTranslation } from "@/i18n/LanguageContext";
 
@@ -188,52 +187,16 @@ const VirtualRounds = () => {
   // Show upgrade prompt if user doesn't have clinical access
   if (!featureAccess.canAccessVirtualRounds) {
     return (
-      <div className="min-h-screen bg-background">
-        {/* Header */}
-        <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur">
-          <div className="container mx-auto flex h-16 items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Link to="/dashboard" className="text-muted-foreground hover:text-foreground">
-                <ArrowLeft className="h-5 w-5" />
-              </Link>
-              <div>
-                <h1 className="font-semibold">Live Virtual Rounds</h1>
-                <p className="text-xs text-muted-foreground">Clinical Access Required</p>
-              </div>
-            </div>
-            <Link to="/dashboard">
-              <img src={livemedLogo} alt="Livemed" className="h-10 md:h-16 object-contain" />
-            </Link>
-          </div>
-        </header>
-        
+      <AppShell>
         <div className="container mx-auto py-8">
           <UpgradePrompt feature="virtualRounds" />
         </div>
-      </div>
+      </AppShell>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur">
-        <div className="container mx-auto flex h-16 items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Link to="/dashboard" className="text-muted-foreground hover:text-foreground">
-              <ArrowLeft className="h-5 w-5" />
-            </Link>
-            <div>
-              <h1 className="font-semibold">Live Virtual Rounds</h1>
-              <p className="text-xs text-muted-foreground">Join real-time telemedicine rounds with US physicians</p>
-            </div>
-          </div>
-          <Link to="/dashboard">
-            <img src={livemedLogo} alt="Livemed" className="h-10 md:h-16 object-contain" />
-          </Link>
-        </div>
-      </header>
-
+    <AppShell>
       <div className="container mx-auto py-6 md:py-8">
         {/* Hero Banner */}
         <div className="mb-6 md:mb-8 p-4 md:p-6 rounded-2xl gradient-livemed text-white">
