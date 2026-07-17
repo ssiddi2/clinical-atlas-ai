@@ -75,21 +75,6 @@ const AppShell = ({ children, headerOnly = false }: AppShellProps) => {
           <Link to="/dashboard" className="flex items-center" aria-label="Livemed Academy — Dashboard">
             <img src={livemedLogo} alt="Livemed Academy" className="h-8 object-contain" />
           </Link>
-          <nav className="hidden md:flex items-center gap-3" aria-label="Primary">
-            <Link
-              to="/curriculum"
-              className="text-sm font-medium text-foreground/70 hover:text-foreground transition-colors rounded-md px-2 py-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            >
-              {t("dashboard.curriculum")}
-            </Link>
-            <Link
-              to="/atlas"
-              className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold text-white bg-gradient-to-r from-blue-500 to-violet-500 shadow-sm hover:shadow-md hover:brightness-110 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-            >
-              <Sparkles className="h-3.5 w-3.5" />
-              ATLAS™
-            </Link>
-          </nav>
         </div>
 
         <div className="flex items-center gap-1.5">
