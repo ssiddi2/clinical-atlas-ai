@@ -1,36 +1,60 @@
-## Problems confirmed
+## Goal
+Make the student dashboard the "hub" and ensure every page reachable from it works, looks consistent, and shares one unified navigation shell.
 
-1. **Duplicate/mismatched nav on `/apply`** — `Apply.tsx` is already rendered inside `PublicLayout` (which mounts the standard light `Header`), but the page also renders its **own** dark-themed `<header>` (fixed, `bg-livemed-deep`, custom logo + "Already have an account?" button). Result: two navs stacked, and the top one uses the old dark style so it looks completely different from the rest of the site.
+## Findings from audit
 
-2. **Login friction** — In `Auth.tsx` the redirect handler runs from **both** `onAuthStateChange` AND `getSession()` in parallel, and does two sequential Supabase queries (`profiles`, then `user_roles`) inside the `onAuthStateChange` callback. That violates the documented pattern (no awaits inside `onAuthStateChange`) and causes:
-   - double redirects / race conditions
-   - visible lag after clicking Sign In before navigation
-   - occasional "flash" of the auth page after login
+**Routes:** All links from `Dashboard.tsx` (and its widgets) resolve to real routes in `App.tsx` — no 404s. Links audited: `/atlas`, `/curriculum`, `/courses`, `/virtual-classroom`, `/virtual-rounds`, `/assessments`, `/diagnostic`, `/profile`, `/onboarding`, `/contact`, `/admin`, `/learning-assessment`, `/qbank`, `/score-predictor`.
 
-3. **Logout friction** — need to verify current sign-out path uses `signOut()` cleanly and lands on `/` without waiting on subsequent authed queries. Will audit `Header` sign-out handler and any `Dashboard` mount-time queries that run before auth is ready.
+**Inconsistency (the real problem):** Every authenticated page renders its own bespoke `<header>` element with different styles:
 
-## Fixes
+| Page | Header style |
+| --- | --- |
+| Dashboard | sticky, `bg-background/85 backdrop-blur-xl`, logo + ATLAS™ pill + Admin + Notifications + Avatar |
+| Curriculum, VirtualRounds, Assessments, DiagnosticAssessment, Profile, Residency, ModuleView | sticky `bg-background/95` — smaller, different contents |
+| Atlas | non-sticky, plain `bg-background` |
+| ScorePredictor | `fixed`, `glass-dark` — **breaks light theme** |
+| PhysicianDashboard | `bg-card/50 backdrop-blur-sm` |
+| LearningAssessment, Onboarding | thin `border-border/40` header — intentionally minimal (flow pages) |
+| Courses, VirtualClassroom, QBank, CourseDetail, LearningUnitPage | no `<header>` at all — no way back to dashboard from these pages |
 
-### A. Unify the navigation on `/apply`
-- Remove the inline `<header>` block and the `pt-24` spacer wrapper from `Apply.tsx`.
-- Remove the page-level `bg-livemed-deep` / dark glass card styling on the success state and form so it inherits the standard light theme used everywhere else.
-- Keep only page content; `PublicLayout`'s `Header` + `Footer` handle chrome. This guarantees one nav bar across the entire public site.
+**Extra issues found while auditing:**
+- `Dashboard.tsx` navigates to `/learning-assessment` on Take Assessment. That's the mobile-friendly quiz — the Take Assessment tile actually points to `/assessments` (correct).
+- ScorePredictor still uses dark-theme utilities (`glass-dark`) — visual regression on light theme.
 
-### B. Smooth login
-Refactor the redirect effect in `Auth.tsx`:
-- Register `onAuthStateChange` first, but inside the callback **do not await** — schedule the redirect via `setTimeout(() => handleAuthRedirect(session), 0)` (documented Supabase pattern).
-- Guard against double execution with a `redirectingRef` so `getSession()` and `onAuthStateChange` can't both fire the handler.
-- Parallelize the profile + roles reads with `Promise.all` instead of sequential awaits.
-- Navigate with `{ replace: true }` so the back button doesn't return to `/auth`.
+## Plan
 
-### C. Smooth logout
-- Audit `Header.tsx` sign-out handler: ensure it calls `supabase.auth.signOut()` and immediately `navigate("/", { replace: true })` without awaiting extra work; clear any local React Query cache if present.
-- Check `Dashboard.tsx` / other authed pages for queries that fire before session is ready and add an `enabled: !!session` gate if they're causing post-logout error toasts or hangs.
+### 1. Create a shared `AppShell` component
+`src/components/layout/AppShell.tsx` — renders the exact same top navigation as `Dashboard.tsx` currently does (logo, Curriculum link, ATLAS™ pill, Admin button when applicable, Notifications, avatar dropdown → Profile / Sign out). Sticky, `bg-background/85 backdrop-blur-xl`, `h-14`. Reads role + profile from Supabase once.
 
-### D. Verify
-- Load `/apply` → confirm single light-themed nav matches `/`, `/programs`, etc.
-- Sign in with demo account → redirect happens in one hop, no flash.
-- Sign out from dashboard → lands on `/` instantly, no console errors.
+### 2. Refactor Dashboard to use `AppShell`
+Move the header JSX out of `Dashboard.tsx` into `AppShell`. Dashboard becomes `<AppShell><main>…</main></AppShell>`.
 
-## Scope
-Frontend only. Files touched: `src/pages/Apply.tsx`, `src/pages/Auth.tsx`, `src/components/layout/Header.tsx` (sign-out only), and minimal gating tweaks on `src/pages/Dashboard.tsx` if the audit shows early-fire queries. No backend, RLS, or schema changes.
+### 3. Wrap every authenticated student page in `AppShell`
+Replace each page's bespoke `<header>` with `<AppShell>`:
+- `Curriculum`, `ModuleView`
+- `Courses`, `CourseDetail`, `LearningUnitPage`  ← currently have no header
+- `VirtualClassroom`  ← currently has no header
+- `VirtualRounds`
+- `Assessments`, `DiagnosticAssessment`
+- `Atlas`
+- `Profile`
+- `Residency`
+- `ScorePredictor` (removes the `glass-dark` dark-theme leftover)
+- `QBank`, `QBankCreate`, `QBankPerformance`  ← no header today
+- `PhysicianDashboard`
+
+Skip (intentionally chromeless): `Auth`, `Onboarding`, `LearningAssessment`, `PendingApproval`, `QBankSession`, `QBankReview`, `LiveQuiz`, `RotationExperience` (focused/full-screen flows).
+
+### 4. Consistency pass
+- Remove duplicate imports (Bell, DropdownMenu, avatar, etc.) from every page now that they live in `AppShell`.
+- Standardize page body wrapper to `<main class="container mx-auto px-4 md:px-6 py-8 md:py-10 space-y-8">` so spacing matches Dashboard.
+- Fix any hardcoded dark utilities on ScorePredictor (`glass-dark`, dark gradients) to the light `.lm-card` system.
+
+### 5. Verify
+- Click through every link from the dashboard in the preview (Playwright): each page loads, shows the shared header, back-to-dashboard works, no console errors.
+- Confirm the ATLAS™ pill is present on every authenticated page and highlights the active route.
+
+## Out of scope
+- No new features, no route additions, no data-model changes.
+- No changes to marketing / public pages.
+- No changes to flow pages (Auth, Onboarding, QBankSession, LiveQuiz, etc.) that intentionally hide chrome.
