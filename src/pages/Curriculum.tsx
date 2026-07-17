@@ -140,6 +140,18 @@ const Curriculum = () => {
   return (
     <AppShell>
       <div className="container mx-auto py-6 md:py-8">
+        <div className="flex items-center gap-4 mb-6">
+          <Button variant="ghost" size="icon" onClick={() => navigate("/dashboard")}>
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+          <div>
+            <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
+              <BookOpen className="h-6 w-6 text-primary" />
+              Curriculum
+            </h1>
+            <p className="text-muted-foreground text-sm mt-1">Explore your enrolled course modules</p>
+          </div>
+        </div>
         {courses.length === 0 ? (
           <Card className="bg-card/50 border-border/30">
             <CardContent className="flex flex-col items-center justify-center py-16 text-center">
