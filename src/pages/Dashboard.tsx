@@ -9,7 +9,7 @@ import {
   BookOpen, Stethoscope, Calendar, MessageSquare,
   PlayCircle, FileText, Target,
   ClipboardCheck, Sparkles, Video, GraduationCap, ChevronRight,
-  CalendarCheck,
+  CalendarCheck, Mail,
 } from "lucide-react";
 import AppShell from "@/components/layout/AppShell";
 import VerificationBanner from "@/components/dashboard/VerificationBanner";
@@ -57,6 +57,7 @@ const Dashboard = () => {
   const [upcomingLectures, setUpcomingLectures] = useState<UpcomingLecture[]>([]);
   const [courseProgressData, setCourseProgressData] = useState<CourseProgress[]>([]);
   const [continueLearning, setContinueLearning] = useState<ContinueLearningData | null>(null);
+  const [pendingInvitesCount, setPendingInvitesCount] = useState(0);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
@@ -78,12 +79,14 @@ const Dashboard = () => {
 
   const loadProfileAndCheckAdmin = async (userId: string) => {
     // Fetch profile, admin check, and enrolled course IDs
-    const [profileRes, adminRes, courseEnrollRes] = await Promise.all([
+    const [profileRes, adminRes, courseEnrollRes, invitesRes] = await Promise.all([
       supabase.from("profiles").select("onboarding_completed, verification_status, weak_areas, learning_assessment_completed").eq("user_id", userId).maybeSingle(),
       supabase.rpc("has_role", { _user_id: userId, _role: "platform_admin" }),
       supabase.from("course_enrollments").select("course_id").eq("student_id", userId).eq("status", "approved"),
+      supabase.from("course_enrollments").select("id", { count: "exact", head: true }).eq("student_id", userId).eq("status", "invited"),
     ]);
     setProfile(profileRes.data);
+    setPendingInvitesCount(invitesRes.count || 0);
 
     // Nudge students who finished onboarding but haven't taken the learning assessment.
     if (profileRes.data?.onboarding_completed && !profileRes.data?.learning_assessment_completed && !adminRes.data) {
@@ -214,6 +217,28 @@ const Dashboard = () => {
           </h1>
           <p className="mt-1.5 text-[15px] text-muted-foreground">{t("dashboard.continueJourney")}</p>
         </div>
+
+        {pendingInvitesCount > 0 && (
+          <Link
+            to="/invitations"
+            className="block rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+          >
+            <Card className="rounded-2xl border-primary/30 bg-primary/[0.04] hover:bg-primary/[0.06] transition-colors">
+              <CardContent className="p-4 flex items-center gap-4">
+                <div className="w-11 h-11 rounded-xl bg-primary flex items-center justify-center shadow-sm">
+                  <Mail className="h-5 w-5 text-white" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-semibold text-foreground">
+                    {pendingInvitesCount} pending course invitation{pendingInvitesCount > 1 ? "s" : ""}
+                  </p>
+                  <p className="text-sm text-muted-foreground">Accept or decline to unlock lectures and materials.</p>
+                </div>
+                <ChevronRight className="h-5 w-5 text-muted-foreground" />
+              </CardContent>
+            </Card>
+          </Link>
+        )}
 
         {/* Quick Actions */}
         <section aria-label="Quick actions">

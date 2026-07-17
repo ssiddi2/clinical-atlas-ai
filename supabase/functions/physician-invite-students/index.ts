@@ -73,10 +73,131 @@ serve(async (req) => {
     }
 
     const body = await req.json();
-    const { courseId, students } = body as { courseId: string; students: InviteStudent[] };
+    const { courseId, students, action, enrollmentId } = body as {
+      courseId: string;
+      students?: InviteStudent[];
+      action?: "invite" | "resend" | "revoke";
+      enrollmentId?: string;
+    };
+    const mode: "invite" | "resend" | "revoke" = action ?? "invite";
+    const isAdmin = roles?.some((r: any) => r.role === "platform_admin");
 
-    if (!courseId || !Array.isArray(students) || students.length === 0) {
-      return new Response(JSON.stringify({ error: "courseId and students[] are required" }), {
+    // Ownership check for the course
+    if (!courseId) {
+      return new Response(JSON.stringify({ error: "courseId is required" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    const { data: courseRow, error: courseRowErr } = await supabase
+      .from("courses")
+      .select("id, instructor_id, title")
+      .eq("id", courseId)
+      .single();
+    if (courseRowErr || !courseRow) {
+      return new Response(JSON.stringify({ error: "Course not found" }), {
+        status: 404,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    if (!isAdmin && courseRow.instructor_id !== user.id) {
+      return new Response(JSON.stringify({ error: "You don't own this course" }), {
+        status: 403,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // ---------- RESEND ----------
+    if (mode === "resend") {
+      if (!enrollmentId) {
+        return new Response(JSON.stringify({ error: "enrollmentId required" }), {
+          status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      const { data: enr } = await supabase
+        .from("course_enrollments")
+        .select("id, student_id, status, course_id")
+        .eq("id", enrollmentId).maybeSingle();
+      if (!enr || enr.course_id !== courseId) {
+        return new Response(JSON.stringify({ error: "Enrollment not found" }), {
+          status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      if (enr.status !== "invited") {
+        return new Response(JSON.stringify({ error: `Cannot resend — current status is ${enr.status}` }), {
+          status: 409, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      // Touch updated_at (also fires audit trigger via update-with-same-status? No — status unchanged → trigger no-ops)
+      await supabase.from("course_enrollments")
+        .update({ updated_at: new Date().toISOString() })
+        .eq("id", enr.id);
+      // Manually insert audit row for the resend action
+      await supabase.from("enrollment_audit_log").insert({
+        enrollment_id: enr.id,
+        course_id: courseId,
+        student_id: enr.student_id,
+        actor_id: user.id,
+        action: "resent",
+        previous_status: "invited",
+        new_status: "invited",
+      });
+      await supabase.from("notifications").insert({
+        user_id: enr.student_id,
+        type: "info",
+        title: `Reminder: invitation to ${courseRow.title}`,
+        message: `Your instructor resent an invitation to join ${courseRow.title}. Accept or decline in your invitations.`,
+        link: `/courses/${courseId}?invite=1`,
+      });
+      return new Response(JSON.stringify({ success: true, action: "resent" }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // ---------- REVOKE ----------
+    if (mode === "revoke") {
+      if (!enrollmentId) {
+        return new Response(JSON.stringify({ error: "enrollmentId required" }), {
+          status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      const { data: enr } = await supabase
+        .from("course_enrollments")
+        .select("id, student_id, status, course_id")
+        .eq("id", enrollmentId).maybeSingle();
+      if (!enr || enr.course_id !== courseId) {
+        return new Response(JSON.stringify({ error: "Enrollment not found" }), {
+          status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      if (enr.status !== "invited") {
+        return new Response(JSON.stringify({ error: `Cannot revoke — status is ${enr.status}` }), {
+          status: 409, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      const { error: updErr } = await supabase.from("course_enrollments")
+        .update({ status: "revoked" })
+        .eq("id", enr.id);
+      if (updErr) {
+        return new Response(JSON.stringify({ error: updErr.message }), {
+          status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      await supabase.from("notifications").insert({
+        user_id: enr.student_id,
+        type: "warning",
+        title: `Invitation withdrawn: ${courseRow.title}`,
+        message: `Your invitation to join ${courseRow.title} has been withdrawn by the instructor.`,
+        link: `/dashboard`,
+      });
+      return new Response(JSON.stringify({ success: true, action: "revoked" }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // ---------- INVITE (default) ----------
+    if (!Array.isArray(students) || students.length === 0) {
+      return new Response(JSON.stringify({ error: "students[] is required" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -89,27 +210,7 @@ serve(async (req) => {
       });
     }
 
-    // Verify caller owns the course (or is admin)
-    const isAdmin = roles?.some((r: any) => r.role === "platform_admin");
-    const { data: course, error: courseErr } = await supabase
-      .from("courses")
-      .select("id, instructor_id, title")
-      .eq("id", courseId)
-      .single();
-
-    if (courseErr || !course) {
-      return new Response(JSON.stringify({ error: "Course not found" }), {
-        status: 404,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
-    if (!isAdmin && course.instructor_id !== user.id) {
-      return new Response(JSON.stringify({ error: "You don't own this course" }), {
-        status: 403,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
+    const course = courseRow;
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const results: InviteResult[] = [];
