@@ -139,9 +139,9 @@ const Landing = () => {
 
   return (
     <>
-      <div ref={containerRef} className="flex flex-col bg-livemed-deep">
+      <div ref={containerRef} className="flex flex-col">
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden lcp-priority">
+      <section data-hero className="relative min-h-screen flex items-center justify-center overflow-hidden lcp-priority bg-section-glow">
         <HeroBackground />
         <video
           className="absolute inset-0 w-full h-full object-cover z-[1]"
