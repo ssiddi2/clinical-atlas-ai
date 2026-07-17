@@ -8,7 +8,7 @@ import { Progress } from "@/components/ui/progress";
 import {
   BookOpen, Stethoscope, Calendar, MessageSquare,
   PlayCircle, FileText, Target,
-  ClipboardCheck, Video, GraduationCap, ChevronRight,
+  ClipboardCheck, Sparkles, Video, GraduationCap, ChevronRight,
   CalendarCheck,
 } from "lucide-react";
 import AppShell from "@/components/layout/AppShell";
