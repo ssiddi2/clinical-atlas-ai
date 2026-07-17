@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import {
-  BookOpen, Stethoscope, Calendar,
+  BookOpen, Stethoscope, Calendar, MessageSquare,
   PlayCircle, FileText, LogOut, Settings, ShieldCheck, Target,
   ClipboardCheck, Sparkles, Video, GraduationCap, ChevronRight, ChevronDown,
   CalendarCheck,
