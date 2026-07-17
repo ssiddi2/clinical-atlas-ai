@@ -225,7 +225,7 @@ const Curriculum = () => {
           </>
         )}
       </div>
-    </div>
+    </AppShell>
   );
 };
 
