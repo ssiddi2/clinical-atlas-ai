@@ -71,11 +71,21 @@ const Admin = () => {
     setCourses(coursesRes.data || []);
     setEnrollments(enrollmentsRes.data || []);
 
+    // Fetch emails via secure admin edge function (auth.users is not accessible via RLS)
+    let emailMap: Record<string, string> = {};
+    if (profilesData.length > 0) {
+      const { data: emailsRes } = await supabase.functions.invoke("admin-actions", {
+        body: { action: "list_emails", userIds: profilesData.map((p) => p.user_id) },
+      });
+      emailMap = (emailsRes as any)?.emails || {};
+    }
+
     const profilesWithDocs = profilesData.map((profile) => ({
       ...profile,
+      email: emailMap[profile.user_id] || null,
       documents: documentsData.filter((doc) => doc.user_id === profile.user_id),
     }));
-    setProfiles(profilesWithDocs);
+    setProfiles(profilesWithDocs as any);
 
     const pending = profilesWithDocs.filter((p) => p.verification_status === "pending").length;
     const verified = profilesWithDocs.filter((p) => p.verification_status === "verified").length;
