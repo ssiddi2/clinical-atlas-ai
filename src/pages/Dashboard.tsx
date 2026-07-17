@@ -296,22 +296,23 @@ const Dashboard = () => {
 
         {/* Welcome Section */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">
-            {t("dashboard.welcomeBack").replace("{name}", firstName)}
+          <h1 className="text-4xl font-bold mb-2 tracking-tight">
+            {t("dashboard.welcomeBack").replace("{name}", firstName)} <span aria-hidden>👋</span>
           </h1>
           <p className="text-muted-foreground">{t("dashboard.continueJourney")}</p>
         </div>
 
         {/* Quick Actions */}
-        <div className="grid grid-cols-2 lg:grid-cols-6 gap-3 md:gap-4 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4 mb-8">
           {quickActions.map((action) => (
             <Link key={action.label} to={action.href}>
               <Card className="hover:shadow-livemed transition-all duration-300 hover:-translate-y-1 cursor-pointer h-full">
-                <CardContent className="p-3 md:p-4 flex items-center gap-2 md:gap-3">
-                  <div className={`w-8 h-8 md:w-10 md:h-10 rounded-lg ${action.color} flex items-center justify-center flex-shrink-0`}>
-                    <action.icon className="h-4 w-4 md:h-5 md:w-5 text-white" />
+                <CardContent className="p-4 flex items-center gap-3">
+                  <div className={`w-11 h-11 rounded-xl ${action.color} flex items-center justify-center flex-shrink-0 shadow-sm`}>
+                    <action.icon className="h-5 w-5 text-white" />
                   </div>
-                  <span className="font-medium text-xs md:text-sm">{action.label}</span>
+                  <span className="font-semibold text-sm leading-tight flex-1">{action.label}</span>
+                  <ChevronRight className="h-4 w-4 text-muted-foreground flex-shrink-0" />
                 </CardContent>
               </Card>
             </Link>
