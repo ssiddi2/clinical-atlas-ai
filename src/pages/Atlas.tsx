@@ -17,9 +17,11 @@ import {
   MessageSquare,
   BookOpen,
 } from "lucide-react";
-import livemedLogo from "@/assets/livemed-logo-full.png";
+
 import { useTranslation } from "@/i18n/LanguageContext";
 import AdaptedBadge from "@/components/learning/AdaptedBadge";
+import livemedLogoAsset from "@/assets/livemed-logo-light.png.asset.json";
+const livemedLogo = livemedLogoAsset.url;
 
 interface Message {
   id: string;

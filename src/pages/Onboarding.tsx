@@ -9,9 +9,11 @@ import { useToast } from "@/hooks/use-toast";
 import { User } from "@supabase/supabase-js";
 import { Send, Loader2, Upload, CheckCircle2, FileText, ArrowRight, Bot, User as UserIcon } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import livemedLogoIcon from "@/assets/livemed-logo-icon.png";
+
 import DocumentUpload from "@/components/onboarding/DocumentUpload";
 import { useTranslation } from "@/i18n/LanguageContext";
+import livemedLogoAsset from "@/assets/livemed-logo-light.png.asset.json";
+const livemedLogoIcon = livemedLogoAsset.url;
 
 interface Message {
   role: "user" | "assistant";

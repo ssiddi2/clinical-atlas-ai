@@ -9,9 +9,11 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, LogOut, Save, User as UserIcon } from "lucide-react";
-import livemedLogo from "@/assets/livemed-logo-full.png";
+
 import { useTranslation } from "@/i18n";
 import AvatarUpload from "@/components/profile/AvatarUpload";
+import livemedLogoAsset from "@/assets/livemed-logo-light.png.asset.json";
+const livemedLogo = livemedLogoAsset.url;
 
 interface ProfileData {
   first_name: string; last_name: string; institution: string; country: string;

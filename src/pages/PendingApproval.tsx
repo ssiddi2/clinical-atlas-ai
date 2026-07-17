@@ -4,8 +4,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Clock, LogOut, Mail } from "lucide-react";
-import livemedLogoFull from "@/assets/livemed-logo-full.png";
+
 import { useTranslation } from "@/i18n";
+import livemedLogoAsset from "@/assets/livemed-logo-light.png.asset.json";
+const livemedLogoFull = livemedLogoAsset.url;
 
 const PendingApproval = () => {
   const navigate = useNavigate();

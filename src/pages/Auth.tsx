@@ -9,9 +9,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/hooks/use-toast";
 import { Eye, EyeOff, Loader2, ArrowLeft, GraduationCap, Stethoscope } from "lucide-react";
-import livemedLogoFull from "@/assets/livemed-logo-full.png";
-import livemedLogoIcon from "@/assets/livemed-logo-icon.png";
+
+
 import { useTranslation } from "@/i18n/LanguageContext";
+import livemedLogoAsset from "@/assets/livemed-logo-light.png.asset.json";
+const livemedLogoFull = livemedLogoAsset.url;
+const livemedLogoIcon = livemedLogoAsset.url;
 
 const Auth = () => {
   const [searchParams] = useSearchParams();

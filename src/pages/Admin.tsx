@@ -5,7 +5,7 @@ import { User } from "@supabase/supabase-js";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ArrowLeft, Loader2, ShieldCheck } from "lucide-react";
-import livemedLogo from "@/assets/livemed-logo-full.png";
+
 import AdminStats from "@/components/admin/AdminStats";
 import PendingVerifications from "@/components/admin/PendingVerifications";
 import PendingApprovals from "@/components/admin/PendingApprovals";
@@ -17,6 +17,8 @@ import AdminStudents from "@/components/admin/AdminStudents";
 import AdminCourses from "@/components/admin/AdminCourses";
 import RotationApplications from "@/components/admin/RotationApplications";
 import { Database } from "@/integrations/supabase/types";
+import livemedLogoAsset from "@/assets/livemed-logo-light.png.asset.json";
+const livemedLogo = livemedLogoAsset.url;
 
 type Profile = Database["public"]["Tables"]["profiles"]["Row"];
 type StudentDocument = Database["public"]["Tables"]["student_documents"]["Row"];

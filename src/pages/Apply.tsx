@@ -10,8 +10,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { GraduationCap, Stethoscope, BookOpen, Brain, Video, Award, CheckCircle, ArrowRight, Loader2 } from "lucide-react";
-import livemedLogo from "@/assets/livemed-logo-full.png";
+
 import { useTranslation } from "@/i18n";
+import livemedLogoAsset from "@/assets/livemed-logo-light.png.asset.json";
+const livemedLogo = livemedLogoAsset.url;
 
 const Apply = () => {
   const navigate = useNavigate();
