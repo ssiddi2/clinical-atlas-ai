@@ -21,8 +21,7 @@ import { TopicHeatmap } from '@/components/score/TopicHeatmap';
 import { ScoreHistory } from '@/components/score/ScoreHistory';
 import { ContributingFactors } from '@/components/score/ContributingFactors';
 import { PeerComparison } from '@/components/score/PeerComparison';
-import livemedLogoAsset from "@/assets/livemed-logo-light.png.asset.json";
-const livemedLogo = livemedLogoAsset.url;
+import AppShell from "@/components/layout/AppShell";
 import { useTranslation } from '@/i18n/LanguageContext';
 
 const MINIMUM_QUESTIONS = 25;
@@ -139,37 +138,9 @@ const ScorePredictor = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 glass-dark border-b border-border/50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => navigate('/dashboard')}
-                className="text-muted-foreground hover:text-foreground"
-              >
-                <ArrowLeft className="w-5 h-5" />
-              </Button>
-              <img 
-                src={livemedLogo} 
-                alt="Livemed" 
-                className="h-6 sm:h-8 w-auto logo-glow cursor-pointer" 
-                onClick={() => navigate('/dashboard')}
-              />
-            </div>
-            <h1 className="text-lg sm:text-xl font-semibold text-foreground flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-primary" />
-              {t("score.title")}
-            </h1>
-          </div>
-        </div>
-      </header>
-
+    <AppShell>
       {/* Educational Disclaimer Banner */}
-      <div className="pt-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+      <div className="pt-6 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="p-3 rounded-lg bg-amber-500/10 border border-amber-500/20 text-center">
           <p className="text-xs sm:text-sm text-amber-200/80">
             <strong>{t("score.disclaimer")}</strong> {t("score.disclaimerText")}
@@ -195,7 +166,7 @@ const ScorePredictor = () => {
           />
         ) : null}
       </main>
-    </div>
+    </AppShell>
   );
 };
 
