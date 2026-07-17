@@ -49,7 +49,9 @@ export default function StudyPlanWidget({ userId }: { userId: string | null }) {
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between gap-2 flex-wrap">
           <CardTitle className="text-lg flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-primary" />
+            <span className="w-9 h-9 rounded-xl bg-amber-500 text-white flex items-center justify-center shadow-sm">
+              <Sparkles className="h-[18px] w-[18px]" />
+            </span>
             {t("studyPlan.title")}
           </CardTitle>
           <AdaptedBadge />
