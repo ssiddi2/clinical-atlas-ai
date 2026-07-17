@@ -626,18 +626,18 @@
 }
 
 /* Text */
-[class~="text-white"]:not([data-hero] *) { color: rgb(15 23 42); }
-[class~="text-white/90"]:not([data-hero] *) { color: rgb(15 23 42 / 0.92); }
-[class~="text-white/80"]:not([data-hero] *) { color: rgb(15 23 42 / 0.82); }
-[class~="text-white/70"]:not([data-hero] *) { color: rgb(15 23 42 / 0.7); }
-[class~="text-white/60"]:not([data-hero] *) { color: rgb(15 23 42 / 0.62); }
-[class~="text-white/50"]:not([data-hero] *) { color: rgb(15 23 42 / 0.55); }
-[class~="text-white/45"]:not([data-hero] *) { color: rgb(15 23 42 / 0.5); }
-[class~="text-white/40"]:not([data-hero] *) { color: rgb(15 23 42 / 0.48); }
-[class~="text-white/35"]:not([data-hero] *) { color: rgb(15 23 42 / 0.45); }
-[class~="text-white/30"]:not([data-hero] *) { color: rgb(15 23 42 / 0.42); }
-[class~="text-white/25"]:not([data-hero] *) { color: rgb(15 23 42 / 0.38); }
-[class~="text-white/15"]:not([data-hero] *) { color: rgb(15 23 42 / 0.25); }
+[class~="text-white"]:not([data-hero] *):not(.gradient-livemed):not(.gradient-livemed *) { color: rgb(15 23 42); }
+[class~="text-white/90"]:not([data-hero] *):not(.gradient-livemed):not(.gradient-livemed *) { color: rgb(15 23 42 / 0.92); }
+[class~="text-white/80"]:not([data-hero] *):not(.gradient-livemed):not(.gradient-livemed *) { color: rgb(15 23 42 / 0.82); }
+[class~="text-white/70"]:not([data-hero] *):not(.gradient-livemed):not(.gradient-livemed *) { color: rgb(15 23 42 / 0.7); }
+[class~="text-white/60"]:not([data-hero] *):not(.gradient-livemed):not(.gradient-livemed *) { color: rgb(15 23 42 / 0.62); }
+[class~="text-white/50"]:not([data-hero] *):not(.gradient-livemed):not(.gradient-livemed *) { color: rgb(15 23 42 / 0.55); }
+[class~="text-white/45"]:not([data-hero] *):not(.gradient-livemed):not(.gradient-livemed *) { color: rgb(15 23 42 / 0.5); }
+[class~="text-white/40"]:not([data-hero] *):not(.gradient-livemed):not(.gradient-livemed *) { color: rgb(15 23 42 / 0.48); }
+[class~="text-white/35"]:not([data-hero] *):not(.gradient-livemed):not(.gradient-livemed *) { color: rgb(15 23 42 / 0.45); }
+[class~="text-white/30"]:not([data-hero] *):not(.gradient-livemed):not(.gradient-livemed *) { color: rgb(15 23 42 / 0.42); }
+[class~="text-white/25"]:not([data-hero] *):not(.gradient-livemed):not(.gradient-livemed *) { color: rgb(15 23 42 / 0.38); }
+[class~="text-white/15"]:not([data-hero] *):not(.gradient-livemed):not(.gradient-livemed *) { color: rgb(15 23 42 / 0.25); }
 
 /* Subtle fills & borders */
 :where([class~="bg-white/[0.06]"], [class~="bg-white/[0.04]"], [class~="bg-white/[0.03]"], [class~="bg-white/[0.02]"], [class~="bg-white/[0.015]"]):not([data-hero] *) { background-color: rgb(15 23 42 / 0.04); }
