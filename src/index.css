@@ -39,8 +39,8 @@
     --destructive: 0 84% 60%;            /* #EF4444 */
     --destructive-foreground: 0 0% 100%;
 
-    --border: 240 4% 5%;                 /* used at 8% opacity via HSLA in tokens */
-    --input: 240 4% 5%;
+    --border: 220 20% 92%;
+    --input: 220 20% 92%;
     --ring: 211 100% 52%;
 
     --radius: 1rem;
@@ -80,7 +80,7 @@
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 214 88% 96%;
     --sidebar-accent-foreground: 240 4% 5%;
-    --sidebar-border: 240 4% 5%;
+    --sidebar-border: 220 20% 92%;
     --sidebar-ring: 211 100% 52%;
 
     /* Legacy livemed-* tokens (retuned to the new brand palette) */
@@ -119,8 +119,8 @@
     --accent-foreground: 0 0% 100%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
-    --border: 240 4% 5%;
-    --input: 240 4% 5%;
+    --border: 220 20% 92%;
+    --input: 220 20% 92%;
     --ring: 211 100% 52%;
     --sidebar-background: 215 71% 97%;
     --sidebar-foreground: 240 4% 5%;
@@ -128,7 +128,7 @@
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 214 88% 96%;
     --sidebar-accent-foreground: 240 4% 5%;
-    --sidebar-border: 240 4% 5%;
+    --sidebar-border: 220 20% 92%;
     --sidebar-ring: 211 100% 52%;
   }
 }
