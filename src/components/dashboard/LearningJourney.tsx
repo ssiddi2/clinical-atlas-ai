@@ -32,8 +32,8 @@ export default function LearningJourney({ userId }: Props) {
 
       const [attemptsRes, progressRes] = await Promise.all([
         supabase
-          .from("question_attempts")
-          .select("id, topic_id, created_at, time_spent_seconds")
+          .from("assessment_attempts")
+          .select("total_questions, time_taken_seconds, created_at")
           .eq("user_id", userId)
           .gte("created_at", start.toISOString()),
         supabase
@@ -44,10 +44,10 @@ export default function LearningJourney({ userId }: Props) {
       ]);
 
       const attempts = (attemptsRes.data as any[]) || [];
-      const seconds = attempts.reduce((s, a) => s + (a.time_spent_seconds || 0), 0);
+      const seconds = attempts.reduce((s, a) => s + (a.time_taken_seconds || 0), 0);
+      const questions = attempts.reduce((s, a) => s + (a.total_questions || 0), 0);
       const topics = new Set(((progressRes.data as any[]) || []).map((p) => p.topic_id));
 
-      // Streak: consecutive days with attempts
       const days = new Set(
         attempts.map((a) => new Date(a.created_at).toISOString().slice(0, 10)),
       );
@@ -60,7 +60,7 @@ export default function LearningJourney({ userId }: Props) {
 
       setStats({
         studyMinutes: Math.round(seconds / 60),
-        questionsAnswered: attempts.length,
+        questionsAnswered: questions,
         topicsCovered: topics.size,
         streak,
       });
