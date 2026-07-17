@@ -10,6 +10,7 @@ import LearningUnitMaterials from "@/components/learning-unit/LearningUnitMateri
 import LearningUnitQuestions from "@/components/learning-unit/LearningUnitQuestions";
 import LearningUnitProgress from "@/components/learning-unit/LearningUnitProgress";
 import LearningUnitSettings from "@/components/learning-unit/LearningUnitSettings";
+import AppShell from "@/components/layout/AppShell";
 
 export default function LearningUnitPage() {
   const { courseId, topicId } = useParams<{ courseId: string; topicId: string }>();
@@ -56,7 +57,7 @@ export default function LearningUnitPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <AppShell>
       <div className="border-b border-border bg-card/50">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center gap-3">
@@ -122,6 +123,6 @@ export default function LearningUnitPage() {
           )}
         </Tabs>
       </div>
-    </div>
+    </AppShell>
   );
 }
