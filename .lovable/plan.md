@@ -1,63 +1,78 @@
-# Fix blue-CTA contrast + refresh Landing to match New Livemed
+# Fix visual polish issues on Landing + Institutions
 
-## Root cause of the black-on-blue bug
+Scope: styling only. No content, copy, IA, or functionality changes.
 
-`src/index.css` (lines 664–675) has a global override that converts every `text-white*` class to dark navy (`rgb(15 23 42)`) except when the element sits inside `[data-hero]` or `.gradient-livemed`. When the Livemed migration added the `.cta-surface` block (blue gradient CTA used on Institutions / Rotations / Programs / Contact / the future Landing CTA), the override wasn't updated, so every `text-white` / `text-white/80` child of `.cta-surface` collapses to dark navy — that's the low-contrast "black text on blue" the user is seeing.
+## 1. Landing hero — contrast
 
-## Fix in two moves
+Hero currently layers a white radial wash (55% → 22%) over the video, then paints title/subtitle in `text-white/90` and `text-white/45`. On the near-white wash the white text nearly disappears — that's the "bad contrast" the user sees.
 
-### Move 1 — Restore white text on every branded blue surface (contrast fix)
+Fix in `src/pages/Landing.tsx` hero (both mobile + desktop branches):
+- Headline line 1: `text-white/90` → `text-ink` (near-black).
+- Headline line 2: keep `text-gradient-livemed` (already high contrast on white).
+- Subtitle: `text-white/45` → `text-soft`.
+- "Enrolling" pill: swap `glass-card-hover` + `text-white/70` for `chip chip-brand` so it reads on the light wash.
+- Keep the video + wash, but tighten the wash to `hsl(0 0% 100% / 0.72) → 0.45` so text has a solid backdrop.
 
-Edit `src/index.css` overrides so the `text-white*` → dark-navy conversion is skipped on any element inside a branded blue surface. Extend each `[class~="text-white*"]:not(...)` selector to also exclude:
+## 2. Stats section — declutter
 
-- `.cta-surface`, `.cta-surface *`
-- `.bg-brand-gradient`, `.bg-brand-gradient *`
-- `.btn-brand`, `.btn-brand *`
-- `.tile-accent`, `.tile-accent *`
-- `.bg-section-dark`, `.bg-section-dark *`
-- `[data-brand-surface]`, `[data-brand-surface] *` (escape hatch for one-off blue blocks)
+`cta-surface` card + separate Joint Commission block currently render as two heavy stacked slabs with lots of vertical padding.
 
-Same escape list is added to the `bg-white/[0.xx]` and `border-white/[0.xx]` overrides on lines 678–679 so translucent pills / dividers rendered on the CTA keep their glassy look instead of turning into a dark fill.
+Fix in Landing stats section:
+- Reduce card padding: `p-8 md:p-14` → `p-8 md:p-10`.
+- Reduce grid divider weight: `bg-white/15` → `bg-white/10`, inner tiles `bg-white/[0.06]` → `bg-transparent`, cell padding `p-6 md:p-10 lg:p-12` → `p-6 md:p-8`.
+- Reduce gap between stats card and JCo block: `mt-16 md:mt-24` → `mt-10 md:mt-14`.
+- Slim JCo block: `p-8 md:p-12` → `p-6 md:p-10`, badge `h-20 md:h-28` → `h-16 md:h-20`.
+- Section vertical rhythm: `py-16 md:py-24` → `py-14 md:py-20`.
 
-After this one edit every existing CTA (Institutions hero, Rotations "Ready to start", Programs "Not sure", Contact sidebar, Institutions "Ready to transform") is legible again without touching page code.
+## 3. "Programs for Every Stage" — capsule + card layout
 
-### Move 2 — Refresh Landing to match New Livemed's vibrancy
+Currently the "Most Popular" / "Recommended" chip is a `chip chip-brand` pill absolutely positioned inside the card at `top-3.5 right-3.5`. It overlaps the year chip below and looks crowded on small cards.
 
-The home page currently keeps its legacy dark wrapper (`bg-livemed-deep`) and dark-slab stats, which the light-theme override flattens into a mostly-white, low-contrast surface — hence the "dull" feel. Rebuild the visual language section-by-section using the utilities already ported from the reference project. Copy and structure stay untouched.
+Fix each program card:
+- Move the popular/recommended pill out of absolute positioning into a normal header row at the top of the card (`flex items-center justify-between mb-4`) with the year chip on the left and the ribbon chip on the right; render an empty spacer when neither ribbon applies so all four cards align.
+- Give the ribbon its own visual weight: replace `chip chip-brand` with a smaller `.chip` variant using solid brand background + white text (uppercase, tracking-wider, `px-2.5 py-1`, `rounded-full`) — inline classes only.
+- Card padding tightened: `p-6 md:p-8` → `p-6 md:p-7`.
+- Ensure equal card heights via existing `h-full`.
 
-**Hero (`Landing.tsx`, lines ~142–270)**
-- Swap outer wrapper: `bg-livemed-deep` → `bg-section-default` (the wrapper still carries `data-hero` so the video overlay behavior is preserved).
-- Add a `.bg-section-glow` layer behind the hero video so the fade-out to the next section is the New Livemed mesh wash instead of white.
-- Add a `chip chip-brand` "Enrolling" pill (replacing the ambiguous glass pill on light).
-- Change the headline to `text-ink` for line 1 and `text-gradient` for line 2 (currently `text-white/90` + `text-gradient-livemed` — both look muted after the override).
-- Keep the video and framer-motion timings.
-- Primary CTA becomes `btn-brand rounded-full` (already the correct token) — no change.
+## 4. Testimonials — add image inside circle
 
-**Stats band (~lines 272–355)**
-- Replace the dark full-bleed slab (`bg-livemed-deep` + `bg-white/[0.06]` divider grid) with a floating `cta-surface rounded-[32px]` card, `max-w-6xl mx-auto`, `text-white` figures + `text-white/70` labels. Now legible thanks to Move 1.
-- Joint Commission strip below becomes a `glass-strong rounded-2xl` block on `bg-section-tinted`, matching the reference's credential blocks.
+The avatar circle currently shows the first initial only. Replace with a real image while keeping the initial as a fallback:
+- Add a small avatar dataset (three names → local placeholder / seeded avatar URL using `https://api.dicebear.com/7.x/initials/svg?seed=<name>` so nothing new is bundled).
+- Circle keeps `tile-accent` background as fallback, adds an `<img>` (`object-cover`, `rounded-full`) inside; `onError` reveals the initial fallback.
+- Circle size `w-8 h-8` → `w-10 h-10` for legibility.
 
-**Feature / value-prop grid**
-- Convert existing feature cards to `article.lm-card.lm-card-interactive` with a `tile-accent` icon square (blue gradient tile with white icon — replaces the current flat icon).
-- Section wrapper: `bg-section-tinted` alternated with `bg-section-glow`.
+## 5. Ghost-button contrast on white default
 
-**Programs / rotations preview grid**
-- Same `lm-card lm-card-interactive` treatment, brand-tinted icon tiles, small `chip` labels for category, `text-soft` supporting copy.
+`Partner With Livemed` secondary CTA and Institutions hero's `variant="outline"` buttons currently render as pure white in default state because shadcn's `variant="outline"` uses `border-input bg-background text-foreground`, and the `text-white` override inside `.cta-surface` (from index.css) forces white text but the background stays transparent — so a plain-white surface shows an invisible label until hover.
 
-**Final CTA**
-- Replace the current dark call-to-action with a `cta-surface rounded-[32px] p-12 md:p-16 max-w-5xl mx-auto` block matching the pattern now used on other pages, buttons `bg-white text-primary` and `border-white/30 text-white`.
+Fix on both usage sites (`Landing.tsx` Institution CTA, `Institutions.tsx` hero):
+- Replace `variant="outline"` with no variant + explicit classes: `bg-white/10 border border-white/40 text-white hover:bg-white/20 backdrop-blur-sm`.
+- This gives a visible translucent chip on the blue surface, keeps the white label readable, and drops the shadcn outline defaults that were causing the "white on white" state.
 
-**Section rhythm on Landing**
-`bg-section-default (hero) → cta-surface (stats) → bg-section-tinted (JCo strip) → bg-section-glow (features) → bg-section-default (programs) → bg-section-tinted (proof) → cta-surface (final CTA)` — matches the alternating light/tint/brand cadence of the reference.
+Applies to:
+- Landing → "Contact Sales" button (line ~635).
+- Institutions → hero "View Case Studies" button (line ~57).
+
+## 6. Institutions — "Ready to Transform" heading color + global spacing pass
+
+- The `Ready to Transform Your Institution?` heading inherits `text-white` inside `cta-surface` (fine), but the surrounding text renders muted; change heading to explicit `text-white` and description to `text-white/85` for stronger hierarchy.
+- Also fix the `Rapid Implementation` section step numbers — they currently use `gradient-livemed` circles with `text-white` numerals which are legible; leave numerals but bump size `w-10 h-10` → `w-11 h-11` and step title `font-semibold` → `font-semibold text-base` for consistency.
+
+Global spacing normalization (styling only, per-section class edits):
+- Public pages currently mix `py-16 md:py-24`, `py-20 md:py-28`, `py-24 md:py-32`. Standardize on two rhythms:
+  - Hero: `py-16 md:py-24`
+  - Content sections: `py-16 md:py-24` (was `py-20`/`py-24 md:py-32` in several places)
+- Container gutters: unify to `px-4 md:px-6`.
+- Files touched: `src/pages/Landing.tsx`, `src/pages/Institutions.tsx`, `src/pages/Programs.tsx`, `src/pages/Rotations.tsx`, `src/pages/Contact.tsx`.
 
 ## Out of scope
 
-- No copy, i18n keys, routing, or functionality changes on Landing or any page.
-- No changes to Header, Footer, or dashboard/authed surfaces.
+- No copy, routes, i18n, dashboard, header/footer, or functionality changes.
 - No new dependencies.
+- Visual-regression snapshots will need refreshing with `bun run test:visual:update` after the pass.
 
 ## Verification
 
-- Manual check at `/`, `/institutions`, `/rotations`, `/programs`, `/contact`: white text on every blue-gradient surface, alternating light/tinted section rhythm on Landing.
-- `bun run test:visual:update` to refresh baselines for landing + the four page snapshots; `bun run test:visual` should pass after refresh.
-- `tsgo` typecheck stays green (no new symbols beyond className strings).
+- Manual check at `/` and `/institutions`: hero text legible, stats block feels lighter, program cards balanced, testimonials show avatars, all "Contact Sales" / "View Case Studies" buttons show visible label in default state, `Ready to Transform` heading clearly white on blue.
+- `tsgo` typecheck stays green (className-only edits + one image URL).
+- Refresh visual snapshots after approval.
