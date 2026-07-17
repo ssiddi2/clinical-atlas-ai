@@ -318,7 +318,7 @@ const Dashboard = () => {
               >
                 <Card className="h-full rounded-2xl border-border/70 shadow-sm hover:shadow-md hover:border-border transition-all duration-200 group-hover:-translate-y-0.5">
                   <CardContent className="p-4 flex items-center gap-3.5">
-                    <div className={`w-11 h-11 rounded-xl ${action.color} flex items-center justify-center flex-shrink-0 shadow-sm`}>
+                    <div data-brand-surface className={`w-11 h-11 rounded-xl ${action.color} flex items-center justify-center flex-shrink-0 shadow-sm`}>
                       <action.icon className="h-5 w-5 text-white" strokeWidth={2.25} />
                     </div>
                     <span className="font-semibold text-[14px] leading-tight flex-1 text-foreground">{action.label}</span>
