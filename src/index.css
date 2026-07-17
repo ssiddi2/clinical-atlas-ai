@@ -706,3 +706,183 @@
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
 }
+
+/* =========================================================
+   New Livemed design-system utilities (ported)
+   Mirrors classes from livemedhealth.com so components share
+   the same look. Typography is intentionally left untouched.
+   ========================================================= */
+@layer utilities {
+  /* Text helpers */
+  .text-soft   { color: var(--soft); }
+  .text-softer { color: var(--softer); }
+  .text-verified { color: var(--verified); }
+  .text-brand   { color: var(--brand); }
+  .text-brand-2 { color: var(--brand-2); }
+
+  .text-gradient {
+    background: linear-gradient(161deg, #0A84FF 0%, #0040DD 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+
+  /* Eyebrow / section number */
+  .eyebrow, .sec-num {
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--softer);
+  }
+
+  /* Chip / badge */
+  .chip {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    padding: 0.3rem 0.65rem; border-radius: 999px;
+    font-size: 12px; font-weight: 500;
+    color: var(--soft);
+    background: color-mix(in oklab, var(--surface) 70%, #ffffff);
+    border: 1px solid rgba(11,11,12,0.08);
+  }
+  .chip-brand {
+    color: var(--brand);
+    background: color-mix(in oklab, var(--brand) 8%, #ffffff);
+    border-color: color-mix(in oklab, var(--brand) 20%, transparent);
+  }
+  .chip-dot::before {
+    content: ""; width: 6px; height: 6px; border-radius: 999px;
+    background: var(--verified);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--verified) 18%, transparent);
+  }
+
+  /* Glass surfaces */
+  .glass {
+    background: rgba(255,255,255,0.72);
+    border: 1px solid rgba(11,11,12,0.06);
+    backdrop-filter: blur(20px) saturate(140%);
+    -webkit-backdrop-filter: blur(20px) saturate(140%);
+    box-shadow: 0 1px 0 rgba(255,255,255,0.6) inset, 0 8px 30px -18px rgba(11,11,12,0.18);
+  }
+  .glass-strong {
+    background: linear-gradient(180deg, rgba(255,255,255,0.94), rgba(238,244,254,0.85));
+    border: 1px solid rgba(11,11,12,0.06);
+    backdrop-filter: blur(24px) saturate(160%);
+    -webkit-backdrop-filter: blur(24px) saturate(160%);
+    box-shadow: 0 1px 0 rgba(255,255,255,0.8) inset, 0 18px 60px -28px rgba(10,132,255,0.30);
+  }
+  .hairline { border: 1px solid rgba(11,11,12,0.08); }
+
+  /* Section surfaces */
+  .bg-section-default { background: hsl(var(--background)); }
+  .bg-section-tinted  {
+    background: var(--surface-tint);
+    border-top: 1px solid rgba(11,11,12,0.05);
+    border-bottom: 1px solid rgba(11,11,12,0.05);
+  }
+  .bg-section-soft {
+    background: var(--surface);
+    border-top: 1px solid rgba(11,11,12,0.06);
+    border-bottom: 1px solid rgba(11,11,12,0.06);
+  }
+  .bg-section-glow {
+    background:
+      radial-gradient(60% 80% at 80% 0%, color-mix(in oklab, var(--brand-3) 14%, transparent), transparent 60%),
+      linear-gradient(180deg, hsl(var(--background)), var(--surface-tint));
+  }
+  .bg-section-glow-rev {
+    background:
+      radial-gradient(70% 90% at 0% 100%, color-mix(in oklab, var(--brand-4) 12%, transparent), transparent 60%),
+      linear-gradient(180deg, var(--surface-tint), hsl(var(--background)));
+  }
+  .bg-section-dark {
+    background: linear-gradient(180deg, var(--ink) 0%, #0a1a3a 60%, var(--ink) 100%);
+    color: #fff;
+  }
+
+  /* Unified card system (Livemed) — namespaced .lm-card to avoid clashing
+     with any existing .card selectors from shadcn variants. */
+  .lm-card {
+    background: hsl(var(--card));
+    border: 1px solid var(--card-border);
+    border-radius: var(--card-radius);
+    padding: var(--card-pad);
+    box-shadow: var(--card-shadow);
+    transition:
+      transform .35s var(--ease-out),
+      box-shadow .35s ease,
+      border-color .35s ease;
+  }
+  .lm-card-lg {
+    background: hsl(var(--card));
+    border: 1px solid var(--card-border);
+    border-radius: var(--card-radius-lg);
+    padding: var(--card-pad-lg);
+    box-shadow: var(--card-shadow-lg);
+  }
+  .lm-card-interactive { cursor: pointer; }
+  .lm-card-interactive:hover {
+    transform: translateY(-3px);
+    border-color: color-mix(in oklab, var(--brand) 25%, var(--card-border));
+    box-shadow: var(--card-shadow-hover);
+  }
+
+  /* Lift hover */
+  .lift { transition: transform .4s var(--ease-out), box-shadow .4s ease, border-color .4s ease; }
+  .lift:hover { transform: translateY(-3px); box-shadow: 0 24px 60px -28px rgba(10,132,255,0.45); }
+
+  /* Brand button */
+  .btn-brand,
+  .bg-brand-gradient {
+    background: linear-gradient(161deg, #0A84FF 0%, #0040DD 100%);
+    color: #ffffff;
+    box-shadow: 0 14px 40px -14px rgba(10,132,255,0.55);
+    transition: filter var(--dur-micro) var(--ease-out),
+                box-shadow var(--dur-macro) var(--ease-out),
+                transform var(--dur-micro) var(--ease-out);
+  }
+  .btn-brand:hover,
+  .bg-brand-gradient:hover {
+    filter: brightness(1.06);
+    box-shadow: 0 20px 56px -14px rgba(10,132,255,0.72);
+    transform: translateY(-1px);
+  }
+  .btn-brand:active,
+  .bg-brand-gradient:active { transform: translateY(0); }
+
+  /* Accent tile (icon chips) */
+  .tile-accent {
+    background: linear-gradient(140deg, #0A84FF 0%, #0040DD 100%);
+    color: #ffffff;
+    border: 1px solid rgba(255,255,255,0.18);
+    box-shadow: 0 24px 70px -24px rgba(10,132,255,0.55);
+  }
+
+  /* Premium CTA surface */
+  .cta-surface {
+    position: relative;
+    background:
+      radial-gradient(60% 80% at 85% 0%, color-mix(in oklab, var(--brand-3) 32%, transparent), transparent 60%),
+      radial-gradient(70% 90% at 0% 100%, color-mix(in oklab, var(--brand-4) 22%, transparent), transparent 65%),
+      linear-gradient(161deg, var(--brand-2) 0%, var(--brand) 100%);
+    color: #fff;
+    box-shadow:
+      0 50px 120px -40px rgba(10,132,255,0.55),
+      0 0 0 1px rgba(255,255,255,0.08) inset,
+      0 1px 0 rgba(255,255,255,0.18) inset;
+  }
+  .cta-surface::after {
+    content: "";
+    position: absolute; inset: 0;
+    background-image: radial-gradient(rgba(255,255,255,0.55) 1px, transparent 1px);
+    background-size: 22px 22px;
+    mask-image: radial-gradient(ellipse at center, black 25%, transparent 70%);
+    opacity: 0.08;
+    pointer-events: none;
+  }
+
+  /* Retune legacy .gradient-livemed to the New Livemed signature gradient */
+  .gradient-livemed {
+    background: linear-gradient(161deg, #0A84FF 0%, #0040DD 100%) !important;
+  }
+  .gradient-livemed-subtle {
+    background: linear-gradient(135deg, rgba(10,132,255,0.14) 0%, rgba(0,64,221,0.08) 100%);
+  }
+}
