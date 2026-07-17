@@ -327,6 +327,20 @@ const Assessments = () => {
         </div>
       )}
       <div className="container mx-auto py-6 md:py-8 max-w-4xl">
+        {!assessmentStarted && (
+          <div className="flex items-center gap-4 mb-6">
+            <Button variant="ghost" size="icon" onClick={() => navigate("/dashboard")}>
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
+            <div>
+              <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
+                <FileText className="h-6 w-6 text-primary" />
+                Assessments
+              </h1>
+              <p className="text-muted-foreground text-sm mt-1">Take USMLE-style practice assessments</p>
+            </div>
+          </div>
+        )}
         {/* Start Screen */}
         {!assessmentStarted && !assessmentComplete && (
           <div className="space-y-6 md:space-y-8">
