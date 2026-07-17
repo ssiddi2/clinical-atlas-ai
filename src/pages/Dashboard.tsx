@@ -8,7 +8,8 @@ import { Progress } from "@/components/ui/progress";
 import {
   BookOpen, Brain, Stethoscope, Award, TrendingUp, Calendar, MessageSquare,
   PlayCircle, FileText, LogOut, Settings, Bell, ShieldCheck, Target,
-  ClipboardCheck, Sparkles, Video, GraduationCap,
+  ClipboardCheck, Sparkles, Video, GraduationCap, ChevronRight, ChevronDown,
+  CalendarCheck,
 } from "lucide-react";
 import livemedLogoAsset from "@/assets/livemed-logo-light.png.asset.json";
 const livemedLogo = livemedLogoAsset.url;
@@ -18,6 +19,14 @@ import StudyPlanWidget from "@/components/dashboard/StudyPlanWidget";
 import { MatchReadyWidget } from "@/components/score/MatchReadyWidget";
 import { useScorePredictor } from "@/hooks/useScorePredictor";
 import { useTranslation } from "@/i18n";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface ProfileData {
   onboarding_completed: boolean;
