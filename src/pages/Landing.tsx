@@ -1,7 +1,6 @@
 import { useRef } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { motion } from "framer-motion";
 import { useIsMobile } from "@/hooks/use-mobile";
 import HeroBackground from "@/components/HeroBackground";
@@ -139,9 +138,9 @@ const Landing = () => {
 
   return (
     <>
-      <div ref={containerRef} className="flex flex-col bg-livemed-deep">
+      <div ref={containerRef} className="flex flex-col">
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden lcp-priority">
+      <section data-hero className="relative min-h-screen flex items-center justify-center overflow-hidden lcp-priority bg-section-glow">
         <HeroBackground />
         <video
           className="absolute inset-0 w-full h-full object-cover z-[1]"
@@ -268,21 +267,20 @@ const Landing = () => {
       </section>
 
       {/* Stats Section */}
-      <section className="relative pt-24 md:pt-32 pb-24 md:pb-32 overflow-hidden">
-        <div className="absolute inset-0 bg-livemed-deep" />
-        
+      <section className="relative py-16 md:py-24 overflow-hidden">
         <div className="container mx-auto px-4 md:px-6 relative">
+          <div className="cta-surface rounded-[32px] p-8 md:p-14 max-w-6xl mx-auto">
           {noAnim ? (
-            <div className="grid grid-cols-3 gap-px bg-white/[0.06] rounded-2xl overflow-hidden">
+            <div className="grid grid-cols-3 gap-px bg-white/15 rounded-2xl overflow-hidden">
               {stats.map((stat) => (
                 <div 
                   key={stat.label} 
-                  className="p-6 md:p-10 lg:p-12 text-center bg-white/[0.015]"
+                  className="p-6 md:p-10 lg:p-12 text-center bg-white/[0.06]"
                 >
-                  <div className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 md:mb-3 text-gradient-livemed">
+                  <div className="text-3xl sm:text-4xl md:text-5xl font-bold mb-2 md:mb-3 text-white">
                     {stat.value}
                   </div>
-                  <div className="uppercase tracking-[0.15em] font-medium text-[10px] md:text-xs text-white/30">
+                  <div className="uppercase tracking-[0.15em] font-medium text-[10px] md:text-xs text-white/70">
                     {stat.label}
                   </div>
                 </div>
@@ -294,18 +292,18 @@ const Landing = () => {
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true, margin: "-100px" }}
-              className="grid grid-cols-3 gap-px bg-white/[0.06] rounded-2xl overflow-hidden"
+              className="grid grid-cols-3 gap-px bg-white/15 rounded-2xl overflow-hidden"
             >
               {stats.map((stat) => (
                 <motion.div 
                   key={stat.label} 
                   variants={fadeInScale}
-                  className="p-6 md:p-10 lg:p-12 text-center bg-white/[0.015]"
+                  className="p-6 md:p-10 lg:p-12 text-center bg-white/[0.06]"
                 >
-                  <div className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 md:mb-3 text-gradient-livemed">
+                  <div className="text-3xl sm:text-4xl md:text-5xl font-bold mb-2 md:mb-3 text-white">
                     {stat.value}
                   </div>
-                  <div className="uppercase tracking-[0.15em] font-medium text-[10px] md:text-xs text-white/30">
+                  <div className="uppercase tracking-[0.15em] font-medium text-[10px] md:text-xs text-white/70">
                     {stat.label}
                   </div>
                 </motion.div>
@@ -313,13 +311,14 @@ const Landing = () => {
             </motion.div>
           )}
 
-          <p className="text-center text-white/40 text-xs md:text-sm mt-6 max-w-2xl mx-auto">
+          <p className="text-center text-white/70 text-xs md:text-sm mt-6 max-w-2xl mx-auto">
             {specialties}
           </p>
+          </div>
 
           {/* Joint Commission Accreditation Badge */}
           <div className="mt-16 md:mt-24 max-w-2xl mx-auto">
-            <div className="border-t border-white/[0.06] pt-12 md:pt-16 flex flex-col items-center text-center">
+            <div className="glass-strong rounded-3xl p-8 md:p-12 flex flex-col items-center text-center">
                <img 
                  src={jointCommissionBadge} 
                  alt="The Joint Commission - National Quality Approval" 
@@ -329,23 +328,23 @@ const Landing = () => {
                  loading="lazy"
                  decoding="async"
                />
-              <p className="text-white/90 font-semibold text-lg md:text-xl tracking-tight mb-1">
+              <p className="font-semibold text-lg md:text-xl tracking-tight mb-1">
                 {t("accreditation.title")}
               </p>
-              <p className="text-white/60 text-sm md:text-base font-medium mb-2">
+              <p className="text-soft text-sm md:text-base font-medium mb-2">
                 {t("accreditation.subtitle")}
               </p>
-              <p className="text-white/35 text-xs md:text-sm max-w-lg mb-4 leading-relaxed">
+              <p className="text-softer text-xs md:text-sm max-w-lg mb-4 leading-relaxed">
                 {t("accreditation.description")}
               </p>
-              <p className="text-white/40 text-sm md:text-base mb-4">
+              <p className="text-soft text-sm md:text-base mb-4">
                 {t("accreditation.enrolling")}
               </p>
-              <p className="text-white/30 text-xs md:text-sm">
+              <p className="text-softer text-xs md:text-sm">
                 {t("accreditation.contact")}{" "}
                 <a 
                   href="mailto:info@livemedhealth.com" 
-                  className="text-white/50 hover:text-white/70 underline underline-offset-2 transition-colors"
+                  className="text-brand hover:text-brand-2 underline underline-offset-2 transition-colors"
                 >
                   info@livemedhealth.com
                 </a>
@@ -356,88 +355,85 @@ const Landing = () => {
       </section>
 
       {/* Features Section */}
-      <section className="py-24 md:py-32 bg-livemed-deep relative overflow-hidden">
+      <section className="py-24 md:py-32 bg-section-tinted relative overflow-hidden">
         <div className="container mx-auto px-4 md:px-6 relative">
           <div className="text-center mb-12 md:mb-20">
-            <div className="inline-flex items-center gap-2 text-white/40 text-xs md:text-sm font-medium mb-5 md:mb-6 border border-white/[0.06] px-4 py-2 rounded-full">
+            <div className="chip chip-brand mb-5 md:mb-6">
               <Sparkles className="h-3.5 w-3.5" />
               {t("features.poweredByAI")}
             </div>
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-semibold mb-4 md:mb-6">
-              <span className="text-gradient-livemed">{t("features.title")}</span>
+            <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-semibold mb-4 md:mb-6">
+              <span className="text-gradient">{t("features.title")}</span>
             </h2>
-            <p className="text-base md:text-lg text-white/40 max-w-xl mx-auto font-light px-4">
+            <p className="text-base md:text-lg text-soft max-w-xl mx-auto font-light px-4">
               {t("features.subtitle")}
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-px bg-white/[0.06] rounded-2xl overflow-hidden">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {features.map((feature) => (
-              <div
+              <article
                 key={feature.title}
-                className="bg-card p-7 md:p-10"
+                className="lm-card lm-card-interactive p-7 md:p-8"
               >
-                <div className="w-10 h-10 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center mb-5">
-                  <feature.icon className="h-[18px] w-[18px] text-white/50" strokeWidth={1.5} />
+                <div className="w-11 h-11 rounded-xl tile-accent flex items-center justify-center mb-5">
+                  <feature.icon className="h-5 w-5 text-white" strokeWidth={2} />
                 </div>
-                <h3 className="font-medium text-base md:text-lg mb-2 text-white/90 tracking-tight">{feature.title}</h3>
-                <p className="text-white/35 text-sm leading-relaxed line-clamp-2">
+                <h3 className="font-medium text-base md:text-lg mb-2 tracking-tight">{feature.title}</h3>
+                <p className="text-soft text-sm leading-relaxed">
                   {feature.description}
                 </p>
                 {"subtitle" in feature && feature.subtitle && (
-                  <p className="text-livemed-cyan/60 text-xs mt-2 leading-relaxed">
+                  <p className="text-brand text-xs mt-2 leading-relaxed font-medium">
                     {feature.subtitle}
                   </p>
                 )}
-              </div>
+              </article>
             ))}
           </div>
         </div>
       </section>
 
       {/* Programs Section */}
-      <section className="py-24 md:py-32 relative overflow-hidden bg-livemed-deep below-fold-section">
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/[0.01] to-transparent" />
+      <section className="py-24 md:py-32 relative overflow-hidden bg-section-glow below-fold-section">
         
         <div className="container mx-auto px-4 md:px-6 relative">
           <div className="text-center mb-12 md:mb-20">
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-semibold mb-4 md:mb-6 text-white">
-              {t("programs.title").split(/(?=Every Stage|كل مرحلة|हर चरण|ہر مرحلے|Cada Etapa)/i)[0]} <span className="text-gradient-livemed">{t("programs.title").includes("Every Stage") ? "Every Stage" : ""}</span>
+            <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-semibold mb-4 md:mb-6">
+              {t("programs.title").split(/(?=Every Stage|كل مرحلة|हर चरण|ہر مرحلے|Cada Etapa)/i)[0]} <span className="text-gradient">{t("programs.title").includes("Every Stage") ? "Every Stage" : ""}</span>
             </h2>
-            <p className="text-base md:text-lg text-white/45 max-w-xl mx-auto font-light px-4 mb-2">
+            <p className="text-base md:text-lg text-soft max-w-xl mx-auto font-light px-4 mb-2">
               {t("programs.subtitle")}
             </p>
-            <p className="text-sm text-white/30 max-w-md mx-auto">{t("programs.chooseLevel")}</p>
+            <p className="text-sm text-softer max-w-md mx-auto">{t("programs.chooseLevel")}</p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-6">
             {programs.map((program) => (
               <div key={program.title}>
-                <Link to={program.href}>
-                  <Card className="h-full group bg-white/[0.02] border-white/[0.06] hover:border-white/[0.12] transition-colors duration-300 relative overflow-hidden rounded-2xl">
+                <Link to={program.href} className="block h-full">
+                  <article className="lm-card lm-card-interactive h-full group relative overflow-hidden p-6 md:p-8">
                     {program.title === t("programs.clinical") && (
-                      <div className="absolute top-3.5 right-3.5 text-[10px] font-medium uppercase tracking-wider bg-white/[0.04] text-white/50 border border-white/[0.06] px-2.5 py-1 rounded-full">{t("programs.mostPopular")}</div>
+                      <div className="absolute top-3.5 right-3.5 text-[10px] font-medium uppercase tracking-wider chip chip-brand">{t("programs.mostPopular")}</div>
                     )}
                     {program.title === t("programs.residencyPrep") && (
-                      <div className="absolute top-3.5 right-3.5 text-[10px] font-medium uppercase tracking-wider bg-white/[0.04] text-white/50 border border-white/[0.06] px-2.5 py-1 rounded-full">{t("programs.recommended")}</div>
+                      <div className="absolute top-3.5 right-3.5 text-[10px] font-medium uppercase tracking-wider chip chip-brand">{t("programs.recommended")}</div>
                     )}
-                    <CardContent className="p-6 md:p-8">
-                      <div className="inline-flex items-center gap-2 text-xs font-medium text-white/40 uppercase tracking-wider mb-4 px-3 py-1.5 bg-white/[0.03] rounded-full border border-white/[0.06]">
-                        <Activity className="h-3 w-3" />
-                        {program.years}
-                      </div>
-                      <h3 className="font-medium text-lg md:text-xl mb-2 md:mb-3 text-white/90 group-hover:text-white transition-colors tracking-tight">
-                        {program.title}
-                      </h3>
-                      <p className="text-white/35 text-sm mb-5 md:mb-6 leading-relaxed">
-                        {program.description}
-                      </p>
-                      <div className="flex items-center text-white/40 text-sm font-medium group-hover:text-white/60 group-hover:gap-2 gap-1.5 transition-all">
-                        <span>{t("programs.explore")}</span>
-                        <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-1 transition-transform" />
-                      </div>
-                    </CardContent>
-                  </Card>
+                    <div className="chip mb-4">
+                      <Activity className="h-3 w-3" />
+                      {program.years}
+                    </div>
+                    <h3 className="font-display font-medium text-lg md:text-xl mb-2 md:mb-3 tracking-tight">
+                      {program.title}
+                    </h3>
+                    <p className="text-soft text-sm mb-5 md:mb-6 leading-relaxed">
+                      {program.description}
+                    </p>
+                    <div className="flex items-center text-brand text-sm font-medium group-hover:gap-2 gap-1.5 transition-all">
+                      <span>{t("programs.explore")}</span>
+                      <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-1 transition-transform" />
+                    </div>
+                  </article>
                 </Link>
               </div>
             ))}
@@ -446,22 +442,22 @@ const Landing = () => {
       </section>
 
       {/* ATLAS Section */}
-      <section className="py-24 md:py-32 relative overflow-hidden bg-livemed-deep below-fold-section">
+      <section className="py-24 md:py-32 relative overflow-hidden bg-section-default below-fold-section">
         <div className="container mx-auto px-4 md:px-6 relative">
           <div className="grid lg:grid-cols-2 gap-12 md:gap-20 items-center">
             <div className="max-w-lg">
-              <div className="inline-flex items-center gap-2 text-white/40 text-xs md:text-sm font-medium mb-6 md:mb-8 border border-white/[0.06] px-4 py-2 rounded-full">
+              <div className="chip chip-brand mb-6 md:mb-8">
                 <MessageSquare className="h-3.5 w-3.5" />
                 {t("atlas.badge")}
-                <div className="w-1.5 h-1.5 bg-livemed-success rounded-full animate-pulse" />
+                <div className="w-1.5 h-1.5 bg-verified rounded-full animate-pulse" />
               </div>
 
-              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold mb-5 md:mb-8 text-white leading-[1.1] tracking-tight">
+              <h2 className="font-display text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold mb-5 md:mb-8 leading-[1.1] tracking-tight">
                 {t("atlas.title")}{" "}
-                <span className="text-gradient-livemed">{t("atlas.titleHighlight")}</span>
+                <span className="text-gradient">{t("atlas.titleHighlight")}</span>
               </h2>
 
-              <p className="text-base md:text-lg text-white/40 mb-8 md:mb-12 leading-relaxed font-light max-w-md">
+              <p className="text-base md:text-lg text-soft mb-8 md:mb-12 leading-relaxed font-light max-w-md">
                 {t("atlas.description")}
               </p>
 
@@ -475,15 +471,15 @@ const Landing = () => {
                     key={item} 
                     className="flex items-start gap-3.5"
                   >
-                    <div className="w-5 h-5 rounded-full bg-white/[0.04] border border-white/[0.08] flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <CheckCircle className="h-3 w-3 text-white/40" />
+                    <div className="w-6 h-6 rounded-full tile-accent flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <CheckCircle className="h-3.5 w-3.5 text-white" />
                     </div>
-                    <span className="text-white/50 text-sm leading-relaxed">{item}</span>
+                    <span className="text-soft text-sm leading-relaxed">{item}</span>
                   </li>
                 ))}
               </ul>
 
-              <Button className="gradient-livemed px-8 py-6 rounded-full group font-semibold text-sm md:text-base w-full sm:w-auto" asChild>
+              <Button className="btn-brand px-8 py-6 rounded-full group font-semibold text-sm md:text-base w-full sm:w-auto" asChild>
                 <Link to="/atlas">
                   {t("atlas.learnMore")}
                   <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
@@ -493,23 +489,21 @@ const Landing = () => {
 
             {/* ATLAS Chat Interface */}
             <div className="relative lg:scale-105 origin-center">
-              <div 
-                className="rounded-2xl md:rounded-3xl p-5 md:p-8 relative bg-white/[0.02] border border-white/[0.06]"
-              >
-                <div className="flex items-center gap-2 md:gap-3 mb-5 md:mb-8 pb-5 md:pb-6 border-b border-white/[0.04]">
+              <div className="lm-card-lg rounded-2xl md:rounded-3xl p-5 md:p-8 relative">
+                <div className="flex items-center gap-2 md:gap-3 mb-5 md:mb-8 pb-5 md:pb-6 border-b border-border">
                   <div className="flex gap-1.5">
-                    <div className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-white/10" />
-                    <div className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-white/10" />
-                    <div className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-white/10" />
+                    <div className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-muted" />
+                    <div className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-muted" />
+                    <div className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-muted" />
                   </div>
                   <div className="flex-1" />
                   <div className="flex items-center gap-2.5 md:gap-3">
-                    <div className="w-8 h-8 md:w-10 md:h-10 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center">
-                      <Brain className="h-4 w-4 md:h-5 md:w-5 text-white/50" />
+                    <div className="w-8 h-8 md:w-10 md:h-10 rounded-lg tile-accent flex items-center justify-center">
+                      <Brain className="h-4 w-4 md:h-5 md:w-5 text-white" />
                     </div>
                     <div>
-                      <div className="font-medium text-white/80 text-xs md:text-sm">ATLAS™</div>
-                      <div className="text-[10px] md:text-xs text-white/30">
+                      <div className="font-medium text-xs md:text-sm">ATLAS™</div>
+                      <div className="text-[10px] md:text-xs text-softer">
                         {t("atlas.cardiology")}
                       </div>
                     </div>
@@ -517,29 +511,29 @@ const Landing = () => {
                 </div>
 
                 <div className="space-y-4 md:space-y-5">
-                  <div className="bg-white/[0.02] rounded-xl md:rounded-2xl p-4 md:p-5 border border-white/[0.04]">
-                    <p className="text-white/70 text-xs md:text-sm leading-relaxed">
+                  <div className="bg-muted/60 rounded-xl md:rounded-2xl p-4 md:p-5">
+                    <p className="text-foreground text-xs md:text-sm leading-relaxed">
                       "A 55-year-old male presents with crushing chest pain 
                       radiating to the left arm. What's your initial differential?"
                     </p>
                   </div>
-                  <div className="bg-white/[0.02] rounded-xl md:rounded-2xl p-4 md:p-5 ml-6 md:ml-10 border border-white/[0.06]">
-                    <p className="text-white/60 text-xs md:text-sm leading-relaxed">
+                  <div className="rounded-xl md:rounded-2xl p-4 md:p-5 ml-6 md:ml-10" style={{ background: 'color-mix(in oklab, var(--brand) 8%, white)' }}>
+                    <p className="text-soft text-xs md:text-sm leading-relaxed">
                       "I would consider acute MI, unstable angina, or aortic 
                       dissection. I'd start with an ECG and troponins..."
                     </p>
                   </div>
-                  <div className="bg-white/[0.02] rounded-xl md:rounded-2xl p-4 md:p-5 border border-white/[0.04]">
-                    <p className="text-white/70 text-xs md:text-sm leading-relaxed">
+                  <div className="bg-muted/60 rounded-xl md:rounded-2xl p-4 md:p-5">
+                    <p className="text-foreground text-xs md:text-sm leading-relaxed">
                       "Good start! What physical exam finding would make you 
                       more suspicious of aortic dissection over MI?"
                     </p>
                   </div>
-                  <div className="flex items-center gap-2 text-white/25 text-xs pl-2">
+                  <div className="flex items-center gap-2 text-softer text-xs pl-2">
                   <div className="flex gap-1">
-                      <span className="w-1.5 h-1.5 bg-white/30 rounded-full animate-[pulse_1.5s_ease-in-out_infinite]" />
-                      <span className="w-1.5 h-1.5 bg-white/30 rounded-full animate-[pulse_1.5s_ease-in-out_0.2s_infinite]" />
-                      <span className="w-1.5 h-1.5 bg-white/30 rounded-full animate-[pulse_1.5s_ease-in-out_0.4s_infinite]" />
+                      <span className="w-1.5 h-1.5 bg-brand rounded-full animate-[pulse_1.5s_ease-in-out_infinite]" />
+                      <span className="w-1.5 h-1.5 bg-brand rounded-full animate-[pulse_1.5s_ease-in-out_0.2s_infinite]" />
+                      <span className="w-1.5 h-1.5 bg-brand rounded-full animate-[pulse_1.5s_ease-in-out_0.4s_infinite]" />
                     </div>
                     <span>{t("atlas.thinking")}</span>
                   </div>
@@ -551,18 +545,18 @@ const Landing = () => {
       </section>
 
       {/* Testimonials Section */}
-      <section className="py-24 md:py-32 bg-livemed-deep relative overflow-hidden below-fold-section">
+      <section className="py-24 md:py-32 bg-section-tinted relative overflow-hidden below-fold-section">
         <div className="container mx-auto px-4 md:px-6 relative">
           <div className="text-center mb-12 md:mb-20">
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-semibold mb-4 md:mb-6 text-white">
-              {t("testimonials.title")} <span className="text-gradient-livemed">{t("testimonials.titleHighlight")}</span>
+            <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-semibold mb-4 md:mb-6">
+              {t("testimonials.title")} <span className="text-gradient">{t("testimonials.titleHighlight")}</span>
             </h2>
-            <p className="text-base md:text-lg text-white/40 max-w-xl mx-auto font-light px-4">
+            <p className="text-base md:text-lg text-soft max-w-xl mx-auto font-light px-4">
               {t("testimonials.subtitle")}
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-white/[0.06] rounded-2xl overflow-hidden max-w-5xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
             {[
               {
                 quote: "ATLAS helped me master pathophysiology I'd struggled with for months. Scored 248 on Step 1.",
@@ -580,72 +574,73 @@ const Landing = () => {
                 role: "Dean of Clinical Education",
               },
             ].map((testimonial, index) => (
-              <div
+              <article
                 key={index}
-                className="bg-card p-7 md:p-10"
+                className="lm-card p-7 md:p-8"
               >
-                <div className="text-2xl text-white/15 mb-3 font-serif">"</div>
-                <p className="text-white/50 mb-5 md:mb-7 leading-relaxed text-sm md:text-base">
+                <div className="text-3xl text-brand/30 mb-3 font-serif leading-none">"</div>
+                <p className="text-foreground/80 mb-5 md:mb-7 leading-relaxed text-sm md:text-base">
                   {testimonial.quote}
                 </p>
-                <div className="border-t border-white/[0.04] pt-5 flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-xs font-medium text-white/40">
+                <div className="border-t border-border pt-5 flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full tile-accent flex items-center justify-center text-xs font-medium text-white">
                     {testimonial.name.charAt(0)}
                   </div>
                   <div>
-                    <p className="font-medium text-white/80 text-sm md:text-base">{testimonial.name}</p>
-                    <p className="text-xs md:text-sm text-white/30">{testimonial.role}</p>
+                    <p className="font-medium text-sm md:text-base">{testimonial.name}</p>
+                    <p className="text-xs md:text-sm text-softer">{testimonial.role}</p>
                   </div>
                 </div>
-              </div>
+              </article>
             ))}
           </div>
         </div>
       </section>
 
       {/* Institution CTA */}
-      <section className="py-24 md:py-32 relative overflow-hidden bg-livemed-deep below-fold-section">
-        <div className="absolute top-0 left-0 right-0 h-px bg-white/[0.04]" />
-        
-        <div className="container mx-auto px-4 md:px-6 text-center relative">
-          <div className="flex justify-center gap-3 md:gap-4 mb-8 md:mb-12">
-            {[Globe, Users, GraduationCap].map((Icon, index) => (
-              <div 
-                key={index}
-                className="w-8 h-8 md:w-14 md:h-14 rounded-2xl bg-white/[0.03] border border-white/[0.06] flex items-center justify-center"
+      <section className="py-16 md:py-24 relative overflow-hidden below-fold-section">
+        <div className="container mx-auto px-4 md:px-6">
+          <div className="cta-surface rounded-[32px] p-10 md:p-16 text-center max-w-5xl mx-auto">
+            <div className="flex justify-center gap-3 md:gap-4 mb-8 md:mb-12">
+              {[Globe, Users, GraduationCap].map((Icon, index) => (
+                <div
+                  key={index}
+                  className="w-10 h-10 md:w-14 md:h-14 rounded-2xl bg-white/15 border border-white/25 flex items-center justify-center backdrop-blur-sm"
+                >
+                  <Icon className="h-5 w-5 md:h-6 md:w-6 text-white" />
+                </div>
+              ))}
+            </div>
+
+            <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-semibold text-white mb-5 md:mb-8">
+              {t("cta.partnerTitle")}
+            </h2>
+
+            <p className="text-base md:text-xl text-white/80 max-w-2xl mx-auto mb-10 md:mb-14 leading-relaxed font-light px-4">
+              {t("cta.partnerDescription")}
+            </p>
+
+            <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center px-4">
+              <Button
+                size="lg"
+                variant="secondary"
+                className="bg-white text-primary hover:bg-white/90 px-8 py-6 rounded-full font-semibold group text-sm md:text-base"
+                asChild
               >
-                <Icon className="h-4 w-4 md:h-6 md:w-6 text-white/50" />
-              </div>
-            ))}
-          </div>
-
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-semibold text-white mb-5 md:mb-8">
-            {t("cta.partnerTitle")}
-          </h2>
-
-          <p className="text-base md:text-xl text-white/40 max-w-2xl mx-auto mb-10 md:mb-14 leading-relaxed font-light px-4">
-            {t("cta.partnerDescription")}
-          </p>
-
-          <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center px-4">
-            <Button
-              size="lg"
-              className="bg-primary text-primary-foreground hover:bg-primary/90 px-8 py-6 rounded-full font-semibold group text-sm md:text-base"
-              asChild
-            >
-              <Link to="/institutions">
-                {t("cta.institutionalPartnerships")}
-                <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-              </Link>
-            </Button>
-            <Button
-              size="lg"
-              variant="ghost"
-              className="px-6 py-5 rounded-full text-white/35 hover:text-white/50 hover:bg-white/[0.03] border border-white/[0.06] text-sm md:text-base font-normal"
-              asChild
-            >
-              <Link to="/contact">{t("cta.contactSales")}</Link>
-            </Button>
+                <Link to="/institutions">
+                  {t("cta.institutionalPartnerships")}
+                  <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                </Link>
+              </Button>
+              <Button
+                size="lg"
+                variant="outline"
+                className="px-6 py-5 rounded-full border-white/40 text-white hover:bg-white/10 text-sm md:text-base font-medium"
+                asChild
+              >
+                <Link to="/contact">{t("cta.contactSales")}</Link>
+              </Button>
+            </div>
           </div>
         </div>
       </section>

@@ -1,68 +1,63 @@
-# Align Programs, Rotations, Institutions, Contact with the New Livemed design system
+# Fix blue-CTA contrast + refresh Landing to match New Livemed
 
-Landing was already reworked to use the New Livemed tokens (`.lm-card`, `.glass`, `.cta-surface`, `.chip`, `.bg-section-*`, brand gradient buttons). The four pages above still use the pre-migration patterns and reference `.gradient-livemed-light`, which no longer exists — so their heroes render as flat white and their CTA cards look nothing like Landing's CTA. This plan is styling-only. No copy, sections, routes, functionality, or i18n keys change.
+## Root cause of the black-on-blue bug
 
-## Diagnosis
+`src/index.css` (lines 664–675) has a global override that converts every `text-white*` class to dark navy (`rgb(15 23 42)`) except when the element sits inside `[data-hero]` or `.gradient-livemed`. When the Livemed migration added the `.cta-surface` block (blue gradient CTA used on Institutions / Rotations / Programs / Contact / the future Landing CTA), the override wasn't updated, so every `text-white` / `text-white/80` child of `.cta-surface` collapses to dark navy — that's the low-contrast "black text on blue" the user is seeing.
 
-- `.gradient-livemed-light` is used on `Programs`, `Rotations`, `Contact`, `About` hero backgrounds but is **not defined** in `src/index.css` → the intended tinted hero backdrop is missing.
-- Hero blocks are plain centered `h1 + muted p` — no eyebrow chip, no brand-tone framing, no rhythm break vs. the sections below.
-- CTA blocks use `Card` / `section` with the raw `gradient-livemed` fill. Landing's equivalent CTA uses `.cta-surface` (radial glow + dot pattern + brand gradient + inset highlights).
-- Feature / benefit cards use raw shadcn `Card` with default radius and shadow — Landing uses the unified `.lm-card` with 20 / 28px radius and the paired shadow tokens.
+## Fix in two moves
 
-## Changes
+### Move 1 — Restore white text on every branded blue surface (contrast fix)
 
-### 1. Add the missing hero backdrop utility to `src/index.css`
-Introduce `.gradient-livemed-light` inside the New Livemed utilities block so the existing markup on all four pages instantly picks up the correct subtle brand wash:
+Edit `src/index.css` overrides so the `text-white*` → dark-navy conversion is skipped on any element inside a branded blue surface. Extend each `[class~="text-white*"]:not(...)` selector to also exclude:
 
-```css
-.gradient-livemed-light {
-  background:
-    radial-gradient(60% 80% at 80% 0%, color-mix(in oklab, var(--brand-3) 14%, transparent), transparent 60%),
-    linear-gradient(180deg, hsl(var(--background)), var(--surface-tint));
-}
-```
+- `.cta-surface`, `.cta-surface *`
+- `.bg-brand-gradient`, `.bg-brand-gradient *`
+- `.btn-brand`, `.btn-brand *`
+- `.tile-accent`, `.tile-accent *`
+- `.bg-section-dark`, `.bg-section-dark *`
+- `[data-brand-surface]`, `[data-brand-surface] *` (escape hatch for one-off blue blocks)
 
-This mirrors `.bg-section-glow` and matches the tint used on Landing's hero fadeout.
+Same escape list is added to the `bg-white/[0.xx]` and `border-white/[0.xx]` overrides on lines 678–679 so translucent pills / dividers rendered on the CTA keep their glassy look instead of turning into a dark fill.
 
-### 2. `src/pages/Programs.tsx`
-- Hero section: keep `<h1>` copy; add a `.chip chip-brand` eyebrow above the title (translated key already exists as `programs.page.subtitle` — reuse when appropriate, otherwise reuse `nav.programs`). Wrap heading in `font-display`, use the standard body class for the paragraph.
-- Tab program cards: swap the outer wrapper `Card` for `<div className="lm-card-lg">` where the large program panel lives; keep small stat cards as `<div className="lm-card">`. Icon tile keeps `gradient-livemed` (already retuned to brand).
-- Bottom "Ready" CTA (line ~245–265): convert the `Card` to a `<section className="cta-surface rounded-[28px] p-10 md:p-14 text-center">` matching Landing's CTA. The button becomes the outline-on-brand pill variant used elsewhere.
-- Add `bg-section-tinted` alternation for the middle Tabs section.
+After this one edit every existing CTA (Institutions hero, Rotations "Ready to start", Programs "Not sure", Contact sidebar, Institutions "Ready to transform") is legible again without touching page code.
 
-### 3. `src/pages/Rotations.tsx`
-- Hero: chip eyebrow + `font-display` title, keep the existing `.gradient-livemed-light` backdrop (now that it exists).
-- Rotation cards: `Card` → `<article className="lm-card lm-card-interactive">`; icon tile keeps `gradient-livemed` fill.
-- Bottom `<section className="py-20 gradient-livemed">` → `<section className="cta-surface rounded-[32px] my-20 mx-4 md:mx-8 p-12 md:p-16 text-center">` so the CTA becomes a floating brand block instead of a full-bleed slab. Container wrapper reduces to `max-w-5xl`.
-- Buttons on the CTA get `variant="secondary"` with `bg-white text-brand hover:bg-white/90` to preserve contrast on the brand surface.
+### Move 2 — Refresh Landing to match New Livemed's vibrancy
 
-### 4. `src/pages/Institutions.tsx`
-- Hero (`gradient-livemed` full-bleed): replace fill with `cta-surface` styling so the hero reads as the signature brand block (matches how Landing frames its dark CTAs). The inline pill (`bg-white/10 text-white`) is preserved but its container becomes the `cta-surface` treatment.
-- Stat tiles: wrap each stat in `<div className="lm-card text-center">` using `stat-value` / `stat-label` typography.
-- Benefit grid: `Card` → `<article className="lm-card lm-card-interactive">`. Icon chip keeps `gradient-livemed`.
-- Steps section stays as a numbered list but each row wraps in `.hairline` divider using the shared border token.
-- Bottom "Ready to transform" `Card`: → `cta-surface`.
+The home page currently keeps its legacy dark wrapper (`bg-livemed-deep`) and dark-slab stats, which the light-theme override flattens into a mostly-white, low-contrast surface — hence the "dull" feel. Rebuild the visual language section-by-section using the utilities already ported from the reference project. Copy and structure stay untouched.
 
-### 5. `src/pages/Contact.tsx`
-- Success state card: replace check-circle callout with `.lm-card-lg` + `tile-accent` for the circle.
-- Hero: chip eyebrow + `font-display` title on top of the now-real `.gradient-livemed-light`.
-- Right-column info `<Card className="gradient-livemed text-white">` (Livemed contact info): → `cta-surface` rounded card, so it reads as the branded sidebar callout instead of a solid blue tile.
-- Form card: wrap the shadcn `Card` in `.glass-strong` styling by adding `className="glass-strong rounded-3xl p-6 md:p-8"` on the outer wrapper (keeps form fields intact).
-- Submit button: `gradient-livemed` → `btn-brand rounded-full`.
+**Hero (`Landing.tsx`, lines ~142–270)**
+- Swap outer wrapper: `bg-livemed-deep` → `bg-section-default` (the wrapper still carries `data-hero` so the video overlay behavior is preserved).
+- Add a `.bg-section-glow` layer behind the hero video so the fade-out to the next section is the New Livemed mesh wash instead of white.
+- Add a `chip chip-brand` "Enrolling" pill (replacing the ambiguous glass pill on light).
+- Change the headline to `text-ink` for line 1 and `text-gradient` for line 2 (currently `text-white/90` + `text-gradient-livemed` — both look muted after the override).
+- Keep the video and framer-motion timings.
+- Primary CTA becomes `btn-brand rounded-full` (already the correct token) — no change.
 
-### 6. Global consistency touches (styling-only)
-- Wrap each page's outermost `main` sections with alternating `bg-section-default` / `bg-section-tinted` (max 3 alternations per page) so the section rhythm matches Landing.
-- Where a page uses `text-muted-foreground` for lede paragraphs directly under `h1`, swap to `text-soft` so the color tone lines up with Landing.
-- No other pages, components, or shared UI are touched.
+**Stats band (~lines 272–355)**
+- Replace the dark full-bleed slab (`bg-livemed-deep` + `bg-white/[0.06]` divider grid) with a floating `cta-surface rounded-[32px]` card, `max-w-6xl mx-auto`, `text-white` figures + `text-white/70` labels. Now legible thanks to Move 1.
+- Joint Commission strip below becomes a `glass-strong rounded-2xl` block on `bg-section-tinted`, matching the reference's credential blocks.
 
-## Verification
+**Feature / value-prop grid**
+- Convert existing feature cards to `article.lm-card.lm-card-interactive` with a `tile-accent` icon square (blue gradient tile with white icon — replaces the current flat icon).
+- Section wrapper: `bg-section-tinted` alternated with `bg-section-glow`.
 
-- Manual eyeball at `/programs`, `/rotations`, `/institutions`, `/contact` against `/` for hero, CTA, and card treatment parity.
-- Run `bun run test:visual:update` to refresh the four page baselines + design-system swatch snapshots; then `bun run test:visual` should be green.
-- Confirm no console errors or missing i18n keys were introduced (the change is purely className-level).
+**Programs / rotations preview grid**
+- Same `lm-card lm-card-interactive` treatment, brand-tinted icon tiles, small `chip` labels for category, `text-soft` supporting copy.
+
+**Final CTA**
+- Replace the current dark call-to-action with a `cta-surface rounded-[32px] p-12 md:p-16 max-w-5xl mx-auto` block matching the pattern now used on other pages, buttons `bg-white text-primary` and `border-white/30 text-white`.
+
+**Section rhythm on Landing**
+`bg-section-default (hero) → cta-surface (stats) → bg-section-tinted (JCo strip) → bg-section-glow (features) → bg-section-default (programs) → bg-section-tinted (proof) → cta-surface (final CTA)` — matches the alternating light/tint/brand cadence of the reference.
 
 ## Out of scope
 
-- No changes to copy, i18n keys, routes, layout components, `Header`, `Footer`, forms behavior, or backend.
-- Dashboard / auth / admin surfaces are untouched.
-- Landing.tsx is untouched.
+- No copy, i18n keys, routing, or functionality changes on Landing or any page.
+- No changes to Header, Footer, or dashboard/authed surfaces.
+- No new dependencies.
+
+## Verification
+
+- Manual check at `/`, `/institutions`, `/rotations`, `/programs`, `/contact`: white text on every blue-gradient surface, alternating light/tinted section rhythm on Landing.
+- `bun run test:visual:update` to refresh baselines for landing + the four page snapshots; `bun run test:visual` should pass after refresh.
+- `tsgo` typecheck stays green (no new symbols beyond className strings).

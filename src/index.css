@@ -715,6 +715,30 @@
 }
 
 /* =========================================================
+   Preserve white text on branded blue surfaces.
+   The light-theme override above rewrites every `text-white*`
+   to dark navy, which kills contrast inside blue CTAs. Re-force
+   real white on any descendant of a known brand surface.
+   ========================================================= */
+:is(.cta-surface, .bg-brand-gradient, .btn-brand, .tile-accent, .bg-section-dark, [data-brand-surface]) [class~="text-white"] { color: #ffffff !important; }
+:is(.cta-surface, .bg-brand-gradient, .btn-brand, .tile-accent, .bg-section-dark, [data-brand-surface]) [class~="text-white/90"] { color: rgb(255 255 255 / 0.9) !important; }
+:is(.cta-surface, .bg-brand-gradient, .btn-brand, .tile-accent, .bg-section-dark, [data-brand-surface]) [class~="text-white/80"] { color: rgb(255 255 255 / 0.8) !important; }
+:is(.cta-surface, .bg-brand-gradient, .btn-brand, .tile-accent, .bg-section-dark, [data-brand-surface]) [class~="text-white/70"] { color: rgb(255 255 255 / 0.7) !important; }
+:is(.cta-surface, .bg-brand-gradient, .btn-brand, .tile-accent, .bg-section-dark, [data-brand-surface]) [class~="text-white/60"] { color: rgb(255 255 255 / 0.6) !important; }
+:is(.cta-surface, .bg-brand-gradient, .btn-brand, .tile-accent, .bg-section-dark, [data-brand-surface]) [class~="text-white/50"] { color: rgb(255 255 255 / 0.5) !important; }
+:is(.cta-surface, .bg-brand-gradient, .btn-brand, .tile-accent, .bg-section-dark, [data-brand-surface]) [class~="text-white/45"] { color: rgb(255 255 255 / 0.45) !important; }
+:is(.cta-surface, .bg-brand-gradient, .btn-brand, .tile-accent, .bg-section-dark, [data-brand-surface]) [class~="text-white/40"] { color: rgb(255 255 255 / 0.4) !important; }
+:is(.cta-surface, .bg-brand-gradient, .btn-brand, .tile-accent, .bg-section-dark, [data-brand-surface]) [class~="text-white/35"] { color: rgb(255 255 255 / 0.35) !important; }
+:is(.cta-surface, .bg-brand-gradient, .btn-brand, .tile-accent, .bg-section-dark, [data-brand-surface]) [class~="text-white/30"] { color: rgb(255 255 255 / 0.3) !important; }
+:is(.cta-surface, .bg-brand-gradient, .btn-brand, .tile-accent, .bg-section-dark, [data-brand-surface]) [class~="text-white/25"] { color: rgb(255 255 255 / 0.25) !important; }
+:is(.cta-surface, .bg-brand-gradient, .btn-brand, .tile-accent, .bg-section-dark, [data-brand-surface]) [class~="text-white/15"] { color: rgb(255 255 255 / 0.15) !important; }
+
+/* Keep translucent white fills/borders inside branded surfaces
+   (pills, dividers) instead of the light-theme dark rewrite. */
+:is(.cta-surface, .bg-brand-gradient, .bg-section-dark, [data-brand-surface]) :is([class~="bg-white/10"], [class~="bg-white/[0.08]"], [class~="bg-white/[0.06]"], [class~="bg-white/[0.04]"]) { background-color: rgb(255 255 255 / 0.1) !important; }
+:is(.cta-surface, .bg-brand-gradient, .bg-section-dark, [data-brand-surface]) :is([class~="border-white/30"], [class~="border-white/20"], [class~="border-white/10"], [class~="border-white/[0.12]"]) { border-color: rgb(255 255 255 / 0.28) !important; }
+
+/* =========================================================
    New Livemed design-system utilities (ported)
    Mirrors classes from livemedhealth.com so components share
    the same look. Typography is intentionally left untouched.
