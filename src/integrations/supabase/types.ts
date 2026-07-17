@@ -2026,6 +2026,16 @@ export type Database = {
           updated_at: string
         }[]
       }
+      notify_course_enrollees: {
+        Args: {
+          _course_id: string
+          _link: string
+          _message: string
+          _title: string
+          _type: string
+        }
+        Returns: undefined
+      }
       profile_self_update_safe: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
