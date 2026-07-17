@@ -68,6 +68,17 @@ export default {
           success: "hsl(var(--livemed-success))",
           warning: "hsl(var(--livemed-warning))",
         },
+        brand: {
+          DEFAULT: "var(--brand)",
+          2: "var(--brand-2)",
+          3: "var(--brand-3)",
+          4: "var(--brand-4)",
+        },
+        ink: "var(--ink)",
+        surface: "var(--surface)",
+        soft: "var(--soft)",
+        softer: "var(--softer)",
+        verified: "var(--verified)",
       },
       borderRadius: {
         lg: "var(--radius)",
