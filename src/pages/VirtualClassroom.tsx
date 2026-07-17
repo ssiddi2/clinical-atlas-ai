@@ -8,6 +8,7 @@ import { ArrowLeft, Video, BookOpen, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import LectureCard from "@/components/classroom/LectureCard";
 import { useTranslation } from "@/i18n/LanguageContext";
+import AppShell from "@/components/layout/AppShell";
 
 const VirtualClassroom = () => {
   const navigate = useNavigate();
@@ -74,7 +75,7 @@ const VirtualClassroom = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <AppShell>
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon" onClick={() => navigate("/dashboard")}>
@@ -135,7 +136,7 @@ const VirtualClassroom = () => {
           </TabsContent>
         </Tabs>
       </div>
-    </div>
+    </AppShell>
   );
 };
 
