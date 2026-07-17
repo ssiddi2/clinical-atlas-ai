@@ -140,7 +140,7 @@ const Landing = () => {
     <>
       <div ref={containerRef} className="flex flex-col">
       {/* Hero Section */}
-      <section data-hero className="relative min-h-[80vh] py-20 md:py-24 flex items-center justify-center overflow-hidden lcp-priority bg-section-glow">
+      <section data-hero className="relative min-h-screen flex items-center justify-center overflow-hidden lcp-priority bg-section-glow">
         <HeroBackground />
         <video
           className="absolute inset-0 w-full h-full object-cover z-[1]"
@@ -205,7 +205,7 @@ const Landing = () => {
             <div className="max-w-4xl mx-auto text-center">
               <motion.div 
                 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.2 }}
-                className="chip chip-brand mb-6"
+                className="chip chip-brand mb-10"
               >
                 <span className="relative flex h-2 w-2">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-livemed-success opacity-75"></span>
@@ -216,14 +216,22 @@ const Landing = () => {
 
               <motion.div 
                 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.25 }}
-                className="text-xs md:text-sm font-semibold uppercase tracking-[0.18em] text-brand mb-3"
+                className="text-2xl md:text-3xl font-semibold text-gradient-livemed mb-4 tracking-wide"
               >
                 {t("hero.academy")}
               </motion.div>
 
+              <div 
+                className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[500px] pointer-events-none"
+                style={{
+                  background: "radial-gradient(ellipse 70% 60% at 50% 50%, hsl(217 91% 60% / 0.08) 0%, hsl(190 95% 55% / 0.03) 40%, transparent 70%)",
+                }}
+                aria-hidden="true"
+              />
+
               <motion.h1 
                 initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
-                className="relative text-5xl md:text-6xl lg:text-[64px] xl:text-[72px] font-semibold tracking-[-0.025em] mb-5 leading-[1.05]"
+                className="relative text-5xl md:text-6xl lg:text-7xl xl:text-[96px] font-semibold tracking-[-0.025em] mb-6 leading-[1.1]"
               >
                 <span className="text-ink">{t("hero.titleLine1")}</span>
                 <br />
@@ -232,7 +240,7 @@ const Landing = () => {
 
               <motion.p 
                 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.5 }}
-                className="text-xl lg:text-2xl text-soft mb-8 max-w-xl mx-auto leading-relaxed font-light tracking-tight"
+                className="text-xl lg:text-2xl text-soft mb-14 max-w-xl mx-auto leading-relaxed font-light tracking-tight"
               >
                 {t("hero.subtitle")}
               </motion.p>
