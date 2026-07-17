@@ -169,7 +169,7 @@ export default function QBankReview() {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <div className="border-b border-border bg-card/50">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-4">
+        <div className="container mx-auto py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <Button variant="ghost" size="icon" onClick={() => navigate('/qbank')}>
@@ -194,7 +194,7 @@ export default function QBankReview() {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-8">
+      <div className="container mx-auto py-8">
         {/* Score Summary */}
         <Card className="p-8 mb-8 text-center bg-gradient-to-b from-card to-background">
           <div className="inline-flex items-center justify-center w-32 h-32 rounded-full bg-primary/10 border-4 border-primary mb-6">

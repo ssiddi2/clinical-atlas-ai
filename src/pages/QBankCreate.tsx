@@ -107,7 +107,7 @@ export default function QBankCreate() {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <div className="border-b border-border bg-card/50">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-4">
+        <div className="container mx-auto py-4">
           <div className="flex items-center gap-4">
             <Button variant="ghost" size="icon" onClick={() => navigate('/qbank')}>
               <ArrowLeft className="h-5 w-5" />
@@ -120,7 +120,7 @@ export default function QBankCreate() {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-8">
+      <div className="container mx-auto py-8">
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Main Configuration */}
           <div className="lg:col-span-2 space-y-8">

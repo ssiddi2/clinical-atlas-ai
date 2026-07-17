@@ -8,14 +8,15 @@ export default {
     container: {
       center: true,
       padding: {
-        DEFAULT: "1rem",
-        sm: "1.5rem",
-        lg: "2rem",
-        xl: "3rem",
-        "2xl": "4rem",
+        DEFAULT: "1.25rem",
+        sm: "2rem",
+        lg: "3rem",
+        xl: "4rem",
+        "2xl": "6rem",
       },
       screens: {
-        "2xl": "1280px",
+        xl: "1120px",
+        "2xl": "1120px",
       },
     },
     extend: {

@@ -506,7 +506,7 @@ const DiagnosticAssessment = () => {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 flex h-16 items-center justify-between">
+        <div className="container mx-auto flex h-16 items-center justify-between">
           <div className="flex items-center gap-4">
             <Link to="/dashboard" className="text-muted-foreground hover:text-foreground">
               <ArrowLeft className="h-5 w-5" />
@@ -535,7 +535,7 @@ const DiagnosticAssessment = () => {
         )}
       </header>
 
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-6 md:py-8 max-w-4xl">
+      <div className="container mx-auto py-6 md:py-8 max-w-4xl">
         {/* Start Screen */}
         {!assessmentStarted && !assessmentComplete && (
           <div className="space-y-6 md:space-y-8">
