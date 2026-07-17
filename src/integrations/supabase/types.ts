@@ -563,6 +563,53 @@ export type Database = {
           },
         ]
       }
+      enrollment_audit_log: {
+        Row: {
+          action: string
+          actor_id: string | null
+          course_id: string
+          created_at: string
+          enrollment_id: string | null
+          id: string
+          metadata: Json
+          new_status: string | null
+          previous_status: string | null
+          student_id: string
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          course_id: string
+          created_at?: string
+          enrollment_id?: string | null
+          id?: string
+          metadata?: Json
+          new_status?: string | null
+          previous_status?: string | null
+          student_id: string
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          course_id?: string
+          created_at?: string
+          enrollment_id?: string | null
+          id?: string
+          metadata?: Json
+          new_status?: string | null
+          previous_status?: string | null
+          student_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "enrollment_audit_log_enrollment_id_fkey"
+            columns: ["enrollment_id"]
+            isOneToOne: false
+            referencedRelation: "course_enrollments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       learning_unit_content: {
         Row: {
           allow_retry: boolean | null
