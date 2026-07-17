@@ -729,10 +729,18 @@
   [class*="bg-emerald-"],[class*="bg-green-"],[class*="bg-teal-"],[class*="bg-cyan-"],
   [class*="bg-amber-"],[class*="bg-orange-"],[class*="bg-yellow-"],
   [class*="bg-rose-"],[class*="bg-red-"],[class*="bg-pink-"],[class*="bg-fuchsia-"],
-  .bg-primary,.bg-destructive,.bg-secondary
+  .bg-primary,.bg-destructive,.bg-secondary,
+  [class*="bg-gradient-"]
 ) [class~="text-white"],
-.bg-primary[class~="text-white"],
-.bg-destructive[class~="text-white"] { color: #ffffff !important; }
+:is(
+  [class*="bg-blue-"],[class*="bg-sky-"],[class*="bg-indigo-"],[class*="bg-violet-"],[class*="bg-purple-"],
+  [class*="bg-emerald-"],[class*="bg-green-"],[class*="bg-teal-"],[class*="bg-cyan-"],
+  [class*="bg-amber-"],[class*="bg-orange-"],[class*="bg-yellow-"],
+  [class*="bg-rose-"],[class*="bg-red-"],[class*="bg-pink-"],[class*="bg-fuchsia-"],
+  [class*="bg-slate-"],[class*="bg-gray-"],[class*="bg-zinc-"],[class*="bg-neutral-"],[class*="bg-stone-"],
+  .bg-primary,.bg-destructive,.bg-secondary,
+  [class*="bg-gradient-"]
+)[class~="text-white"] { color: #ffffff !important; }
 :is(.cta-surface, .bg-brand-gradient, .btn-brand, .tile-accent, .bg-section-dark, [data-brand-surface]) [class~="text-white/90"] { color: rgb(255 255 255 / 0.9) !important; }
 :is(.cta-surface, .bg-brand-gradient, .btn-brand, .tile-accent, .bg-section-dark, [data-brand-surface]) [class~="text-white/80"] { color: rgb(255 255 255 / 0.8) !important; }
 :is(.cta-surface, .bg-brand-gradient, .btn-brand, .tile-accent, .bg-section-dark, [data-brand-surface]) [class~="text-white/70"] { color: rgb(255 255 255 / 0.7) !important; }
