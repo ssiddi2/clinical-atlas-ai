@@ -140,7 +140,7 @@ const Landing = () => {
     <>
       <div ref={containerRef} className="flex flex-col">
       {/* Hero Section */}
-      <section data-hero className="relative min-h-[80vh] py-20 md:py-24 flex items-center justify-center overflow-hidden lcp-priority bg-section-glow">
+      <section data-hero className="relative min-h-screen flex items-center justify-center overflow-hidden lcp-priority bg-section-glow">
         <HeroBackground />
         <video
           className="absolute inset-0 w-full h-full object-cover z-[1]"
@@ -205,7 +205,7 @@ const Landing = () => {
             <div className="max-w-4xl mx-auto text-center">
               <motion.div 
                 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.2 }}
-                className="chip chip-brand mb-6"
+                className="chip chip-brand mb-10"
               >
                 <span className="relative flex h-2 w-2">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-livemed-success opacity-75"></span>
@@ -216,14 +216,22 @@ const Landing = () => {
 
               <motion.div 
                 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.25 }}
-                className="text-xs md:text-sm font-semibold uppercase tracking-[0.18em] text-brand mb-3"
+                className="text-2xl md:text-3xl font-semibold text-gradient-livemed mb-4 tracking-wide"
               >
                 {t("hero.academy")}
               </motion.div>
 
+              <div 
+                className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[500px] pointer-events-none"
+                style={{
+                  background: "radial-gradient(ellipse 70% 60% at 50% 50%, hsl(217 91% 60% / 0.08) 0%, hsl(190 95% 55% / 0.03) 40%, transparent 70%)",
+                }}
+                aria-hidden="true"
+              />
+
               <motion.h1 
                 initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
-                className="relative text-5xl md:text-6xl lg:text-[64px] xl:text-[72px] font-semibold tracking-[-0.025em] mb-5 leading-[1.05]"
+                className="relative text-5xl md:text-6xl lg:text-7xl xl:text-[96px] font-semibold tracking-[-0.025em] mb-6 leading-[1.1]"
               >
                 <span className="text-ink">{t("hero.titleLine1")}</span>
                 <br />
@@ -232,7 +240,7 @@ const Landing = () => {
 
               <motion.p 
                 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.5 }}
-                className="text-xl lg:text-2xl text-soft mb-8 max-w-xl mx-auto leading-relaxed font-light tracking-tight"
+                className="text-xl lg:text-2xl text-soft mb-14 max-w-xl mx-auto leading-relaxed font-light tracking-tight"
               >
                 {t("hero.subtitle")}
               </motion.p>
@@ -261,94 +269,95 @@ const Landing = () => {
       {/* Stats Section */}
       <section className="relative py-14 md:py-20 overflow-hidden">
         <div className="container mx-auto relative">
-          <div className="relative rounded-[32px] p-8 md:p-10 max-w-6xl mx-auto bg-gradient-to-br from-slate-50 via-blue-50/60 to-slate-100 border border-slate-200/70 shadow-[0_20px_60px_-30px_rgba(15,23,42,0.15)] overflow-hidden">
+          <div className="relative rounded-[32px] p-8 md:p-12 max-w-6xl mx-auto bg-gradient-to-br from-slate-50 via-blue-50/60 to-slate-100 border border-slate-200/70 shadow-[0_20px_60px_-30px_rgba(15,23,42,0.15)] overflow-hidden">
             <div aria-hidden className="pointer-events-none absolute inset-0 opacity-40 animate-shimmer" />
-          {noAnim ? (
-            <div className="relative grid grid-cols-3 gap-px bg-slate-200/70 rounded-2xl overflow-hidden">
-              {stats.map((stat) => (
-                <div 
-                  key={stat.label} 
-                  className="p-6 md:p-8 text-center bg-white/60 backdrop-blur-sm"
-                >
-                  <div className="text-3xl sm:text-4xl md:text-5xl font-bold mb-2 md:mb-3 text-gradient-livemed">
-                    {stat.value}
-                  </div>
-                  <div className="uppercase tracking-[0.15em] font-medium text-[10px] md:text-xs text-slate-500">
-                    {stat.label}
-                  </div>
-                </div>
-              ))}
+
+            {/* Accreditation header */}
+            <div className="relative flex flex-col md:flex-row items-center md:items-center gap-5 md:gap-7 text-center md:text-left">
+              <img
+                src={jointCommissionBadge}
+                alt="The Joint Commission - National Quality Approval"
+                className="h-16 md:h-20 w-auto object-contain shrink-0"
+                width="128"
+                height="128"
+                loading="lazy"
+                decoding="async"
+              />
+              <div className="flex-1">
+                <p className="font-semibold text-lg md:text-xl tracking-tight text-ink">
+                  {t("accreditation.title")}
+                </p>
+                <p className="text-soft text-sm md:text-base font-medium mt-0.5">
+                  {t("accreditation.subtitle")}
+                </p>
+                <p className="text-softer text-xs md:text-sm mt-1.5 leading-relaxed max-w-2xl">
+                  {t("accreditation.description")}
+                </p>
+              </div>
             </div>
-          ) : (
-            <motion.div 
-              variants={staggerContainer}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, margin: "-100px" }}
-              className="relative grid grid-cols-3 gap-px bg-slate-200/70 rounded-2xl overflow-hidden"
-            >
-              {stats.map((stat) => (
-                <motion.div 
-                  key={stat.label} 
-                  variants={fadeInScale}
-                  className="p-6 md:p-8 text-center bg-white/60 backdrop-blur-sm"
-                >
+
+            <div className="relative my-8 md:my-10 border-t border-slate-200/70" />
+
+            {/* Stats grid */}
+            {noAnim ? (
+              <div className="relative grid grid-cols-3 divide-x divide-slate-200/70">
+                {stats.map((stat) => (
+                  <div key={stat.label} className="px-4 md:px-6 py-2 text-center">
+                    <div className="text-3xl sm:text-4xl md:text-5xl font-bold mb-2 md:mb-3 text-gradient-livemed">
+                      {stat.value}
+                    </div>
+                    <div className="uppercase tracking-[0.15em] font-medium text-[10px] md:text-xs text-slate-500">
+                      {stat.label}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <motion.div
+                variants={staggerContainer}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, margin: "-100px" }}
+                className="relative grid grid-cols-3 divide-x divide-slate-200/70"
+              >
+                {stats.map((stat) => (
                   <motion.div
-                    initial={{ opacity: 0, y: 12 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.5, ease: "easeOut" }}
-                    className="text-3xl sm:text-4xl md:text-5xl font-bold mb-2 md:mb-3 text-gradient-livemed"
+                    key={stat.label}
+                    variants={fadeInScale}
+                    className="px-4 md:px-6 py-2 text-center"
                   >
-                    {stat.value}
+                    <motion.div
+                      initial={{ opacity: 0, y: 12 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.5, ease: "easeOut" }}
+                      className="text-3xl sm:text-4xl md:text-5xl font-bold mb-2 md:mb-3 text-gradient-livemed"
+                    >
+                      {stat.value}
+                    </motion.div>
+                    <div className="uppercase tracking-[0.15em] font-medium text-[10px] md:text-xs text-slate-500">
+                      {stat.label}
+                    </div>
                   </motion.div>
-                  <div className="uppercase tracking-[0.15em] font-medium text-[10px] md:text-xs text-slate-500">
-                    {stat.label}
-                  </div>
-                </motion.div>
-              ))}
-            </motion.div>
-          )}
+                ))}
+              </motion.div>
+            )}
 
-          <p className="relative text-center text-slate-500 text-xs md:text-sm mt-6 max-w-2xl mx-auto">
-            {specialties}
-          </p>
-          </div>
+            <p className="relative text-center text-slate-500 text-xs md:text-sm mt-6 max-w-2xl mx-auto">
+              {specialties}
+            </p>
 
-          {/* Joint Commission Accreditation Badge */}
-          <div className="mt-10 md:mt-14 max-w-2xl mx-auto">
-            <div className="glass-strong rounded-3xl p-6 md:p-10 flex flex-col items-center text-center">
-               <img 
-                 src={jointCommissionBadge} 
-                 alt="The Joint Commission - National Quality Approval" 
-                 className="h-16 md:h-20 w-auto object-contain mb-6"
-                 width="128"
-                 height="128"
-                 loading="lazy"
-                 decoding="async"
-               />
-              <p className="font-semibold text-lg md:text-xl tracking-tight mb-1">
-                {t("accreditation.title")}
-              </p>
-              <p className="text-soft text-sm md:text-base font-medium mb-2">
-                {t("accreditation.subtitle")}
-              </p>
-              <p className="text-softer text-xs md:text-sm max-w-lg mb-4 leading-relaxed">
-                {t("accreditation.description")}
-              </p>
-              <p className="text-soft text-sm md:text-base mb-4">
-                {t("accreditation.enrolling")}
-              </p>
-              <p className="text-softer text-xs md:text-sm">
-                {t("accreditation.contact")}{" "}
-                <a 
-                  href="mailto:info@livemedhealth.com" 
-                  className="text-brand hover:text-brand-2 underline underline-offset-2 transition-colors"
-                >
-                  info@livemedhealth.com
-                </a>
-              </p>
-            </div>
+            <p className="relative text-center text-softer text-xs md:text-sm mt-4">
+              {t("accreditation.enrolling")}
+              <span className="mx-2 text-slate-300">·</span>
+              {t("accreditation.contact")}{" "}
+              <a
+                href="mailto:info@livemedhealth.com"
+                className="text-brand hover:text-brand-2 underline underline-offset-2 transition-colors"
+              >
+                info@livemedhealth.com
+              </a>
+            </p>
           </div>
         </div>
       </section>
