@@ -10,8 +10,6 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import LessonContentRenderer from "@/components/lesson/LessonContentRenderer";
 import {
-import livemedLogoAsset from "@/assets/livemed-logo-light.png.asset.json";
-const livemedLogo = livemedLogoAsset.url;
   BookOpen,
   Brain,
   ArrowLeft,
@@ -23,6 +21,8 @@ const livemedLogo = livemedLogoAsset.url;
   MessageSquare,
   Award,
 } from "lucide-react";
+import livemedLogoAsset from "@/assets/livemed-logo-light.png.asset.json";
+const livemedLogo = livemedLogoAsset.url;
 
 interface Module {
   id: string;
