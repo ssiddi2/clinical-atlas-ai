@@ -197,12 +197,12 @@ const Dashboard = () => {
   const hasTakenDiagnostic = profile?.weak_areas && profile.weak_areas.length > 0;
 
   const quickActions = [
-    { icon: MessageSquare, label: t("dashboard.askAtlas"), href: "/atlas", color: "bg-accent" },
-    { icon: GraduationCap, label: t("courses.myCourses") || "My Courses", href: "/courses", color: "bg-primary" },
-    { icon: Video, label: t("dashboard.virtualClassroom"), href: "/virtual-classroom", color: "bg-livemed-success" },
-    { icon: BookOpen, label: t("dashboard.curriculum"), href: "/curriculum", color: "bg-livemed-warning" },
-    { icon: Stethoscope, label: t("dashboard.liveRounds"), href: "/virtual-rounds", color: "bg-destructive" },
-    { icon: FileText, label: t("dashboard.takeAssessment"), href: "/assessments", color: "bg-livemed-warning" },
+    { icon: MessageSquare, label: t("dashboard.askAtlas"), href: "/atlas", color: "bg-blue-500" },
+    { icon: GraduationCap, label: t("courses.myCourses") || "My Courses", href: "/courses", color: "bg-violet-500" },
+    { icon: Video, label: t("dashboard.virtualClassroom"), href: "/virtual-classroom", color: "bg-emerald-500" },
+    { icon: BookOpen, label: t("dashboard.curriculum"), href: "/curriculum", color: "bg-amber-500" },
+    { icon: Stethoscope, label: t("dashboard.liveRounds"), href: "/virtual-rounds", color: "bg-rose-500" },
+    { icon: FileText, label: t("dashboard.takeAssessment"), href: "/assessments", color: "bg-orange-500" },
   ];
 
   const upcomingItems = upcomingLectures.length > 0
@@ -218,21 +218,38 @@ const Dashboard = () => {
     <div className="min-h-screen bg-background">
       {/* Top Navigation */}
       <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur">
-        <div className="container mx-auto flex h-16 items-center justify-between">
-          <Link to="/dashboard" className="flex items-center gap-2">
-            <img src={livemedLogo} alt="Livemed" className="h-10 md:h-16 object-contain" />
-          </Link>
+        <div className="container mx-auto flex h-16 items-center justify-between gap-6">
+          <div className="flex items-center gap-6">
+            <Link to="/dashboard" className="flex items-center">
+              <img src={livemedLogo} alt="Livemed Academy" className="h-8 object-contain" />
+            </Link>
+            <nav className="hidden md:flex items-center gap-5">
+              <Link to="/curriculum" className="text-sm font-medium text-muted-foreground hover:text-primary">{t("dashboard.curriculum")}</Link>
+              <Link to="/atlas" className="text-sm font-medium text-muted-foreground hover:text-primary">ATLAS™</Link>
+            </nav>
+          </div>
 
-          <nav className="hidden md:flex items-center gap-6">
-            <Link to="/curriculum" className="text-sm font-medium text-muted-foreground hover:text-primary">{t("dashboard.curriculum")}</Link>
-            <Link to="/atlas" className="text-sm font-medium text-muted-foreground hover:text-primary">ATLAS™</Link>
-            <Link to="/courses" className="text-sm font-medium text-muted-foreground hover:text-primary">{t("courses.myCourses") || "My Courses"}</Link>
-            <Link to="/virtual-classroom" className="text-sm font-medium text-muted-foreground hover:text-primary">{t("dashboard.virtualClassroom")}</Link>
-            <Link to="/virtual-rounds" className="text-sm font-medium text-muted-foreground hover:text-primary">{t("dashboard.liveRounds")}</Link>
-            <Link to="/assessments" className="text-sm font-medium text-muted-foreground hover:text-primary">{t("footer.assessments")}</Link>
+          <nav className="hidden lg:flex items-center gap-8">
+            {[
+              { icon: GraduationCap, label: t("courses.myCourses") || "My Courses", href: "/courses" },
+              { icon: Video, label: t("dashboard.virtualClassroom"), href: "/virtual-classroom" },
+              { icon: Stethoscope, label: t("dashboard.liveRounds"), href: "/virtual-rounds" },
+              { icon: FileText, label: t("footer.assessments"), href: "/assessments" },
+            ].map((item) => (
+              <Link
+                key={item.label}
+                to={item.href}
+                className="group flex flex-col items-center gap-1 text-muted-foreground hover:text-primary transition-colors"
+              >
+                <div className="w-9 h-9 rounded-lg border border-border flex items-center justify-center group-hover:border-primary group-hover:bg-primary/5 transition-colors">
+                  <item.icon className="h-4 w-4" />
+                </div>
+                <span className="text-[11px] font-medium leading-none">{item.label}</span>
+              </Link>
+            ))}
           </nav>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             {isAdmin && (
               <Button variant="ghost" size="sm" onClick={() => navigate("/admin")} className="text-primary">
                 <ShieldCheck className="h-5 w-5 mr-1" />
@@ -240,8 +257,32 @@ const Dashboard = () => {
               </Button>
             )}
             <NotificationBell userId={user?.id || null} />
-            <Button variant="ghost" size="icon" onClick={() => navigate("/profile")}><Settings className="h-5 w-5" /></Button>
-            <Button variant="ghost" size="icon" onClick={handleSignOut}><LogOut className="h-5 w-5" /></Button>
+            <Button variant="ghost" size="icon" onClick={() => navigate("/profile")}>
+              <Settings className="h-5 w-5" />
+            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="flex items-center gap-2 pl-1 pr-3 py-1 rounded-full border border-border hover:border-primary/40 hover:bg-muted/50 transition-colors">
+                  <Avatar className="h-8 w-8">
+                    <AvatarImage src={user?.user_metadata?.avatar_url} />
+                    <AvatarFallback className="text-xs font-semibold">
+                      {firstName.slice(0, 2).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <span className="text-sm font-medium hidden sm:inline">{firstName}</span>
+                  <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-44">
+                <DropdownMenuItem onClick={() => navigate("/profile")}>
+                  <Settings className="h-4 w-4 mr-2" /> Profile
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleSignOut}>
+                  <LogOut className="h-4 w-4 mr-2" /> Sign out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </header>
