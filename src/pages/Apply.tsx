@@ -10,10 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { GraduationCap, Stethoscope, BookOpen, Brain, Video, Award, CheckCircle, ArrowRight, Loader2 } from "lucide-react";
-
 import { useTranslation } from "@/i18n";
-import livemedLogoAsset from "@/assets/livemed-logo-light.png.asset.json";
-const livemedLogo = livemedLogoAsset.url;
 
 const Apply = () => {
   const navigate = useNavigate();
@@ -74,18 +71,18 @@ const Apply = () => {
 
   if (submitted) {
     return (
-      <div className="min-h-screen bg-livemed-deep flex items-center justify-center px-4">
+      <div className="min-h-[70vh] flex items-center justify-center px-4 py-16">
         <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="max-w-lg w-full">
-          <Card className="glass-card border-white/10 text-center">
+          <Card className="lm-card text-center">
             <CardContent className="pt-12 pb-8">
               <div className="w-20 h-20 rounded-full gradient-livemed flex items-center justify-center mx-auto mb-6 shadow-glow">
                 <CheckCircle className="w-10 h-10 text-white" />
               </div>
-              <h1 className="text-2xl font-bold text-white mb-3">{t("apply.applicationReceived")}</h1>
-              <p className="text-white/60 mb-8">{t("apply.thankYou")}</p>
+              <h1 className="text-2xl font-bold text-foreground mb-3">{t("apply.applicationReceived")}</h1>
+              <p className="text-muted-foreground mb-8">{t("apply.thankYou")}</p>
               <div className="flex flex-col gap-3">
                 <Button className="w-full gradient-livemed" asChild><Link to="/">{t("apply.returnHome")}</Link></Button>
-                <Button variant="ghost" className="w-full text-white/60 hover:text-white" asChild><Link to="/contact">{t("apply.contactSupport")}</Link></Button>
+                <Button variant="ghost" className="w-full" asChild><Link to="/contact">{t("apply.contactSupport")}</Link></Button>
               </div>
             </CardContent>
           </Card>
@@ -95,23 +92,14 @@ const Apply = () => {
   }
 
   return (
-    <div className="min-h-screen bg-livemed-deep">
-      <header className="fixed top-0 left-0 right-0 z-50 bg-livemed-deep/80 backdrop-blur-xl border-b border-white/10">
-        <div className="container mx-auto flex h-16 items-center justify-between">
-          <Link to="/"><img src={livemedLogo} alt="Livemed Academy logo" className="h-10 object-contain" /></Link>
-          <Button variant="ghost" className="text-white/60 hover:text-white" asChild>
-            <Link to="/auth">{t("auth.alreadyHaveAccount")}</Link>
-          </Button>
-        </div>
-      </header>
-
-      <div className="pt-24 pb-16 px-4">
+    <div className="min-h-screen">
+      <div className="pt-16 pb-16 px-4">
         <div className="max-w-6xl mx-auto">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-12">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-4">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-4 font-display">
               {t("apply.title")} <span className="text-gradient-livemed">{t("apply.titleHighlight")}</span>
             </h1>
-            <p className="text-lg text-white/50 max-w-2xl mx-auto">{t("apply.subtitle")}</p>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">{t("apply.subtitle")}</p>
           </motion.div>
 
           <div className="grid lg:grid-cols-2 gap-8">
