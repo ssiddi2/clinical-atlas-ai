@@ -378,7 +378,7 @@ const Dashboard = () => {
               <CardHeader className="pb-3">
                 <CardTitle className="flex items-center gap-2.5 text-base font-semibold">
                   <span className="w-9 h-9 rounded-xl bg-blue-500 text-white flex items-center justify-center shadow-sm">
-                    <BookOpen className="h-4.5 w-4.5" />
+                    <BookOpen className="h-[18px] w-[18px]" />
                   </span>
                   {t("dashboard.continueWhereLeft")}
                 </CardTitle>
@@ -425,7 +425,7 @@ const Dashboard = () => {
                 <div className="flex items-center justify-between">
                   <CardTitle className="flex items-center gap-2.5 text-base font-semibold">
                     <span className="w-9 h-9 rounded-xl bg-violet-500 text-white flex items-center justify-center shadow-sm">
-                      <Calendar className="h-4.5 w-4.5" />
+                      <Calendar className="h-[18px] w-[18px]" />
                     </span>
                     {t("dashboard.upcoming")}
                   </CardTitle>
