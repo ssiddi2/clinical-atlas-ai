@@ -269,18 +269,19 @@ const Landing = () => {
       {/* Stats Section */}
       <section className="relative py-14 md:py-20 overflow-hidden">
         <div className="container mx-auto px-4 md:px-6 relative">
-          <div className="cta-surface rounded-[32px] p-8 md:p-10 max-w-6xl mx-auto">
+          <div className="relative rounded-[32px] p-8 md:p-10 max-w-6xl mx-auto bg-gradient-to-br from-slate-50 via-blue-50/60 to-slate-100 border border-slate-200/70 shadow-[0_20px_60px_-30px_rgba(15,23,42,0.15)] overflow-hidden">
+            <div aria-hidden className="pointer-events-none absolute inset-0 opacity-40 animate-shimmer" />
           {noAnim ? (
-            <div className="grid grid-cols-3 gap-px bg-white/10 rounded-2xl overflow-hidden">
+            <div className="relative grid grid-cols-3 gap-px bg-slate-200/70 rounded-2xl overflow-hidden">
               {stats.map((stat) => (
                 <div 
                   key={stat.label} 
-                  className="p-6 md:p-8 text-center bg-transparent"
+                  className="p-6 md:p-8 text-center bg-white/60 backdrop-blur-sm"
                 >
-                  <div className="text-3xl sm:text-4xl md:text-5xl font-bold mb-2 md:mb-3 text-white">
+                  <div className="text-3xl sm:text-4xl md:text-5xl font-bold mb-2 md:mb-3 text-gradient-livemed">
                     {stat.value}
                   </div>
-                  <div className="uppercase tracking-[0.15em] font-medium text-[10px] md:text-xs text-white/70">
+                  <div className="uppercase tracking-[0.15em] font-medium text-[10px] md:text-xs text-slate-500">
                     {stat.label}
                   </div>
                 </div>
@@ -292,18 +293,24 @@ const Landing = () => {
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true, margin: "-100px" }}
-              className="grid grid-cols-3 gap-px bg-white/10 rounded-2xl overflow-hidden"
+              className="relative grid grid-cols-3 gap-px bg-slate-200/70 rounded-2xl overflow-hidden"
             >
               {stats.map((stat) => (
                 <motion.div 
                   key={stat.label} 
                   variants={fadeInScale}
-                  className="p-6 md:p-8 text-center bg-transparent"
+                  className="p-6 md:p-8 text-center bg-white/60 backdrop-blur-sm"
                 >
-                  <div className="text-3xl sm:text-4xl md:text-5xl font-bold mb-2 md:mb-3 text-white">
+                  <motion.div
+                    initial={{ opacity: 0, y: 12 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5, ease: "easeOut" }}
+                    className="text-3xl sm:text-4xl md:text-5xl font-bold mb-2 md:mb-3 text-gradient-livemed"
+                  >
                     {stat.value}
-                  </div>
-                  <div className="uppercase tracking-[0.15em] font-medium text-[10px] md:text-xs text-white/70">
+                  </motion.div>
+                  <div className="uppercase tracking-[0.15em] font-medium text-[10px] md:text-xs text-slate-500">
                     {stat.label}
                   </div>
                 </motion.div>
@@ -311,7 +318,7 @@ const Landing = () => {
             </motion.div>
           )}
 
-          <p className="text-center text-white/70 text-xs md:text-sm mt-6 max-w-2xl mx-auto">
+          <p className="relative text-center text-slate-500 text-xs md:text-sm mt-6 max-w-2xl mx-auto">
             {specialties}
           </p>
           </div>
@@ -419,12 +426,12 @@ const Landing = () => {
                         {program.years}
                       </div>
                       {program.title === t("programs.clinical") && (
-                        <span className="inline-flex items-center rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider bg-brand text-white">
+                        <span className="inline-flex items-center rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider bg-brand !text-white shadow-[0_4px_12px_-4px_rgba(0,64,221,0.45)]">
                           {t("programs.mostPopular")}
                         </span>
                       )}
                       {program.title === t("programs.residencyPrep") && (
-                        <span className="inline-flex items-center rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider bg-brand text-white">
+                        <span className="inline-flex items-center rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider bg-brand !text-white shadow-[0_4px_12px_-4px_rgba(0,64,221,0.45)]">
                           {t("programs.recommended")}
                         </span>
                       )}
@@ -582,14 +589,20 @@ const Landing = () => {
             ].map((testimonial, index) => (
               <article
                 key={index}
-                className="lm-card p-7 md:p-8"
+                className={`rounded-[var(--card-radius)] border border-slate-200/60 p-7 md:p-8 transition-shadow duration-300 hover:shadow-[0_20px_60px_-30px_rgba(15,23,42,0.18)] ${
+                  index === 0
+                    ? "bg-gradient-to-br from-slate-50 to-white"
+                    : index === 1
+                    ? "bg-gradient-to-br from-blue-50/50 to-white"
+                    : "bg-gradient-to-br from-indigo-50/50 to-white"
+                }`}
               >
-                <div className="text-3xl text-brand/30 mb-3 font-serif leading-none">"</div>
-                <p className="text-foreground/80 mb-5 md:mb-7 leading-relaxed text-sm md:text-base">
+                <div className="text-3xl text-slate-300 mb-3 font-serif leading-none">"</div>
+                <p className="text-slate-700 mb-5 md:mb-7 leading-relaxed text-sm md:text-base">
                   {testimonial.quote}
                 </p>
-                <div className="border-t border-border pt-5 flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full tile-accent flex items-center justify-center text-xs font-medium text-white overflow-hidden">
+                <div className="border-t border-slate-100 pt-5 flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-100 to-indigo-100 text-blue-700 ring-1 ring-white flex items-center justify-center text-xs font-medium overflow-hidden">
                     <img
                       src={`https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(testimonial.name)}&backgroundType=gradientLinear`}
                       alt=""
@@ -599,8 +612,8 @@ const Landing = () => {
                     />
                   </div>
                   <div>
-                    <p className="font-medium text-sm md:text-base">{testimonial.name}</p>
-                    <p className="text-xs md:text-sm text-softer">{testimonial.role}</p>
+                    <p className="font-medium text-sm md:text-base text-slate-800">{testimonial.name}</p>
+                    <p className="text-xs md:text-sm text-slate-500">{testimonial.role}</p>
                   </div>
                 </div>
               </article>
