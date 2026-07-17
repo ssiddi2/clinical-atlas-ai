@@ -217,6 +217,11 @@ const Atlas = () => {
   };
 
   const createNewConversation = async () => {
+    // If current chat is already empty, don't create another empty one.
+    if (messages.length === 0) {
+      textareaRef.current?.focus();
+      return;
+    }
     const { data, error } = await supabase
       .from("eli_conversations")
       .insert({ user_id: user?.id, title: "New Conversation" })
