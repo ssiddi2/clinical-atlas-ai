@@ -65,7 +65,7 @@ export default function StudyPlanWidget({ userId }: { userId: string | null }) {
       <CardContent className="space-y-3">
         {plan.slice(0, 4).map((item, i) => (
           <div key={item.specialty_id} className="flex items-center gap-3 p-2 rounded-lg bg-background/50">
-            <div className="w-6 h-6 rounded-full bg-primary/20 text-primary text-xs font-bold flex items-center justify-center flex-shrink-0">
+            <div className="w-6 h-6 rounded-full bg-primary text-white text-xs font-bold flex items-center justify-center flex-shrink-0 shadow-sm">
               {i + 1}
             </div>
             <div className="flex-1 min-w-0">
