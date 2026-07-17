@@ -574,16 +574,19 @@ const Landing = () => {
                 quote: "ATLAS helped me master pathophysiology I'd struggled with for months. Scored 248 on Step 1.",
                 name: "Dr. Maria Santos",
                 role: "IMG from Brazil, Matched Internal Medicine",
+                photo: "https://images.unsplash.com/photo-1594824476967-48c8b964273f?auto=format&fit=crop&w=200&h=200&q=80",
               },
               {
                 quote: "Virtual rotations prepared me for U.S. clinicals. Received outstanding evaluations my first week.",
                 name: "Ahmed Khalil",
                 role: "Medical Student, Egypt",
+                photo: "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&w=200&h=200&q=80",
               },
               {
                 quote: "USMLE pass rates improved 18% after implementing Livemed. Analytics identify struggling students early.",
                 name: "Dr. James Wilson",
                 role: "Dean of Clinical Education",
+                photo: "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&w=200&h=200&q=80",
               },
             ].map((testimonial, index) => (
               <article
@@ -601,13 +604,15 @@ const Landing = () => {
                   {testimonial.quote}
                 </p>
                 <div className="border-t border-slate-100 pt-5 flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-100 to-indigo-100 text-blue-700 ring-1 ring-white flex items-center justify-center text-xs font-medium overflow-hidden">
+                  <div className="w-14 h-14 rounded-full bg-gradient-to-br from-blue-100 to-indigo-100 ring-2 ring-white shadow-sm flex items-center justify-center overflow-hidden shrink-0">
                     <img
-                      src={`https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(testimonial.name)}&backgroundType=gradientLinear`}
-                      alt=""
+                      src={testimonial.photo}
+                      alt={testimonial.name}
                       className="w-full h-full object-cover"
                       loading="lazy"
-                      onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
+                      onError={(e) => {
+                        (e.currentTarget as HTMLImageElement).src = `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(testimonial.name)}&backgroundType=gradientLinear`;
+                      }}
                     />
                   </div>
                   <div>
