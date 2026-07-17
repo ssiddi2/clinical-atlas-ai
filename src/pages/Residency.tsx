@@ -21,8 +21,7 @@ import {
 } from "lucide-react";
 
 import { useTranslation } from "@/i18n/LanguageContext";
-import livemedLogoAsset from "@/assets/livemed-logo-light.png.asset.json";
-const livemedLogo = livemedLogoAsset.url;
+import AppShell from "@/components/layout/AppShell";
 
 const Residency = () => {
   const navigate = useNavigate();
@@ -101,23 +100,7 @@ const Residency = () => {
   );
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur">
-        <div className="container mx-auto flex h-16 items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" onClick={() => navigate("/dashboard")}>
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
-            <Link to="/dashboard">
-              <img src={livemedLogo} alt="Livemed" style={{ height: '80px', width: 'auto' }} className="object-contain" />
-            </Link>
-          </div>
-          <h1 className="text-lg font-semibold">{t("residency.title")}</h1>
-          <div className="w-20" /> {/* Spacer for centering */}
-        </div>
-      </header>
-
+    <AppShell>
       <main className="container mx-auto py-8">
         {/* Hero Section with Overall Score */}
         <div className="text-center mb-12">
@@ -300,7 +283,7 @@ const Residency = () => {
           </div>
         </div>
       </main>
-    </div>
+    </AppShell>
   );
 };
 
