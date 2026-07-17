@@ -365,8 +365,8 @@ const Dashboard = () => {
                   </div>
                   <div aria-hidden className="hidden md:flex w-44 h-44 rounded-2xl bg-gradient-to-br from-primary to-primary/70 items-center justify-center flex-shrink-0 relative shadow-lg shadow-primary/20">
                     <ClipboardCheck className="h-20 w-20 text-white" strokeWidth={1.5} />
-                    <div className="absolute bottom-3 right-3 w-12 h-12 rounded-full bg-background shadow-md flex items-center justify-center ring-1 ring-border">
-                      <Target className="h-7 w-7 text-primary" strokeWidth={2} />
+                    <div className="absolute bottom-3 right-3 w-12 h-12 rounded-full bg-emerald-500 shadow-md flex items-center justify-center ring-2 ring-background">
+                      <Target className="h-6 w-6 text-white" strokeWidth={2.25} />
                     </div>
                   </div>
                 </CardContent>
