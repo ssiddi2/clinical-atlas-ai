@@ -42,23 +42,29 @@ const EnrollmentAuditLog = ({ courseId, studentId, limit = 100 }: Props) => {
   const load = async () => {
     let q = supabase
       .from("enrollment_audit_log")
-      .select("id, action, previous_status, new_status, created_at, course_id, student_id, actor_id, student:profiles!enrollment_audit_log_student_id_fkey(first_name, last_name), actor:profiles!enrollment_audit_log_actor_id_fkey(first_name, last_name), course:courses(title)")
+      .select("id, action, previous_status, new_status, created_at, course_id, student_id, actor_id")
       .order("created_at", { ascending: false })
       .limit(limit);
     if (courseId) q = q.eq("course_id", courseId);
     if (studentId) q = q.eq("student_id", studentId);
     const { data } = await q;
-    // Fallback without joins if FK relationship names differ
-    if (!data) {
-      const alt = await supabase
-        .from("enrollment_audit_log")
-        .select("*")
-        .order("created_at", { ascending: false })
-        .limit(limit);
-      setRows((alt.data as any) || []);
-    } else {
-      setRows(data as any);
-    }
+    const base = (data as any[]) || [];
+    if (base.length === 0) { setRows([]); setLoading(false); return; }
+
+    const userIds = Array.from(new Set(base.flatMap((r: any) => [r.student_id, r.actor_id].filter(Boolean))));
+    const courseIds = Array.from(new Set(base.map((r: any) => r.course_id)));
+    const [profRes, courseRes] = await Promise.all([
+      supabase.from("profiles").select("user_id, first_name, last_name").in("user_id", userIds),
+      courseId ? Promise.resolve({ data: [] as any[] }) : supabase.from("courses").select("id, title").in("id", courseIds),
+    ]);
+    const profMap = new Map((profRes.data || []).map((p: any) => [p.user_id, p]));
+    const courseMap = new Map(((courseRes as any).data || []).map((c: any) => [c.id, c]));
+    setRows(base.map((r: any) => ({
+      ...r,
+      student: profMap.get(r.student_id) || null,
+      actor: r.actor_id ? profMap.get(r.actor_id) || null : null,
+      course: courseMap.get(r.course_id) || null,
+    })));
     setLoading(false);
   };
 
