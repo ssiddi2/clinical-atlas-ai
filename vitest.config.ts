@@ -9,6 +9,8 @@ export default defineConfig({
     globals: true,
     setupFiles: ["./src/test/setup.ts"],
     include: ["src/**/*.{test,spec}.{ts,tsx}"],
+    // Playwright specs live in tests/visual and must NOT be picked up by Vitest.
+    exclude: ["node_modules", "dist", "tests/**", "playwright-report/**", "test-results/**"],
   },
   resolve: {
     alias: { "@": path.resolve(__dirname, "./src") },
