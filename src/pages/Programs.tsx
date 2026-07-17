@@ -129,14 +129,15 @@ const Programs = () => {
   return (
     <main className="flex-1">
         {/* Hero */}
-        <section className="relative py-20 md:py-28 overflow-hidden">
+        <section className="relative py-20 md:py-28 overflow-hidden bg-section-glow">
           <div className="absolute inset-0 gradient-livemed-light" />
           <div className="container mx-auto px-4 relative">
             <div className="max-w-3xl mx-auto text-center">
-              <h1 className="text-4xl md:text-5xl font-bold mb-6">
+              <span className="chip chip-brand mb-6">{t("nav.programs", "Programs")}</span>
+              <h1 className="font-display text-4xl md:text-5xl font-bold mb-6 mt-4">
                 {t("programs.page.title")}
               </h1>
-              <p className="text-lg text-muted-foreground mb-8">
+              <p className="text-lg text-soft mb-8">
                 {t("programs.page.subtitle")}
               </p>
             </div>
@@ -144,7 +145,7 @@ const Programs = () => {
         </section>
 
         {/* Programs Tabs */}
-        <section className="py-20">
+        <section className="py-20 bg-section-tinted">
           <div className="container mx-auto px-4">
             <Tabs defaultValue="pre-clinical" className="w-full">
               <TabsList className="grid w-full max-w-2xl mx-auto grid-cols-4 mb-12">
@@ -207,14 +208,14 @@ const Programs = () => {
                     </div>
 
                     {/* Features Card */}
-                    <Card className="sticky top-24">
-                      <CardHeader>
-                        <CardTitle>{t("programs.page.programFeatures")}</CardTitle>
-                        <CardDescription>
+                    <div className="lm-card-lg sticky top-24 p-6 md:p-8">
+                      <div className="mb-6">
+                        <h3 className="text-xl font-semibold mb-1">{t("programs.page.programFeatures")}</h3>
+                        <p className="text-sm text-soft">
                           {t("programs.page.everythingIncluded")} {program.title}
-                        </CardDescription>
-                      </CardHeader>
-                      <CardContent>
+                        </p>
+                      </div>
+                      <div>
                         <div className="space-y-4">
                           {program.features.map((feature, idx) => (
                             <div key={idx} className="flex items-start gap-3">
@@ -226,7 +227,7 @@ const Programs = () => {
                           ))}
                         </div>
 
-                      <div className="mt-8 p-4 bg-muted rounded-lg">
+                      <div className="mt-8 p-4 bg-muted/60 rounded-xl">
                           <div className="flex items-center gap-3 mb-3">
                             <Brain className="h-5 w-5 text-accent" />
                             <span className="font-medium">{t("programs.page.atlasIncluded")}</span>
@@ -235,8 +236,8 @@ const Programs = () => {
                             {t("programs.page.atlasDesc")}
                           </p>
                         </div>
-                      </CardContent>
-                    </Card>
+                      </div>
+                    </div>
                   </div>
                 </TabsContent>
               ))}
@@ -245,22 +246,24 @@ const Programs = () => {
         </section>
 
         {/* CTA */}
-        <section className="py-20 bg-muted/30">
-          <div className="container mx-auto px-4 text-center">
-            <h2 className="text-3xl font-bold mb-4">{t("programs.page.notSure")}</h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
-              {t("programs.page.notSureDesc")}
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" className="gradient-livemed" asChild>
-                <Link to="/auth?mode=signup">{t("programs.page.createFreeAccount")}</Link>
-              </Button>
-              <Button size="lg" variant="outline" asChild>
-                <Link to="/contact">{t("programs.page.talkAdmissions")}</Link>
-              </Button>
+        <section className="py-20">
+          <div className="container mx-auto px-4">
+            <div className="cta-surface rounded-[28px] p-10 md:p-14 text-center max-w-5xl mx-auto">
+              <h2 className="font-display text-3xl md:text-4xl font-bold text-white mb-4">{t("programs.page.notSure")}</h2>
+              <p className="text-lg text-white/80 max-w-2xl mx-auto mb-8">
+                {t("programs.page.notSureDesc")}
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Button size="lg" variant="secondary" className="bg-white text-primary hover:bg-white/90" asChild>
+                  <Link to="/auth?mode=signup">{t("programs.page.createFreeAccount")}</Link>
+                </Button>
+                <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10" asChild>
+                  <Link to="/contact">{t("programs.page.talkAdmissions")}</Link>
+                </Button>
+              </div>
             </div>
-            </div>
-          </section>
+          </div>
+        </section>
     </main>
   );
 };
