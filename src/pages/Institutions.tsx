@@ -31,7 +31,7 @@ const Institutions = () => {
   return (
     <main className="flex-1">
       <section className="relative py-16 md:py-20 overflow-hidden">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
           <div className="cta-surface rounded-[32px] p-10 md:p-16 max-w-6xl mx-auto">
             <div className="max-w-3xl">
               <div className="inline-flex items-center gap-2 bg-white/10 text-white px-4 py-2 rounded-full text-sm font-medium mb-6">
@@ -54,7 +54,7 @@ const Institutions = () => {
       </section>
 
       <section className="py-12 border-b border-border bg-section-tinted">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {stats.map((stat) => (
               <div key={stat.label} className="lm-card text-center p-6">
@@ -67,7 +67,7 @@ const Institutions = () => {
       </section>
 
       <section className="py-20">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
           <div className="text-center mb-16">
             <h2 className="font-display text-3xl md:text-4xl font-bold mb-4">{t("institutions.whyChoose")}</h2>
             <p className="text-lg text-soft max-w-2xl mx-auto">{t("institutions.whyChooseDesc")}</p>
@@ -87,7 +87,7 @@ const Institutions = () => {
       </section>
 
       <section className="py-20 bg-section-tinted">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
           <div className="text-center mb-16">
             <h2 className="font-display text-3xl md:text-4xl font-bold mb-4">{t("institutions.solutions")}</h2>
           </div>
@@ -111,7 +111,7 @@ const Institutions = () => {
       </section>
 
       <section className="py-20">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
               <h2 className="font-display text-3xl font-bold mb-6">{t("institutions.rapidImplementation")}</h2>

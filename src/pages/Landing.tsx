@@ -162,7 +162,7 @@ const Landing = () => {
         />
         
         {isMobile ? (
-          <div className="container mx-auto px-4 relative z-10">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 relative z-10">
             <div className="max-w-4xl mx-auto text-center">
               <div className="chip chip-brand mb-6">
                 <span className="relative flex h-2 w-2">
@@ -201,7 +201,7 @@ const Landing = () => {
             </div>
           </div>
         ) : (
-          <div className="container mx-auto px-4 md:px-6 relative z-10">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 relative z-10">
             <div className="max-w-4xl mx-auto text-center">
               <motion.div 
                 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.2 }}
@@ -268,7 +268,7 @@ const Landing = () => {
 
       {/* Stats Section */}
       <section className="relative py-14 md:py-20 overflow-hidden">
-        <div className="container mx-auto px-4 md:px-6 relative">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 relative">
           <div className="relative rounded-[32px] p-8 md:p-10 max-w-6xl mx-auto bg-gradient-to-br from-slate-50 via-blue-50/60 to-slate-100 border border-slate-200/70 shadow-[0_20px_60px_-30px_rgba(15,23,42,0.15)] overflow-hidden">
             <div aria-hidden className="pointer-events-none absolute inset-0 opacity-40 animate-shimmer" />
           {noAnim ? (
@@ -363,7 +363,7 @@ const Landing = () => {
 
       {/* Features Section */}
       <section className="py-24 md:py-32 bg-section-tinted relative overflow-hidden">
-        <div className="container mx-auto px-4 md:px-6 relative">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 relative">
           <div className="text-center mb-12 md:mb-20">
             <div className="chip chip-brand mb-5 md:mb-6">
               <Sparkles className="h-3.5 w-3.5" />
@@ -404,7 +404,7 @@ const Landing = () => {
       {/* Programs Section */}
       <section className="py-24 md:py-32 relative overflow-hidden bg-section-glow below-fold-section">
         
-        <div className="container mx-auto px-4 md:px-6 relative">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 relative">
           <div className="text-center mb-12 md:mb-20">
             <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-semibold mb-4 md:mb-6">
               {t("programs.title").split(/(?=Every Stage|كل مرحلة|हर चरण|ہر مرحلے|Cada Etapa)/i)[0]} <span className="text-gradient">{t("programs.title").includes("Every Stage") ? "Every Stage" : ""}</span>
@@ -456,7 +456,7 @@ const Landing = () => {
 
       {/* ATLAS Section */}
       <section className="py-24 md:py-32 relative overflow-hidden bg-section-default below-fold-section">
-        <div className="container mx-auto px-4 md:px-6 relative">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 relative">
           <div className="grid lg:grid-cols-2 gap-12 md:gap-20 items-center">
             <div className="max-w-lg">
               <div className="chip chip-brand mb-6 md:mb-8">
@@ -559,7 +559,7 @@ const Landing = () => {
 
       {/* Testimonials Section */}
       <section className="py-24 md:py-32 bg-section-tinted relative overflow-hidden below-fold-section">
-        <div className="container mx-auto px-4 md:px-6 relative">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 relative">
           <div className="text-center mb-12 md:mb-20">
             <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-semibold mb-4 md:mb-6">
               {t("testimonials.title")} <span className="text-gradient">{t("testimonials.titleHighlight")}</span>
@@ -624,7 +624,7 @@ const Landing = () => {
 
       {/* Institution CTA */}
       <section className="py-16 md:py-24 relative overflow-hidden below-fold-section">
-        <div className="container mx-auto px-4 md:px-6">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
           <div className="cta-surface rounded-[32px] p-10 md:p-16 text-center max-w-5xl mx-auto">
             <div className="flex justify-center gap-3 md:gap-4 mb-8 md:mb-12">
               {[Globe, Users, GraduationCap].map((Icon, index) => (

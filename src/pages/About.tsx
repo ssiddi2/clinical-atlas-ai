@@ -31,7 +31,7 @@ const About = () => {
     <div className="flex-1">
       <section className="relative py-20 md:py-28 overflow-hidden">
         <div className="absolute inset-0 gradient-livemed-light" />
-        <div className="container mx-auto px-4 relative">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 relative">
           <div className="max-w-4xl mx-auto text-center">
             <div className="inline-flex items-center gap-2 bg-accent/10 text-accent px-4 py-2 rounded-full text-sm font-medium mb-6">
               <GraduationCap className="h-4 w-4" />
@@ -45,7 +45,7 @@ const About = () => {
       </section>
 
       <section className="py-20">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
           <div className="max-w-4xl mx-auto">
             <div className="grid md:grid-cols-2 gap-12 items-center">
               <div>
@@ -66,7 +66,7 @@ const About = () => {
       </section>
 
       <section className="py-20 bg-muted/30">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold mb-4">{t("about.whatWeOffer")}</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">{t("about.whatWeOfferDesc")}</p>
@@ -86,7 +86,7 @@ const About = () => {
       </section>
 
       <section className="py-20">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold mb-4">{t("about.ourValues")}</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">{t("about.ourValuesDesc")}</p>
@@ -106,7 +106,7 @@ const About = () => {
       </section>
 
       <section className="py-20 bg-muted/30">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-12">
               <div className="w-16 h-16 rounded-full gradient-livemed flex items-center justify-center mx-auto mb-6"><Shield className="h-8 w-8 text-white" /></div>
@@ -124,7 +124,7 @@ const About = () => {
       </section>
 
       <section className="py-20">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold mb-4">{t("about.leadershipTeam")}</h2>
             <p className="text-muted-foreground max-w-2xl mx-auto">{t("about.leadershipDesc")}</p>
@@ -145,7 +145,7 @@ const About = () => {
       </section>
 
       <section className="py-12 bg-muted/50">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
           <div className="max-w-3xl mx-auto text-center">
             <p className="text-sm text-muted-foreground mb-2"><strong>{t("about.educationalDisclaimer")}</strong> {t("about.disclaimerText")}</p>
             <p className="text-xs text-muted-foreground/70">{t("about.jcDisclaimer")}</p>
@@ -154,7 +154,7 @@ const About = () => {
       </section>
 
       <section className="py-20 gradient-livemed">
-        <div className="container mx-auto px-4 text-center">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 text-center">
           <h2 className="text-3xl font-bold text-white mb-4">{t("about.readyAdvance")}</h2>
           <p className="text-lg text-white/80 max-w-2xl mx-auto mb-8">{t("about.readyAdvanceDesc")}</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">

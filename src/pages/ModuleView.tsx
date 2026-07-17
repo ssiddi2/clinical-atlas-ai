@@ -342,7 +342,7 @@ const ModuleView = () => {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="sticky top-0 z-50 border-b border-border bg-background/95 backdrop-blur">
-        <div className="container mx-auto px-4 flex h-16 items-center justify-between">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 flex h-16 items-center justify-between">
           <div className="flex items-center gap-4">
             <Link to="/curriculum" className="text-muted-foreground hover:text-foreground">
               <ArrowLeft className="h-5 w-5" />
@@ -364,7 +364,7 @@ const ModuleView = () => {
         <Progress value={progress} className="h-1" />
       </header>
 
-      <div className="container mx-auto px-4 py-8 max-w-4xl">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-8 max-w-4xl">
         {/* Lesson Content */}
         {!isQuiz && lessonSections.length > 0 && (
           <div className="space-y-8">

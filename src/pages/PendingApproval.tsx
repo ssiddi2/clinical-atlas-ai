@@ -38,7 +38,7 @@ const PendingApproval = () => {
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <header className="border-b border-border bg-background/95 backdrop-blur">
-        <div className="container mx-auto px-4 flex h-16 items-center justify-between">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 flex h-16 items-center justify-between">
           <Link to="/"><img src={livemedLogoFull} alt="Livemed Academy" style={{ height: '60px', width: 'auto' }} className="object-contain" /></Link>
           <Button variant="ghost" size="sm" onClick={handleSignOut}><LogOut className="mr-2 h-4 w-4" />{t("common.signOut", "Sign Out")}</Button>
         </div>
@@ -65,7 +65,7 @@ const PendingApproval = () => {
       </main>
 
       <footer className="border-t border-border py-4">
-        <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">© {new Date().getFullYear()} Livemed Academy.</div>
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 text-center text-sm text-muted-foreground">© {new Date().getFullYear()} Livemed Academy.</div>
       </footer>
     </div>
   );
