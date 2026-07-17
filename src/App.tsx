@@ -51,6 +51,7 @@ const CourseDetail = lazy(() => import("./pages/CourseDetail"));
 const LearningUnitPage = lazy(() => import("./pages/LearningUnitPage"));
 const LiveQuiz = lazy(() => import("./pages/LiveQuiz"));
 const OAuthConsent = lazy(() => import("./pages/OAuthConsent"));
+const LORRequests = lazy(() => import("./pages/LORRequests"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -176,6 +177,12 @@ const App = () => {
 
             {/* Admin Dashboard (platform_admin only) */}
             <Route path="/admin" element={<Admin />} />
+
+            {/* Physician Letters of Recommendation */}
+            <Route path="/lor" element={<LORRequests />} />
+
+            {/* Legacy /pricing redirect to /apply handled via NotFound; provide alias */}
+            <Route path="/pricing" element={<Apply />} />
 
             {/* MCP OAuth consent (Claude Desktop, ChatGPT, Cursor) */}
             <Route path="/.lovable/oauth/consent" element={<OAuthConsent />} />
