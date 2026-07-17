@@ -366,9 +366,10 @@ const Atlas = () => {
           onClick={createNewConversation}
           aria-label={t("atlas.newConversation")}
           title={t("atlas.newConversation")}
-          className="inline-flex items-center justify-center h-9 w-9 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+          className="inline-flex items-center gap-1.5 h-9 px-2.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
         >
           <Plus className="h-5 w-5" />
+          <span className="text-sm font-medium hidden sm:inline">{t("atlas.newConversation")}</span>
         </button>
         <div className="h-6 w-px bg-border" />
         <div className="flex items-center gap-2 md:gap-3 min-w-0">
