@@ -96,7 +96,7 @@ const AppShell = ({ children, headerOnly = false }: AppShellProps) => {
             variant="ghost"
             size="icon"
             aria-label="Profile settings"
-            onClick={() => navigate("/profile")}
+            onClick={() => navigate("/settings")}
             className="rounded-full bg-muted/60 hover:bg-muted text-foreground/80"
           >
             <Settings className="h-4 w-4" />
@@ -118,8 +118,8 @@ const AppShell = ({ children, headerOnly = false }: AppShellProps) => {
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-44">
-              <DropdownMenuItem onClick={() => navigate("/profile")}>
-                <Settings className="h-4 w-4 mr-2" /> Profile
+              <DropdownMenuItem onClick={() => navigate("/settings")}>
+                <Settings className="h-4 w-4 mr-2" /> Settings
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={handleSignOut}>

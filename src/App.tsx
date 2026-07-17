@@ -153,6 +153,7 @@ const App = () => {
 
             {/* Profile Settings (authenticated) */}
             <Route path="/profile" element={<Profile />} />
+            <Route path="/settings" element={<Profile />} />
 
             {/* QBank - Question Bank (authenticated) */}
             <Route path="/qbank" element={<QBank />} />
