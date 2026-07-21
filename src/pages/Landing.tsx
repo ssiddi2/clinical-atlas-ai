@@ -150,14 +150,14 @@ const Landing = () => {
           playsInline
           aria-hidden="true"
           src={heroVideo.url}
-          style={{ opacity: 0.6 }}
+          style={{ opacity: 0.85 }}
         />
         <div
           className="absolute inset-0 z-[2]"
           aria-hidden="true"
           style={{
             background:
-              "radial-gradient(ellipse 70% 60% at 50% 50%, hsl(0 0% 100% / 0.85) 0%, hsl(0 0% 100% / 0.7) 55%, hsl(0 0% 100% / 0.45) 100%)",
+              "radial-gradient(ellipse 70% 60% at 50% 50%, hsl(0 0% 100% / 0.7) 0%, hsl(0 0% 100% / 0.5) 55%, hsl(0 0% 100% / 0.2) 100%)",
           }}
         />
         
