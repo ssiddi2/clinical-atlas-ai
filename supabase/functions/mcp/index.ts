@@ -17,8 +17,8 @@ function admin(ctx) {
 }
 async function requireAdmin(ctx) {
   if (!ctx.isAuthenticated()) return "Not authenticated";
-  const sb = admin(ctx);
-  const { data, error } = await sb.rpc("has_role", { _user_id: ctx.getUserId(), _role: "platform_admin" });
+  const sb2 = admin(ctx);
+  const { data, error } = await sb2.rpc("has_role", { _user_id: ctx.getUserId(), _role: "platform_admin" });
   if (error) return error.message;
   if (!data) return "Platform admin role required to review content.";
   return null;
@@ -66,9 +66,9 @@ var get_qbank_question_default = defineTool2({
   handler: async ({ question_id }, ctx) => {
     const err = await requireAdmin(ctx);
     if (err) return { content: [{ type: "text", text: err }], isError: true };
-    const sb = admin(ctx);
+    const sb2 = admin(ctx);
     const isUuid = /^[0-9a-f-]{36}$/i.test(question_id);
-    const { data, error } = await sb.from("qbank_questions").select("*").eq(isUuid ? "id" : "question_id", question_id).maybeSingle();
+    const { data, error } = await sb2.from("qbank_questions").select("*").eq(isUuid ? "id" : "question_id", question_id).maybeSingle();
     if (error) return { content: [{ type: "text", text: error.message }], isError: true };
     if (!data) return { content: [{ type: "text", text: "Question not found" }], isError: true };
     const opts = data.options ?? [];
@@ -133,11 +133,11 @@ var get_atlas_conversation_default = defineTool4({
   handler: async ({ conversation_id }, ctx) => {
     const err = await requireAdmin(ctx);
     if (err) return { content: [{ type: "text", text: err }], isError: true };
-    const sb = admin(ctx);
-    const { data: convo, error: cErr } = await sb.from("eli_conversations").select("*").eq("id", conversation_id).maybeSingle();
+    const sb2 = admin(ctx);
+    const { data: convo, error: cErr } = await sb2.from("eli_conversations").select("*").eq("id", conversation_id).maybeSingle();
     if (cErr) return { content: [{ type: "text", text: cErr.message }], isError: true };
     if (!convo) return { content: [{ type: "text", text: "Conversation not found" }], isError: true };
-    const { data: msgs, error: mErr } = await sb.from("eli_messages").select("role, content, created_at").eq("conversation_id", conversation_id).order("created_at");
+    const { data: msgs, error: mErr } = await sb2.from("eli_messages").select("role, content, created_at").eq("conversation_id", conversation_id).order("created_at");
     if (mErr) return { content: [{ type: "text", text: mErr.message }], isError: true };
     const transcript = (msgs ?? []).map((m) => `**${m.role.toUpperCase()}:**
 ${m.content}`).join("\n\n---\n\n");
@@ -266,18 +266,192 @@ var list_reviews_default = defineTool8({
   }
 });
 
+// src/lib/mcp/tools/me.ts
+import { defineTool as defineTool9 } from "npm:@lovable.dev/mcp-js@0.22.2";
+
+// src/lib/mcp/tools/_shared.ts
+import { createClient as createClient2 } from "npm:@supabase/supabase-js@^2.90.1";
+function sb(ctx) {
+  return createClient2(process.env.SUPABASE_URL, process.env.SUPABASE_PUBLISHABLE_KEY, {
+    global: { headers: { Authorization: `Bearer ${ctx.getToken()}` } },
+    auth: { persistSession: false, autoRefreshToken: false }
+  });
+}
+async function requireRole(ctx, role) {
+  if (!ctx.isAuthenticated()) return "Not authenticated";
+  const { data, error } = await sb(ctx).rpc("has_role", { _user_id: ctx.getUserId(), _role: role });
+  if (error) return error.message;
+  if (!data) return `${role} role required.`;
+  return null;
+}
+async function requireAuth(ctx) {
+  if (!ctx.isAuthenticated()) return "Not authenticated";
+  return null;
+}
+var errText = (msg) => ({ content: [{ type: "text", text: msg }], isError: true });
+var okJson = (label, payload) => ({
+  content: [{ type: "text", text: `${label}
+${JSON.stringify(payload, null, 2)}` }],
+  structuredContent: payload
+});
+
+// src/lib/mcp/tools/me.ts
+var me_default = defineTool9({
+  name: "me",
+  title: "Get current user",
+  description: "Return the signed-in user's profile, roles, and membership tier.",
+  inputSchema: {},
+  annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
+  handler: async (_input, ctx) => {
+    const err = await requireAuth(ctx);
+    if (err) return errText(err);
+    const client = sb(ctx);
+    const uid = ctx.getUserId();
+    const [{ data: profile }, { data: roles }] = await Promise.all([
+      client.from("profiles").select("*").eq("user_id", uid).maybeSingle(),
+      client.from("user_roles").select("role").eq("user_id", uid)
+    ]);
+    return okJson("Current user", {
+      user_id: uid,
+      email: ctx.getUserEmail(),
+      roles: (roles ?? []).map((r) => r.role),
+      profile
+    });
+  }
+});
+
+// src/lib/mcp/tools/my-courses.ts
+import { defineTool as defineTool10 } from "npm:@lovable.dev/mcp-js@0.22.2";
+var my_courses_default = defineTool10({
+  name: "my_courses",
+  title: "List my courses",
+  description: "List courses the signed-in user is enrolled in (approved, invited, pending, or declined).",
+  inputSchema: {},
+  annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
+  handler: async (_input, ctx) => {
+    const err = await requireAuth(ctx);
+    if (err) return errText(err);
+    const { data, error } = await sb(ctx).from("course_enrollments").select("id, status, enrolled_at, courses:course_id (id, title, description, instructor_id, status)").eq("student_id", ctx.getUserId()).order("enrolled_at", { ascending: false });
+    if (error) return errText(error.message);
+    return okJson(`Enrollments (${data?.length ?? 0})`, { enrollments: data });
+  }
+});
+
+// src/lib/mcp/tools/my-progress.ts
+import { defineTool as defineTool11 } from "npm:@lovable.dev/mcp-js@0.22.2";
+var my_progress_default = defineTool11({
+  name: "my_progress",
+  title: "Get my progress",
+  description: "Return the signed-in user's latest score predictions and recent assessment attempts.",
+  inputSchema: {},
+  annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
+  handler: async (_input, ctx) => {
+    const err = await requireAuth(ctx);
+    if (err) return errText(err);
+    const client = sb(ctx);
+    const uid = ctx.getUserId();
+    const [{ data: predictions }, { data: attempts }] = await Promise.all([
+      client.from("score_predictions").select("*").eq("user_id", uid).order("created_at", { ascending: false }).limit(5),
+      client.from("assessment_attempts").select("*").eq("user_id", uid).order("created_at", { ascending: false }).limit(10)
+    ]);
+    return okJson("Progress", { score_predictions: predictions, recent_attempts: attempts });
+  }
+});
+
+// src/lib/mcp/tools/my-notifications.ts
+import { defineTool as defineTool12 } from "npm:@lovable.dev/mcp-js@0.22.2";
+import { z as z9 } from "npm:zod@^3.25.76";
+var my_notifications_default = defineTool12({
+  name: "my_notifications",
+  title: "List my notifications",
+  description: "List the signed-in user's notifications, newest first.",
+  inputSchema: {
+    unread_only: z9.boolean().default(false),
+    limit: z9.number().int().min(1).max(100).default(25)
+  },
+  annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
+  handler: async ({ unread_only, limit }, ctx) => {
+    const err = await requireAuth(ctx);
+    if (err) return errText(err);
+    let q = sb(ctx).from("notifications").select("*").eq("user_id", ctx.getUserId()).order("created_at", { ascending: false }).limit(limit);
+    if (unread_only) q = q.is("read_at", null);
+    const { data, error } = await q;
+    if (error) return errText(error.message);
+    return okJson(`Notifications (${data?.length ?? 0})`, { notifications: data });
+  }
+});
+
+// src/lib/mcp/tools/my-taught-courses.ts
+import { defineTool as defineTool13 } from "npm:@lovable.dev/mcp-js@0.22.2";
+var my_taught_courses_default = defineTool13({
+  name: "my_taught_courses",
+  title: "List courses I teach",
+  description: "List courses where the signed-in physician is the instructor. Requires physician role.",
+  inputSchema: {},
+  annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
+  handler: async (_input, ctx) => {
+    const err = await requireRole(ctx, "physician");
+    if (err) return errText(err);
+    const { data, error } = await sb(ctx).from("courses").select("id, title, description, status, created_at, updated_at").eq("instructor_id", ctx.getUserId()).order("updated_at", { ascending: false });
+    if (error) return errText(error.message);
+    return okJson(`Courses (${data?.length ?? 0})`, { courses: data });
+  }
+});
+
+// src/lib/mcp/tools/list-course-students.ts
+import { defineTool as defineTool14 } from "npm:@lovable.dev/mcp-js@0.22.2";
+import { z as z10 } from "npm:zod@^3.25.76";
+var list_course_students_default = defineTool14({
+  name: "list_course_students",
+  title: "List course students",
+  description: "List enrollments for a course. Physician must be the instructor of the course.",
+  inputSchema: {
+    course_id: z10.string().uuid(),
+    status: z10.enum(["invited", "pending", "approved", "declined", "rejected", "revoked"]).optional()
+  },
+  annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
+  handler: async ({ course_id, status }, ctx) => {
+    const err = await requireRole(ctx, "physician");
+    if (err) return errText(err);
+    const client = sb(ctx);
+    const { data: course, error: cErr } = await client.from("courses").select("id, instructor_id, title").eq("id", course_id).maybeSingle();
+    if (cErr) return errText(cErr.message);
+    if (!course || course.instructor_id !== ctx.getUserId()) return errText("Not the instructor of this course.");
+    let q = client.from("course_enrollments").select("id, status, enrolled_at, student_id, profiles:student_id (first_name, last_name)").eq("course_id", course_id).order("enrolled_at", { ascending: false });
+    if (status) q = q.eq("status", status);
+    const { data, error } = await q;
+    if (error) return errText(error.message);
+    return okJson(`Roster for ${course.title} (${data?.length ?? 0})`, { enrollments: data });
+  }
+});
+
 // src/lib/mcp/index.ts
 var projectRef = "sljalqmlkpjtvtzjwfgx";
 var mcp_default = defineMcp({
   name: "livemed-academy-review",
   title: "Livemed Academy \u2014 Content Review",
   version: "0.1.0",
-  instructions: "Admin-only tools for reviewing Livemed Academy content quality. Use list_qbank_questions / search_content to find items, get_qbank_question / get_course_quiz / get_atlas_conversation to read full content, and flag_content_for_review to log a verdict with sources cross-checked (First Aid, UpToDate, USPSTF, AHA/ACC, NBME outlines, etc.). Every tool requires the platform_admin role.",
+  instructions: "Role-aware tools for Livemed Academy. Any signed-in user: me, my_courses, my_progress, my_notifications. Physicians: my_taught_courses, list_course_students. Platform admins: list_qbank_questions, get_qbank_question, search_content, list_atlas_conversations, get_atlas_conversation, get_course_quiz, flag_content_for_review, list_content_reviews. Each tool enforces its own role check via the OAuth-verified session.",
   auth: auth.oauth.issuer({
     issuer: `https://${projectRef}.supabase.co/auth/v1`,
     acceptedAudiences: "authenticated"
   }),
-  tools: [list_qbank_questions_default, get_qbank_question_default, search_content_default, list_atlas_conversations_default, get_atlas_conversation_default, get_course_quiz_default, flag_content_default, list_reviews_default]
+  tools: [
+    me_default,
+    my_courses_default,
+    my_progress_default,
+    my_notifications_default,
+    my_taught_courses_default,
+    list_course_students_default,
+    list_qbank_questions_default,
+    get_qbank_question_default,
+    search_content_default,
+    list_atlas_conversations_default,
+    get_atlas_conversation_default,
+    get_course_quiz_default,
+    flag_content_default,
+    list_reviews_default
+  ]
 });
 
 // lovable-mcp-supabase-entry.ts

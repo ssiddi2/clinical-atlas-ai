@@ -7,6 +7,12 @@ import listAtlasConvos from "./tools/list-atlas-conversations";
 import getCourseQuiz from "./tools/get-course-quiz";
 import flagContent from "./tools/flag-content";
 import listReviews from "./tools/list-reviews";
+import me from "./tools/me";
+import myCourses from "./tools/my-courses";
+import myProgress from "./tools/my-progress";
+import myNotifications from "./tools/my-notifications";
+import myTaughtCourses from "./tools/my-taught-courses";
+import listCourseStudents from "./tools/list-course-students";
 
 const projectRef = import.meta.env.VITE_SUPABASE_PROJECT_ID ?? "project-ref-unset";
 
@@ -15,10 +21,25 @@ export default defineMcp({
   title: "Livemed Academy — Content Review",
   version: "0.1.0",
   instructions:
-    "Admin-only tools for reviewing Livemed Academy content quality. Use list_qbank_questions / search_content to find items, get_qbank_question / get_course_quiz / get_atlas_conversation to read full content, and flag_content_for_review to log a verdict with sources cross-checked (First Aid, UpToDate, USPSTF, AHA/ACC, NBME outlines, etc.). Every tool requires the platform_admin role.",
+    "Role-aware tools for Livemed Academy. Any signed-in user: me, my_courses, my_progress, my_notifications. Physicians: my_taught_courses, list_course_students. Platform admins: list_qbank_questions, get_qbank_question, search_content, list_atlas_conversations, get_atlas_conversation, get_course_quiz, flag_content_for_review, list_content_reviews. Each tool enforces its own role check via the OAuth-verified session.",
   auth: auth.oauth.issuer({
     issuer: `https://${projectRef}.supabase.co/auth/v1`,
     acceptedAudiences: "authenticated",
   }),
-  tools: [listQbank, getQbank, searchContent, listAtlasConvos, getAtlasConvo, getCourseQuiz, flagContent, listReviews],
+  tools: [
+    me,
+    myCourses,
+    myProgress,
+    myNotifications,
+    myTaughtCourses,
+    listCourseStudents,
+    listQbank,
+    getQbank,
+    searchContent,
+    listAtlasConvos,
+    getAtlasConvo,
+    getCourseQuiz,
+    flagContent,
+    listReviews,
+  ],
 });
