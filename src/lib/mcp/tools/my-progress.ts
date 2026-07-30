@@ -13,7 +13,7 @@ export default defineTool({
     const client = sb(ctx);
     const uid = ctx.getUserId();
     const [{ data: predictions }, { data: attempts }] = await Promise.all([
-      client.from("score_predictions").select("*").eq("user_id", uid).order("created_at", { ascending: false }).limit(5),
+      client.from("usmle_score_predictions").select("*").eq("user_id", uid).order("created_at", { ascending: false }).limit(5),
       client.from("assessment_attempts").select("*").eq("user_id", uid).order("created_at", { ascending: false }).limit(10),
     ]);
     return okJson("Progress", { score_predictions: predictions, recent_attempts: attempts });
