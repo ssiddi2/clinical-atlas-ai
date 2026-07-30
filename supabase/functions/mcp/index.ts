@@ -351,7 +351,7 @@ var my_progress_default = defineTool11({
     const client = sb(ctx);
     const uid = ctx.getUserId();
     const [{ data: predictions }, { data: attempts }] = await Promise.all([
-      client.from("score_predictions").select("*").eq("user_id", uid).order("created_at", { ascending: false }).limit(5),
+      client.from("usmle_score_predictions").select("*").eq("user_id", uid).order("created_at", { ascending: false }).limit(5),
       client.from("assessment_attempts").select("*").eq("user_id", uid).order("created_at", { ascending: false }).limit(10)
     ]);
     return okJson("Progress", { score_predictions: predictions, recent_attempts: attempts });
@@ -374,7 +374,7 @@ var my_notifications_default = defineTool12({
     const err = await requireAuth(ctx);
     if (err) return errText(err);
     let q = sb(ctx).from("notifications").select("*").eq("user_id", ctx.getUserId()).order("created_at", { ascending: false }).limit(limit);
-    if (unread_only) q = q.is("read_at", null);
+    if (unread_only) q = q.eq("is_read", false);
     const { data, error } = await q;
     if (error) return errText(error.message);
     return okJson(`Notifications (${data?.length ?? 0})`, { notifications: data });
