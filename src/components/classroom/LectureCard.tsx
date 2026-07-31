@@ -4,7 +4,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Clock, Users, ExternalLink, Play, Trash2, Edit2, Sparkles } from "lucide-react";
+import { Calendar, Clock, Users, ExternalLink, Play, Trash2, Edit2, Sparkles, Presentation } from "lucide-react";
+import { Link } from "react-router-dom";
 import { useTranslation } from "@/i18n/LanguageContext";
 import { useToast } from "@/hooks/use-toast";
 import EditLectureModal from "./EditLectureModal";
@@ -111,6 +112,11 @@ export default function LectureCard({ lecture, isInstructor, isEnrolled, enrollm
                     </a>
                   </Button>
                 )}
+                <Button size="sm" variant="outline" asChild className="border-primary/40 text-primary hover:bg-primary/10">
+                  <Link to={`/studio/${lecture.id}`}>
+                    <Presentation className="h-3.5 w-3.5 mr-1.5" /> Teaching Studio
+                  </Link>
+                </Button>
                 <Button size="sm" variant="outline" onClick={() => setShowQuiz(true)} className="border-primary/40 text-primary hover:bg-primary/10">
                   <Sparkles className="h-3.5 w-3.5 mr-1.5" /> Live Quiz
                 </Button>
@@ -130,10 +136,17 @@ export default function LectureCard({ lecture, isInstructor, isEnrolled, enrollm
                     {t("classroom.enroll")}
                   </Button>
                 )}
-                {isEnrolled && lecture.meeting_url && (lecture.status === "live" || lecture.status === "scheduled") && (
+                {isEnrolled && (lecture.status === "live" || lecture.status === "scheduled") && (
                   <Button size="sm" asChild className="gradient-livemed">
+                    <Link to={`/studio/${lecture.id}`}>
+                      <Presentation className="h-3.5 w-3.5 mr-1.5" /> {t("classroom.joinLecture")}
+                    </Link>
+                  </Button>
+                )}
+                {isEnrolled && lecture.meeting_url && (lecture.status === "live" || lecture.status === "scheduled") && (
+                  <Button size="sm" variant="outline" asChild>
                     <a href={lecture.meeting_url} target="_blank" rel="noopener noreferrer">
-                      <ExternalLink className="h-3.5 w-3.5 mr-1.5" /> {t("classroom.joinLecture")}
+                      <ExternalLink className="h-3.5 w-3.5 mr-1.5" /> {t("classroom.openMeeting")}
                     </a>
                   </Button>
                 )}
