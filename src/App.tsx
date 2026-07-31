@@ -53,6 +53,7 @@ const LiveQuiz = lazy(() => import("./pages/LiveQuiz"));
 const OAuthConsent = lazy(() => import("./pages/OAuthConsent"));
 const LORRequests = lazy(() => import("./pages/LORRequests"));
 const Invitations = lazy(() => import("./pages/Invitations"));
+const LiveStudio = lazy(() => import("./pages/LiveStudio"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -171,6 +172,9 @@ const App = () => {
 
             {/* Live Quiz (USMLE Whisperer) */}
             <Route path="/live-quiz/:id" element={<LiveQuiz />} />
+
+            {/* Live Teaching Studio */}
+            <Route path="/studio/:id" element={<LiveStudio />} />
 
             {/* Courses */}
             <Route path="/courses" element={<Courses />} />

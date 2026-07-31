@@ -99,6 +99,82 @@ export type Database = {
           },
         ]
       }
+      classroom_presence: {
+        Row: {
+          accumulated_seconds: number
+          called_on_count: number
+          classroom_id: string
+          connection_quality: string | null
+          hand_raised_at: string | null
+          id: string
+          is_online: boolean
+          joined_at: string
+          last_seen_at: string
+          user_id: string
+        }
+        Insert: {
+          accumulated_seconds?: number
+          called_on_count?: number
+          classroom_id: string
+          connection_quality?: string | null
+          hand_raised_at?: string | null
+          id?: string
+          is_online?: boolean
+          joined_at?: string
+          last_seen_at?: string
+          user_id: string
+        }
+        Update: {
+          accumulated_seconds?: number
+          called_on_count?: number
+          classroom_id?: string
+          connection_quality?: string | null
+          hand_raised_at?: string | null
+          id?: string
+          is_online?: boolean
+          joined_at?: string
+          last_seen_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "classroom_presence_classroom_id_fkey"
+            columns: ["classroom_id"]
+            isOneToOne: false
+            referencedRelation: "virtual_classrooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      classroom_stage: {
+        Row: {
+          classroom_id: string
+          mode: string
+          payload: Json
+          updated_at: string
+        }
+        Insert: {
+          classroom_id: string
+          mode?: string
+          payload?: Json
+          updated_at?: string
+        }
+        Update: {
+          classroom_id?: string
+          mode?: string
+          payload?: Json
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "classroom_stage_classroom_id_fkey"
+            columns: ["classroom_id"]
+            isOneToOne: true
+            referencedRelation: "virtual_classrooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       competency_scores: {
         Row: {
           assessment_count: number
@@ -859,6 +935,91 @@ export type Database = {
             columns: ["module_id"]
             isOneToOne: false
             referencedRelation: "modules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      live_case_votes: {
+        Row: {
+          case_id: string
+          created_at: string
+          id: string
+          option_index: number
+          step_index: number
+          student_id: string
+        }
+        Insert: {
+          case_id: string
+          created_at?: string
+          id?: string
+          option_index: number
+          step_index: number
+          student_id: string
+        }
+        Update: {
+          case_id?: string
+          created_at?: string
+          id?: string
+          option_index?: number
+          step_index?: number
+          student_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "live_case_votes_case_id_fkey"
+            columns: ["case_id"]
+            isOneToOne: false
+            referencedRelation: "live_cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      live_cases: {
+        Row: {
+          classroom_id: string
+          created_at: string
+          current_step_index: number
+          id: string
+          instructor_id: string
+          revealed: boolean
+          status: string
+          steps: Json
+          title: string
+          updated_at: string
+          vignette: string
+        }
+        Insert: {
+          classroom_id: string
+          created_at?: string
+          current_step_index?: number
+          id?: string
+          instructor_id: string
+          revealed?: boolean
+          status?: string
+          steps?: Json
+          title: string
+          updated_at?: string
+          vignette: string
+        }
+        Update: {
+          classroom_id?: string
+          created_at?: string
+          current_step_index?: number
+          id?: string
+          instructor_id?: string
+          revealed?: boolean
+          status?: string
+          steps?: Json
+          title?: string
+          updated_at?: string
+          vignette?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "live_cases_classroom_id_fkey"
+            columns: ["classroom_id"]
+            isOneToOne: false
+            referencedRelation: "virtual_classrooms"
             referencedColumns: ["id"]
           },
         ]
@@ -1968,6 +2129,35 @@ export type Database = {
           },
         ]
       }
+      whiteboard_snapshots: {
+        Row: {
+          background_url: string | null
+          classroom_id: string
+          strokes: Json
+          updated_at: string
+        }
+        Insert: {
+          background_url?: string | null
+          classroom_id: string
+          strokes?: Json
+          updated_at?: string
+        }
+        Update: {
+          background_url?: string | null
+          classroom_id?: string
+          strokes?: Json
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "whiteboard_snapshots_classroom_id_fkey"
+            columns: ["classroom_id"]
+            isOneToOne: true
+            referencedRelation: "virtual_classrooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       rotation_sessions_public: {
@@ -2031,11 +2221,23 @@ export type Database = {
       }
     }
     Functions: {
+      finalize_classroom_attendance: {
+        Args: { _classroom_id: string; _min_seconds?: number }
+        Returns: number
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
+        Returns: boolean
+      }
+      is_case_instructor: {
+        Args: { _case_id: string; _user_id: string }
+        Returns: boolean
+      }
+      is_case_participant: {
+        Args: { _case_id: string; _user_id: string }
         Returns: boolean
       }
       is_classroom_enrolled: {
