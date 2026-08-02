@@ -198,6 +198,13 @@ const Landing = () => {
                   </Link>
                 </Button>
               </div>
+
+              <div className="mt-6 flex justify-center">
+                <span className="chip chip-brand">
+                  <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
+                  <span className="font-medium">{t("hero.atlas")}</span>
+                </span>
+              </div>
             </div>
           </div>
         ) : (
@@ -259,6 +266,16 @@ const Landing = () => {
                     <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                   </Link>
                 </Button>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.85 }}
+                className="mt-7 flex justify-center"
+              >
+                <span className="chip chip-brand">
+                  <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
+                  <span className="font-medium">{t("hero.atlas")}</span>
+                </span>
               </motion.div>
             </div>
           </div>

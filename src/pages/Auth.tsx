@@ -230,8 +230,8 @@ const Auth = () => {
                         >
                           <RadioGroupItem value="physician" id="role-physician" className="sr-only" />
                           <Stethoscope className={`h-6 w-6 ${signupRole === "physician" ? "text-primary" : "text-muted-foreground"}`} />
-                          <span className={`text-sm font-medium ${signupRole === "physician" ? "text-primary" : "text-muted-foreground"}`}>
-                            {t("auth.teachingAttending")}
+                          <span className={`text-sm font-medium text-center ${signupRole === "physician" ? "text-primary" : "text-muted-foreground"}`}>
+                            {t("auth.professorOrAttending")}
                           </span>
                         </Label>
                       </RadioGroup>
