@@ -684,7 +684,7 @@
   "qbank.perf.questionsAttempted": "preguntas intentadas",
   "auth.iAmA": "Soy un/a...",
   "auth.medicalStudent": "Estudiante de Medicina",
-  "auth.teachingAttending": "Médico Docente",
+  "auth.professorOrAttending": "Profesor o Médico Adjunto",
   "physician.welcome": "Bienvenido/a",
   "physician.dashboardSubtitle": "Gestiona tus clases virtuales, rondas e interacciones con estudiantes.",
   "physician.upcoming": "Próximas",
