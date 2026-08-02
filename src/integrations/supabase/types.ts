@@ -1727,6 +1727,9 @@ export type Database = {
           application_reason: string | null
           attendance_minutes: number | null
           attended: boolean | null
+          credential_verified: boolean
+          credential_verified_at: string | null
+          credential_verified_by: string | null
           cv_url: string | null
           enrolled_at: string
           evaluation_score: number | null
@@ -1738,12 +1741,16 @@ export type Database = {
           reviewer_notes: string | null
           session_id: string
           status: string
+          transcript_url: string | null
           user_id: string
         }
         Insert: {
           application_reason?: string | null
           attendance_minutes?: number | null
           attended?: boolean | null
+          credential_verified?: boolean
+          credential_verified_at?: string | null
+          credential_verified_by?: string | null
           cv_url?: string | null
           enrolled_at?: string
           evaluation_score?: number | null
@@ -1755,12 +1762,16 @@ export type Database = {
           reviewer_notes?: string | null
           session_id: string
           status?: string
+          transcript_url?: string | null
           user_id: string
         }
         Update: {
           application_reason?: string | null
           attendance_minutes?: number | null
           attended?: boolean | null
+          credential_verified?: boolean
+          credential_verified_at?: string | null
+          credential_verified_by?: string | null
           cv_url?: string | null
           enrolled_at?: string
           evaluation_score?: number | null
@@ -1772,6 +1783,7 @@ export type Database = {
           reviewer_notes?: string | null
           session_id?: string
           status?: string
+          transcript_url?: string | null
           user_id?: string
         }
         Relationships: [

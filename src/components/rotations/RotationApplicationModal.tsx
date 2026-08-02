@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { useFeatureAccess } from "@/hooks/useFeatureAccess";
-import { Loader2, FileText, Send } from "lucide-react";
+import { Loader2, FileText, GraduationCap, Send } from "lucide-react";
 import { Link } from "react-router-dom";
 
 interface Props {
@@ -20,6 +20,7 @@ export default function RotationApplicationModal({ open, onOpenChange, rotation 
   const { toast } = useToast();
   const [reason, setReason] = useState("");
   const [cv, setCv] = useState<File | null>(null);
+  const [transcript, setTranscript] = useState<File | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [authed, setAuthed] = useState<string | null>(null);
   const { canAccessRotationExperience, loading: tierLoading } = useFeatureAccess(authed);
@@ -29,6 +30,7 @@ export default function RotationApplicationModal({ open, onOpenChange, rotation 
     supabase.auth.getUser().then(({ data }) => setAuthed(data.user?.id ?? null));
     setReason("");
     setCv(null);
+    setTranscript(null);
   }, [open]);
 
   useEffect(() => {
@@ -48,19 +50,30 @@ export default function RotationApplicationModal({ open, onOpenChange, rotation 
       toast({ title: "Tell us more", description: "Please write at least 50 characters.", variant: "destructive" });
       return;
     }
+    if (!transcript) {
+      toast({
+        title: "Transcript required",
+        description: "Attach your medical school transcript (PDF) — faculty must verify your credential before review.",
+        variant: "destructive",
+      });
+      return;
+    }
 
     setSubmitting(true);
     try {
-      let cvUrl: string | null = null;
-      if (cv) {
-        const ext = cv.name.split(".").pop() || "pdf";
-        const path = `${authed}/${rotation.id}-${Date.now()}.${ext}`;
+      const upload = async (file: File, label: string) => {
+        const ext = file.name.split(".").pop() || "pdf";
+        const path = `${authed}/${rotation.id}-${label}-${Date.now()}.${ext}`;
         const { error: upErr } = await supabase.storage
           .from("rotation-applications")
-          .upload(path, cv, { upsert: true });
+          .upload(path, file, { upsert: true });
         if (upErr) throw upErr;
-        cvUrl = path;
-      }
+        return path;
+      };
+
+      const transcriptUrl = await upload(transcript, "transcript");
+      let cvUrl: string | null = null;
+      if (cv) cvUrl = await upload(cv, "cv");
 
       const { error } = await supabase.from("rotation_enrollments").insert({
         session_id: rotation.id,
@@ -68,10 +81,14 @@ export default function RotationApplicationModal({ open, onOpenChange, rotation 
         status: "pending",
         application_reason: reason,
         cv_url: cvUrl,
+        transcript_url: transcriptUrl,
       });
       if (error) throw error;
 
-      toast({ title: "Application submitted", description: "We'll notify you once reviewed." });
+      toast({
+        title: "Application submitted",
+        description: "Faculty will verify your transcript, then review your application.",
+      });
       onOpenChange(false);
     } catch (err: any) {
       toast({ title: "Submission failed", description: err.message, variant: "destructive" });
@@ -104,7 +121,8 @@ export default function RotationApplicationModal({ open, onOpenChange, rotation 
         <DialogHeader>
           <DialogTitle>Apply for {rotation.title}</DialogTitle>
           <DialogDescription>
-            Tell the supervising attending why this rotation fits your goals. Applications are reviewed within 3 business days.
+            How it works: submit your application and medical school transcript → faculty verifies your credential →
+            faculty reviews your application → decision. Applications are reviewed within a few business days.
           </DialogDescription>
         </DialogHeader>
 
@@ -123,8 +141,24 @@ export default function RotationApplicationModal({ open, onOpenChange, rotation 
           </div>
 
           <div className="space-y-2">
+            <Label htmlFor="transcript" className="flex items-center gap-2">
+              <GraduationCap className="h-4 w-4" /> Medical School Transcript (PDF) <span className="text-destructive">*</span>
+            </Label>
+            <Input
+              id="transcript"
+              type="file"
+              accept=".pdf"
+              onChange={(e) => setTranscript(e.target.files?.[0] ?? null)}
+            />
+            <p className="text-xs text-muted-foreground">
+              Required. Faculty verify this credential before your application is reviewed.
+            </p>
+            {transcript && <p className="text-xs text-muted-foreground">Selected: {transcript.name}</p>}
+          </div>
+
+          <div className="space-y-2">
             <Label htmlFor="cv" className="flex items-center gap-2">
-              <FileText className="h-4 w-4" /> CV / Transcript (optional, PDF)
+              <FileText className="h-4 w-4" /> CV (optional, PDF)
             </Label>
             <Input
               id="cv"
