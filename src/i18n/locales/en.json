@@ -867,7 +867,7 @@
 
   "auth.iAmA": "I am a...",
   "auth.medicalStudent": "Medical Student",
-  "auth.teachingAttending": "Teaching Attending",
+  "auth.professorOrAttending": "Professor or Attending",
 
   "physician.welcome": "Welcome",
   "physician.dashboardSubtitle": "Manage your virtual lectures, rounds, and student interactions.",
