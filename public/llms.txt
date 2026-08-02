@@ -1,6 +1,6 @@
 # Livemed Academy
 
-> Where AI meets medicine. A US-based medical education platform for International Medical Graduates offering virtual clinical rotations, USMLE prep, and residency readiness training.
+> Where AI meets medical education. A US-based medical education university powered by ATLAS™, an AI Professor, for International Medical Graduates offering virtual clinical rotations, USMLE prep, and residency readiness training.
 
 ## Pages
 
