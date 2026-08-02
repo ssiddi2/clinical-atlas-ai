@@ -198,6 +198,13 @@ const Landing = () => {
                   </Link>
                 </Button>
               </div>
+
+              <div className="mt-6 flex justify-center">
+                <span className="chip chip-brand">
+                  <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
+                  <span className="font-medium">{t("hero.atlas")}</span>
+                </span>
+              </div>
             </div>
           </div>
         ) : (
