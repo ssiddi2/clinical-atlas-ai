@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Award, Stethoscope, Video, ArrowRight } from "lucide-react";
+import { Award, ShieldCheck, GraduationCap, ArrowRight } from "lucide-react";
 
 interface Props {
   open: boolean;
@@ -9,9 +9,9 @@ interface Props {
 }
 
 const benefits = [
-  { icon: Stethoscope, text: "Apply to live virtual rotations with US-based attendings" },
-  { icon: Video, text: "Join Virtual Rounds and bedside teaching sessions" },
-  { icon: Award, text: "Eligible for Letters of Recommendation & evaluations" },
+  { icon: GraduationCap, text: "Submit an application with your medical school transcript" },
+  { icon: ShieldCheck, text: "Faculty verify your credential, then review your application" },
+  { icon: Award, text: "Placements unlock evaluations, Letters of Recommendation & match support" },
 ];
 
 export default function UpgradeToApplyDialog({ open, onOpenChange }: Props) {
@@ -19,9 +19,10 @@ export default function UpgradeToApplyDialog({ open, onOpenChange }: Props) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>Clinical membership required</DialogTitle>
+          <DialogTitle>Applied-for clinical pathway</DialogTitle>
           <DialogDescription>
-            Virtual rotations are part of the Clinical tier. Upgrade to submit your application.
+            Virtual rotations with live physicians aren't a one-click purchase. They're a faculty-verified clinical
+            pathway — and applicants need an active All-Access membership before applying.
           </DialogDescription>
         </DialogHeader>
 
@@ -39,7 +40,7 @@ export default function UpgradeToApplyDialog({ open, onOpenChange }: Props) {
         <DialogFooter className="gap-2 sm:gap-2">
           <Button variant="outline" onClick={() => onOpenChange(false)}>Maybe later</Button>
           <Button asChild className="gradient-livemed">
-            <Link to="/apply">Upgrade to Clinical<ArrowRight className="ml-2 h-4 w-4" /></Link>
+            <Link to="/apply">Start your application<ArrowRight className="ml-2 h-4 w-4" /></Link>
           </Button>
         </DialogFooter>
       </DialogContent>
