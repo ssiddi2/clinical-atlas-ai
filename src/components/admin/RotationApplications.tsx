@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
-import { CheckCircle2, XCircle, Loader2, Download, FileText } from "lucide-react";
+import { CheckCircle2, XCircle, Loader2, FileText, GraduationCap, ShieldCheck } from "lucide-react";
 
 interface AppRow {
   id: string;
@@ -15,6 +15,9 @@ interface AppRow {
   status: string;
   application_reason: string | null;
   cv_url: string | null;
+  transcript_url: string | null;
+  credential_verified: boolean;
+  credential_verified_at: string | null;
   enrolled_at: string;
   reviewer_notes: string | null;
   profile?: { first_name: string | null; last_name: string | null; avatar_url: string | null; institution: string | null; country: string | null };
@@ -91,7 +94,28 @@ export default function RotationApplications() {
     setActing(null);
   };
 
-  const downloadCv = async (path: string) => {
+  const verifyCredential = async (app: AppRow) => {
+    setActing(app.id);
+    const { data: { user } } = await supabase.auth.getUser();
+    const { error } = await supabase
+      .from("rotation_enrollments")
+      .update({
+        credential_verified: true,
+        credential_verified_by: user?.id,
+        credential_verified_at: new Date().toISOString(),
+      })
+      .eq("id", app.id);
+
+    if (error) {
+      toast({ title: "Verification failed", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Credential verified" });
+      await load();
+    }
+    setActing(null);
+  };
+
+  const openDocument = async (path: string) => {
     const { data, error } = await supabase.storage.from("rotation-applications").createSignedUrl(path, 60);
     if (error || !data) {
       toast({ title: "Could not generate download link", variant: "destructive" });
@@ -128,18 +152,39 @@ export default function RotationApplications() {
                     <p className="text-xs text-muted-foreground">{app.profile?.institution} · {app.profile?.country}</p>
                     <p className="text-sm mt-1">Applied to: <span className="font-medium">{app.session?.title}</span> with {app.session?.physician_name}</p>
                   </div>
-                  <Badge variant="outline">Pending</Badge>
+                  <Badge variant={app.credential_verified ? "default" : "outline"} className="whitespace-nowrap">
+                    {app.credential_verified ? "Credential verified" : "Awaiting verification"}
+                  </Badge>
                 </div>
 
                 {app.application_reason && (
                   <div className="text-sm bg-muted/50 rounded-lg p-3">{app.application_reason}</div>
                 )}
 
-                {app.cv_url && (
-                  <Button size="sm" variant="outline" onClick={() => downloadCv(app.cv_url!)}>
-                    <FileText className="h-3.5 w-3.5 mr-1.5" /> View CV
-                  </Button>
-                )}
+                <div className="flex flex-wrap gap-2">
+                  {app.transcript_url ? (
+                    <Button size="sm" variant="outline" onClick={() => openDocument(app.transcript_url!)}>
+                      <GraduationCap className="h-3.5 w-3.5 mr-1.5" /> View transcript
+                    </Button>
+                  ) : (
+                    <span className="text-xs text-muted-foreground self-center">No transcript on file</span>
+                  )}
+                  {app.cv_url && (
+                    <Button size="sm" variant="outline" onClick={() => openDocument(app.cv_url!)}>
+                      <FileText className="h-3.5 w-3.5 mr-1.5" /> View CV
+                    </Button>
+                  )}
+                  {!app.credential_verified && (
+                    <Button
+                      size="sm"
+                      variant="secondary"
+                      onClick={() => verifyCredential(app)}
+                      disabled={acting === app.id || !app.transcript_url}
+                    >
+                      <ShieldCheck className="h-3.5 w-3.5 mr-1.5" /> Verify transcript / credential
+                    </Button>
+                  )}
+                </div>
 
                 <Textarea
                   placeholder="Reviewer notes (optional)"
@@ -149,13 +194,24 @@ export default function RotationApplications() {
                 />
 
                 <div className="flex gap-2">
-                  <Button size="sm" onClick={() => decide(app, "approved")} disabled={acting === app.id} className="gradient-livemed">
+                  <Button
+                    size="sm"
+                    onClick={() => decide(app, "approved")}
+                    disabled={acting === app.id || !app.credential_verified}
+                    title={app.credential_verified ? undefined : "Verify the applicant's credential before approving"}
+                    className="gradient-livemed"
+                  >
                     <CheckCircle2 className="h-4 w-4 mr-1.5" /> Approve
                   </Button>
                   <Button size="sm" variant="destructive" onClick={() => decide(app, "rejected")} disabled={acting === app.id}>
                     <XCircle className="h-4 w-4 mr-1.5" /> Reject
                   </Button>
                 </div>
+                {!app.credential_verified && (
+                  <p className="text-xs text-muted-foreground">
+                    Approval unlocks once the medical school transcript is verified.
+                  </p>
+                )}
               </CardContent>
             </Card>
           ))}
