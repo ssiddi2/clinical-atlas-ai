@@ -658,7 +658,7 @@
   "qbank.perf.questionsAttempted": "سوالات کی کوشش",
   "auth.iAmA": "میں ہوں...",
   "auth.medicalStudent": "طبی طالب علم",
-  "auth.teachingAttending": "تدریسی ڈاکٹر",
+  "auth.professorOrAttending": "پروفیسر یا اٹینڈنگ ڈاکٹر",
   "physician.welcome": "خوش آمدید",
   "physician.dashboardSubtitle": "اپنے ورچوئل لیکچرز، راؤنڈز اور طلباء کے تعاملات کا انتظام کریں۔",
   "physician.upcoming": "آنے والے",
