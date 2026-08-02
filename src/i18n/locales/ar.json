@@ -706,7 +706,7 @@
   "qbank.perf.questionsAttempted": "أسئلة تمت محاولتها",
   "auth.iAmA": "أنا...",
   "auth.medicalStudent": "طالب طب",
-  "auth.teachingAttending": "طبيب مشرف",
+  "auth.professorOrAttending": "أستاذ أو طبيب مشرف",
   "physician.welcome": "مرحباً",
   "physician.dashboardSubtitle": "إدارة المحاضرات الافتراضية والجولات وتفاعلات الطلاب.",
   "physician.upcoming": "القادمة",
