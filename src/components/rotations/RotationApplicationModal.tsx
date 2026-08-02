@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { useFeatureAccess } from "@/hooks/useFeatureAccess";
-import { Loader2, FileText, Send } from "lucide-react";
+import { Loader2, FileText, GraduationCap, Send } from "lucide-react";
 import { Link } from "react-router-dom";
 
 interface Props {
