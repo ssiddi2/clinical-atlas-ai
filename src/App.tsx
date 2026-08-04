@@ -25,6 +25,7 @@ const ModuleView = lazy(() => import("./pages/ModuleView"));
 const Assessments = lazy(() => import("./pages/Assessments"));
 const DiagnosticAssessment = lazy(() => import("./pages/DiagnosticAssessment"));
 const Apply = lazy(() => import("./pages/Apply"));
+const Membership = lazy(() => import("./pages/Membership"));
 const Contact = lazy(() => import("./pages/Contact"));
 const RotationExperience = lazy(() => import("./pages/RotationExperience"));
 const About = lazy(() => import("./pages/About"));
@@ -108,6 +109,7 @@ const App = () => {
               <Route path="/rotations" element={<Rotations />} />
               <Route path="/institutions" element={<Institutions />} />
               <Route path="/apply" element={<Apply />} />
+              <Route path="/membership" element={<Membership />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/about" element={<About />} />
               <Route path="/terms" element={<Terms />} />
