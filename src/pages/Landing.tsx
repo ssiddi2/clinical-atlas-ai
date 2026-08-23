@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { useIsMobile } from "@/hooks/use-mobile";
 import HeroBackground from "@/components/HeroBackground";
 import jointCommissionBadge from "@/assets/joint-commission-badge.png.asset.json";
-import heroVideo from "@/assets/hero-video.mp4.asset.json";
+import heroBackground from "@/assets/hero-background.mp4.asset.json";
 import { useTranslation } from "@/i18n/LanguageContext";
 import {
   GraduationCap,
@@ -149,8 +149,8 @@ const Landing = () => {
           loop
           playsInline
           aria-hidden="true"
-          src={heroVideo.url}
-          style={{ opacity: 0.85 }}
+          src={heroBackground.url}
+          style={{ opacity: 0.6 }}
         />
         <div
           className="absolute inset-0 z-[2]"
