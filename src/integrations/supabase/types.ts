@@ -863,6 +863,126 @@ export type Database = {
           },
         ]
       }
+      learning_unit_step_items: {
+        Row: {
+          body: string | null
+          created_at: string
+          duration_label: string | null
+          id: string
+          image_url: string | null
+          sort_order: number
+          source: string | null
+          step_id: string
+          subtitle: string | null
+          title: string | null
+          url: string | null
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          duration_label?: string | null
+          id?: string
+          image_url?: string | null
+          sort_order?: number
+          source?: string | null
+          step_id: string
+          subtitle?: string | null
+          title?: string | null
+          url?: string | null
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          duration_label?: string | null
+          id?: string
+          image_url?: string | null
+          sort_order?: number
+          source?: string | null
+          step_id?: string
+          subtitle?: string | null
+          title?: string | null
+          url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "learning_unit_step_items_step_id_fkey"
+            columns: ["step_id"]
+            isOneToOne: false
+            referencedRelation: "learning_unit_steps"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      learning_unit_step_progress: {
+        Row: {
+          completed_at: string
+          id: string
+          step_id: string
+          student_id: string
+        }
+        Insert: {
+          completed_at?: string
+          id?: string
+          step_id: string
+          student_id: string
+        }
+        Update: {
+          completed_at?: string
+          id?: string
+          step_id?: string
+          student_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "learning_unit_step_progress_step_id_fkey"
+            columns: ["step_id"]
+            isOneToOne: false
+            referencedRelation: "learning_unit_steps"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      learning_unit_steps: {
+        Row: {
+          created_at: string
+          description: string | null
+          duration_minutes: number
+          id: string
+          sort_order: number
+          step_key: string
+          title: string
+          topic_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          duration_minutes?: number
+          id?: string
+          sort_order?: number
+          step_key: string
+          title: string
+          topic_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          duration_minutes?: number
+          id?: string
+          sort_order?: number
+          step_key?: string
+          title?: string
+          topic_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "learning_unit_steps_topic_id_fkey"
+            columns: ["topic_id"]
+            isOneToOne: false
+            referencedRelation: "course_topics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       lecture_copilot_questions: {
         Row: {
           answer: string | null
@@ -2293,6 +2413,14 @@ export type Database = {
       }
     }
     Functions: {
+      can_edit_topic: {
+        Args: { _topic_id: string; _user_id: string }
+        Returns: boolean
+      }
+      can_view_topic: {
+        Args: { _topic_id: string; _user_id: string }
+        Returns: boolean
+      }
       finalize_classroom_attendance: {
         Args: { _classroom_id: string; _min_seconds?: number }
         Returns: number

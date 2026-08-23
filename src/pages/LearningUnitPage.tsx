@@ -3,7 +3,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, BookOpen, Video, FileText, HelpCircle, BarChart3, Bot, Settings } from "lucide-react";
+import { ArrowLeft, ListChecks, BookOpen, Video, FileText, HelpCircle, BarChart3, Bot, Settings } from "lucide-react";
+import LearningUnitSession from "@/components/learning-unit/LearningUnitSession";
 import LearningUnitOverview from "@/components/learning-unit/LearningUnitOverview";
 import LearningUnitLectures from "@/components/learning-unit/LearningUnitLectures";
 import LearningUnitMaterials from "@/components/learning-unit/LearningUnitMaterials";
@@ -73,8 +74,11 @@ export default function LearningUnitPage() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 py-6">
-        <Tabs defaultValue="overview">
+        <Tabs defaultValue="session">
           <TabsList className="mb-6 flex-wrap h-auto gap-1">
+            <TabsTrigger value="session" className="gap-1.5">
+              <ListChecks className="h-3.5 w-3.5" /> Session
+            </TabsTrigger>
             <TabsTrigger value="overview" className="gap-1.5">
               <BookOpen className="h-3.5 w-3.5" /> Overview
             </TabsTrigger>
@@ -99,6 +103,9 @@ export default function LearningUnitPage() {
             )}
           </TabsList>
 
+          <TabsContent value="session">
+            <LearningUnitSession topicId={topicId!} isInstructor={isInstructor} />
+          </TabsContent>
           <TabsContent value="overview">
             <LearningUnitOverview topicId={topicId!} courseId={courseId!} isInstructor={isInstructor} />
           </TabsContent>
