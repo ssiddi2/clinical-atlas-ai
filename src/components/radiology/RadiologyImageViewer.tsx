@@ -6,17 +6,17 @@ import { Loader2, Maximize2, RotateCcw, Contrast, Sun, Minimize2 } from "lucide-
 
 const BUCKET = "radiology-images";
 
-export function useRadiologyImageUrl(path?: string | null) {
+export function useRadiologyImageUrl(path?: string | null, bucket: string = BUCKET) {
   const [url, setUrl] = useState<string | null>(null);
   useEffect(() => {
     let active = true;
     if (!path) { setUrl(null); return; }
     if (/^https?:\/\//.test(path)) { setUrl(path); return; }
-    supabase.storage.from(BUCKET).createSignedUrl(path, 3600).then(({ data }) => {
+    supabase.storage.from(bucket).createSignedUrl(path, 3600).then(({ data }) => {
       if (active) setUrl(data?.signedUrl ?? null);
     });
     return () => { active = false; };
-  }, [path]);
+  }, [path, bucket]);
   return url;
 }
 
@@ -24,10 +24,11 @@ interface Props {
   path?: string | null;
   alt?: string;
   className?: string;
+  bucket?: string;
 }
 
-export default function RadiologyImageViewer({ path, alt = "Radiology study", className = "" }: Props) {
-  const url = useRadiologyImageUrl(path);
+export default function RadiologyImageViewer({ path, alt = "Radiology study", className = "", bucket = BUCKET }: Props) {
+  const url = useRadiologyImageUrl(path, bucket);
   const containerRef = useRef<HTMLDivElement>(null);
   const [zoom, setZoom] = useState(1);
   const [offset, setOffset] = useState({ x: 0, y: 0 });

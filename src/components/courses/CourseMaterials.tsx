@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Upload, FileText, Trash2, Download, Loader2, File } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import RadiologyImageViewer from "@/components/radiology/RadiologyImageViewer";
 import {
   Select,
   SelectContent,
@@ -29,7 +30,7 @@ interface Material {
   created_at: string;
 }
 
-const MATERIAL_TYPES = ["notes", "slides", "syllabus", "assignment", "other"];
+const MATERIAL_TYPES = ["notes", "slides", "syllabus", "assignment", "image", "other"];
 
 const CourseMaterials = ({ courseId, isInstructor, topicId }: CourseMaterialsProps) => {
   const { toast } = useToast();
@@ -156,7 +157,7 @@ const CourseMaterials = ({ courseId, isInstructor, topicId }: CourseMaterialsPro
             ref={fileInputRef}
             type="file"
             className="hidden"
-            accept=".pdf,.doc,.docx,.ppt,.pptx,.txt,.md"
+            accept=".pdf,.doc,.docx,.ppt,.pptx,.txt,.md,.png,.jpg,.jpeg,.webp"
             onChange={handleUpload}
           />
           <Button
@@ -167,7 +168,7 @@ const CourseMaterials = ({ courseId, isInstructor, topicId }: CourseMaterialsPro
             {uploading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Upload className="h-4 w-4 mr-2" />}
             {uploading ? "Uploading..." : "Upload File"}
           </Button>
-          <span className="text-xs text-muted-foreground">PDF, Word, PowerPoint — max 20MB</span>
+          <span className="text-xs text-muted-foreground">PDF, Word, PowerPoint, images — max 20MB</span>
         </div>
       )}
 

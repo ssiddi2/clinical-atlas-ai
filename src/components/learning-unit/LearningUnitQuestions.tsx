@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Plus, Trash2, Edit2, Save, X, Sparkles, Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import RadiologyImageUpload from "@/components/radiology/RadiologyImageUpload";
+import RadiologyImageViewer from "@/components/radiology/RadiologyImageViewer";
 import QuestionPlayer from "./QuestionPlayer";
 
 interface Question {
@@ -309,6 +310,11 @@ export default function LearningUnitQuestions({ topicId, courseId, isInstructor 
                 <div className="flex items-start gap-3">
                   <span className="text-xs font-bold text-muted-foreground mt-1">Q{idx + 1}</span>
                   <div className="flex-1 min-w-0">
+                    {q.image_url && (
+                      <div className="mb-2 max-w-[220px]">
+                        <RadiologyImageViewer path={q.image_url} alt={q.body_region || "Radiology study"} />
+                      </div>
+                    )}
                     <p className="text-sm font-medium mb-2">{q.stem}</p>
                     <div className="space-y-1 mb-2">
                       {q.options.map((opt, i) => (
@@ -321,6 +327,7 @@ export default function LearningUnitQuestions({ topicId, courseId, isInstructor 
                       <Badge variant="outline" className="text-[10px]">{q.difficulty}</Badge>
                       {q.concept_tag && <Badge variant="outline" className="text-[10px]">{q.concept_tag}</Badge>}
                       <Badge variant="outline" className="text-[10px]">Exam: {q.exam_relevance}</Badge>
+                      {q.modality && <Badge variant="outline" className="text-[10px]">{q.modality}</Badge>}
                     </div>
                   </div>
                   {isInstructor && (
