@@ -64,16 +64,24 @@ export default function LiveCasePanel({ classroomId, userId, isInstructor }: Pro
 
   useEffect(() => { loadCase(); }, [loadCase]);
 
+  // Always watch the classroom so a case created or started later shows up without a refresh.
+  useEffect(() => {
+    const channel = supabase
+      .channel(`classroom_cases_${classroomId}`)
+      .on("postgres_changes", { event: "*", schema: "public", table: "live_cases", filter: `classroom_id=eq.${classroomId}` }, () => loadCase())
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [classroomId, loadCase]);
+
   useEffect(() => {
     if (!liveCase) return;
     loadVotes(liveCase);
     const channel = supabase
-      .channel(`case_${liveCase.id}`)
-      .on("postgres_changes", { event: "*", schema: "public", table: "live_cases", filter: `id=eq.${liveCase.id}` }, () => loadCase())
+      .channel(`case_votes_${liveCase.id}`)
       .on("postgres_changes", { event: "*", schema: "public", table: "live_case_votes", filter: `case_id=eq.${liveCase.id}` }, () => loadVotes(liveCase))
       .subscribe();
     return () => { supabase.removeChannel(channel); };
-  }, [liveCase?.id, liveCase?.current_step_index, liveCase?.revealed, loadCase, loadVotes]);
+  }, [liveCase?.id, liveCase?.current_step_index, loadVotes]);
 
   const generate = async () => {
     setBusy(true);
