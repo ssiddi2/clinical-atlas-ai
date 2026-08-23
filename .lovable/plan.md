@@ -1,29 +1,46 @@
-# Live Video Compliance Posture — Keep the PHI Door Open
+# Radiology Training Course — Interactive Image Learning
 
-Goal: run the Teaching Studio on the free LiveKit tier now (education-only, no patient data), while making the PHI upgrade path explicit and the "no real patient data" rule visible to instructors so no one accidentally streams PHI before the compliance work is done.
+Ship a radiology course where uploaded images work both as teaching material and as graded, interactive image-based cases. Students join by professor invite; admins seed the base course, professors add their own cases.
 
 ## What gets built
 
-**1. De-identification guardrail in the Studio**
-A short, dismissible notice for instructors when they start a session: teaching content only, no real names, MRNs, DOBs, faces, or unredacted imaging. Dismissal is remembered per user so it isn't nagging. Students don't see it.
+### 1. Radiology course scaffold (admin-seeded)
+A "Diagnostic Radiology Fundamentals" course under the Radiology specialty, with learning units:
+Chest X-ray, Abdominal imaging, Musculoskeletal/trauma, Neuro CT/MRI, Emergency findings, Image interpretation basics.
+Each unit is a normal learning unit, so all existing instructor tools (materials, lectures, questions, settings, progress) work unchanged.
 
-**2. A one-line status banner on the Video tab**
-The video tab currently falls back to the external meeting link when LiveKit keys aren't set. Make that state legible: explain that in-app video is not yet enabled and that the external link is being used, rather than looking broken.
+### 2. Image support on cases
+Questions inside a learning unit gain radiology fields: an image, plus modality (X-ray / CT / MRI / US), body region, and an optional "findings" reveal shown after answering. Uploads go to a private bucket and are shown through short-lived signed URLs, matching how course materials are handled today.
 
-**3. A written compliance note in the repo**
-A short `docs/live-video-compliance.md` covering:
-- Current posture: education-only, no PHI, free tier, no BAA.
-- What must change before any identifiable patient data appears on stream — either a LiveKit Enterprise plan with a signed BAA, or self-hosted LiveKit so media stays in infrastructure you control.
-- The adjacent items that a PHI decision also touches: session recordings, uploaded imaging in course materials and storage buckets, live case content, and audit logging.
-- Explicitly: HIPAA does not attach to de-identified teaching material, so the current setup is appropriate for what the platform does today.
+Professors upload images from the question editor; admins can do the same on any course.
 
-## What is deliberately NOT built now
+### 3. Interactive image viewer
+A shared viewer used by both teaching material and cases:
+- pinch/scroll zoom, drag to pan, double-tap reset
+- brightness/contrast sliders (windowing-style), invert toggle
+- fullscreen, and a "hide/show findings overlay" toggle for teaching images
+- works on touch and desktop
 
-No BAA-tier signup, no encryption-at-rest changes, no recording-retention policy, no audit-log expansion. Those are only justified once you decide real patient encounters are in scope, and doing them speculatively adds cost and complexity for a risk that doesn't exist yet.
+### 4. Student case player
+Students get an actual interactive attempt flow in the unit's Questions tab instead of a static list:
+image viewer beside the stem → pick an answer → immediate correct/incorrect with explanation and findings reveal → next case → score summary written to existing progress tracking (feeds the 70% unlock gate already in place).
+
+### 5. Radiology media library in the unit
+The Materials tab gets an image-gallery mode for radiology units: thumbnail grid, click to open in the interactive viewer, professor captions.
+
+### 6. Logins & roles
+No new auth system — the existing student and "Professor or Attending" sign-ins already cover this. Work here is verification and wiring:
+- professor invites students to the radiology course via the existing invite flow (student gets a notification + `/invitations` entry)
+- students only see the course after accepting, per the existing enrollment restriction
+- admins can create/assign the course and add professors from the admin area
 
 ## Technical notes
 
-- Guardrail is presentation-only: a small component rendered inside `src/pages/LiveStudio.tsx`, gated to the instructor, persisted via localStorage. No schema change, no new table.
-- Video-tab messaging is a copy change inside `src/components/live/LiveVideo.tsx`, in the existing branch that already detects missing LiveKit credentials.
-- `LIVEKIT_URL` / `LIVEKIT_API_KEY` / `LIVEKIT_API_SECRET` stay unset; `supabase/functions/livekit-token` already handles their absence, so nothing breaks.
-- No backend, RLS, or migration work in this plan.
+- **Migration**: add `image_url`, `modality`, `body_region`, `findings` to `learning_unit_questions`; new private storage bucket `radiology-images` with RLS allowing instructor upload and enrolled-student read. GRANTs included with the table/policy changes.
+- **Data seed** (`run_sql`, not migration): the radiology course row, its `course_topics` tree, and `learning_unit_content` per unit.
+- **New components**: `RadiologyImageViewer` (zoom/pan/window/invert), `RadiologyImageUpload`, `QuestionPlayer` (student attempt flow), gallery mode in `CourseMaterials`.
+- **Edited**: `LearningUnitQuestions.tsx` (image fields + branch to player for students), `LearningUnitMaterials.tsx`, learning-unit progress write on attempt completion.
+- Images you upload in chat get placed into the seeded units as starter cases; the same upload path is available to professors afterwards.
+
+## Not in this pass
+Full DICOM parsing/series scrolling, automated AI image reading, and any billing/pricing changes.
