@@ -110,7 +110,7 @@ export default function LearningUnitSession({ topicId, isInstructor }: Props) {
       case "objectives":
         return (
           <ol className="space-y-2 list-decimal pl-5 text-sm">
-            {list.map(i => <li key={i.id} className="flex"><span className="flex-1">{i.title}</span>{editBar(i)}</li>)}
+            {list.map(i => <li key={i.id}><span className="flex items-start"><span className="flex-1">{i.title}</span>{editBar(i)}</span></li>)}
           </ol>
         );
       case "reading":
@@ -159,7 +159,7 @@ export default function LearningUnitSession({ topicId, isInstructor }: Props) {
                   )}
                   {i.url && (
                     <p className="mt-2 text-xs text-muted-foreground">
-                      <a href={i.url} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Watch on YouTube</a>
+                      <a href={i.url} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Open the source</a>
                       {i.source && ` · Courtesy of ${i.source}`}
                     </p>
                   )}
