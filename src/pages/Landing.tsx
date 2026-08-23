@@ -149,8 +149,8 @@ const Landing = () => {
           loop
           playsInline
           aria-hidden="true"
-          src={heroVideo.url}
-          style={{ opacity: 0.85 }}
+          src={heroBackground.url}
+          style={{ opacity: 0.6 }}
         />
         <div
           className="absolute inset-0 z-[2]"
