@@ -9,6 +9,9 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Plus, Trash2, Edit2, Save, X, Sparkles, Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import RadiologyImageUpload from "@/components/radiology/RadiologyImageUpload";
+import RadiologyImageViewer from "@/components/radiology/RadiologyImageViewer";
+import QuestionPlayer from "./QuestionPlayer";
 
 interface Question {
   id: string;
@@ -20,6 +23,10 @@ interface Question {
   concept_tag: string;
   exam_relevance: string;
   sort_order: number;
+  image_url: string | null;
+  modality: string | null;
+  body_region: string | null;
+  findings: string | null;
 }
 
 interface Props {
@@ -36,6 +43,10 @@ const EMPTY_QUESTION = {
   difficulty: "medium",
   concept_tag: "",
   exam_relevance: "medium",
+  image_url: null as string | null,
+  modality: "",
+  body_region: "",
+  findings: "",
 };
 
 export default function LearningUnitQuestions({ topicId, courseId, isInstructor }: Props) {
@@ -77,6 +88,10 @@ export default function LearningUnitQuestions({ topicId, courseId, isInstructor 
       difficulty: form.difficulty,
       concept_tag: form.concept_tag,
       exam_relevance: form.exam_relevance,
+      image_url: form.image_url,
+      modality: form.modality || null,
+      body_region: form.body_region || null,
+      findings: form.findings || null,
       created_by: user.id,
       sort_order: editingId ? questions.find(q => q.id === editingId)?.sort_order || 0 : questions.length,
     };
@@ -119,6 +134,10 @@ export default function LearningUnitQuestions({ topicId, courseId, isInstructor 
       difficulty: q.difficulty,
       concept_tag: q.concept_tag,
       exam_relevance: q.exam_relevance,
+      image_url: q.image_url,
+      modality: q.modality || "",
+      body_region: q.body_region || "",
+      findings: q.findings || "",
     });
   };
 
@@ -133,6 +152,13 @@ export default function LearningUnitQuestions({ topicId, courseId, isInstructor 
   }
 
   const showEditor = creating || editingId;
+
+  if (!isInstructor) {
+    if (questions.length === 0) {
+      return <p className="text-muted-foreground text-center py-8">No cases for this unit yet.</p>;
+    }
+    return <QuestionPlayer topicId={topicId} questions={questions} />;
+  }
 
   return (
     <div className="space-y-4">
@@ -186,6 +212,47 @@ export default function LearningUnitQuestions({ topicId, courseId, isInstructor 
                 </div>
               ))}
             </div>
+            <div>
+              <Label className="mb-1.5 block">Radiology Image (optional)</Label>
+              <RadiologyImageUpload
+                courseId={courseId}
+                topicId={topicId}
+                value={form.image_url}
+                onChange={path => setForm(f => ({ ...f, image_url: path }))}
+              />
+            </div>
+            {form.image_url && (
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label className="mb-1.5 block">Modality</Label>
+                  <Select value={form.modality || "X-ray"} onValueChange={v => setForm(f => ({ ...f, modality: v }))}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="X-ray">X-ray</SelectItem>
+                      <SelectItem value="CT">CT</SelectItem>
+                      <SelectItem value="MRI">MRI</SelectItem>
+                      <SelectItem value="Ultrasound">Ultrasound</SelectItem>
+                      <SelectItem value="Nuclear">Nuclear medicine</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label className="mb-1.5 block">Body Region</Label>
+                  <Input value={form.body_region} onChange={e => setForm(f => ({ ...f, body_region: e.target.value }))} placeholder="e.g. Chest PA" className="h-9" />
+                </div>
+              </div>
+            )}
+            {form.image_url && (
+              <div>
+                <Label className="mb-1.5 block">Radiologic Findings (revealed after answering)</Label>
+                <Textarea
+                  value={form.findings}
+                  onChange={e => setForm(f => ({ ...f, findings: e.target.value }))}
+                  placeholder="Right lower lobe airspace opacity with air bronchograms..."
+                  className="min-h-[70px]"
+                />
+              </div>
+            )}
             <div>
               <Label className="mb-1.5 block">Explanation</Label>
               <Textarea
@@ -243,6 +310,11 @@ export default function LearningUnitQuestions({ topicId, courseId, isInstructor 
                 <div className="flex items-start gap-3">
                   <span className="text-xs font-bold text-muted-foreground mt-1">Q{idx + 1}</span>
                   <div className="flex-1 min-w-0">
+                    {q.image_url && (
+                      <div className="mb-2 max-w-[220px]">
+                        <RadiologyImageViewer path={q.image_url} alt={q.body_region || "Radiology study"} />
+                      </div>
+                    )}
                     <p className="text-sm font-medium mb-2">{q.stem}</p>
                     <div className="space-y-1 mb-2">
                       {q.options.map((opt, i) => (
@@ -255,6 +327,7 @@ export default function LearningUnitQuestions({ topicId, courseId, isInstructor 
                       <Badge variant="outline" className="text-[10px]">{q.difficulty}</Badge>
                       {q.concept_tag && <Badge variant="outline" className="text-[10px]">{q.concept_tag}</Badge>}
                       <Badge variant="outline" className="text-[10px]">Exam: {q.exam_relevance}</Badge>
+                      {q.modality && <Badge variant="outline" className="text-[10px]">{q.modality}</Badge>}
                     </div>
                   </div>
                   {isInstructor && (

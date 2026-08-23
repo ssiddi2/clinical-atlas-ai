@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Upload, FileText, Trash2, Download, Loader2, File } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import RadiologyImageViewer from "@/components/radiology/RadiologyImageViewer";
 import {
   Select,
   SelectContent,
@@ -29,7 +30,7 @@ interface Material {
   created_at: string;
 }
 
-const MATERIAL_TYPES = ["notes", "slides", "syllabus", "assignment", "other"];
+const MATERIAL_TYPES = ["notes", "slides", "syllabus", "assignment", "image", "other"];
 
 const CourseMaterials = ({ courseId, isInstructor, topicId }: CourseMaterialsProps) => {
   const { toast } = useToast();
@@ -134,6 +135,10 @@ const CourseMaterials = ({ courseId, isInstructor, topicId }: CourseMaterialsPro
     return <File className="h-5 w-5 text-blue-400" />;
   };
 
+  const isImage = (m: Material) => m.file_type.startsWith("image/") || m.material_type === "image";
+  const images = materials.filter(isImage);
+  const docs = materials.filter((m) => !isImage(m));
+
   if (loading) {
     return <div className="flex justify-center py-8"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>;
   }
@@ -156,7 +161,7 @@ const CourseMaterials = ({ courseId, isInstructor, topicId }: CourseMaterialsPro
             ref={fileInputRef}
             type="file"
             className="hidden"
-            accept=".pdf,.doc,.docx,.ppt,.pptx,.txt,.md"
+            accept=".pdf,.doc,.docx,.ppt,.pptx,.txt,.md,.png,.jpg,.jpeg,.webp"
             onChange={handleUpload}
           />
           <Button
@@ -167,7 +172,27 @@ const CourseMaterials = ({ courseId, isInstructor, topicId }: CourseMaterialsPro
             {uploading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Upload className="h-4 w-4 mr-2" />}
             {uploading ? "Uploading..." : "Upload File"}
           </Button>
-          <span className="text-xs text-muted-foreground">PDF, Word, PowerPoint — max 20MB</span>
+          <span className="text-xs text-muted-foreground">PDF, Word, PowerPoint, images — max 20MB</span>
+        </div>
+      )}
+
+      {images.length > 0 && (
+        <div className="grid gap-4 sm:grid-cols-2">
+          {images.map((m) => (
+            <Card key={m.id} className="bg-card/50">
+              <CardContent className="p-3 space-y-2">
+                <RadiologyImageViewer path={m.file_url} bucket="course-materials" alt={m.description || m.file_name} />
+                <div className="flex items-center gap-2">
+                  <p className="text-sm font-medium truncate flex-1">{m.description || m.file_name}</p>
+                  {isInstructor && (
+                    <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => handleDelete(m)}>
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          ))}
         </div>
       )}
 
@@ -178,7 +203,8 @@ const CourseMaterials = ({ courseId, isInstructor, topicId }: CourseMaterialsPro
         </div>
       ) : (
         <div className="space-y-2">
-          {materials.map((m) => (
+          {docs.map((m) => (
+
             <Card key={m.id} className="bg-card/50">
               <CardContent className="flex items-center gap-3 p-3">
                 {getIcon(m.file_type)}

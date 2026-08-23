@@ -800,6 +800,7 @@ export type Database = {
       }
       learning_unit_questions: {
         Row: {
+          body_region: string | null
           concept_tag: string | null
           correct_answer_index: number
           created_at: string | null
@@ -807,13 +808,17 @@ export type Database = {
           difficulty: string | null
           exam_relevance: string | null
           explanation: string | null
+          findings: string | null
           id: string
+          image_url: string | null
+          modality: string | null
           options: Json
           sort_order: number | null
           stem: string
           topic_id: string
         }
         Insert: {
+          body_region?: string | null
           concept_tag?: string | null
           correct_answer_index?: number
           created_at?: string | null
@@ -821,13 +826,17 @@ export type Database = {
           difficulty?: string | null
           exam_relevance?: string | null
           explanation?: string | null
+          findings?: string | null
           id?: string
+          image_url?: string | null
+          modality?: string | null
           options?: Json
           sort_order?: number | null
           stem: string
           topic_id: string
         }
         Update: {
+          body_region?: string | null
           concept_tag?: string | null
           correct_answer_index?: number
           created_at?: string | null
@@ -835,7 +844,10 @@ export type Database = {
           difficulty?: string | null
           exam_relevance?: string | null
           explanation?: string | null
+          findings?: string | null
           id?: string
+          image_url?: string | null
+          modality?: string | null
           options?: Json
           sort_order?: number | null
           stem?: string
