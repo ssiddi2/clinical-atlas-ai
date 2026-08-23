@@ -135,6 +135,10 @@ const CourseMaterials = ({ courseId, isInstructor, topicId }: CourseMaterialsPro
     return <File className="h-5 w-5 text-blue-400" />;
   };
 
+  const isImage = (m: Material) => m.file_type.startsWith("image/") || m.material_type === "image";
+  const images = materials.filter(isImage);
+  const docs = materials.filter((m) => !isImage(m));
+
   if (loading) {
     return <div className="flex justify-center py-8"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>;
   }
