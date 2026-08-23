@@ -172,6 +172,26 @@ const CourseMaterials = ({ courseId, isInstructor, topicId }: CourseMaterialsPro
         </div>
       )}
 
+      {images.length > 0 && (
+        <div className="grid gap-4 sm:grid-cols-2">
+          {images.map((m) => (
+            <Card key={m.id} className="bg-card/50">
+              <CardContent className="p-3 space-y-2">
+                <RadiologyImageViewer path={m.file_url} bucket="course-materials" alt={m.description || m.file_name} />
+                <div className="flex items-center gap-2">
+                  <p className="text-sm font-medium truncate flex-1">{m.description || m.file_name}</p>
+                  {isInstructor && (
+                    <Button variant="ghost" size="icon" className="h-7 w-7 text-destructive" onClick={() => handleDelete(m)}>
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
+
       {materials.length === 0 ? (
         <div className="text-center py-8">
           <FileText className="h-10 w-10 text-muted-foreground/30 mx-auto mb-3" />
@@ -179,7 +199,8 @@ const CourseMaterials = ({ courseId, isInstructor, topicId }: CourseMaterialsPro
         </div>
       ) : (
         <div className="space-y-2">
-          {materials.map((m) => (
+          {docs.map((m) => (
+
             <Card key={m.id} className="bg-card/50">
               <CardContent className="flex items-center gap-3 p-3">
                 {getIcon(m.file_type)}
