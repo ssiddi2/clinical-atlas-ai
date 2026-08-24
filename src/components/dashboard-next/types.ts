@@ -11,6 +11,9 @@ export type CardType =
   | "verification"
   | "onboarding";
 
+/** Which expanded flow opens when the card itself is tapped. */
+export type CardJourney = "topic" | "lecture" | "drill";
+
 export interface PredictiveCard {
   /** Stable key used to persist bookmark / snooze / dismiss state. */
   key: string;
@@ -31,6 +34,16 @@ export interface PredictiveCard {
   askPrompt: string;
   /** Pre-filled request when the student taps "Build study guide". */
   studyGuidePrompt: string;
+  /** Expanded journey opened from the card body. */
+  journey?: CardJourney;
+  /** Curriculum topic behind the card, when there is one. */
+  topicId?: string;
+  /** Virtual classroom behind the card, when there is one. */
+  classroomId?: string;
+  /** Concept tags used to pull practice questions. */
+  focus?: string[];
+  /** Best-guess QBank subject for drill filtering. */
+  subject?: string;
 }
 
 export interface CardState {
