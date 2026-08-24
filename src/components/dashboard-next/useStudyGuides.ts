@@ -74,10 +74,71 @@ export function useStudyGuides(userId: string | null | undefined) {
     }
   }, []);
 
+  /**
+   * Builds a guide from a kept ATLAS artifact, so the session is grounded in
+   * that artifact's own clinical context (its caption, source and query).
+   */
+  const generateFromArtifact = useCallback(async (artifact: {
+    id: string;
+    title: string;
+    caption: string | null;
+    image_url: string | null;
+    source_url: string | null;
+    source_query: string | null;
+    context_excerpt: string | null;
+    faculty_verified: boolean;
+  }): Promise<StudyGuide | null> => {
+    setGenerating(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        toast({ title: "Please sign in", variant: "destructive" });
+        return null;
+      }
+      const context = [
+        `Saved artifact: ${artifact.title}`,
+        artifact.caption ? `Caption: ${artifact.caption}` : "",
+        artifact.source_query ? `Originally surfaced for: ${artifact.source_query}` : "",
+        artifact.context_excerpt ? `Conversation context: ${artifact.context_excerpt}` : "",
+        artifact.source_url ? `Source: ${artifact.source_url}` : "",
+        artifact.faculty_verified ? "Faculty-verified teaching asset." : "Not yet faculty-verified.",
+      ].filter(Boolean).join("\n");
+
+      const resp = await fetch(FN_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.access_token}`,
+          apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+        },
+        body: JSON.stringify({
+          prompt: `Build a focused learning session around this saved teaching artifact: "${artifact.title}". Teach the findings it demonstrates, the differential it belongs to, and how it is tested.`,
+          context,
+          artifactId: artifact.id,
+        }),
+      });
+      const payload = await resp.json().catch(() => ({}));
+      if (!resp.ok) {
+        toast({
+          title: "Session unavailable",
+          description: payload.error ?? "ATLAS could not build the session right now.",
+          variant: "destructive",
+        });
+        return null;
+      }
+      const guide = payload.guide as StudyGuide;
+      setGuides((prev) => [guide, ...prev]);
+      return guide;
+    } finally {
+      setGenerating(false);
+    }
+  }, []);
+
   const remove = useCallback(async (id: string) => {
     setGuides((prev) => prev.filter((g) => g.id !== id));
     await supabase.from("study_guides").delete().eq("id", id);
   }, []);
 
-  return { guides, generating, generate, remove, reload: load };
+  return { guides, generating, generate, generateFromArtifact, remove, reload: load };
 }
+

@@ -18,6 +18,7 @@ const Dashboard = lazy(() => import("./pages/Dashboard"));
 const DashboardNext = lazy(() => import("./pages/DashboardNext"));
 const Atlas = lazy(() => import("./pages/Atlas"));
 const MediaLibrary = lazy(() => import("./pages/MediaLibrary"));
+const Artifacts = lazy(() => import("./pages/Artifacts"));
 const Programs = lazy(() => import("./pages/Programs"));
 const Rotations = lazy(() => import("./pages/Rotations"));
 const VirtualRounds = lazy(() => import("./pages/VirtualRounds"));
@@ -151,6 +152,9 @@ const App = () => {
 
             {/* ATLAS AI Professor (authenticated) */}
             <Route path="/atlas" element={<Atlas />} />
+
+            {/* ATLAS artifacts library (authenticated) */}
+            <Route path="/artifacts" element={<Artifacts />} />
 
             {/* Residency Readiness (authenticated) */}
             <Route path="/residency" element={<Residency />} />

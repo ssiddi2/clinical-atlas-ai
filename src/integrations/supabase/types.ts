@@ -67,6 +67,80 @@ export type Database = {
           },
         ]
       }
+      atlas_artifacts: {
+        Row: {
+          caption: string | null
+          context_excerpt: string | null
+          conversation_id: string | null
+          created_at: string
+          credit: string | null
+          faculty_verified: boolean
+          id: string
+          image_url: string | null
+          kind: string
+          last_studied_at: string | null
+          license: string | null
+          pinned: boolean
+          session_count: number
+          source_query: string | null
+          source_url: string | null
+          title: string
+          topic_tags: string[]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          caption?: string | null
+          context_excerpt?: string | null
+          conversation_id?: string | null
+          created_at?: string
+          credit?: string | null
+          faculty_verified?: boolean
+          id?: string
+          image_url?: string | null
+          kind?: string
+          last_studied_at?: string | null
+          license?: string | null
+          pinned?: boolean
+          session_count?: number
+          source_query?: string | null
+          source_url?: string | null
+          title: string
+          topic_tags?: string[]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          caption?: string | null
+          context_excerpt?: string | null
+          conversation_id?: string | null
+          created_at?: string
+          credit?: string | null
+          faculty_verified?: boolean
+          id?: string
+          image_url?: string | null
+          kind?: string
+          last_studied_at?: string | null
+          license?: string | null
+          pinned?: boolean
+          session_count?: number
+          source_query?: string | null
+          source_url?: string | null
+          title?: string
+          topic_tags?: string[]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "atlas_artifacts_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "eli_conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       card_groups: {
         Row: {
           color: string
@@ -2340,6 +2414,7 @@ export type Database = {
       }
       study_guides: {
         Row: {
+          artifact_id: string | null
           card_key: string | null
           card_type: string | null
           content: string
@@ -2355,6 +2430,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          artifact_id?: string | null
           card_key?: string | null
           card_type?: string | null
           content?: string
@@ -2370,6 +2446,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          artifact_id?: string | null
           card_key?: string | null
           card_type?: string | null
           content?: string
@@ -2385,6 +2462,13 @@ export type Database = {
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "study_guides_artifact_id_fkey"
+            columns: ["artifact_id"]
+            isOneToOne: false
+            referencedRelation: "atlas_artifacts"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "study_guides_topic_id_fkey"
             columns: ["topic_id"]

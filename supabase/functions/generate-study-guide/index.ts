@@ -53,6 +53,8 @@ serve(async (req) => {
     const cardKey: string | null = body.cardKey ?? null;
     const cardType: string | null = body.cardType ?? null;
     const topicId: string | null = body.topicId ?? null;
+    const artifactId: string | null = body.artifactId ?? null;
+
     const context: string = String(body.context ?? "").slice(0, 2000);
 
     if (!prompt) return json({ error: "A prompt is required" }, 400);
@@ -92,6 +94,7 @@ serve(async (req) => {
         card_key: cardKey,
         card_type: cardType,
         topic_id: topicId,
+        artifact_id: artifactId,
         title,
         subject: parsed?.subject ?? null,
         focus_areas: focus,

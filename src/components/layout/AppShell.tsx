@@ -12,6 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
+  Bookmark,
   LogOut,
   Settings,
   ShieldCheck,
@@ -116,6 +117,16 @@ const AppShell = ({ children, headerOnly = false }: AppShellProps) => {
               <span className="hidden sm:inline">{t("dashboard.admin")}</span>
             </Button>
           )}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate("/artifacts")}
+            className="rounded-full bg-muted/60 hover:bg-muted"
+            aria-label="Your ATLAS artifacts"
+          >
+            <Bookmark className="h-4 w-4" />
+            <span className="hidden md:inline ml-1.5">Artifacts</span>
+          </Button>
           <Button
             variant="ghost"
             size="sm"
