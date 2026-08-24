@@ -20,6 +20,7 @@ import {
   Mail,
 } from "lucide-react";
 import NotificationBell from "@/components/notifications/NotificationBell";
+import BackButton from "@/components/layout/BackButton";
 import { useTranslation } from "@/i18n";
 import livemedLogoAsset from "@/assets/livemed-logo-light.png.asset.json";
 
@@ -96,7 +97,8 @@ const AppShell = ({ children, headerOnly = false }: AppShellProps) => {
   const header = (
     <header className="sticky top-0 z-50 border-b border-border/70 bg-background/85 backdrop-blur-xl">
       <div className="container mx-auto px-4 md:px-6 flex h-14 items-center justify-between gap-8">
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 md:gap-4 min-w-0">
+          <BackButton />
           <Link to="/dashboard" className="flex items-center" aria-label="Livemed Academy — Dashboard">
             <img src={livemedLogo} alt="Livemed Academy" className="h-8 object-contain" />
           </Link>
