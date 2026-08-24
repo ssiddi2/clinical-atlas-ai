@@ -278,38 +278,55 @@ const LearningAssessment = () => {
           </motion.div>
         </AnimatePresence>
 
-        <div className="flex justify-between mt-6">
+        <div className="flex flex-col sm:flex-row items-center justify-between mt-6 gap-3">
           <Button
             variant="outline"
-            disabled={sectionIdx === 0 || submitting}
+            disabled={sectionIdx === 0 || submitting || skipping}
             onClick={() => setSectionIdx((i) => Math.max(0, i - 1))}
+            className="w-full sm:w-auto"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back
           </Button>
-          {isLast ? (
-            <Button disabled={!sectionComplete || submitting} onClick={handleSubmit}>
-              {submitting ? (
-                <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Saving
-                </>
-              ) : (
-                <>
-                  Finish
-                  <Sparkles className="h-4 w-4 ml-2" />
-                </>
-              )}
-            </Button>
-          ) : (
+
+          <div className="flex items-center gap-3 w-full sm:w-auto">
             <Button
-              disabled={!sectionComplete}
-              onClick={() => setSectionIdx((i) => Math.min(SECTIONS.length - 1, i + 1))}
+              variant="ghost"
+              onClick={handleSkip}
+              disabled={skipping || submitting}
+              className="flex-1 sm:flex-none"
             >
-              Continue
-              <ArrowRight className="h-4 w-4 ml-2" />
+              {skipping ? (
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              ) : (
+                <SkipForward className="h-4 w-4 mr-2" />
+              )}
+              Skip for now
             </Button>
-          )}
+            {isLast ? (
+              <Button disabled={!sectionComplete || submitting || skipping} onClick={handleSubmit}>
+                {submitting ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Saving
+                  </>
+                ) : (
+                  <>
+                    Finish
+                    <Sparkles className="h-4 w-4 ml-2" />
+                  </>
+                )}
+              </Button>
+            ) : (
+              <Button
+                disabled={!sectionComplete || skipping}
+                onClick={() => setSectionIdx((i) => Math.min(SECTIONS.length - 1, i + 1))}
+              >
+                Continue
+                <ArrowRight className="h-4 w-4 ml-2" />
+              </Button>
+            )}
+          </div>
         </div>
       </div>
     </div>
