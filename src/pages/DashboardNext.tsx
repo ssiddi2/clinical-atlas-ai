@@ -3,14 +3,21 @@ import { useNavigate } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { User } from "@supabase/supabase-js";
-import { LayoutDashboard, Loader2, MessageSquare, Sparkles } from "lucide-react";
+import { LayoutDashboard, Loader2, MessageSquare, NotebookPen, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import AppShell from "@/components/layout/AppShell";
 import AtlasChat, { AtlasContext } from "@/components/atlas/AtlasChat";
 import { useAtlasChat } from "@/components/atlas/useAtlasChat";
 import SplitPane from "@/components/dashboard-next/SplitPane";
 import PredictiveCardItem from "@/components/dashboard-next/PredictiveCardItem";
+import CardGroupsBar, { CardFilter } from "@/components/dashboard-next/CardGroupsBar";
+import DrillSheet, { DrillRequest } from "@/components/dashboard-next/DrillSheet";
+import StudyGuideSheet from "@/components/dashboard-next/StudyGuideSheet";
+import TopicJourneySheet from "@/components/dashboard-next/TopicJourneySheet";
+import LectureJourneySheet from "@/components/dashboard-next/LectureJourneySheet";
 import { usePredictiveCards } from "@/components/dashboard-next/usePredictiveCards";
+import { useCardGroups, CardGroup } from "@/components/dashboard-next/useCardGroups";
+import { useStudyGuides, StudyGuide } from "@/components/dashboard-next/useStudyGuides";
 import type { PredictiveCard } from "@/components/dashboard-next/types";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -27,6 +34,11 @@ const DashboardNext = () => {
   const [draft, setDraft] = useState("");
   const [context, setContext] = useState<AtlasContext | null>(null);
   const [mobileView, setMobileView] = useState<"cards" | "atlas">("cards");
+  const [filter, setFilter] = useState<CardFilter>({ kind: "all" });
+  const [drill, setDrill] = useState<DrillRequest | null>(null);
+  const [openGuide, setOpenGuide] = useState<StudyGuide | null>(null);
+  const [topicCard, setTopicCard] = useState<PredictiveCard | null>(null);
+  const [lectureCard, setLectureCard] = useState<PredictiveCard | null>(null);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => {
@@ -43,7 +55,9 @@ const DashboardNext = () => {
   }, [navigate]);
 
   const chat = useAtlasChat(user?.id);
-  const { cards, states, loading, updateState } = usePredictiveCards(user?.id);
+  const { cards, states, loading, updateState, reload } = usePredictiveCards(user?.id);
+  const { groups, createGroup, removeGroup } = useCardGroups(user?.id);
+  const { guides, generating, generate, remove } = useStudyGuides(user?.id);
 
   const firstName = user?.user_metadata?.first_name || "there";
 
@@ -53,10 +67,46 @@ const DashboardNext = () => {
     if (isMobile) setMobileView("atlas");
   };
 
+  const buildGuide = async (card: PredictiveCard) => {
+    const guide = await generate(card);
+    if (guide) setOpenGuide(guide);
+  };
+
+  const drillCard = (card: PredictiveCard, focus?: string[]) =>
+    setDrill({
+      title: `Drill · ${card.title}`,
+      focus: focus ?? card.focus ?? [card.title],
+      subject: card.subject ?? null,
+    });
+
+  const openJourney = (card: PredictiveCard) => {
+    if (card.journey === "topic") setTopicCard(card);
+    else if (card.journey === "lecture") setLectureCard(card);
+    else if (card.journey === "drill") drillCard(card);
+    else if (card.href) navigate(card.href);
+  };
+
   const snooze = (card: PredictiveCard) => {
     const until = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
     updateState(card, { snoozed_until: until });
   };
+
+  const setGroup = (card: PredictiveCard, group: CardGroup | null) =>
+    updateState(card, { group_id: group?.id ?? null, group_name: group?.name ?? null });
+
+  const visibleCards = useMemo(() => {
+    if (filter.kind === "bookmarked") return cards.filter((c) => states[c.key]?.bookmarked);
+    if (filter.kind === "group") return cards.filter((c) => states[c.key]?.group_id === filter.id);
+    return cards;
+  }, [cards, states, filter]);
+
+  const bookmarkCount = useMemo(
+    () => cards.filter((c) => states[c.key]?.bookmarked).length,
+    [cards, states],
+  );
+
+  const countFor = (groupId: string) =>
+    cards.filter((c) => states[c.key]?.group_id === groupId).length;
 
   const suggestions = useMemo(
     () => cards.slice(0, 4).map((c) => c.askPrompt),
@@ -84,30 +134,67 @@ const DashboardNext = () => {
           </Button>
         </header>
 
+        <CardGroupsBar
+          groups={groups}
+          filter={filter}
+          bookmarkCount={bookmarkCount}
+          countFor={countFor}
+          onFilter={setFilter}
+          onCreate={createGroup}
+          onRemove={removeGroup}
+        />
+
+        {guides.length > 0 && (
+          <div className="rounded-2xl border border-border bg-muted/40 p-3">
+            <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground mb-2">
+              Your study guides
+            </p>
+            <div className="flex flex-wrap gap-1.5">
+              {guides.slice(0, 6).map((g) => (
+                <button
+                  key={g.id}
+                  onClick={() => setOpenGuide(g)}
+                  className="inline-flex items-center gap-1.5 rounded-full border border-border bg-background px-3 py-1.5 text-xs hover:bg-muted transition-colors"
+                >
+                  <NotebookPen className="h-3 w-3 text-primary" />
+                  <span className="max-w-[180px] truncate">{g.title}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
 
         {loading ? (
           <div className="flex items-center gap-2 text-muted-foreground text-sm py-10">
             <Loader2 className="h-4 w-4 animate-spin" /> Reading your signals…
           </div>
-        ) : cards.length === 0 ? (
+        ) : visibleCards.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-border p-8 text-center">
             <Sparkles className="h-6 w-6 mx-auto text-muted-foreground mb-3" />
-            <p className="font-medium">You're all caught up</p>
+            <p className="font-medium">
+              {filter.kind === "all" ? "You're all caught up" : "Nothing filed here yet"}
+            </p>
             <p className="text-sm text-muted-foreground mt-1">
-              New cards appear as lectures are scheduled and you work through units.
+              {filter.kind === "all"
+                ? "New cards appear as lectures are scheduled and you work through units."
+                : "Save or group a card and it will show up here."}
             </p>
           </div>
         ) : (
           <AnimatePresence initial={false}>
-            {cards.map((card) => (
+            {visibleCards.map((card) => (
               <PredictiveCardItem
                 key={card.key}
                 card={card}
                 state={states[card.key]}
+                groups={groups}
                 onAsk={(c) => handoff(c, c.askPrompt)}
-                onStudyGuide={(c) => handoff(c, c.studyGuidePrompt)}
+                onStudyGuide={buildGuide}
+                onDrill={(c) => drillCard(c)}
+                onOpenJourney={openJourney}
                 onBookmark={(c) => updateState(c, { bookmarked: !states[c.key]?.bookmarked })}
                 onSnooze={snooze}
+                onGroup={setGroup}
               />
             ))}
           </AnimatePresence>
@@ -174,6 +261,51 @@ const DashboardNext = () => {
       ) : (
         <SplitPane left={cardPane} right={atlasPane} />
       )}
+
+      <StudyGuideSheet
+        guide={openGuide}
+        generating={generating}
+        onClose={() => setOpenGuide(null)}
+        onDrill={(g) =>
+          setDrill({
+            title: `Drill · ${g.title}`,
+            focus: g.focus_areas ?? [],
+            subject: g.subject,
+            guideId: g.id,
+          })
+        }
+        onAskAtlas={(g) => {
+          setContext({ label: g.title, prompt: `The student is studying the guide "${g.title}".` });
+          setDraft(`Quiz me on the key points of ${g.title}.`);
+          setOpenGuide(null);
+          if (isMobile) setMobileView("atlas");
+        }}
+        onDelete={(g) => remove(g.id)}
+      />
+
+      <TopicJourneySheet
+        card={topicCard}
+        userId={user?.id}
+        onClose={() => { setTopicCard(null); reload(); }}
+        onAskAtlas={(c) => { setTopicCard(null); handoff(c, c.askPrompt); }}
+        onStudyGuide={(c) => { setTopicCard(null); buildGuide(c); }}
+        onDrill={(c) => { setTopicCard(null); drillCard(c); }}
+      />
+
+      <LectureJourneySheet
+        card={lectureCard}
+        userId={user?.id}
+        onClose={() => setLectureCard(null)}
+        onAskAtlas={(c) => { setLectureCard(null); handoff(c, c.askPrompt); }}
+        onDrill={(c, focus) => { setLectureCard(null); drillCard(c, focus); }}
+      />
+
+      <DrillSheet
+        request={drill}
+        userId={user?.id}
+        onClose={() => setDrill(null)}
+        onFinished={reload}
+      />
     </div>
   );
 };
