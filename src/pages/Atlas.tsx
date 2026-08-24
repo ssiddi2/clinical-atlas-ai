@@ -7,7 +7,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "@/hooks/use-toast";
 import ReactMarkdown from "react-markdown";
-import { markdownComponents } from "@/components/atlas/AtlasChat";
+import { markdownComponents, ArtifactCaptureProvider } from "@/components/atlas/AtlasChat";
+import { useArtifacts } from "@/components/atlas/useArtifacts";
 import {
   Brain,
   Send,
