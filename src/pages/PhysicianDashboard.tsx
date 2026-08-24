@@ -263,7 +263,7 @@ const PhysicianDashboard = () => {
         {/* Quick Actions */}
         <section>
           <h2 className="text-xl font-semibold text-foreground mb-4">{t("physician.quickActions")}</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <Card className="bg-card/50 border-border/30 hover:border-primary/30 transition-colors cursor-pointer" onClick={() => setShowCreateModal(true)}>
               <CardContent className="flex items-center gap-4 p-5">
                 <div className="p-3 rounded-xl bg-primary/10 text-primary"><Video className="h-5 w-5" /></div>
@@ -279,6 +279,15 @@ const PhysicianDashboard = () => {
                 <div>
                   <p className="font-medium text-foreground">{t("physician.virtualRounds")}</p>
                   <p className="text-sm text-muted-foreground">{t("physician.virtualRoundsDesc")}</p>
+                </div>
+              </CardContent>
+            </Card>
+            <Card className="bg-card/50 border-border/30 hover:border-primary/30 transition-colors cursor-pointer" onClick={() => navigate("/media-library")}>
+              <CardContent className="flex items-center gap-4 p-5">
+                <div className="p-3 rounded-xl bg-primary/10 text-primary"><BookOpen className="h-5 w-5" /></div>
+                <div>
+                  <p className="font-medium text-foreground">Teaching Media Library</p>
+                  <p className="text-sm text-muted-foreground">Approve the images ATLAS teaches with</p>
                 </div>
               </CardContent>
             </Card>
