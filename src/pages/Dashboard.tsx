@@ -211,12 +211,20 @@ const Dashboard = () => {
         />
 
         {/* Welcome Section */}
-        <div>
-          <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-foreground">
-            {t("dashboard.welcomeBack").replace("{name}", firstName)} <span aria-hidden>👋</span>
-          </h1>
-          <p className="mt-1.5 text-[15px] text-muted-foreground">{t("dashboard.continueJourney")}</p>
+        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
+          <div>
+            <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-foreground">
+              {t("dashboard.welcomeBack").replace("{name}", firstName)} <span aria-hidden>👋</span>
+            </h1>
+            <p className="mt-1.5 text-[15px] text-muted-foreground">{t("dashboard.continueJourney")}</p>
+          </div>
+          <Button asChild variant="outline" size="sm" className="rounded-full self-start sm:self-auto">
+            <Link to="/dashboard/next">
+              <Sparkles className="h-4 w-4 mr-1.5" /> Try ATLAS dashboard
+            </Link>
+          </Button>
         </div>
+
 
         {pendingInvitesCount > 0 && (
           <Link

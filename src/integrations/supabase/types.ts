@@ -2027,6 +2027,45 @@ export type Database = {
         }
         Relationships: []
       }
+      student_card_state: {
+        Row: {
+          bookmarked: boolean
+          card_key: string
+          card_type: string | null
+          created_at: string
+          dismissed: boolean
+          group_name: string | null
+          id: string
+          snoozed_until: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          bookmarked?: boolean
+          card_key: string
+          card_type?: string | null
+          created_at?: string
+          dismissed?: boolean
+          group_name?: string | null
+          id?: string
+          snoozed_until?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          bookmarked?: boolean
+          card_key?: string
+          card_type?: string | null
+          created_at?: string
+          dismissed?: boolean
+          group_name?: string | null
+          id?: string
+          snoozed_until?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       student_documents: {
         Row: {
           document_type: string
