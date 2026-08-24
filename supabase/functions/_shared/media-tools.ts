@@ -170,24 +170,31 @@ export async function searchCuratedLibrary(
     .slice(0, 8);
   if (tokens.length === 0) return [];
 
-  const or = tokens
+  const select =
+    "id,title,description,teaching_caption,image_url,source_page_url,credit,license,modality,body_region,keywords,topic_tags,usage_count";
+  const textOr = tokens
     .flatMap((t) => [`title.ilike.%${t}%`, `description.ilike.%${t}%`, `teaching_caption.ilike.%${t}%`])
     .join(",");
 
-  const { data, error } = await admin
-    .from("medical_media")
-    .select(
-      "id,title,description,teaching_caption,image_url,source_page_url,credit,license,modality,body_region,keywords,topic_tags,usage_count",
-    )
-    .eq("status", "approved")
-    .or(`${or},keywords.cs.{${tokens.join(",")}},topic_tags.cs.{${tokens.join(",")}}`)
-    .order("usage_count", { ascending: false })
-    .limit(limit * 3);
+  // Two passes: free-text match, plus array-overlap on curated keywords/tags.
+  // (PostgREST `or=` cannot safely carry `{a,b}` array literals, so they stay separate.)
+  const [byText, byKeyword, byTag] = await Promise.all([
+    admin.from("medical_media").select(select).eq("status", "approved").or(textOr).limit(limit * 3),
+    admin.from("medical_media").select(select).eq("status", "approved").overlaps("keywords", tokens).limit(limit * 3),
+    admin.from("medical_media").select(select).eq("status", "approved").overlaps("topic_tags", tokens).limit(limit * 3),
+  ]);
 
-  if (error) {
-    console.error("Curated library search failed:", error.message);
-    return [];
+  const firstError = byText.error || byKeyword.error || byTag.error;
+  if (firstError) {
+    console.error("Curated library search failed:", firstError.message);
   }
+
+  const byId = new Map<string, any>();
+  for (const row of [...(byText.data ?? []), ...(byKeyword.data ?? []), ...(byTag.data ?? [])]) {
+    byId.set(row.id, row);
+  }
+  const data = [...byId.values()];
+
 
   const scored = (data ?? []).map((row: any) => {
     const haystack = [
