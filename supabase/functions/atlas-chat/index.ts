@@ -62,7 +62,49 @@ INTERACTION GUIDELINES:
 - Format responses clearly with headers and bullet points when helpful
 - Keep responses concise unless detailed explanation is requested
 
+VISUAL TEACHING (tools):
+- You can call search_medical_images to pull real, open-license images (radiographs, CT/MRI, ECGs, histology, gross pathology, anatomy plates) and fetch_web_page to read a public https page.
+- Use search_medical_images whenever a picture teaches better than prose, or when the student asks to "show" something. Prefer 1-3 images, not a gallery.
+- Embed each image in your answer as markdown: ![short clinical caption](imageUrl) and immediately below it cite the source as a markdown link: [Source: <title> — <license>](pageUrl)
+- Never invent or guess an image URL — only embed URLs returned by the tool. If the tool returns nothing useful, say so and describe the finding in words instead.
+- Teach from the image: point out the specific findings the student should look for before revealing the interpretation.
+- Open-license Commons images are teaching aids, not diagnostic references — remind students to confirm findings against a radiologist/attending or an authoritative atlas.
+
 Remember: You are the most patient, consistent, and rigorous professor a student will ever have.`;
+
+const MODEL = "google/gemini-3-flash-preview";
+const GATEWAY_URL = "https://ai.gateway.lovable.dev/v1/chat/completions";
+
+function gatewayError(status: number) {
+  if (status === 429) {
+    return new Response(
+      JSON.stringify({ error: "rate_limited", message: "You're sending messages too quickly. Please wait a moment and try again." }),
+      { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
+  }
+  if (status === 402) {
+    return new Response(
+      JSON.stringify({ error: "credits_exhausted", message: "AI credits have been exhausted. Please try again later." }),
+      { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
+  }
+  return null;
+}
+
+/** Wraps already-generated text as an OpenAI-style SSE stream for the client. */
+function textAsSSE(text: string) {
+  const encoder = new TextEncoder();
+  const stream = new ReadableStream({
+    start(controller) {
+      const chunk = { choices: [{ delta: { content: text } }] };
+      controller.enqueue(encoder.encode(`data: ${JSON.stringify(chunk)}\n\n`));
+      controller.enqueue(encoder.encode("data: [DONE]\n\n"));
+      controller.close();
+    },
+  });
+  return stream;
+}
+
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
