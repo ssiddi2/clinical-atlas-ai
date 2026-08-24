@@ -118,6 +118,7 @@ const LearningAssessment = () => {
   const [sectionIdx, setSectionIdx] = useState(0);
   const [answers, setAnswers] = useState<Answers>({});
   const [submitting, setSubmitting] = useState(false);
+  const [skipping, setSkipping] = useState(false);
   const [done, setDone] = useState<ReturnType<typeof scoreProfile> | null>(null);
 
   useEffect(() => {
