@@ -148,8 +148,9 @@ const Landing = () => {
           muted
           loop
           playsInline
+          preload="auto"
           aria-hidden="true"
-          src={heroBackground.url}
+          src="/hero-background.mp4"
           style={{ opacity: 0.6 }}
         />
         <div
@@ -157,7 +158,7 @@ const Landing = () => {
           aria-hidden="true"
           style={{
             background:
-              "radial-gradient(ellipse 70% 60% at 50% 50%, hsl(0 0% 100% / 0.7) 0%, hsl(0 0% 100% / 0.5) 55%, hsl(0 0% 100% / 0.2) 100%)",
+              "radial-gradient(ellipse 65% 55% at 50% 45%, hsl(0 0% 100% / 0.5) 0%, hsl(0 0% 100% / 0.25) 60%, hsl(0 0% 100% / 0) 100%)",
           }}
         />
         
