@@ -165,6 +165,31 @@ const LearningAssessment = () => {
     }
   };
 
+  const handleSkip = async () => {
+    if (!userId) return;
+    setSkipping(true);
+    try {
+      const { error } = await supabase
+        .from("profiles")
+        .update({ learning_assessment_completed: true })
+        .eq("user_id", userId);
+      if (error) throw error;
+      toast({
+        title: "Skipped learning profile",
+        description: "You can retake it anytime from your profile settings.",
+      });
+      navigate("/dashboard");
+    } catch (e) {
+      toast({
+        title: "Couldn't skip",
+        description: e instanceof Error ? e.message : "Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setSkipping(false);
+    }
+  };
+
   if (done) {
     const tailoring = profileTailoring(done);
     return (
