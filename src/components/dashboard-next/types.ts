@@ -49,6 +49,7 @@ export interface PredictiveCard {
 export interface CardState {
   bookmarked: boolean;
   group_name: string | null;
+  group_id?: string | null;
   snoozed_until: string | null;
   dismissed: boolean;
 }
