@@ -67,6 +67,36 @@ export type Database = {
           },
         ]
       }
+      card_groups: {
+        Row: {
+          color: string
+          created_at: string
+          id: string
+          name: string
+          sort_order: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          color?: string
+          created_at?: string
+          id?: string
+          name: string
+          sort_order?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          color?: string
+          created_at?: string
+          id?: string
+          name?: string
+          sort_order?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       classroom_enrollments: {
         Row: {
           attended: boolean
@@ -686,6 +716,62 @@ export type Database = {
           },
         ]
       }
+      guide_drills: {
+        Row: {
+          answers: Json
+          completed_at: string | null
+          correct_count: number
+          created_at: string
+          filters: Json
+          guide_id: string | null
+          id: string
+          question_ids: string[]
+          source: string
+          status: string
+          total_questions: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          answers?: Json
+          completed_at?: string | null
+          correct_count?: number
+          created_at?: string
+          filters?: Json
+          guide_id?: string | null
+          id?: string
+          question_ids?: string[]
+          source?: string
+          status?: string
+          total_questions?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          answers?: Json
+          completed_at?: string | null
+          correct_count?: number
+          created_at?: string
+          filters?: Json
+          guide_id?: string | null
+          id?: string
+          question_ids?: string[]
+          source?: string
+          status?: string
+          total_questions?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "guide_drills_guide_id_fkey"
+            columns: ["guide_id"]
+            isOneToOne: false
+            referencedRelation: "study_guides"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       learning_unit_content: {
         Row: {
           allow_retry: boolean | null
@@ -1017,6 +1103,59 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "lecture_copilot_questions_classroom_id_fkey"
+            columns: ["classroom_id"]
+            isOneToOne: false
+            referencedRelation: "virtual_classrooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lecture_debriefs: {
+        Row: {
+          attendance_seconds: number
+          classroom_id: string
+          created_at: string
+          id: string
+          quiz: Json
+          quiz_answers: Json
+          quiz_score: number | null
+          status: string
+          student_id: string
+          summary: string | null
+          updated_at: string
+          weak_concepts: Json
+        }
+        Insert: {
+          attendance_seconds?: number
+          classroom_id: string
+          created_at?: string
+          id?: string
+          quiz?: Json
+          quiz_answers?: Json
+          quiz_score?: number | null
+          status?: string
+          student_id: string
+          summary?: string | null
+          updated_at?: string
+          weak_concepts?: Json
+        }
+        Update: {
+          attendance_seconds?: number
+          classroom_id?: string
+          created_at?: string
+          id?: string
+          quiz?: Json
+          quiz_answers?: Json
+          quiz_score?: number | null
+          status?: string
+          student_id?: string
+          summary?: string | null
+          updated_at?: string
+          weak_concepts?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lecture_debriefs_classroom_id_fkey"
             columns: ["classroom_id"]
             isOneToOne: false
             referencedRelation: "virtual_classrooms"
@@ -2034,6 +2173,7 @@ export type Database = {
           card_type: string | null
           created_at: string
           dismissed: boolean
+          group_id: string | null
           group_name: string | null
           id: string
           snoozed_until: string | null
@@ -2046,6 +2186,7 @@ export type Database = {
           card_type?: string | null
           created_at?: string
           dismissed?: boolean
+          group_id?: string | null
           group_name?: string | null
           id?: string
           snoozed_until?: string | null
@@ -2058,13 +2199,22 @@ export type Database = {
           card_type?: string | null
           created_at?: string
           dismissed?: boolean
+          group_id?: string | null
           group_name?: string | null
           id?: string
           snoozed_until?: string | null
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "student_card_state_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "card_groups"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       student_documents: {
         Row: {
@@ -2104,6 +2254,62 @@ export type Database = {
           verified_by?: string | null
         }
         Relationships: []
+      }
+      study_guides: {
+        Row: {
+          card_key: string | null
+          card_type: string | null
+          content: string
+          created_at: string
+          focus_areas: string[]
+          id: string
+          model: string | null
+          status: string
+          subject: string | null
+          title: string
+          topic_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          card_key?: string | null
+          card_type?: string | null
+          content?: string
+          created_at?: string
+          focus_areas?: string[]
+          id?: string
+          model?: string | null
+          status?: string
+          subject?: string | null
+          title: string
+          topic_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          card_key?: string | null
+          card_type?: string | null
+          content?: string
+          created_at?: string
+          focus_areas?: string[]
+          id?: string
+          model?: string | null
+          status?: string
+          subject?: string | null
+          title?: string
+          topic_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "study_guides_topic_id_fkey"
+            columns: ["topic_id"]
+            isOneToOne: false
+            referencedRelation: "course_topics"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       study_plans: {
         Row: {
