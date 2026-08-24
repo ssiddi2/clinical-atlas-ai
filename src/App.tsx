@@ -15,6 +15,7 @@ import Landing from "./pages/Landing";
 // All other pages loaded lazily for code splitting
 const Auth = lazy(() => import("./pages/Auth"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
+const DashboardNext = lazy(() => import("./pages/DashboardNext"));
 const Atlas = lazy(() => import("./pages/Atlas"));
 const Programs = lazy(() => import("./pages/Programs"));
 const Rotations = lazy(() => import("./pages/Rotations"));
@@ -131,6 +132,7 @@ const App = () => {
 
             {/* Dashboard (authenticated) */}
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/dashboard/next" element={<DashboardNext />} />
 
             {/* Curriculum (authenticated) */}
             <Route path="/curriculum" element={<Curriculum />} />
