@@ -183,34 +183,65 @@ serve(async (req) => {
       throw new Error("LOVABLE_API_KEY is not configured");
     }
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    const sseHeaders = {
+      ...corsHeaders,
+      "Content-Type": "text/event-stream",
+      "Cache-Control": "no-cache",
+      "Connection": "keep-alive",
+    };
+
+    // Phase 1 — let ATLAS decide whether it needs images / a web page.
+    // Runs non-streaming so tool calls can be resolved, then the final answer streams.
+    for (let round = 0; round < 3; round++) {
+      const resolve = await fetch(GATEWAY_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${LOVABLE_API_KEY}` },
+        body: JSON.stringify({
+          model: MODEL,
+          messages,
+          max_tokens: 2000,
+          temperature: 0.7,
+          tools: ATLAS_TOOLS,
+        }),
+      });
+
+      if (!resolve.ok) {
+        const mapped = gatewayError(resolve.status);
+        if (mapped) return mapped;
+        console.error("AI Gateway error (tool phase):", resolve.status, await resolve.text());
+        throw new Error(`AI Gateway error: ${resolve.status}`);
+      }
+
+      const data = await resolve.json();
+      const choice = data?.choices?.[0]?.message;
+      const toolCalls = choice?.tool_calls ?? [];
+
+      if (toolCalls.length === 0) {
+        // No visuals needed — deliver the answer we already have.
+        const text = typeof choice?.content === "string" ? choice.content : "";
+        if (!text) break;
+        console.log(`ATLAS direct response for user: ${userId}, conversation: ${conversationId}`);
+        return new Response(textAsSSE(text), { headers: sseHeaders });
+      }
+
+      messages.push({ role: "assistant", content: choice.content ?? "", tool_calls: toolCalls } as any);
+      for (const call of toolCalls) {
+        const result = await runAtlasTool(call.function?.name, call.function?.arguments ?? "{}");
+        messages.push({ role: "tool", tool_call_id: call.id, content: result } as any);
+      }
+      console.log(`ATLAS ran ${toolCalls.length} tool call(s) for user ${userId}`);
+    }
+
+    // Phase 2 — stream the final answer with the tool results in context.
+    const response = await fetch(GATEWAY_URL, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${LOVABLE_API_KEY}`,
-      },
-      body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
-        messages,
-        max_tokens: 2000,
-        temperature: 0.7,
-        stream: true,
-      }),
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${LOVABLE_API_KEY}` },
+      body: JSON.stringify({ model: MODEL, messages, max_tokens: 2000, temperature: 0.7, stream: true }),
     });
 
     if (!response.ok) {
-      if (response.status === 429) {
-        return new Response(
-          JSON.stringify({ error: "rate_limited", message: "You're sending messages too quickly. Please wait a moment and try again." }),
-          { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
-      }
-      if (response.status === 402) {
-        return new Response(
-          JSON.stringify({ error: "credits_exhausted", message: "AI credits have been exhausted. Please try again later." }),
-          { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
-      }
+      const mapped = gatewayError(response.status);
+      if (mapped) return mapped;
       const errorText = await response.text();
       console.error("AI Gateway error:", response.status, errorText);
       throw new Error(`AI Gateway error: ${response.status}`);
@@ -218,15 +249,8 @@ serve(async (req) => {
 
     console.log(`ATLAS streaming response for user: ${userId}, conversation: ${conversationId}`);
 
-    // Stream the response directly back to the client
-    return new Response(response.body, {
-      headers: {
-        ...corsHeaders,
-        "Content-Type": "text/event-stream",
-        "Cache-Control": "no-cache",
-        "Connection": "keep-alive",
-      },
-    });
+    return new Response(response.body, { headers: sseHeaders });
+
   } catch (error) {
     console.error("Error in atlas-chat function:", error);
     const errorMessage = error instanceof Error ? error.message : "Unknown error";
