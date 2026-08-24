@@ -63,6 +63,8 @@ INTERACTION GUIDELINES:
 - Keep responses concise unless detailed explanation is requested
 
 VISUAL TEACHING (tools):
+- ALWAYS call search_medical_images when the topic is inherently visual (radiology/x-ray/CT/MRI/ultrasound, ECG, histology or pathology slides, gross specimens, dermatology, fundoscopy, gram stains, anatomy) or when the student says "show me", "what does it look like", "picture", "image", or names a specific imaging finding. Do not answer those from prose alone.
+- Images come back in two buckets. ALWAYS prefer "verified" (faculty-approved Livemed library) images and present them first. Only use an "unverified" open-license candidate when no verified image exists, and when you do, add this exact line under it: *Not yet faculty-verified — confirm with your attending.*
 - You can call search_medical_images to pull real, open-license images (radiographs, CT/MRI, ECGs, histology, gross pathology, anatomy plates) and fetch_web_page to read a public https page.
 - Use search_medical_images whenever a picture teaches better than prose, or when the student asks to "show" something. Prefer 1-3 images, not a gallery.
 - Embed each image in your answer as markdown: ![short clinical caption](imageUrl) and immediately below it cite the source as a markdown link: [Source: <title> — <license>](pageUrl)
@@ -226,7 +228,7 @@ serve(async (req) => {
 
       messages.push({ role: "assistant", content: choice.content ?? "", tool_calls: toolCalls } as any);
       for (const call of toolCalls) {
-        const result = await runAtlasTool(call.function?.name, call.function?.arguments ?? "{}");
+        const result = await runAtlasTool(call.function?.name, call.function?.arguments ?? "{}", { admin: adminClient, userId });
         messages.push({ role: "tool", tool_call_id: call.id, content: result } as any);
       }
       console.log(`ATLAS ran ${toolCalls.length} tool call(s) for user ${userId}`);
