@@ -30,7 +30,7 @@ export function usePredictiveCards(userId: string | null | undefined) {
       supabase.from("course_enrollments").select("course_id").eq("student_id", userId).eq("status", "approved"),
       supabase.from("course_enrollments").select("id", { count: "exact", head: true }).eq("student_id", userId).eq("status", "invited"),
       supabase.from("qbank_user_progress").select("is_correct").eq("user_id", userId).limit(500),
-      supabase.from("student_card_state").select("card_key, bookmarked, group_name, snoozed_until, dismissed").eq("user_id", userId),
+      supabase.from("student_card_state").select("card_key, bookmarked, group_name, group_id, snoozed_until, dismissed").eq("user_id", userId),
     ]);
 
     const profile = profileRes.data;
@@ -75,6 +75,9 @@ export function usePredictiveCards(userId: string | null | undefined) {
           atlasContext: `The student is preparing for the lecture "${l.title}".`,
           askPrompt: `What should I review before the "${l.title}" lecture?`,
           studyGuidePrompt: `Build a short pre-lecture study guide for "${l.title}".`,
+          journey: "lecture",
+          classroomId: l.id,
+          focus: [l.title],
         });
       });
 
@@ -102,6 +105,10 @@ export function usePredictiveCards(userId: string | null | undefined) {
           atlasContext: `The student is working through the learning unit "${resumeTopic.title}" in the course "${course?.title || ""}".`,
           askPrompt: `Teach me the high-yield essentials of ${resumeTopic.title}.`,
           studyGuidePrompt: `Build a study guide for ${resumeTopic.title} with high-yield points and exam traps.`,
+          journey: "topic",
+          topicId: resumeTopic.id,
+          focus: [resumeTopic.title],
+          subject: course?.title ?? null ?? undefined,
         });
       }
 
@@ -125,6 +132,9 @@ export function usePredictiveCards(userId: string | null | undefined) {
           atlasContext: `The student scored ${weakUnit.quiz_score}% on the unit quiz for "${weakTopic.title}".`,
           askPrompt: `I scored ${weakUnit.quiz_score}% on ${weakTopic.title}. Where am I likely going wrong?`,
           studyGuidePrompt: `Build a remediation plan for ${weakTopic.title} targeting my weak points.`,
+          journey: "topic",
+          topicId: weakTopic.id,
+          focus: [weakTopic.title],
         });
       }
     }
@@ -162,6 +172,9 @@ export function usePredictiveCards(userId: string | null | undefined) {
         atlasContext: `The student's diagnostic assessment flagged "${area}" as a weak area.`,
         askPrompt: `Walk me through the highest-yield concepts in ${area}.`,
         studyGuidePrompt: `Build a one-week study guide for ${area}.`,
+        journey: "drill",
+        focus: [area],
+        subject: profile?.target_specialty ?? undefined,
       });
     });
 
@@ -181,6 +194,8 @@ export function usePredictiveCards(userId: string | null | undefined) {
         atlasContext: `The student has answered ${attempted} QBank questions and needs 25 to unlock score prediction.`,
         askPrompt: "How should I structure my first QBank blocks?",
         studyGuidePrompt: "Build a QBank practice plan for my first 25 questions.",
+        journey: "drill",
+        focus: (profile?.weak_areas || []).slice(0, 3),
       });
     } else {
       const correct = (qbankRes.data || []).filter((q: any) => q.is_correct).length;
@@ -199,6 +214,8 @@ export function usePredictiveCards(userId: string | null | undefined) {
         atlasContext: `The student's QBank accuracy is ${pct}% across ${attempted} questions.`,
         askPrompt: `My QBank accuracy is ${pct}%. How do I push it higher?`,
         studyGuidePrompt: "Build a QBank strategy to raise my accuracy.",
+        journey: "drill",
+        focus: (profile?.weak_areas || []).slice(0, 3),
       });
     }
 
@@ -225,6 +242,7 @@ export function usePredictiveCards(userId: string | null | undefined) {
       stateMap[s.card_key] = {
         bookmarked: s.bookmarked,
         group_name: s.group_name,
+        group_id: s.group_id ?? null,
         snoozed_until: s.snoozed_until,
         dismissed: s.dismissed,
       };
@@ -239,7 +257,8 @@ export function usePredictiveCards(userId: string | null | undefined) {
 
   const updateState = useCallback(async (card: PredictiveCard, patch: Partial<CardState>) => {
     if (!userId) return;
-    const current = states[card.key] || { bookmarked: false, group_name: null, snoozed_until: null, dismissed: false };
+    const current = states[card.key]
+      || { bookmarked: false, group_name: null, group_id: null, snoozed_until: null, dismissed: false };
     const merged = { ...current, ...patch };
     setStates((prev) => ({ ...prev, [card.key]: merged }));
     await supabase.from("student_card_state").upsert({
@@ -248,6 +267,7 @@ export function usePredictiveCards(userId: string | null | undefined) {
       card_type: card.type,
       bookmarked: merged.bookmarked,
       group_name: merged.group_name,
+      group_id: merged.group_id ?? null,
       snoozed_until: merged.snoozed_until,
       dismissed: merged.dismissed,
     }, { onConflict: "user_id,card_key" });
