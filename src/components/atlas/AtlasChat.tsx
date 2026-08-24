@@ -1,15 +1,76 @@
-import { useEffect, useRef, ReactNode } from "react";
+import { useEffect, useRef, ReactNode, createContext, useContext, useState } from "react";
 import ReactMarkdown from "react-markdown";
-import { Brain, ExternalLink, Loader2, Send, Sparkles, X } from "lucide-react";
+import { Brain, Bookmark, BookmarkCheck, ExternalLink, Loader2, Send, Sparkles, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import type { useAtlasChat } from "./useAtlasChat";
 
+/** What a student can keep from an ATLAS answer and later study. */
+export interface ArtifactDraft {
+  kind: "image" | "link";
+  title: string;
+  caption?: string | null;
+  imageUrl?: string | null;
+  sourceUrl?: string | null;
+}
+
+/**
+ * Lets any surface that renders ATLAS markdown offer "keep this" on the media
+ * ATLAS shows. When no provider is present the figures render read-only.
+ */
+export const ArtifactCaptureContext = createContext<
+  ((artifact: ArtifactDraft) => Promise<boolean> | boolean) | null
+>(null);
+
+export const ArtifactCaptureProvider = ({
+  onSave,
+  children,
+}: {
+  onSave: (artifact: ArtifactDraft) => Promise<boolean> | boolean;
+  children: ReactNode;
+}) => <ArtifactCaptureContext.Provider value={onSave}>{children}</ArtifactCaptureContext.Provider>;
+
+const KeepButton = ({ artifact }: { artifact: ArtifactDraft }) => {
+  const onSave = useContext(ArtifactCaptureContext);
+  const [saved, setSaved] = useState(false);
+  const [busy, setBusy] = useState(false);
+  if (!onSave) return null;
+
+  return (
+    <Button
+      type="button"
+      size="sm"
+      variant={saved ? "secondary" : "outline"}
+      disabled={busy || saved}
+      className="rounded-full h-7 px-2.5 text-xs"
+      onClick={async () => {
+        setBusy(true);
+        const ok = await onSave(artifact);
+        setBusy(false);
+        if (ok) setSaved(true);
+      }}
+    >
+      {busy ? (
+        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+      ) : saved ? (
+        <>
+          <BookmarkCheck className="h-3.5 w-3.5 mr-1" /> Kept
+        </>
+      ) : (
+        <>
+          <Bookmark className="h-3.5 w-3.5 mr-1" /> Keep &amp; study
+        </>
+      )}
+    </Button>
+  );
+};
+
 /**
  * Renders ATLAS markdown, including embedded teaching media. Images ATLAS pulls
  * from the web are shown in a framed figure with their caption; links open in a
- * new tab so the student can check the original source.
+ * new tab so the student can check the original source. Each figure can be kept
+ * as an artifact and later turned into a focused learning session.
  */
 export const markdownComponents = {
   img: ({ src, alt }: { src?: string; alt?: string }) => {
@@ -24,7 +85,21 @@ export const markdownComponents = {
             className="w-full max-h-[420px] rounded-xl border border-border object-contain bg-muted"
           />
         </a>
-        {alt && <figcaption className="mt-1.5 text-xs text-muted-foreground">{alt}</figcaption>}
+        <div className="mt-1.5 flex items-start justify-between gap-3">
+          {alt ? (
+            <figcaption className="text-xs text-muted-foreground">{alt}</figcaption>
+          ) : (
+            <span />
+          )}
+          <KeepButton
+            artifact={{
+              kind: "image",
+              title: (alt ?? "Teaching image").slice(0, 160),
+              caption: alt ?? null,
+              imageUrl: src,
+            }}
+          />
+        </div>
       </figure>
     );
   },
@@ -40,6 +115,7 @@ export const markdownComponents = {
     </a>
   ),
 };
+
 
 
 export interface AtlasContext {
