@@ -6,7 +6,8 @@ import { User } from "@supabase/supabase-js";
 import { LayoutDashboard, Loader2, MessageSquare, NotebookPen, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import AppShell from "@/components/layout/AppShell";
-import AtlasChat, { AtlasContext } from "@/components/atlas/AtlasChat";
+import AtlasChat, { AtlasContext, ArtifactCaptureProvider } from "@/components/atlas/AtlasChat";
+import { useArtifacts } from "@/components/atlas/useArtifacts";
 import { useAtlasChat } from "@/components/atlas/useAtlasChat";
 import SplitPane from "@/components/dashboard-next/SplitPane";
 import PredictiveCardItem from "@/components/dashboard-next/PredictiveCardItem";
@@ -55,6 +56,7 @@ const DashboardNext = () => {
   }, [navigate]);
 
   const chat = useAtlasChat(user?.id);
+  const { save: saveArtifact } = useArtifacts(user?.id);
   const { cards, states, loading, updateState, reload } = usePredictiveCards(user?.id);
   const { groups, createGroup, removeGroup } = useCardGroups(user?.id);
   const { guides, generating, generate, remove } = useStudyGuides(user?.id);
@@ -204,6 +206,7 @@ const DashboardNext = () => {
   );
 
   const atlasPane = (
+    <ArtifactCaptureProvider onSave={(draft) => saveArtifact(draft)}>
     <AtlasChat
       chat={chat}
       draft={draft}
@@ -215,6 +218,7 @@ const DashboardNext = () => {
       suggestions={suggestions}
       className="bg-muted/20"
     />
+    </ArtifactCaptureProvider>
   );
 
   if (authLoading) {
