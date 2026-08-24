@@ -4,6 +4,7 @@ import { Menu, X } from "lucide-react";
 import { useState, useEffect, useCallback } from "react";
 import livemedLogo from "@/assets/livemed-logo-light.png.asset.json";
 import LanguageSwitcher from "./LanguageSwitcher";
+import BackButton from "./BackButton";
 import { useTranslation } from "@/i18n";
 
 const Header = () => {
@@ -36,7 +37,9 @@ const Header = () => {
             : "bg-white/70 backdrop-blur-md border-border/60"
         }`}
       >
-        {/* Logo */}
+        {/* Back + Logo */}
+        <div className="flex items-center gap-1.5 min-w-0">
+        <BackButton fallback="/" className="-ml-1" />
         <Link to="/" className="flex items-center group flex-shrink-0">
           <img
             src={livemedLogo.url}
@@ -48,6 +51,7 @@ const Header = () => {
             decoding="sync"
           />
         </Link>
+        </div>
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-8">
