@@ -32,3 +32,9 @@ verify_jwt = false
 
 [functions.payments-webhook]
 verify_jwt = false
+
+[functions.generate-study-guide]
+verify_jwt = false
+
+[functions.lecture-debrief]
+verify_jwt = false
