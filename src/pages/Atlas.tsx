@@ -158,6 +158,7 @@ const Atlas = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const assistantContentRef = useRef("");
+  const { save: saveArtifact } = useArtifacts(user?.id);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
@@ -358,6 +359,15 @@ const Atlas = () => {
   ];
 
   return (
+    <ArtifactCaptureProvider
+      onSave={(draft) =>
+        saveArtifact({
+          ...draft,
+          conversationId: currentConversation,
+          contextExcerpt: messages.filter((m) => m.role === "user").slice(-1)[0]?.content?.slice(0, 500) ?? null,
+        })
+      }
+    >
     <div className="h-screen flex flex-col bg-background">
       {/* Unified Top Bar */}
       <header className="sticky top-0 z-40 h-14 flex items-center px-3 md:px-4 border-b border-border bg-background">
@@ -509,6 +519,7 @@ const Atlas = () => {
       </div>
       </div>
     </div>
+    </ArtifactCaptureProvider>
   );
 };
 
