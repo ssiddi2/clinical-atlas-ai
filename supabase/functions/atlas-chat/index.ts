@@ -1,5 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { ATLAS_TOOLS, runAtlasTool } from "../_shared/media-tools.ts";
+
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -60,7 +62,49 @@ INTERACTION GUIDELINES:
 - Format responses clearly with headers and bullet points when helpful
 - Keep responses concise unless detailed explanation is requested
 
+VISUAL TEACHING (tools):
+- You can call search_medical_images to pull real, open-license images (radiographs, CT/MRI, ECGs, histology, gross pathology, anatomy plates) and fetch_web_page to read a public https page.
+- Use search_medical_images whenever a picture teaches better than prose, or when the student asks to "show" something. Prefer 1-3 images, not a gallery.
+- Embed each image in your answer as markdown: ![short clinical caption](imageUrl) and immediately below it cite the source as a markdown link: [Source: <title> — <license>](pageUrl)
+- Never invent or guess an image URL — only embed URLs returned by the tool. If the tool returns nothing useful, say so and describe the finding in words instead.
+- Teach from the image: point out the specific findings the student should look for before revealing the interpretation.
+- Open-license Commons images are teaching aids, not diagnostic references — remind students to confirm findings against a radiologist/attending or an authoritative atlas.
+
 Remember: You are the most patient, consistent, and rigorous professor a student will ever have.`;
+
+const MODEL = "google/gemini-3-flash-preview";
+const GATEWAY_URL = "https://ai.gateway.lovable.dev/v1/chat/completions";
+
+function gatewayError(status: number) {
+  if (status === 429) {
+    return new Response(
+      JSON.stringify({ error: "rate_limited", message: "You're sending messages too quickly. Please wait a moment and try again." }),
+      { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
+  }
+  if (status === 402) {
+    return new Response(
+      JSON.stringify({ error: "credits_exhausted", message: "AI credits have been exhausted. Please try again later." }),
+      { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
+  }
+  return null;
+}
+
+/** Wraps already-generated text as an OpenAI-style SSE stream for the client. */
+function textAsSSE(text: string) {
+  const encoder = new TextEncoder();
+  const stream = new ReadableStream({
+    start(controller) {
+      const chunk = { choices: [{ delta: { content: text } }] };
+      controller.enqueue(encoder.encode(`data: ${JSON.stringify(chunk)}\n\n`));
+      controller.enqueue(encoder.encode("data: [DONE]\n\n"));
+      controller.close();
+    },
+  });
+  return stream;
+}
+
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -139,34 +183,65 @@ serve(async (req) => {
       throw new Error("LOVABLE_API_KEY is not configured");
     }
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    const sseHeaders = {
+      ...corsHeaders,
+      "Content-Type": "text/event-stream",
+      "Cache-Control": "no-cache",
+      "Connection": "keep-alive",
+    };
+
+    // Phase 1 — let ATLAS decide whether it needs images / a web page.
+    // Runs non-streaming so tool calls can be resolved, then the final answer streams.
+    for (let round = 0; round < 3; round++) {
+      const resolve = await fetch(GATEWAY_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${LOVABLE_API_KEY}` },
+        body: JSON.stringify({
+          model: MODEL,
+          messages,
+          max_tokens: 2000,
+          temperature: 0.7,
+          tools: ATLAS_TOOLS,
+        }),
+      });
+
+      if (!resolve.ok) {
+        const mapped = gatewayError(resolve.status);
+        if (mapped) return mapped;
+        console.error("AI Gateway error (tool phase):", resolve.status, await resolve.text());
+        throw new Error(`AI Gateway error: ${resolve.status}`);
+      }
+
+      const data = await resolve.json();
+      const choice = data?.choices?.[0]?.message;
+      const toolCalls = choice?.tool_calls ?? [];
+
+      if (toolCalls.length === 0) {
+        // No visuals needed — deliver the answer we already have.
+        const text = typeof choice?.content === "string" ? choice.content : "";
+        if (!text) break;
+        console.log(`ATLAS direct response for user: ${userId}, conversation: ${conversationId}`);
+        return new Response(textAsSSE(text), { headers: sseHeaders });
+      }
+
+      messages.push({ role: "assistant", content: choice.content ?? "", tool_calls: toolCalls } as any);
+      for (const call of toolCalls) {
+        const result = await runAtlasTool(call.function?.name, call.function?.arguments ?? "{}");
+        messages.push({ role: "tool", tool_call_id: call.id, content: result } as any);
+      }
+      console.log(`ATLAS ran ${toolCalls.length} tool call(s) for user ${userId}`);
+    }
+
+    // Phase 2 — stream the final answer with the tool results in context.
+    const response = await fetch(GATEWAY_URL, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${LOVABLE_API_KEY}`,
-      },
-      body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
-        messages,
-        max_tokens: 2000,
-        temperature: 0.7,
-        stream: true,
-      }),
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${LOVABLE_API_KEY}` },
+      body: JSON.stringify({ model: MODEL, messages, max_tokens: 2000, temperature: 0.7, stream: true }),
     });
 
     if (!response.ok) {
-      if (response.status === 429) {
-        return new Response(
-          JSON.stringify({ error: "rate_limited", message: "You're sending messages too quickly. Please wait a moment and try again." }),
-          { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
-      }
-      if (response.status === 402) {
-        return new Response(
-          JSON.stringify({ error: "credits_exhausted", message: "AI credits have been exhausted. Please try again later." }),
-          { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
-      }
+      const mapped = gatewayError(response.status);
+      if (mapped) return mapped;
       const errorText = await response.text();
       console.error("AI Gateway error:", response.status, errorText);
       throw new Error(`AI Gateway error: ${response.status}`);
@@ -174,15 +249,8 @@ serve(async (req) => {
 
     console.log(`ATLAS streaming response for user: ${userId}, conversation: ${conversationId}`);
 
-    // Stream the response directly back to the client
-    return new Response(response.body, {
-      headers: {
-        ...corsHeaders,
-        "Content-Type": "text/event-stream",
-        "Cache-Control": "no-cache",
-        "Connection": "keep-alive",
-      },
-    });
+    return new Response(response.body, { headers: sseHeaders });
+
   } catch (error) {
     console.error("Error in atlas-chat function:", error);
     const errorMessage = error instanceof Error ? error.message : "Unknown error";

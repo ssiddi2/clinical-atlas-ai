@@ -1,10 +1,46 @@
 import { useEffect, useRef, ReactNode } from "react";
 import ReactMarkdown from "react-markdown";
-import { Brain, Loader2, Send, Sparkles, X } from "lucide-react";
+import { Brain, ExternalLink, Loader2, Send, Sparkles, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import type { useAtlasChat } from "./useAtlasChat";
+
+/**
+ * Renders ATLAS markdown, including embedded teaching media. Images ATLAS pulls
+ * from the web are shown in a framed figure with their caption; links open in a
+ * new tab so the student can check the original source.
+ */
+export const markdownComponents = {
+  img: ({ src, alt }: { src?: string; alt?: string }) => {
+    if (!src) return null;
+    return (
+      <figure className="my-3">
+        <a href={src} target="_blank" rel="noopener noreferrer">
+          <img
+            src={src}
+            alt={alt ?? "Clinical teaching image"}
+            loading="lazy"
+            className="w-full max-h-[420px] rounded-xl border border-border object-contain bg-muted"
+          />
+        </a>
+        {alt && <figcaption className="mt-1.5 text-xs text-muted-foreground">{alt}</figcaption>}
+      </figure>
+    );
+  },
+  a: ({ href, children }: { href?: string; children?: ReactNode }) => (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="inline-flex items-center gap-1 underline decoration-dotted underline-offset-2"
+    >
+      {children}
+      <ExternalLink className="h-3 w-3 flex-shrink-0" />
+    </a>
+  ),
+};
+
 
 export interface AtlasContext {
   /** Short label shown to the student on the composer chip. */
@@ -103,7 +139,7 @@ const AtlasChat = ({
                   >
                     {msg.role === "assistant" ? (
                       <div className="prose prose-sm max-w-none text-sm [&>*:first-child]:mt-0 [&>*:last-child]:mb-0">
-                        <ReactMarkdown>{msg.content}</ReactMarkdown>
+                        <ReactMarkdown components={markdownComponents as never}>{msg.content}</ReactMarkdown>
                         {streaming && msg.id.startsWith("temp-assistant-") && (
                           <span className="inline-block w-[2px] h-[1em] bg-foreground ml-0.5 align-middle animate-pulse" />
                         )}

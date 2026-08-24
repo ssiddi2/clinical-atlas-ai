@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "@/hooks/use-toast";
 import ReactMarkdown from "react-markdown";
+import { markdownComponents } from "@/components/atlas/AtlasChat";
 import {
   Brain,
   Send,
@@ -452,7 +453,7 @@ const Atlas = () => {
                   >
                   {msg.role === "assistant" ? (
                       <div className="prose prose-sm dark:prose-invert max-w-none text-xs md:text-sm [&>*:first-child]:mt-0 [&>*:last-child]:mb-0">
-                        <ReactMarkdown>{msg.content}</ReactMarkdown>
+                        <ReactMarkdown components={markdownComponents as never}>{msg.content}</ReactMarkdown>
                         {streaming && msg.id.startsWith("temp-assistant-") && (
                           <span className="inline-block w-[2px] h-[1em] bg-foreground ml-0.5 align-middle animate-[blink_1s_steps(2)_infinite]" />
                         )}
