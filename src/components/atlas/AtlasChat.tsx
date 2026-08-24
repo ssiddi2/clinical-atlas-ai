@@ -15,7 +15,7 @@ export const markdownComponents = {
   img: ({ src, alt }: { src?: string; alt?: string }) => {
     if (!src) return null;
     return (
-      <figure className="my-3 not-prose">
+      <figure className="my-3">
         <a href={src} target="_blank" rel="noopener noreferrer">
           <img
             src={src}
