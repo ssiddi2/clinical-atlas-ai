@@ -108,7 +108,7 @@ export function usePredictiveCards(userId: string | null | undefined) {
           journey: "topic",
           topicId: resumeTopic.id,
           focus: [resumeTopic.title],
-          subject: course?.title ?? null ?? undefined,
+          subject: course?.title ?? undefined,
         });
       }
 
