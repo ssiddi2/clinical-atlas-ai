@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, ArrowRight, Brain, CheckCircle2, Loader2, Sparkles } from "lucide-react";
+import { ArrowLeft, ArrowRight, Brain, CheckCircle2, Loader2, SkipForward, Sparkles } from "lucide-react";
 
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -118,6 +118,7 @@ const LearningAssessment = () => {
   const [sectionIdx, setSectionIdx] = useState(0);
   const [answers, setAnswers] = useState<Answers>({});
   const [submitting, setSubmitting] = useState(false);
+  const [skipping, setSkipping] = useState(false);
   const [done, setDone] = useState<ReturnType<typeof scoreProfile> | null>(null);
 
   useEffect(() => {
@@ -161,6 +162,31 @@ const LearningAssessment = () => {
       });
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const handleSkip = async () => {
+    if (!userId) return;
+    setSkipping(true);
+    try {
+      const { error } = await supabase
+        .from("profiles")
+        .update({ learning_assessment_completed: true })
+        .eq("user_id", userId);
+      if (error) throw error;
+      toast({
+        title: "Skipped learning profile",
+        description: "You can retake it anytime from your profile settings.",
+      });
+      navigate("/dashboard");
+    } catch (e) {
+      toast({
+        title: "Couldn't skip",
+        description: e instanceof Error ? e.message : "Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setSkipping(false);
     }
   };
 
@@ -252,38 +278,55 @@ const LearningAssessment = () => {
           </motion.div>
         </AnimatePresence>
 
-        <div className="flex justify-between mt-6">
+        <div className="flex flex-col sm:flex-row items-center justify-between mt-6 gap-3">
           <Button
             variant="outline"
-            disabled={sectionIdx === 0 || submitting}
+            disabled={sectionIdx === 0 || submitting || skipping}
             onClick={() => setSectionIdx((i) => Math.max(0, i - 1))}
+            className="w-full sm:w-auto"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back
           </Button>
-          {isLast ? (
-            <Button disabled={!sectionComplete || submitting} onClick={handleSubmit}>
-              {submitting ? (
-                <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Saving
-                </>
-              ) : (
-                <>
-                  Finish
-                  <Sparkles className="h-4 w-4 ml-2" />
-                </>
-              )}
-            </Button>
-          ) : (
+
+          <div className="flex items-center gap-3 w-full sm:w-auto">
             <Button
-              disabled={!sectionComplete}
-              onClick={() => setSectionIdx((i) => Math.min(SECTIONS.length - 1, i + 1))}
+              variant="ghost"
+              onClick={handleSkip}
+              disabled={skipping || submitting}
+              className="flex-1 sm:flex-none"
             >
-              Continue
-              <ArrowRight className="h-4 w-4 ml-2" />
+              {skipping ? (
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              ) : (
+                <SkipForward className="h-4 w-4 mr-2" />
+              )}
+              Skip for now
             </Button>
-          )}
+            {isLast ? (
+              <Button disabled={!sectionComplete || submitting || skipping} onClick={handleSubmit}>
+                {submitting ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Saving
+                  </>
+                ) : (
+                  <>
+                    Finish
+                    <Sparkles className="h-4 w-4 ml-2" />
+                  </>
+                )}
+              </Button>
+            ) : (
+              <Button
+                disabled={!sectionComplete || skipping}
+                onClick={() => setSectionIdx((i) => Math.min(SECTIONS.length - 1, i + 1))}
+              >
+                Continue
+                <ArrowRight className="h-4 w-4 ml-2" />
+              </Button>
+            )}
+          </div>
         </div>
       </div>
     </div>
