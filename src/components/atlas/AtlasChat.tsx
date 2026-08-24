@@ -11,7 +11,7 @@ import type { useAtlasChat } from "./useAtlasChat";
  * from the web are shown in a framed figure with their caption; links open in a
  * new tab so the student can check the original source.
  */
-const markdownComponents = {
+export const markdownComponents = {
   img: ({ src, alt }: { src?: string; alt?: string }) => {
     if (!src) return null;
     return (
