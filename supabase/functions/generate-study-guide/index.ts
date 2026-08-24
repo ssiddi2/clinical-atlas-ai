@@ -94,6 +94,7 @@ serve(async (req) => {
         card_key: cardKey,
         card_type: cardType,
         topic_id: topicId,
+        artifact_id: artifactId,
         title,
         subject: parsed?.subject ?? null,
         focus_areas: focus,
