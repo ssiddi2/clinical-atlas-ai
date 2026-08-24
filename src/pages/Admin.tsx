@@ -17,6 +17,7 @@ import AdminStudents from "@/components/admin/AdminStudents";
 import AdminCourses from "@/components/admin/AdminCourses";
 import RotationApplications from "@/components/admin/RotationApplications";
 import AdminContentReviews from "@/components/admin/AdminContentReviews";
+import MediaLibraryReview from "@/components/admin/MediaLibraryReview";
 import AdminContactInquiries from "@/components/admin/AdminContactInquiries";
 import EnrollmentAuditLog from "@/components/courses/EnrollmentAuditLog";
 import { Database } from "@/integrations/supabase/types";
@@ -150,6 +151,7 @@ const Admin = () => {
             <TabsTrigger value="verifications">Verifications</TabsTrigger>
             <TabsTrigger value="inquiries">Inquiries</TabsTrigger>
             <TabsTrigger value="reviews">Content Reviews</TabsTrigger>
+            <TabsTrigger value="media">Media Library</TabsTrigger>
             <TabsTrigger value="activity">Activity Log</TabsTrigger>
           </TabsList>
 
@@ -220,6 +222,12 @@ const Admin = () => {
             <div className="bg-card rounded-lg border p-6">
               <h2 className="text-xl font-semibold mb-4">Content Reviews Audit Trail</h2>
               <AdminContentReviews />
+            </div>
+          </TabsContent>
+
+          <TabsContent value="media">
+            <div className="bg-card rounded-lg border p-6">
+              <MediaLibraryReview />
             </div>
           </TabsContent>
 

@@ -146,8 +146,140 @@ export async function fetchWebPage(url: string): Promise<{ url: string; title: s
   return { url: parsed.toString(), title, text: stripHtml(body).slice(0, 7000) };
 }
 
+export interface LibraryMedia extends MediaResult {
+  id: string;
+  modality: string | null;
+  bodyRegion: string | null;
+  teachingCaption: string | null;
+}
+
+/**
+ * Deterministic layer: faculty-approved images from our own curated library.
+ * Matched on keywords / topic tags / title / description tokens.
+ */
+export async function searchCuratedLibrary(
+  admin: any,
+  query: string,
+  limit: number,
+): Promise<LibraryMedia[]> {
+  const tokens = query
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, " ")
+    .split(/\s+/)
+    .filter((t) => t.length > 2)
+    .slice(0, 8);
+  if (tokens.length === 0) return [];
+
+  const select =
+    "id,title,description,teaching_caption,image_url,source_page_url,credit,license,modality,body_region,keywords,topic_tags,usage_count";
+  const textOr = tokens
+    .flatMap((t) => [`title.ilike.%${t}%`, `description.ilike.%${t}%`, `teaching_caption.ilike.%${t}%`])
+    .join(",");
+
+  // Two passes: free-text match, plus array-overlap on curated keywords/tags.
+  // (PostgREST `or=` cannot safely carry `{a,b}` array literals, so they stay separate.)
+  const [byText, byKeyword, byTag] = await Promise.all([
+    admin.from("medical_media").select(select).eq("status", "approved").or(textOr).limit(limit * 3),
+    admin.from("medical_media").select(select).eq("status", "approved").overlaps("keywords", tokens).limit(limit * 3),
+    admin.from("medical_media").select(select).eq("status", "approved").overlaps("topic_tags", tokens).limit(limit * 3),
+  ]);
+
+  const firstError = byText.error || byKeyword.error || byTag.error;
+  if (firstError) {
+    console.error("Curated library search failed:", firstError.message);
+  }
+
+  const byId = new Map<string, any>();
+  for (const row of [...(byText.data ?? []), ...(byKeyword.data ?? []), ...(byTag.data ?? [])]) {
+    byId.set(row.id, row);
+  }
+  const data = [...byId.values()];
+
+
+  const scored = (data ?? []).map((row: any) => {
+    const haystack = [
+      row.title,
+      row.description,
+      row.teaching_caption,
+      ...(row.keywords ?? []),
+      ...(row.topic_tags ?? []),
+    ]
+      .join(" ")
+      .toLowerCase();
+    const score = tokens.reduce((acc, t) => acc + (haystack.includes(t) ? 1 : 0), 0);
+    return { row, score };
+  });
+
+  scored.sort((a, b) => b.score - a.score || (b.row.usage_count ?? 0) - (a.row.usage_count ?? 0));
+
+  return scored.slice(0, limit).map(({ row }) => ({
+    id: row.id,
+    title: row.title,
+    imageUrl: row.image_url,
+    pageUrl: row.source_page_url ?? "",
+    credit: row.credit ?? "Livemed Academy curated library",
+    license: row.license ?? "Faculty-approved",
+    description: row.description ?? "",
+    teachingCaption: row.teaching_caption,
+    modality: row.modality,
+    bodyRegion: row.body_region,
+  }));
+}
+
+/** Files open-license candidates into the faculty review queue (pending, never auto-visible). */
+async function suggestForReview(
+  admin: any,
+  userId: string | null,
+  query: string,
+  results: MediaResult[],
+): Promise<void> {
+  if (!admin || results.length === 0) return;
+  const rows = results.map((r) => ({
+    title: r.title,
+    description: r.description || null,
+    image_url: r.imageUrl,
+    source_page_url: r.pageUrl,
+    credit: r.credit,
+    license: r.license,
+    keywords: query
+      .toLowerCase()
+      .replace(/[^a-z0-9\s-]/g, " ")
+      .split(/\s+/)
+      .filter((t) => t.length > 2)
+      .slice(0, 8),
+    status: "pending",
+    suggested_by: userId,
+    suggested_query: query,
+  }));
+
+  const { error } = await admin
+    .from("medical_media")
+    .upsert(rows, { onConflict: "image_url", ignoreDuplicates: true });
+  if (error) console.error("Could not queue media suggestions:", error.message);
+}
+
+async function bumpUsage(admin: any, ids: string[]): Promise<void> {
+  if (!admin || ids.length === 0) return;
+  for (const id of ids) {
+    const { data } = await admin.from("medical_media").select("usage_count").eq("id", id).maybeSingle();
+    await admin
+      .from("medical_media")
+      .update({ usage_count: (data?.usage_count ?? 0) + 1 })
+      .eq("id", id);
+  }
+}
+
+export interface AtlasToolContext {
+  admin?: any;
+  userId?: string | null;
+}
+
 /** Runs one tool call and returns a JSON string for the model. */
-export async function runAtlasTool(name: string, rawArgs: string): Promise<string> {
+export async function runAtlasTool(
+  name: string,
+  rawArgs: string,
+  ctx: AtlasToolContext = {},
+): Promise<string> {
   let args: any = {};
   try {
     args = rawArgs ? JSON.parse(rawArgs) : {};
@@ -157,11 +289,47 @@ export async function runAtlasTool(name: string, rawArgs: string): Promise<strin
 
   try {
     if (name === "search_medical_images") {
-      const results = await searchMedicalImages(String(args.query ?? ""), Number(args.limit ?? 3));
-      if (results.length === 0) {
-        return JSON.stringify({ results: [], note: "No open-license images matched. Try broader terms." });
+      const query = String(args.query ?? "");
+      const count = Math.min(6, Math.max(1, Math.round(Number(args.limit ?? 3))));
+
+      // Layer 1 — deterministic: our faculty-approved library.
+      const curated = ctx.admin ? await searchCuratedLibrary(ctx.admin, query, count) : [];
+      await bumpUsage(ctx.admin, curated.map((c) => c.id));
+
+      // Layer 2 — fallback: open-license web search for long-tail topics.
+      let fallback: MediaResult[] = [];
+      if (curated.length < count) {
+        try {
+          fallback = await searchMedicalImages(query, count - curated.length);
+        } catch (err) {
+          console.error("Commons fallback failed:", err);
+        }
+        // Everything surfaced from the web is queued for faculty verification.
+        await suggestForReview(ctx.admin, ctx.userId ?? null, query, fallback);
       }
-      return JSON.stringify({ results });
+
+      if (curated.length === 0 && fallback.length === 0) {
+        return JSON.stringify({ results: [], note: "No images matched. Try broader terms." });
+      }
+
+      return JSON.stringify({
+        verified: curated.map((c) => ({
+          title: c.title,
+          imageUrl: c.imageUrl,
+          pageUrl: c.pageUrl,
+          credit: c.credit,
+          license: c.license,
+          description: c.teachingCaption || c.description,
+          modality: c.modality,
+          bodyRegion: c.bodyRegion,
+          faculty_verified: true,
+        })),
+        unverified: fallback.map((f) => ({ ...f, faculty_verified: false })),
+        note:
+          curated.length > 0
+            ? "Prefer the faculty-verified images. Any unverified image must carry the unverified caveat."
+            : "No faculty-verified image exists for this topic yet; these are open-license candidates queued for faculty review — label them as not yet faculty-verified.",
+      });
     }
     if (name === "fetch_web_page") {
       return JSON.stringify(await fetchWebPage(String(args.url ?? "")));
@@ -172,3 +340,4 @@ export async function runAtlasTool(name: string, rawArgs: string): Promise<strin
     return JSON.stringify({ error: error instanceof Error ? error.message : "Tool failed" });
   }
 }
+

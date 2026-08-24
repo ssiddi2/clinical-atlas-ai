@@ -1421,6 +1421,89 @@ export type Database = {
           },
         ]
       }
+      medical_media: {
+        Row: {
+          body_region: string | null
+          created_at: string
+          credit: string | null
+          description: string | null
+          id: string
+          image_url: string
+          keywords: string[]
+          license: string | null
+          modality: string | null
+          review_notes: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          source_page_url: string | null
+          specialty_id: string | null
+          status: string
+          suggested_by: string | null
+          suggested_query: string | null
+          teaching_caption: string | null
+          title: string
+          topic_tags: string[]
+          updated_at: string
+          usage_count: number
+        }
+        Insert: {
+          body_region?: string | null
+          created_at?: string
+          credit?: string | null
+          description?: string | null
+          id?: string
+          image_url: string
+          keywords?: string[]
+          license?: string | null
+          modality?: string | null
+          review_notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          source_page_url?: string | null
+          specialty_id?: string | null
+          status?: string
+          suggested_by?: string | null
+          suggested_query?: string | null
+          teaching_caption?: string | null
+          title: string
+          topic_tags?: string[]
+          updated_at?: string
+          usage_count?: number
+        }
+        Update: {
+          body_region?: string | null
+          created_at?: string
+          credit?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string
+          keywords?: string[]
+          license?: string | null
+          modality?: string | null
+          review_notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          source_page_url?: string | null
+          specialty_id?: string | null
+          status?: string
+          suggested_by?: string | null
+          suggested_query?: string | null
+          teaching_caption?: string | null
+          title?: string
+          topic_tags?: string[]
+          updated_at?: string
+          usage_count?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "medical_media_specialty_id_fkey"
+            columns: ["specialty_id"]
+            isOneToOne: false
+            referencedRelation: "specialties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       modules: {
         Row: {
           content_type: string | null

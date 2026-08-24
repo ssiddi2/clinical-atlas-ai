@@ -17,6 +17,7 @@ const Auth = lazy(() => import("./pages/Auth"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const DashboardNext = lazy(() => import("./pages/DashboardNext"));
 const Atlas = lazy(() => import("./pages/Atlas"));
+const MediaLibrary = lazy(() => import("./pages/MediaLibrary"));
 const Programs = lazy(() => import("./pages/Programs"));
 const Rotations = lazy(() => import("./pages/Rotations"));
 const VirtualRounds = lazy(() => import("./pages/VirtualRounds"));
@@ -187,6 +188,7 @@ const App = () => {
 
             {/* Admin Dashboard (platform_admin only) */}
             <Route path="/admin" element={<Admin />} />
+            <Route path="/media-library" element={<MediaLibrary />} />
 
             {/* Physician Letters of Recommendation */}
             <Route path="/lor" element={<LORRequests />} />
