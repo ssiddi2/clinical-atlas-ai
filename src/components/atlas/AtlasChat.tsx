@@ -139,7 +139,7 @@ const AtlasChat = ({
                   >
                     {msg.role === "assistant" ? (
                       <div className="prose prose-sm max-w-none text-sm [&>*:first-child]:mt-0 [&>*:last-child]:mb-0">
-                        <ReactMarkdown>{msg.content}</ReactMarkdown>
+                        <ReactMarkdown components={markdownComponents as never}>{msg.content}</ReactMarkdown>
                         {streaming && msg.id.startsWith("temp-assistant-") && (
                           <span className="inline-block w-[2px] h-[1em] bg-foreground ml-0.5 align-middle animate-pulse" />
                         )}
