@@ -66,13 +66,24 @@ const DashboardNext = () => {
   const cardPane = (
     <div className="h-full overflow-y-auto">
       <div className="px-4 md:px-6 py-6 space-y-4 max-w-2xl mx-auto pb-32 md:pb-10">
-        <header>
-          <p className="text-sm text-muted-foreground">Welcome back</p>
-          <h1 className="text-2xl font-semibold tracking-tight">{firstName}, here's what matters now</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Surfaced from your courses, lectures and question data. Swipe a card away to snooze it for a day.
-          </p>
+        <header className="flex items-start justify-between gap-3">
+          <div>
+            <p className="text-sm text-muted-foreground">Welcome back</p>
+            <h1 className="text-2xl font-semibold tracking-tight">{firstName}, here's what matters now</h1>
+            <p className="text-sm text-muted-foreground mt-1">
+              Surfaced from your courses, lectures and question data. Swipe a card away to snooze it for a day.
+            </p>
+          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="rounded-full flex-shrink-0"
+            onClick={() => navigate("/dashboard")}
+          >
+            <LayoutDashboard className="h-4 w-4 mr-1.5" /> Classic
+          </Button>
         </header>
+
 
         {loading ? (
           <div className="flex items-center gap-2 text-muted-foreground text-sm py-10">
