@@ -77,6 +77,18 @@ function markdownSafeUrl(raw: string): string {
   }
 }
 
+/**
+ * Wikimedia now serves only an allowed set of thumbnail widths and answers
+ * anything else with HTTP 400 ("Use thumbnail sizes listed on ..."), which shows
+ * up as a broken image. Any other width falls back to the full-size file.
+ */
+const ALLOWED_THUMB_WIDTHS = new Set([250, 320, 500, 640, 800, 960, 1024, 1280, 2560]);
+function safeCommonsImageUrl(thumbUrl?: string, originalUrl?: string): string {
+  const width = Number(thumbUrl?.match(/\/(\d+)px-/)?.[1] ?? 0);
+  if (thumbUrl && width && ALLOWED_THUMB_WIDTHS.has(width)) return thumbUrl;
+  return originalUrl || thumbUrl || "";
+}
+
 
 function stripHtml(html: string): string {
   return html
