@@ -61,6 +61,23 @@ export const ATLAS_TOOLS = [
 
 const UA = "LivemedAcademy-ATLAS/1.0 (medical education; contact info@livemedhealth.com)";
 
+/**
+ * Makes an image URL safe to embed in markdown: drops tracking query strings
+ * (Commons appends utm_* params) and escapes the parentheses/spaces that break
+ * markdown `![](...)` parsing and produce a broken-image placeholder.
+ */
+function markdownSafeUrl(raw: string): string {
+  if (!raw) return raw;
+  try {
+    const u = new URL(raw);
+    u.search = "";
+    return u.toString().replace(/\(/g, "%28").replace(/\)/g, "%29").replace(/ /g, "%20");
+  } catch {
+    return raw;
+  }
+}
+
+
 function stripHtml(html: string): string {
   return html
     .replace(/<script[\s\S]*?<\/script>/gi, " ")
