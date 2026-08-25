@@ -1,6 +1,6 @@
 import { useEffect, useRef, ReactNode, createContext, useContext, useState } from "react";
 import ReactMarkdown from "react-markdown";
-import { Brain, Bookmark, BookmarkCheck, ExternalLink, Loader2, Send, Sparkles, X } from "lucide-react";
+import { Brain, Bookmark, BookmarkCheck, ExternalLink, ImageOff, Loader2, Send, Sparkles, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -72,25 +72,39 @@ const KeepButton = ({ artifact }: { artifact: ArtifactDraft }) => {
  * new tab so the student can check the original source. Each figure can be kept
  * as an artifact and later turned into a focused learning session.
  */
-export const markdownComponents = {
-  img: ({ src, alt }: { src?: string; alt?: string }) => {
-    if (!src) return null;
-    return (
-      <figure className="my-3">
+const TeachingImage = ({ src, alt }: { src: string; alt?: string }) => {
+  const [failed, setFailed] = useState(false);
+
+  return (
+    <figure className="my-3">
+      {failed ? (
+        <a
+          href={src}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-2 rounded-xl border border-border bg-muted px-3 py-3 text-xs text-muted-foreground no-underline"
+        >
+          <ImageOff className="h-4 w-4 flex-shrink-0" />
+          <span>
+            This image couldn&apos;t load here — open it at the source
+            <ExternalLink className="inline h-3 w-3 ml-1 align-[-1px]" />
+          </span>
+        </a>
+      ) : (
         <a href={src} target="_blank" rel="noopener noreferrer">
           <img
             src={src}
             alt={alt ?? "Clinical teaching image"}
             loading="lazy"
+            referrerPolicy="no-referrer"
+            onError={() => setFailed(true)}
             className="w-full max-h-[420px] rounded-xl border border-border object-contain bg-muted"
           />
         </a>
-        <div className="mt-1.5 flex items-start justify-between gap-3">
-          {alt ? (
-            <figcaption className="text-xs text-muted-foreground">{alt}</figcaption>
-          ) : (
-            <span />
-          )}
+      )}
+      <div className="mt-1.5 flex items-start justify-between gap-3">
+        {alt ? <figcaption className="text-xs text-muted-foreground">{alt}</figcaption> : <span />}
+        {!failed && (
           <KeepButton
             artifact={{
               kind: "image",
@@ -99,10 +113,18 @@ export const markdownComponents = {
               imageUrl: src,
             }}
           />
-        </div>
-      </figure>
-    );
+        )}
+      </div>
+    </figure>
+  );
+};
+
+export const markdownComponents = {
+  img: ({ src, alt }: { src?: string; alt?: string }) => {
+    if (!src) return null;
+    return <TeachingImage src={src} alt={alt} />;
   },
+
   a: ({ href, children }: { href?: string; children?: ReactNode }) => (
     <a
       href={href}
