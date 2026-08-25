@@ -2279,7 +2279,7 @@ ON CONFLICT DO NOTHING;
 -- 1. Canonical core-curriculum course that owns the lane shells -------------
 INSERT INTO public.courses (id, instructor_id, title, description, status)
 SELECT '11111111-1111-4111-8111-000000000001',
-       (SELECT user_id FROM public.user_roles WHERE role = 'platform_admin' ORDER BY created_at LIMIT 1),
+       (SELECT user_id FROM public.user_roles WHERE role = 'platform_admin' ORDER BY user_id LIMIT 1),
        'Livemed Core Curriculum — USMLE Step 2 CK',
        'Faculty workspace holding one learning-unit shell per USMLE Step 2 CK lane. Objectives are drafts generated from the published content outline and require faculty review before release.',
        'draft'
