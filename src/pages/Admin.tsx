@@ -231,6 +231,13 @@ const Admin = () => {
             </div>
           </TabsContent>
 
+          <TabsContent value="standards">
+            <div className="bg-card rounded-lg border p-6">
+              <CurriculumStandards />
+            </div>
+          </TabsContent>
+
+
           <TabsContent value="activity">
             <div className="bg-card rounded-lg border p-6">
               <h2 className="text-xl font-semibold mb-1">Enrollment Activity Log</h2>
