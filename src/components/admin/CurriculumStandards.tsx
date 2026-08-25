@@ -14,6 +14,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
+import LaneAuthoringQueue from "./LaneAuthoringQueue";
+
 import {
   BookMarked,
   ExternalLink,
@@ -265,8 +267,10 @@ export default function CurriculumStandards() {
         <TabsList>
           <TabsTrigger value="registry">Source Registry</TabsTrigger>
           <TabsTrigger value="coverage">Blueprint Coverage</TabsTrigger>
+          <TabsTrigger value="lanes">Lane Queue</TabsTrigger>
           <TabsTrigger value="competencies">ACGME Competencies</TabsTrigger>
         </TabsList>
+
 
         {/* ------------------------------ Registry ------------------------------ */}
         <TabsContent value="registry" className="space-y-4 pt-4">
@@ -512,8 +516,14 @@ export default function CurriculumStandards() {
           </div>
         </TabsContent>
 
+        {/* ------------------------------- Lanes -------------------------------- */}
+        <TabsContent value="lanes" className="pt-4">
+          <LaneAuthoringQueue />
+        </TabsContent>
+
         {/* ---------------------------- Competencies ---------------------------- */}
         <TabsContent value="competencies" className="space-y-3 pt-4">
+
           <p className="text-sm text-muted-foreground">
             The six ACGME core competencies, cited to the Common Program Requirements. Rotation evaluations and letters
             of recommendation are written against these.

@@ -2269,3 +2269,261 @@ JOIN public.usmle_blueprint_nodes n
  AND q.system ILIKE '%pharmacolog%'
 WHERE q.is_active
 ON CONFLICT DO NOTHING;
+
+
+-- ===========================================================================
+-- CURRICULUM LANE SCAFFOLD — every USMLE Step 2 CK lane gets a home
+-- Idempotent. Shells + draft objectives only; no clinical assertions.
+-- ===========================================================================
+
+-- 1. Canonical core-curriculum course that owns the lane shells -------------
+INSERT INTO public.courses (id, instructor_id, title, description, status)
+SELECT '11111111-1111-4111-8111-000000000001',
+       (SELECT user_id FROM public.user_roles WHERE role = 'platform_admin' ORDER BY user_id LIMIT 1),
+       'Livemed Core Curriculum — USMLE Step 2 CK',
+       'Faculty workspace holding one learning-unit shell per USMLE Step 2 CK lane. Objectives are drafts generated from the published content outline and require faculty review before release.',
+       'draft'
+WHERE EXISTS (SELECT 1 FROM public.user_roles WHERE role = 'platform_admin')
+ON CONFLICT (id) DO NOTHING;
+
+-- 2. One learning-unit shell per organ-system and discipline lane ----------
+INSERT INTO public.course_topics (course_id, title, sort_order, is_high_yield)
+SELECT '11111111-1111-4111-8111-000000000001',
+       n.title,
+       n.sort_order + CASE WHEN n.axis = 'discipline' THEN 1000 ELSE 0 END,
+       COALESCE(n.weight_high, 0) >= 9
+FROM public.usmle_blueprint_nodes n
+WHERE n.axis IN ('system', 'discipline')
+  AND NOT EXISTS (
+    SELECT 1 FROM public.course_topics t
+    WHERE t.course_id = '11111111-1111-4111-8111-000000000001' AND t.title = n.title
+  );
+
+-- 3. Link every shell to its blueprint lane -------------------------------
+INSERT INTO public.content_blueprint_map (content_type, content_id, blueprint_node_id, confidence, notes)
+SELECT 'course_topic', t.id::text, n.id, 'imported',
+       'Auto-created lane shell. Faculty must confirm scope and objectives.'
+FROM public.course_topics t
+JOIN public.usmle_blueprint_nodes n
+  ON n.title = t.title AND n.axis IN ('system', 'discipline')
+WHERE t.course_id = '11111111-1111-4111-8111-000000000001'
+ON CONFLICT DO NOTHING;
+
+-- 4. Draft learning-unit body for each shell ------------------------------
+INSERT INTO public.learning_unit_content (topic_id, explanation, quick_notes, instructor_note, status, is_high_yield, passing_score)
+SELECT t.id,
+       'DRAFT — pending faculty authoring. This unit covers the ' || n.title ||
+       ' lane of the USMLE Step 2 CK content outline' ||
+       CASE WHEN n.weight_high IS NOT NULL
+            THEN ' (published exam weight ' || n.weight_low || '–' || n.weight_high || '%).'
+            ELSE '.' END ||
+       ' Teaching content, images, and questions must be added by faculty and cited to an approved source before this unit is released to students.',
+       'Nothing here is student-ready yet. Draft objectives below were generated from the blueprint category, not from clinical text.',
+       'Author against the sources paired with this lane in Admin → Standards. Target item count is in the authoring queue.',
+       'draft',
+       COALESCE(n.weight_high, 0) >= 9,
+       70
+FROM public.course_topics t
+JOIN public.usmle_blueprint_nodes n ON n.title = t.title AND n.axis IN ('system', 'discipline')
+WHERE t.course_id = '11111111-1111-4111-8111-000000000001'
+  AND NOT EXISTS (SELECT 1 FROM public.learning_unit_content c WHERE c.topic_id = t.id);
+
+-- 5. Standard six-step session skeleton for each shell --------------------
+INSERT INTO public.learning_unit_steps (topic_id, step_key, title, description, duration_minutes, sort_order)
+SELECT t.id, s.step_key, s.title, s.description, s.duration_minutes, s.sort_order
+FROM public.course_topics t
+CROSS JOIN (VALUES
+  ('objectives', 'Review the objectives', 'What you should be able to do by the end of the session.', 2, 0),
+  ('reading', 'Preliminary reading', 'Approved references for this lane. Skim these before the didactic block.', 8, 1),
+  ('videos', 'Watch the didactic block', 'Embedded from the original source and linked back to it; nothing is rehosted.', 43, 2),
+  ('images', 'Review the images', 'One film or figure per finding, from the verified media library.', 8, 3),
+  ('discussion', 'Come ready to discuss', 'Faculty prompts for the live block.', 15, 4),
+  ('mcqs', 'Answer the MCQs', 'Blueprint-mapped questions for this lane.', 8, 5)
+) AS s(step_key, title, description, duration_minutes, sort_order)
+WHERE t.course_id = '11111111-1111-4111-8111-000000000001'
+  AND NOT EXISTS (
+    SELECT 1 FROM public.learning_unit_steps st WHERE st.topic_id = t.id AND st.step_key = s.step_key
+  );
+
+-- 6. Draft objectives, phrased from the blueprint physician tasks ---------
+INSERT INTO public.learning_unit_step_items (step_id, sort_order, title, subtitle, body)
+SELECT st.id, o.sort_order,
+       replace(o.text, '{lane}', n.title),
+       'Draft objective — generated from the blueprint category, pending faculty review',
+       NULL
+FROM public.learning_unit_steps st
+JOIN public.course_topics t ON t.id = st.topic_id
+JOIN public.usmle_blueprint_nodes n ON n.title = t.title AND n.axis IN ('system', 'discipline')
+CROSS JOIN (VALUES
+  (0, 'Take a focused history and physical examination for the common presentations of the {lane} lane.'),
+  (1, 'Select and interpret the first-line laboratory and diagnostic studies used in {lane}.'),
+  (2, 'Formulate the most likely diagnosis and a ranked differential for {lane} presentations.'),
+  (3, 'Choose initial management, pharmacotherapy, and surveillance for high-yield {lane} conditions.'),
+  (4, 'Recognise the {lane} emergencies that require immediate intervention, and escalate appropriately.'),
+  (5, 'Apply health maintenance and prevention recommendations relevant to {lane}.')
+) AS o(sort_order, text)
+WHERE st.step_key = 'objectives'
+  AND t.course_id = '11111111-1111-4111-8111-000000000001'
+  AND NOT EXISTS (
+    SELECT 1 FROM public.learning_unit_step_items i WHERE i.step_id = st.id AND i.sort_order = o.sort_order
+  );
+
+-- 7. Pair approved sources with every lane -------------------------------
+WITH pairing(code, source_name, role) AS (
+  VALUES
+    -- lane-specific guidelines / references
+    ('SYS-CV','ACC / AHA Guidelines','guideline'),
+    ('SYS-CV','NIH / NHLBI','guideline'),
+    ('SYS-RESP','NIH / NHLBI','guideline'),
+    ('SYS-RESP','CDC','guideline'),
+    ('SYS-GI','StatPearls / NCBI Bookshelf','guideline'),
+    ('SYS-RENAL','NIH / NHLBI','guideline'),
+    ('SYS-ENDO','American Diabetes Association Standards of Care','guideline'),
+    ('SYS-PREG','ACOG','guideline'),
+    ('SYS-FEMREPRO','ACOG','guideline'),
+    ('SYS-MALEREPRO','USPSTF Recommendations','guideline'),
+    ('SYS-IMMUNE','IDSA Guidelines','guideline'),
+    ('SYS-IMMUNE','CDC','guideline'),
+    ('SYS-BLOOD','NIH / NHLBI','guideline'),
+    ('SYS-NEURO','NIH / NHLBI','guideline'),
+    ('SYS-SKIN','StatPearls / NCBI Bookshelf','guideline'),
+    ('SYS-MSK','StatPearls / NCBI Bookshelf','guideline'),
+    ('SYS-BEHAV','CDC','guideline'),
+    ('SYS-HUMDEV','American Academy of Pediatrics','guideline'),
+    ('SYS-HUMDEV','CDC','guideline'),
+    ('SYS-MULTI','IDSA Guidelines','guideline'),
+    ('SYS-BIOSTAT','PubMed','guideline'),
+    ('SYS-BIOSTAT','USPSTF Recommendations','guideline'),
+    ('SYS-SOCIAL','ACGME Common Program Requirements','guideline'),
+    ('DISC-MED','ACC / AHA Guidelines','guideline'),
+    ('DISC-SURG','StatPearls / NCBI Bookshelf','guideline'),
+    ('DISC-PEDS','American Academy of Pediatrics','guideline'),
+    ('DISC-OBGYN','ACOG','guideline'),
+    ('DISC-PSYCH','StatPearls / NCBI Bookshelf','guideline'),
+    ('DISC-FM','USPSTF Recommendations','guideline'),
+    ('DISC-EM','ACC / AHA Guidelines','guideline'),
+    ('DISC-NEURO','NIH / NHLBI','guideline'),
+    ('DISC-RADS','Radiopaedia','guideline'),
+    ('DISC-PREV','USPSTF Recommendations','guideline'),
+    ('DISC-PREV','CDC','guideline'),
+    ('PT-MK','NBME Subject Examinations','guideline'),
+    ('PT-DX-LAB','NIH / NHLBI','guideline'),
+    ('PT-DX-PROG','PubMed','guideline'),
+    ('PT-MG-PREV','USPSTF Recommendations','guideline'),
+    ('PT-MG-PHARM','FDA Drug Labels (DailyMed)','guideline'),
+    ('PT-MG-INTERV','ACC / AHA Guidelines','guideline'),
+    ('PT-PBLI','PubMed','guideline'),
+    ('PT-PBLI','ACGME Common Program Requirements','guideline'),
+    ('PT-PROF','ACGME Common Program Requirements','guideline'),
+    ('PT-SBP','ACGME Common Program Requirements','guideline')
+)
+INSERT INTO public.blueprint_node_sources (blueprint_node_id, source_id, role, notes)
+SELECT n.id, s.id, p.role, 'Seeded lane pairing — faculty may refine.'
+FROM pairing p
+JOIN public.usmle_blueprint_nodes n ON n.code = p.code
+JOIN public.content_sources s ON s.name = p.source_name
+ON CONFLICT DO NOTHING;
+
+-- Universal pairings: blueprint of record + primary reference for every lane
+INSERT INTO public.blueprint_node_sources (blueprint_node_id, source_id, role, notes)
+SELECT n.id, s.id, 'blueprint', 'Lane definition of record.'
+FROM public.usmle_blueprint_nodes n
+JOIN public.content_sources s ON s.name = 'USMLE Content Outline'
+ON CONFLICT DO NOTHING;
+
+INSERT INTO public.blueprint_node_sources (blueprint_node_id, source_id, role, notes)
+SELECT n.id, s.id, 'primary', 'Default primary reference for authoring this lane.'
+FROM public.usmle_blueprint_nodes n
+JOIN public.content_sources s ON s.name = 'StatPearls / NCBI Bookshelf'
+ON CONFLICT DO NOTHING;
+
+-- Imaging sources for clinical lanes
+INSERT INTO public.blueprint_node_sources (blueprint_node_id, source_id, role, notes)
+SELECT n.id, s.id, 'imaging', 'Approved image source for this lane.'
+FROM public.usmle_blueprint_nodes n
+JOIN public.content_sources s ON s.name IN ('Livemed Academy Verified Media Library', 'Radiopaedia', 'Wikimedia Commons')
+WHERE n.axis IN ('system', 'discipline')
+ON CONFLICT DO NOTHING;
+
+-- 8. Reading-step items built from each lane's paired sources -------------
+INSERT INTO public.learning_unit_step_items (step_id, sort_order, title, subtitle, url, source)
+SELECT st.id,
+       row_number() OVER (PARTITION BY st.id ORDER BY cs.authority_tier, cs.name) - 1,
+       cs.name,
+       'Approved source for this lane · Tier ' || cs.authority_tier,
+       cs.url,
+       COALESCE(cs.publisher, cs.name)
+FROM public.learning_unit_steps st
+JOIN public.course_topics t ON t.id = st.topic_id
+JOIN public.usmle_blueprint_nodes n ON n.title = t.title AND n.axis IN ('system', 'discipline')
+JOIN public.blueprint_node_sources bns ON bns.blueprint_node_id = n.id AND bns.role IN ('primary', 'guideline')
+JOIN public.content_sources cs ON cs.id = bns.source_id AND cs.status = 'approved'
+WHERE st.step_key = 'reading'
+  AND t.course_id = '11111111-1111-4111-8111-000000000001'
+  AND NOT EXISTS (SELECT 1 FROM public.learning_unit_step_items i WHERE i.step_id = st.id);
+
+-- 9. Blueprint mappings for existing QBank content -----------------------
+-- Clinical discipline axis, from the question's subject
+WITH disc(subject, code) AS (
+  VALUES ('Cardiology','DISC-MED'), ('Endocrinology','DISC-MED'), ('Gastroenterology','DISC-MED'),
+         ('Hematology','DISC-MED'), ('Infectious Disease','DISC-MED'), ('Nephrology','DISC-MED'),
+         ('Pulmonology','DISC-MED'), ('Pharmacology','DISC-MED'), ('Neurology','DISC-NEURO'),
+         ('Surgery','DISC-SURG'), ('Pediatrics','DISC-PEDS'), ('Obstetrics & Gynecology','DISC-OBGYN'),
+         ('Psychiatry','DISC-PSYCH'), ('Family Medicine','DISC-FM'), ('Emergency Medicine','DISC-EM'),
+         ('Radiology','DISC-RADS'), ('Preventive Medicine','DISC-PREV')
+)
+INSERT INTO public.content_blueprint_map (content_type, content_id, blueprint_node_id, confidence, notes)
+SELECT 'qbank_question', q.id::text, n.id, 'imported', 'Auto-mapped from question subject; faculty review pending.'
+FROM public.qbank_questions q
+JOIN disc d ON d.subject = q.subject
+JOIN public.usmle_blueprint_nodes n ON n.code = d.code
+WHERE q.is_active
+ON CONFLICT DO NOTHING;
+
+-- Physician-task axis, from the lead-in phrasing of the vignette
+INSERT INTO public.content_blueprint_map (content_type, content_id, blueprint_node_id, confidence, notes)
+SELECT 'qbank_question', q.id::text, n.id, 'imported', 'Auto-mapped from vignette lead-in; faculty review pending.'
+FROM public.qbank_questions q
+JOIN public.usmle_blueprint_nodes n ON n.code = CASE
+  WHEN q.subject = 'Pharmacology' OR q.stem ILIKE '%pharmacotherapy%' OR q.stem ILIKE '%which of the following drugs%'
+    OR q.stem ILIKE '%mechanism of action%' THEN 'PT-MG-PHARM'
+  WHEN q.stem ILIKE '%screening%' OR q.stem ILIKE '%vaccin%' OR q.stem ILIKE '%prevent%' THEN 'PT-MG-PREV'
+  WHEN q.stem ILIKE '%most likely diagnosis%' OR q.stem ILIKE '%most likely cause%' THEN 'PT-DX-DIAG'
+  WHEN q.stem ILIKE '%next step in diagnosis%' OR q.stem ILIKE '%confirm the diagnosis%'
+    OR q.stem ILIKE '%most appropriate test%' OR q.stem ILIKE '%diagnostic study%' THEN 'PT-DX-LAB'
+  WHEN q.stem ILIKE '%next step in management%' OR q.stem ILIKE '%most appropriate management%'
+    OR q.stem ILIKE '%best initial treatment%' OR q.stem ILIKE '%treatment%' THEN 'PT-MG-MIXED'
+  WHEN q.stem ILIKE '%physical examination finding%' OR q.stem ILIKE '%on examination%' THEN 'PT-DX-HXPE'
+  ELSE 'PT-DX-DIAG'
+END
+WHERE q.is_active
+ON CONFLICT DO NOTHING;
+
+-- Existing chest-imaging learning units land in the radiology lane
+INSERT INTO public.content_blueprint_map (content_type, content_id, blueprint_node_id, confidence, notes)
+SELECT 'course_topic', t.id::text, n.id, 'imported', 'Auto-mapped from unit title; faculty review pending.'
+FROM public.course_topics t
+JOIN public.usmle_blueprint_nodes n ON n.code = 'DISC-RADS'
+WHERE t.course_id <> '11111111-1111-4111-8111-000000000001'
+  AND (t.title ILIKE '%x-ray%' OR t.title ILIKE '%xray%' OR t.title ILIKE '%cxr%'
+       OR t.title ILIKE '%imaging%' OR t.title ILIKE '%radiolog%' OR t.title ILIKE '%ct %')
+ON CONFLICT DO NOTHING;
+
+-- 10. Faculty authoring queue, one work item per lane --------------------
+INSERT INTO public.curriculum_authoring_tasks (blueprint_node_id, topic_id, status, target_items, priority, notes)
+SELECT n.id,
+       t.id,
+       CASE WHEN COALESCE(m.cnt, 0) = 0 THEN 'not_started' ELSE 'in_progress' END,
+       GREATEST(10, ROUND(COALESCE((n.weight_low + n.weight_high) / 2.0, 2) * 10))::int,
+       COALESCE(n.weight_high, 0),
+       'Seeded work item. Author against the sources paired with this lane.'
+FROM public.usmle_blueprint_nodes n
+LEFT JOIN public.course_topics t
+  ON t.course_id = '11111111-1111-4111-8111-000000000001' AND t.title = n.title
+LEFT JOIN (
+  SELECT blueprint_node_id, COUNT(*) cnt
+  FROM public.content_blueprint_map
+  WHERE content_type = 'qbank_question'
+  GROUP BY blueprint_node_id
+) m ON m.blueprint_node_id = n.id
+ON CONFLICT (blueprint_node_id) DO NOTHING;
