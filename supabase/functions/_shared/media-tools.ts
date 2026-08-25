@@ -78,16 +78,45 @@ function markdownSafeUrl(raw: string): string {
 }
 
 /**
- * Wikimedia now serves only an allowed set of thumbnail widths and answers
- * anything else with HTTP 400 ("Use thumbnail sizes listed on ..."), which shows
- * up as a broken image. Any other width falls back to the full-size file.
+ * Wikimedia serves only an allowed set of thumbnail widths and answers anything
+ * else with HTTP 400 ("Use thumbnail sizes listed on ..."), which shows up as a
+ * broken image. So we normalize any thumbnail width to 800px, and only fall back
+ * to the full-size original when the browser can actually render that format
+ * (TIFF/SVG/PDF originals render as a broken image / question mark).
  */
 const ALLOWED_THUMB_WIDTHS = new Set([250, 320, 500, 640, 800, 960, 1024, 1280, 2560]);
+const RENDERABLE = /\.(jpe?g|png|gif|webp)$/i;
 function safeCommonsImageUrl(thumbUrl?: string, originalUrl?: string): string {
-  const width = Number(thumbUrl?.match(/\/(\d+)px-/)?.[1] ?? 0);
-  if (thumbUrl && width && ALLOWED_THUMB_WIDTHS.has(width)) return thumbUrl;
-  return originalUrl || thumbUrl || "";
+  if (thumbUrl) {
+    const width = Number(thumbUrl.match(/\/(\d+)px-/)?.[1] ?? 0);
+    if (width && ALLOWED_THUMB_WIDTHS.has(width)) return thumbUrl;
+    // Rewrite an odd width (e.g. /743px-) to an allowed one instead of dropping the thumb.
+    const normalized = thumbUrl.replace(/\/(\d+)px-/, "/800px-");
+    if (normalized !== thumbUrl) return normalized;
+  }
+  if (originalUrl && RENDERABLE.test(new URL(originalUrl).pathname)) return originalUrl;
+  return thumbUrl || originalUrl || "";
 }
+
+/**
+ * Commons is full of multi-panel teaching montages ("4x4 CT grid", figure
+ * collages, before/after strips). Those are useless for pointing a student at a
+ * single finding, so they are dropped unless the student explicitly asked for a
+ * comparison or series.
+ */
+const MONTAGE_RE =
+  /\b(montage|collage|composite|grid|panels?|multipanel|multi-panel|figure\s*\d\s*[-–]\s*\d|fig\.?\s*\d[a-f]\b|\d\s*x\s*\d|series|sequence|animation|gallery|comparison of \d)\b/i;
+const COMPARISON_INTENT_RE = /\b(compare|comparison|montage|series|sequence|panel|grid|side by side)\b/i;
+
+/** Rejects montages and results that don't mention any of the query's terms. */
+function isTeachableSingleImage(r: MediaResult, tokens: string[], allowMontage: boolean): boolean {
+  const haystack = `${r.title} ${r.description}`;
+  if (!allowMontage && MONTAGE_RE.test(haystack)) return false;
+  if (tokens.length === 0) return true;
+  const lower = haystack.toLowerCase();
+  return tokens.some((t) => lower.includes(t));
+}
+
 
 
 function stripHtml(html: string): string {
