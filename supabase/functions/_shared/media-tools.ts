@@ -134,26 +134,17 @@ function stripHtml(html: string): string {
     .trim();
 }
 
-export async function searchMedicalImages(query: string, limit = 3): Promise<MediaResult[]> {
-  const count = Math.min(6, Math.max(1, Math.round(limit || 3)));
-  const allowMontage = COMPARISON_INTENT_RE.test(query);
-  const tokens = query
-    .toLowerCase()
-    .replace(/[^a-z0-9\s-]/g, " ")
-    .split(/\s+/)
-    .filter((t) => t.length > 3)
-    .slice(0, 8);
-
+/** One Commons search pass. Returns [] when the phrase matches nothing. */
+async function commonsSearch(searchString: string, fetchLimit: number): Promise<MediaResult[]> {
   const params = new URLSearchParams({
     action: "query",
     format: "json",
     origin: "*",
     // Restrict to formats a browser can render inline (no TIFF/SVG originals).
-    gsrsearch: `filetype:bitmap ${query}`,
+    gsrsearch: `filetype:bitmap ${searchString}`,
     generator: "search",
     gsrnamespace: "6",
-    // Over-fetch so montages / off-topic hits can be filtered out and still leave enough.
-    gsrlimit: String(Math.min(30, count * 5)),
+    gsrlimit: String(fetchLimit),
     prop: "imageinfo",
     iiprop: "url|extmetadata",
     iiurlwidth: "800", // Commons only serves an allowed set of widths (…, 640, 800, 1024, …)
@@ -169,7 +160,7 @@ export async function searchMedicalImages(query: string, limit = 3): Promise<Med
   const json = await resp.json();
   const pages: Record<string, any> = json?.query?.pages ?? {};
 
-  const mapped = Object.values(pages)
+  return Object.values(pages)
     .map((page: any) => {
       const info = page?.imageinfo?.[0];
       if (!info) return null;
@@ -183,7 +174,42 @@ export async function searchMedicalImages(query: string, limit = 3): Promise<Med
         description: stripHtml(meta.ImageDescription?.value ?? "").slice(0, 400),
       } as MediaResult;
     })
-    .filter((r): r is MediaResult => Boolean(r?.imageUrl && RENDERABLE.test(new URL(r.imageUrl).pathname)));
+    .filter((r): r is MediaResult => {
+      if (!r?.imageUrl) return false;
+      try {
+        return RENDERABLE.test(new URL(r.imageUrl).pathname);
+      } catch {
+        return false;
+      }
+    });
+}
+
+export async function searchMedicalImages(query: string, limit = 3): Promise<MediaResult[]> {
+  const count = Math.min(6, Math.max(1, Math.round(limit || 3)));
+  const allowMontage = COMPARISON_INTENT_RE.test(query);
+  const tokens = query
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, " ")
+    .split(/\s+/)
+    .filter((t) => t.length > 3)
+    .slice(0, 8);
+
+  // Commons ANDs every term, so a long phrase ("CT head subdural hematoma")
+  // often matches nothing. Widen progressively instead of returning empty.
+  const variants = [query];
+  if (tokens.length > 2) variants.push(tokens.slice(-3).join(" "));
+  if (tokens.length > 1) variants.push(tokens.slice(-2).join(" "));
+  if (tokens.length > 0) variants.push(tokens[tokens.length - 1]);
+
+  const fetchLimit = Math.min(30, Math.max(10, count * 5));
+  const byUrl = new Map<string, MediaResult>();
+  for (const variant of variants) {
+    for (const r of await commonsSearch(variant, fetchLimit)) {
+      if (!byUrl.has(r.imageUrl)) byUrl.set(r.imageUrl, r);
+    }
+    if ([...byUrl.values()].filter((r) => isTeachableSingleImage(r, tokens, allowMontage)).length >= count) break;
+  }
+  const mapped = [...byUrl.values()];
 
   // Rank by how many query terms the title/description mention, single images first.
   const score = (r: MediaResult) => {
@@ -196,6 +222,7 @@ export async function searchMedicalImages(query: string, limit = 3): Promise<Med
   const ranked = (clean.length > 0 ? clean : mapped).sort((a, b) => score(b) - score(a));
   return ranked.slice(0, count);
 }
+
 
 
 export async function fetchWebPage(url: string): Promise<{ url: string; title: string; text: string }> {
