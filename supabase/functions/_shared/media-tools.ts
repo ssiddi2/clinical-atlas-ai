@@ -61,6 +61,23 @@ export const ATLAS_TOOLS = [
 
 const UA = "LivemedAcademy-ATLAS/1.0 (medical education; contact info@livemedhealth.com)";
 
+/**
+ * Makes an image URL safe to embed in markdown: drops tracking query strings
+ * (Commons appends utm_* params) and escapes the parentheses/spaces that break
+ * markdown `![](...)` parsing and produce a broken-image placeholder.
+ */
+function markdownSafeUrl(raw: string): string {
+  if (!raw) return raw;
+  try {
+    const u = new URL(raw);
+    u.search = "";
+    return u.toString().replace(/\(/g, "%28").replace(/\)/g, "%29").replace(/ /g, "%20");
+  } catch {
+    return raw;
+  }
+}
+
+
 function stripHtml(html: string): string {
   return html
     .replace(/<script[\s\S]*?<\/script>/gi, " ")
@@ -108,7 +125,7 @@ export async function searchMedicalImages(query: string, limit = 3): Promise<Med
       const meta = info.extmetadata ?? {};
       return {
         title: String(page.title ?? "").replace(/^File:/, ""),
-        imageUrl: info.thumburl || info.url,
+        imageUrl: markdownSafeUrl(info.thumburl || info.url),
         pageUrl: info.descriptionurl || `https://commons.wikimedia.org/wiki/${encodeURIComponent(page.title)}`,
         credit: stripHtml(meta.Artist?.value ?? meta.Credit?.value ?? "Wikimedia Commons").slice(0, 160),
         license: stripHtml(meta.LicenseShortName?.value ?? "See source page").slice(0, 80),
@@ -215,7 +232,7 @@ export async function searchCuratedLibrary(
   return scored.slice(0, limit).map(({ row }) => ({
     id: row.id,
     title: row.title,
-    imageUrl: row.image_url,
+    imageUrl: markdownSafeUrl(row.image_url),
     pageUrl: row.source_page_url ?? "",
     credit: row.credit ?? "Livemed Academy curated library",
     license: row.license ?? "Faculty-approved",
