@@ -14,6 +14,57 @@ export type Database = {
   }
   public: {
     Tables: {
+      acgme_competencies: {
+        Row: {
+          code: string
+          created_at: string
+          description: string | null
+          id: string
+          parent_id: string | null
+          sort_order: number
+          source_id: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          parent_id?: string | null
+          sort_order?: number
+          source_id?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          parent_id?: string | null
+          sort_order?: number
+          source_id?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "acgme_competencies_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "acgme_competencies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "acgme_competencies_source_id_fkey"
+            columns: ["source_id"]
+            isOneToOne: false
+            referencedRelation: "content_sources"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       assessment_attempts: {
         Row: {
           assessment_type: string
@@ -342,6 +393,80 @@ export type Database = {
         }
         Relationships: []
       }
+      content_blueprint_map: {
+        Row: {
+          blueprint_node_id: string | null
+          competency_id: string | null
+          confidence: string
+          content_id: string
+          content_type: string
+          created_at: string
+          id: string
+          mapped_by: string | null
+          notes: string | null
+          source_citation: string | null
+          source_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          blueprint_node_id?: string | null
+          competency_id?: string | null
+          confidence?: string
+          content_id: string
+          content_type: string
+          created_at?: string
+          id?: string
+          mapped_by?: string | null
+          notes?: string | null
+          source_citation?: string | null
+          source_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          blueprint_node_id?: string | null
+          competency_id?: string | null
+          confidence?: string
+          content_id?: string
+          content_type?: string
+          created_at?: string
+          id?: string
+          mapped_by?: string | null
+          notes?: string | null
+          source_citation?: string | null
+          source_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "content_blueprint_map_blueprint_node_id_fkey"
+            columns: ["blueprint_node_id"]
+            isOneToOne: false
+            referencedRelation: "blueprint_coverage"
+            referencedColumns: ["blueprint_node_id"]
+          },
+          {
+            foreignKeyName: "content_blueprint_map_blueprint_node_id_fkey"
+            columns: ["blueprint_node_id"]
+            isOneToOne: false
+            referencedRelation: "usmle_blueprint_nodes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "content_blueprint_map_competency_id_fkey"
+            columns: ["competency_id"]
+            isOneToOne: false
+            referencedRelation: "acgme_competencies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "content_blueprint_map_source_id_fkey"
+            columns: ["source_id"]
+            isOneToOne: false
+            referencedRelation: "content_sources"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       content_reviews: {
         Row: {
           content_id: string
@@ -384,6 +509,66 @@ export type Database = {
           sources_checked?: string[]
           updated_at?: string
           verdict?: string
+        }
+        Relationships: []
+      }
+      content_sources: {
+        Row: {
+          added_by: string | null
+          allowed_for_retrieval: boolean
+          authority_tier: number
+          citation_format: string | null
+          created_at: string
+          domain: string
+          id: string
+          license: string | null
+          name: string
+          notes: string | null
+          publisher: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          source_type: string
+          status: string
+          updated_at: string
+          url: string | null
+        }
+        Insert: {
+          added_by?: string | null
+          allowed_for_retrieval?: boolean
+          authority_tier?: number
+          citation_format?: string | null
+          created_at?: string
+          domain: string
+          id?: string
+          license?: string | null
+          name: string
+          notes?: string | null
+          publisher?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          source_type?: string
+          status?: string
+          updated_at?: string
+          url?: string | null
+        }
+        Update: {
+          added_by?: string | null
+          allowed_for_retrieval?: boolean
+          authority_tier?: number
+          citation_format?: string | null
+          created_at?: string
+          domain?: string
+          id?: string
+          license?: string | null
+          name?: string
+          notes?: string | null
+          publisher?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          source_type?: string
+          status?: string
+          updated_at?: string
+          url?: string | null
         }
         Relationships: []
       }
@@ -2615,6 +2800,76 @@ export type Database = {
         }
         Relationships: []
       }
+      usmle_blueprint_nodes: {
+        Row: {
+          axis: string
+          code: string
+          created_at: string
+          description: string | null
+          exam: string
+          id: string
+          parent_id: string | null
+          sort_order: number
+          source_id: string | null
+          title: string
+          updated_at: string
+          weight_high: number | null
+          weight_low: number | null
+        }
+        Insert: {
+          axis: string
+          code: string
+          created_at?: string
+          description?: string | null
+          exam?: string
+          id?: string
+          parent_id?: string | null
+          sort_order?: number
+          source_id?: string | null
+          title: string
+          updated_at?: string
+          weight_high?: number | null
+          weight_low?: number | null
+        }
+        Update: {
+          axis?: string
+          code?: string
+          created_at?: string
+          description?: string | null
+          exam?: string
+          id?: string
+          parent_id?: string | null
+          sort_order?: number
+          source_id?: string | null
+          title?: string
+          updated_at?: string
+          weight_high?: number | null
+          weight_low?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "usmle_blueprint_nodes_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "blueprint_coverage"
+            referencedColumns: ["blueprint_node_id"]
+          },
+          {
+            foreignKeyName: "usmle_blueprint_nodes_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "usmle_blueprint_nodes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "usmle_blueprint_nodes_source_id_fkey"
+            columns: ["source_id"]
+            isOneToOne: false
+            referencedRelation: "content_sources"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       usmle_score_predictions: {
         Row: {
           confidence_interval: Json | null
@@ -2764,6 +3019,22 @@ export type Database = {
       }
     }
     Views: {
+      blueprint_coverage: {
+        Row: {
+          axis: string | null
+          blueprint_node_id: string | null
+          cited_items: number | null
+          code: string | null
+          curriculum_items: number | null
+          exam: string | null
+          mapped_items: number | null
+          qbank_items: number | null
+          title: string | null
+          weight_high: number | null
+          weight_low: number | null
+        }
+        Relationships: []
+      }
       rotation_sessions_public: {
         Row: {
           created_at: string | null
@@ -2870,6 +3141,10 @@ export type Database = {
       }
       is_course_instructor: {
         Args: { _course_id: string; _user_id: string }
+        Returns: boolean
+      }
+      is_retrieval_domain_allowed: {
+        Args: { _hostname: string }
         Returns: boolean
       }
       list_rotation_sessions_public: {

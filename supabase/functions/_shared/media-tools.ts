@@ -46,7 +46,7 @@ export const ATLAS_TOOLS = [
     function: {
       name: "fetch_web_page",
       description:
-        "Read the readable text of a public https web page (guideline, article, review) so you can teach from it and cite it. Use for links the student shares or authoritative references you name.",
+        "Read the readable text of a public https web page (guideline, article, review) so you can teach from it and cite it. Only domains on the Livemed approved source registry can be read — USMLE/NBME, ACGME, StatPearls/NCBI, PubMed, CDC, USPSTF, NIH, DailyMed, ACC/AHA, ACOG, AAP, IDSA, ADA, Radiopaedia. If a student shares a link outside the registry the call is refused; say so and teach from an approved source instead. The result includes the registry's citation format — use it verbatim when citing.",
       parameters: {
         type: "object",
         properties: {
@@ -225,7 +225,40 @@ export async function searchMedicalImages(query: string, limit = 3): Promise<Med
 
 
 
-export async function fetchWebPage(url: string): Promise<{ url: string; title: string; text: string }> {
+/**
+ * Curriculum source registry lookup. Returns the approved source row whose
+ * domain covers this hostname, or null when the host is not on the allow-list.
+ * When the registry has no retrieval-enabled rows at all, nothing is blocked.
+ */
+async function lookupApprovedSource(
+  admin: any,
+  hostname: string,
+): Promise<{ allowed: boolean; source: any | null }> {
+  if (!admin) return { allowed: true, source: null };
+  try {
+    const { data, error } = await admin
+      .from("content_sources")
+      .select("name, publisher, domain, authority_tier, license, citation_format, allowed_for_retrieval, status")
+      .eq("allowed_for_retrieval", true)
+      .eq("status", "approved");
+    if (error) throw error;
+    const rows = data ?? [];
+    if (rows.length === 0) return { allowed: true, source: null };
+    const host = hostname.toLowerCase();
+    const match = rows.find(
+      (r: any) => host === r.domain.toLowerCase() || host.endsWith(`.${r.domain.toLowerCase()}`),
+    );
+    return { allowed: Boolean(match), source: match ?? null };
+  } catch (err) {
+    console.error("Source registry lookup failed, allowing read:", err);
+    return { allowed: true, source: null };
+  }
+}
+
+export async function fetchWebPage(
+  url: string,
+  admin?: any,
+): Promise<{ url: string; title: string; text: string; source?: unknown; citation?: string }> {
   let parsed: URL;
   try {
     parsed = new URL(url);
@@ -235,6 +268,15 @@ export async function fetchWebPage(url: string): Promise<{ url: string; title: s
   if (parsed.protocol !== "https:") throw new Error("Only https URLs can be read.");
   if (/^(localhost|127\.|0\.|10\.|192\.168\.|169\.254\.|172\.(1[6-9]|2\d|3[01])\.)/.test(parsed.hostname)) {
     throw new Error("This host cannot be read.");
+  }
+
+  const { allowed, source } = await lookupApprovedSource(admin, parsed.hostname);
+  if (!allowed) {
+    throw new Error(
+      `${parsed.hostname} is not on the Livemed approved source list, so it cannot be used to teach. ` +
+        `Use an approved source (USMLE/NBME outlines, ACGME, StatPearls/NCBI, PubMed, CDC, USPSTF, NIH, DailyMed, ` +
+        `ACC/AHA, ACOG, AAP, IDSA, ADA, Radiopaedia) and tell the student the link was outside the vetted registry.`,
+    );
   }
 
   const resp = await fetch(parsed.toString(), {
@@ -250,7 +292,15 @@ export async function fetchWebPage(url: string): Promise<{ url: string; title: s
   }
 
   const title = stripHtml(body.match(/<title[^>]*>([\s\S]*?)<\/title>/i)?.[1] ?? parsed.hostname);
-  return { url: parsed.toString(), title, text: stripHtml(body).slice(0, 7000) };
+  return {
+    url: parsed.toString(),
+    title,
+    text: stripHtml(body).slice(0, 7000),
+    source: source
+      ? { name: source.name, publisher: source.publisher, authorityTier: source.authority_tier, license: source.license }
+      : null,
+    citation: source?.citation_format ?? undefined,
+  };
 }
 
 export interface LibraryMedia extends MediaResult {
@@ -439,7 +489,7 @@ export async function runAtlasTool(
       });
     }
     if (name === "fetch_web_page") {
-      return JSON.stringify(await fetchWebPage(String(args.url ?? "")));
+      return JSON.stringify(await fetchWebPage(String(args.url ?? ""), ctx.admin));
     }
     return JSON.stringify({ error: `Unknown tool: ${name}` });
   } catch (error) {
