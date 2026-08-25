@@ -514,8 +514,14 @@ export default function CurriculumStandards() {
           </div>
         </TabsContent>
 
+        {/* ------------------------------- Lanes -------------------------------- */}
+        <TabsContent value="lanes" className="pt-4">
+          <LaneAuthoringQueue />
+        </TabsContent>
+
         {/* ---------------------------- Competencies ---------------------------- */}
         <TabsContent value="competencies" className="space-y-3 pt-4">
+
           <p className="text-sm text-muted-foreground">
             The six ACGME core competencies, cited to the Common Program Requirements. Rotation evaluations and letters
             of recommendation are written against these.
