@@ -192,6 +192,68 @@ export type Database = {
           },
         ]
       }
+      blueprint_node_sources: {
+        Row: {
+          blueprint_node_id: string
+          created_at: string
+          created_by: string | null
+          id: string
+          notes: string | null
+          role: string
+          source_id: string
+          updated_at: string
+        }
+        Insert: {
+          blueprint_node_id: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          notes?: string | null
+          role?: string
+          source_id: string
+          updated_at?: string
+        }
+        Update: {
+          blueprint_node_id?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          notes?: string | null
+          role?: string
+          source_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "blueprint_node_sources_blueprint_node_id_fkey"
+            columns: ["blueprint_node_id"]
+            isOneToOne: false
+            referencedRelation: "blueprint_coverage"
+            referencedColumns: ["blueprint_node_id"]
+          },
+          {
+            foreignKeyName: "blueprint_node_sources_blueprint_node_id_fkey"
+            columns: ["blueprint_node_id"]
+            isOneToOne: false
+            referencedRelation: "lane_readiness"
+            referencedColumns: ["blueprint_node_id"]
+          },
+          {
+            foreignKeyName: "blueprint_node_sources_blueprint_node_id_fkey"
+            columns: ["blueprint_node_id"]
+            isOneToOne: false
+            referencedRelation: "usmle_blueprint_nodes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "blueprint_node_sources_source_id_fkey"
+            columns: ["source_id"]
+            isOneToOne: false
+            referencedRelation: "content_sources"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       card_groups: {
         Row: {
           color: string
@@ -442,6 +504,13 @@ export type Database = {
             columns: ["blueprint_node_id"]
             isOneToOne: false
             referencedRelation: "blueprint_coverage"
+            referencedColumns: ["blueprint_node_id"]
+          },
+          {
+            foreignKeyName: "content_blueprint_map_blueprint_node_id_fkey"
+            columns: ["blueprint_node_id"]
+            isOneToOne: false
+            referencedRelation: "lane_readiness"
             referencedColumns: ["blueprint_node_id"]
           },
           {
@@ -847,6 +916,77 @@ export type Database = {
             columns: ["specialty_id"]
             isOneToOne: false
             referencedRelation: "specialties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      curriculum_authoring_tasks: {
+        Row: {
+          blueprint_node_id: string
+          created_at: string
+          due_on: string | null
+          id: string
+          notes: string | null
+          owner_id: string | null
+          priority: number
+          status: string
+          target_items: number
+          topic_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          blueprint_node_id: string
+          created_at?: string
+          due_on?: string | null
+          id?: string
+          notes?: string | null
+          owner_id?: string | null
+          priority?: number
+          status?: string
+          target_items?: number
+          topic_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          blueprint_node_id?: string
+          created_at?: string
+          due_on?: string | null
+          id?: string
+          notes?: string | null
+          owner_id?: string | null
+          priority?: number
+          status?: string
+          target_items?: number
+          topic_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "curriculum_authoring_tasks_blueprint_node_id_fkey"
+            columns: ["blueprint_node_id"]
+            isOneToOne: false
+            referencedRelation: "blueprint_coverage"
+            referencedColumns: ["blueprint_node_id"]
+          },
+          {
+            foreignKeyName: "curriculum_authoring_tasks_blueprint_node_id_fkey"
+            columns: ["blueprint_node_id"]
+            isOneToOne: false
+            referencedRelation: "lane_readiness"
+            referencedColumns: ["blueprint_node_id"]
+          },
+          {
+            foreignKeyName: "curriculum_authoring_tasks_blueprint_node_id_fkey"
+            columns: ["blueprint_node_id"]
+            isOneToOne: false
+            referencedRelation: "usmle_blueprint_nodes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "curriculum_authoring_tasks_topic_id_fkey"
+            columns: ["topic_id"]
+            isOneToOne: false
+            referencedRelation: "course_topics"
             referencedColumns: ["id"]
           },
         ]
@@ -2858,6 +2998,13 @@ export type Database = {
             foreignKeyName: "usmle_blueprint_nodes_parent_id_fkey"
             columns: ["parent_id"]
             isOneToOne: false
+            referencedRelation: "lane_readiness"
+            referencedColumns: ["blueprint_node_id"]
+          },
+          {
+            foreignKeyName: "usmle_blueprint_nodes_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
             referencedRelation: "usmle_blueprint_nodes"
             referencedColumns: ["id"]
           },
@@ -3034,6 +3181,38 @@ export type Database = {
           weight_low: number | null
         }
         Relationships: []
+      }
+      lane_readiness: {
+        Row: {
+          axis: string | null
+          blueprint_node_id: string | null
+          code: string | null
+          curriculum_items: number | null
+          due_on: string | null
+          exam: string | null
+          mapped_items: number | null
+          notes: string | null
+          owner_id: string | null
+          qbank_items: number | null
+          sort_order: number | null
+          source_count: number | null
+          status: string | null
+          target_items: number | null
+          task_id: string | null
+          title: string | null
+          topic_id: string | null
+          weight_high: number | null
+          weight_low: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "curriculum_authoring_tasks_topic_id_fkey"
+            columns: ["topic_id"]
+            isOneToOne: false
+            referencedRelation: "course_topics"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       rotation_sessions_public: {
         Row: {
