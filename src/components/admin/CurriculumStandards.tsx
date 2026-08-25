@@ -265,8 +265,10 @@ export default function CurriculumStandards() {
         <TabsList>
           <TabsTrigger value="registry">Source Registry</TabsTrigger>
           <TabsTrigger value="coverage">Blueprint Coverage</TabsTrigger>
+          <TabsTrigger value="lanes">Lane Queue</TabsTrigger>
           <TabsTrigger value="competencies">ACGME Competencies</TabsTrigger>
         </TabsList>
+
 
         {/* ------------------------------ Registry ------------------------------ */}
         <TabsContent value="registry" className="space-y-4 pt-4">
