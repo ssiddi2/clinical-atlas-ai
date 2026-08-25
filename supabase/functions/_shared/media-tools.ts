@@ -136,14 +136,24 @@ function stripHtml(html: string): string {
 
 export async function searchMedicalImages(query: string, limit = 3): Promise<MediaResult[]> {
   const count = Math.min(6, Math.max(1, Math.round(limit || 3)));
+  const allowMontage = COMPARISON_INTENT_RE.test(query);
+  const tokens = query
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, " ")
+    .split(/\s+/)
+    .filter((t) => t.length > 3)
+    .slice(0, 8);
+
   const params = new URLSearchParams({
     action: "query",
     format: "json",
     origin: "*",
-    generator: "search",
+    // Restrict to formats a browser can render inline (no TIFF/SVG originals).
     gsrsearch: `filetype:bitmap ${query}`,
+    generator: "search",
     gsrnamespace: "6",
-    gsrlimit: String(count),
+    // Over-fetch so montages / off-topic hits can be filtered out and still leave enough.
+    gsrlimit: String(Math.min(30, count * 5)),
     prop: "imageinfo",
     iiprop: "url|extmetadata",
     iiurlwidth: "800", // Commons only serves an allowed set of widths (…, 640, 800, 1024, …)
@@ -159,7 +169,7 @@ export async function searchMedicalImages(query: string, limit = 3): Promise<Med
   const json = await resp.json();
   const pages: Record<string, any> = json?.query?.pages ?? {};
 
-  return Object.values(pages)
+  const mapped = Object.values(pages)
     .map((page: any) => {
       const info = page?.imageinfo?.[0];
       if (!info) return null;
@@ -173,8 +183,20 @@ export async function searchMedicalImages(query: string, limit = 3): Promise<Med
         description: stripHtml(meta.ImageDescription?.value ?? "").slice(0, 400),
       } as MediaResult;
     })
-    .filter((r): r is MediaResult => Boolean(r?.imageUrl));
+    .filter((r): r is MediaResult => Boolean(r?.imageUrl && RENDERABLE.test(new URL(r.imageUrl).pathname)));
+
+  // Rank by how many query terms the title/description mention, single images first.
+  const score = (r: MediaResult) => {
+    const lower = `${r.title} ${r.description}`.toLowerCase();
+    const hits = tokens.reduce((acc, t) => acc + (lower.includes(t) ? 1 : 0), 0);
+    return hits - (MONTAGE_RE.test(lower) ? 5 : 0);
+  };
+
+  const clean = mapped.filter((r) => isTeachableSingleImage(r, tokens, allowMontage));
+  const ranked = (clean.length > 0 ? clean : mapped).sort((a, b) => score(b) - score(a));
+  return ranked.slice(0, count);
 }
+
 
 export async function fetchWebPage(url: string): Promise<{ url: string; title: string; text: string }> {
   let parsed: URL;
