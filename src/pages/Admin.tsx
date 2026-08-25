@@ -18,6 +18,7 @@ import AdminCourses from "@/components/admin/AdminCourses";
 import RotationApplications from "@/components/admin/RotationApplications";
 import AdminContentReviews from "@/components/admin/AdminContentReviews";
 import MediaLibraryReview from "@/components/admin/MediaLibraryReview";
+import CurriculumStandards from "@/components/admin/CurriculumStandards";
 import AdminContactInquiries from "@/components/admin/AdminContactInquiries";
 import EnrollmentAuditLog from "@/components/courses/EnrollmentAuditLog";
 import { Database } from "@/integrations/supabase/types";
@@ -152,6 +153,7 @@ const Admin = () => {
             <TabsTrigger value="inquiries">Inquiries</TabsTrigger>
             <TabsTrigger value="reviews">Content Reviews</TabsTrigger>
             <TabsTrigger value="media">Media Library</TabsTrigger>
+            <TabsTrigger value="standards">Standards</TabsTrigger>
             <TabsTrigger value="activity">Activity Log</TabsTrigger>
           </TabsList>
 
