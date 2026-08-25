@@ -2301,7 +2301,7 @@ WHERE n.axis IN ('system', 'discipline')
 
 -- 3. Link every shell to its blueprint lane -------------------------------
 INSERT INTO public.content_blueprint_map (content_type, content_id, blueprint_node_id, confidence, notes)
-SELECT 'learning_unit', t.id::text, n.id, 'imported',
+SELECT 'course_topic', t.id::text, n.id, 'imported',
        'Auto-created lane shell. Faculty must confirm scope and objectives.'
 FROM public.course_topics t
 JOIN public.usmle_blueprint_nodes n
@@ -2501,7 +2501,7 @@ ON CONFLICT DO NOTHING;
 
 -- Existing chest-imaging learning units land in the radiology lane
 INSERT INTO public.content_blueprint_map (content_type, content_id, blueprint_node_id, confidence, notes)
-SELECT 'learning_unit', t.id::text, n.id, 'imported', 'Auto-mapped from unit title; faculty review pending.'
+SELECT 'course_topic', t.id::text, n.id, 'imported', 'Auto-mapped from unit title; faculty review pending.'
 FROM public.course_topics t
 JOIN public.usmle_blueprint_nodes n ON n.code = 'DISC-RADS'
 WHERE t.course_id <> '11111111-1111-4111-8111-000000000001'
