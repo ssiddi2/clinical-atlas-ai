@@ -46,7 +46,7 @@ export const ATLAS_TOOLS = [
     function: {
       name: "fetch_web_page",
       description:
-        "Read the readable text of a public https web page (guideline, article, review) so you can teach from it and cite it. Use for links the student shares or authoritative references you name.",
+        "Read the readable text of a public https web page (guideline, article, review) so you can teach from it and cite it. Only domains on the Livemed approved source registry can be read — USMLE/NBME, ACGME, StatPearls/NCBI, PubMed, CDC, USPSTF, NIH, DailyMed, ACC/AHA, ACOG, AAP, IDSA, ADA, Radiopaedia. If a student shares a link outside the registry the call is refused; say so and teach from an approved source instead. The result includes the registry's citation format — use it verbatim when citing.",
       parameters: {
         type: "object",
         properties: {
