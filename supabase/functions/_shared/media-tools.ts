@@ -489,7 +489,7 @@ export async function runAtlasTool(
       });
     }
     if (name === "fetch_web_page") {
-      return JSON.stringify(await fetchWebPage(String(args.url ?? "")));
+      return JSON.stringify(await fetchWebPage(String(args.url ?? ""), ctx.admin));
     }
     return JSON.stringify({ error: `Unknown tool: ${name}` });
   } catch (error) {
