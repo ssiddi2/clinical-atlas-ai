@@ -2242,7 +2242,7 @@ JOIN public.usmle_blueprint_nodes n
    WHEN q.system ILIKE '%gastro%' OR q.system ILIKE '%gi%' THEN 'SYS-GI'
    WHEN q.system ILIKE '%renal%' OR q.system ILIKE '%urinary%' OR q.system ILIKE '%nephro%' THEN 'SYS-RENAL'
    WHEN q.system ILIKE '%endocr%' THEN 'SYS-ENDO'
-   WHEN q.system ILIKE '%neuro%' OR q.system ILIKE '%special sense%' THEN 'SYS-NEURO'
+   WHEN q.system ILIKE '%neuro%' OR q.system ILIKE '%nervous%' OR q.system ILIKE '%special sense%' THEN 'SYS-NEURO'
    WHEN q.system ILIKE '%psych%' OR q.system ILIKE '%behavior%' THEN 'SYS-BEHAV'
    WHEN q.system ILIKE '%musculo%' OR q.system ILIKE '%rheum%' OR q.system ILIKE '%ortho%' THEN 'SYS-MSK'
    WHEN q.system ILIKE '%derm%' OR q.system ILIKE '%skin%' THEN 'SYS-SKIN'
@@ -2257,5 +2257,15 @@ JOIN public.usmle_blueprint_nodes n
    WHEN q.system ILIKE '%multi%' OR q.system ILIKE '%infectious%' OR q.system ILIKE '%oncolog%' THEN 'SYS-MULTI'
    ELSE NULL
  END
+WHERE q.is_active
+ON CONFLICT DO NOTHING;
+
+-- Physician-task fallback for items filed under a discipline rather than a system.
+INSERT INTO public.content_blueprint_map (content_type, content_id, blueprint_node_id, confidence, notes)
+SELECT 'qbank_question', q.id::text, n.id, 'imported', 'Auto-mapped from qbank_questions.system on standards rollout'
+FROM public.qbank_questions q
+JOIN public.usmle_blueprint_nodes n
+  ON n.exam = 'step2ck' AND n.axis = 'physician_task' AND n.code = 'PT-MG-PHARM'
+ AND q.system ILIKE '%pharmacolog%'
 WHERE q.is_active
 ON CONFLICT DO NOTHING;
