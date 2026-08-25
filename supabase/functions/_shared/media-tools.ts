@@ -137,7 +137,7 @@ export async function searchMedicalImages(query: string, limit = 3): Promise<Med
       const meta = info.extmetadata ?? {};
       return {
         title: String(page.title ?? "").replace(/^File:/, ""),
-        imageUrl: markdownSafeUrl(info.thumburl || info.url),
+        imageUrl: markdownSafeUrl(safeCommonsImageUrl(info.thumburl, info.url)),
         pageUrl: info.descriptionurl || `https://commons.wikimedia.org/wiki/${encodeURIComponent(page.title)}`,
         credit: stripHtml(meta.Artist?.value ?? meta.Credit?.value ?? "Wikimedia Commons").slice(0, 160),
         license: stripHtml(meta.LicenseShortName?.value ?? "See source page").slice(0, 80),
