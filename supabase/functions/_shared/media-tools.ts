@@ -78,16 +78,45 @@ function markdownSafeUrl(raw: string): string {
 }
 
 /**
- * Wikimedia now serves only an allowed set of thumbnail widths and answers
- * anything else with HTTP 400 ("Use thumbnail sizes listed on ..."), which shows
- * up as a broken image. Any other width falls back to the full-size file.
+ * Wikimedia serves only an allowed set of thumbnail widths and answers anything
+ * else with HTTP 400 ("Use thumbnail sizes listed on ..."), which shows up as a
+ * broken image. So we normalize any thumbnail width to 800px, and only fall back
+ * to the full-size original when the browser can actually render that format
+ * (TIFF/SVG/PDF originals render as a broken image / question mark).
  */
 const ALLOWED_THUMB_WIDTHS = new Set([250, 320, 500, 640, 800, 960, 1024, 1280, 2560]);
+const RENDERABLE = /\.(jpe?g|png|gif|webp)$/i;
 function safeCommonsImageUrl(thumbUrl?: string, originalUrl?: string): string {
-  const width = Number(thumbUrl?.match(/\/(\d+)px-/)?.[1] ?? 0);
-  if (thumbUrl && width && ALLOWED_THUMB_WIDTHS.has(width)) return thumbUrl;
-  return originalUrl || thumbUrl || "";
+  if (thumbUrl) {
+    const width = Number(thumbUrl.match(/\/(\d+)px-/)?.[1] ?? 0);
+    if (width && ALLOWED_THUMB_WIDTHS.has(width)) return thumbUrl;
+    // Rewrite an odd width (e.g. /743px-) to an allowed one instead of dropping the thumb.
+    const normalized = thumbUrl.replace(/\/(\d+)px-/, "/800px-");
+    if (normalized !== thumbUrl) return normalized;
+  }
+  if (originalUrl && RENDERABLE.test(new URL(originalUrl).pathname)) return originalUrl;
+  return thumbUrl || originalUrl || "";
 }
+
+/**
+ * Commons is full of multi-panel teaching montages ("4x4 CT grid", figure
+ * collages, before/after strips). Those are useless for pointing a student at a
+ * single finding, so they are dropped unless the student explicitly asked for a
+ * comparison or series.
+ */
+const MONTAGE_RE =
+  /\b(montage|collage|composite|grid|panels?|multipanel|multi-panel|figure\s*\d\s*[-–]\s*\d|fig\.?\s*\d[a-f]\b|\d\s*x\s*\d|series|sequence|animation|gallery|comparison of \d)\b/i;
+const COMPARISON_INTENT_RE = /\b(compare|comparison|montage|series|sequence|panel|grid|side by side)\b/i;
+
+/** Rejects montages and results that don't mention any of the query's terms. */
+function isTeachableSingleImage(r: MediaResult, tokens: string[], allowMontage: boolean): boolean {
+  const haystack = `${r.title} ${r.description}`;
+  if (!allowMontage && MONTAGE_RE.test(haystack)) return false;
+  if (tokens.length === 0) return true;
+  const lower = haystack.toLowerCase();
+  return tokens.some((t) => lower.includes(t));
+}
+
 
 
 function stripHtml(html: string): string {
@@ -105,16 +134,17 @@ function stripHtml(html: string): string {
     .trim();
 }
 
-export async function searchMedicalImages(query: string, limit = 3): Promise<MediaResult[]> {
-  const count = Math.min(6, Math.max(1, Math.round(limit || 3)));
+/** One Commons search pass. Returns [] when the phrase matches nothing. */
+async function commonsSearch(searchString: string, fetchLimit: number): Promise<MediaResult[]> {
   const params = new URLSearchParams({
     action: "query",
     format: "json",
     origin: "*",
+    // Restrict to formats a browser can render inline (no TIFF/SVG originals).
+    gsrsearch: `filetype:bitmap ${searchString}`,
     generator: "search",
-    gsrsearch: `filetype:bitmap ${query}`,
     gsrnamespace: "6",
-    gsrlimit: String(count),
+    gsrlimit: String(fetchLimit),
     prop: "imageinfo",
     iiprop: "url|extmetadata",
     iiurlwidth: "800", // Commons only serves an allowed set of widths (…, 640, 800, 1024, …)
@@ -144,8 +174,56 @@ export async function searchMedicalImages(query: string, limit = 3): Promise<Med
         description: stripHtml(meta.ImageDescription?.value ?? "").slice(0, 400),
       } as MediaResult;
     })
-    .filter((r): r is MediaResult => Boolean(r?.imageUrl));
+    .filter((r): r is MediaResult => {
+      if (!r?.imageUrl) return false;
+      try {
+        return RENDERABLE.test(new URL(r.imageUrl).pathname);
+      } catch {
+        return false;
+      }
+    });
 }
+
+export async function searchMedicalImages(query: string, limit = 3): Promise<MediaResult[]> {
+  const count = Math.min(6, Math.max(1, Math.round(limit || 3)));
+  const allowMontage = COMPARISON_INTENT_RE.test(query);
+  const tokens = query
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, " ")
+    .split(/\s+/)
+    .filter((t) => t.length > 3)
+    .slice(0, 8);
+
+  // Commons ANDs every term, so a long phrase ("CT head subdural hematoma")
+  // often matches nothing. Widen progressively instead of returning empty.
+  const variants = [query];
+  if (tokens.length > 2) variants.push(tokens.slice(-3).join(" "));
+  if (tokens.length > 1) variants.push(tokens.slice(-2).join(" "));
+  if (tokens.length > 0) variants.push(tokens[tokens.length - 1]);
+
+  const fetchLimit = Math.min(30, Math.max(10, count * 5));
+  const byUrl = new Map<string, MediaResult>();
+  for (const variant of variants) {
+    for (const r of await commonsSearch(variant, fetchLimit)) {
+      if (!byUrl.has(r.imageUrl)) byUrl.set(r.imageUrl, r);
+    }
+    if ([...byUrl.values()].filter((r) => isTeachableSingleImage(r, tokens, allowMontage)).length >= count) break;
+  }
+  const mapped = [...byUrl.values()];
+
+  // Rank by how many query terms the title/description mention, single images first.
+  const score = (r: MediaResult) => {
+    const lower = `${r.title} ${r.description}`.toLowerCase();
+    const hits = tokens.reduce((acc, t) => acc + (lower.includes(t) ? 1 : 0), 0);
+    return hits - (MONTAGE_RE.test(lower) ? 5 : 0);
+  };
+
+  const clean = mapped.filter((r) => isTeachableSingleImage(r, tokens, allowMontage));
+  const ranked = (clean.length > 0 ? clean : mapped).sort((a, b) => score(b) - score(a));
+  return ranked.slice(0, count);
+}
+
+
 
 export async function fetchWebPage(url: string): Promise<{ url: string; title: string; text: string }> {
   let parsed: URL;
