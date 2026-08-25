@@ -77,6 +77,18 @@ function markdownSafeUrl(raw: string): string {
   }
 }
 
+/**
+ * Wikimedia now serves only an allowed set of thumbnail widths and answers
+ * anything else with HTTP 400 ("Use thumbnail sizes listed on ..."), which shows
+ * up as a broken image. Any other width falls back to the full-size file.
+ */
+const ALLOWED_THUMB_WIDTHS = new Set([250, 320, 500, 640, 800, 960, 1024, 1280, 2560]);
+function safeCommonsImageUrl(thumbUrl?: string, originalUrl?: string): string {
+  const width = Number(thumbUrl?.match(/\/(\d+)px-/)?.[1] ?? 0);
+  if (thumbUrl && width && ALLOWED_THUMB_WIDTHS.has(width)) return thumbUrl;
+  return originalUrl || thumbUrl || "";
+}
+
 
 function stripHtml(html: string): string {
   return html
@@ -105,7 +117,7 @@ export async function searchMedicalImages(query: string, limit = 3): Promise<Med
     gsrlimit: String(count),
     prop: "imageinfo",
     iiprop: "url|extmetadata",
-    iiurlwidth: "900",
+    iiurlwidth: "800", // Commons only serves an allowed set of widths (…, 640, 800, 1024, …)
   });
 
   const resp = await fetch(`https://commons.wikimedia.org/w/api.php?${params}`, {
@@ -125,7 +137,7 @@ export async function searchMedicalImages(query: string, limit = 3): Promise<Med
       const meta = info.extmetadata ?? {};
       return {
         title: String(page.title ?? "").replace(/^File:/, ""),
-        imageUrl: markdownSafeUrl(info.thumburl || info.url),
+        imageUrl: markdownSafeUrl(safeCommonsImageUrl(info.thumburl, info.url)),
         pageUrl: info.descriptionurl || `https://commons.wikimedia.org/wiki/${encodeURIComponent(page.title)}`,
         credit: stripHtml(meta.Artist?.value ?? meta.Credit?.value ?? "Wikimedia Commons").slice(0, 160),
         license: stripHtml(meta.LicenseShortName?.value ?? "See source page").slice(0, 80),

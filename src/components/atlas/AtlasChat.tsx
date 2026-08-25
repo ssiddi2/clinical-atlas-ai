@@ -76,7 +76,8 @@ const TeachingImage = ({ src, alt }: { src: string; alt?: string }) => {
   const [failed, setFailed] = useState(false);
 
   return (
-    <figure className="my-3">
+    // Spans (not <figure>) because markdown puts images inside a <p>.
+    <span className="block my-3">
       {failed ? (
         <a
           href={src}
@@ -91,7 +92,7 @@ const TeachingImage = ({ src, alt }: { src: string; alt?: string }) => {
           </span>
         </a>
       ) : (
-        <a href={src} target="_blank" rel="noopener noreferrer">
+        <a href={src} target="_blank" rel="noopener noreferrer" className="block">
           <img
             src={src}
             alt={alt ?? "Clinical teaching image"}
@@ -102,8 +103,8 @@ const TeachingImage = ({ src, alt }: { src: string; alt?: string }) => {
           />
         </a>
       )}
-      <div className="mt-1.5 flex items-start justify-between gap-3">
-        {alt ? <figcaption className="text-xs text-muted-foreground">{alt}</figcaption> : <span />}
+      <span className="mt-1.5 flex items-start justify-between gap-3">
+        {alt ? <span className="text-xs text-muted-foreground">{alt}</span> : <span />}
         {!failed && (
           <KeepButton
             artifact={{
@@ -114,8 +115,8 @@ const TeachingImage = ({ src, alt }: { src: string; alt?: string }) => {
             }}
           />
         )}
-      </div>
-    </figure>
+      </span>
+    </span>
   );
 };
 
