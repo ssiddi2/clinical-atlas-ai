@@ -5,6 +5,7 @@ import {
   ShieldCheck, Sparkles, Target, TrendingUp,
 } from "lucide-react";
 import { DIAGRAM_LIBRARY } from "@/components/live/diagramLibrary";
+import { getRenderableMediaUrl } from "@/lib/mediaUrl";
 import type { CardState, PredictiveCard } from "./types";
 
 
@@ -303,7 +304,7 @@ export function usePredictiveCards(userId: string | null | undefined) {
         askPrompt: `Walk me through how to read this image: ${m.title}. What findings should I name first?`,
         studyGuidePrompt: `Build a study guide on interpreting ${m.title}, with a systematic reading approach and classic mimics.`,
         journey: "media",
-        imageUrl: m.image_url,
+        imageUrl: getRenderableMediaUrl(m.image_url),
         caption: m.teaching_caption || m.description || undefined,
         credit: m.credit || undefined,
         license: m.license || undefined,
@@ -333,7 +334,7 @@ export function usePredictiveCards(userId: string | null | undefined) {
         askPrompt: `Quiz me on ${artifact.title} using the image I saved.`,
         studyGuidePrompt: `Build a short study guide around ${artifact.title}.`,
         journey: "media",
-        imageUrl: artifact.image_url,
+        imageUrl: getRenderableMediaUrl(artifact.image_url),
         caption: artifact.caption || undefined,
         credit: artifact.credit || undefined,
         license: artifact.license || undefined,
