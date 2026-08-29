@@ -237,6 +237,139 @@ export function usePredictiveCards(userId: string | null | undefined) {
       });
     }
 
+    /* ---------- Visual learning lanes: curated media, diagrams, kept artifacts ---------- */
+
+    // Keyword pool the visual matchers score against: weak areas, what the
+    // student is actively studying, and their target specialty.
+    const pool = [
+      ...(profile?.weak_areas || []),
+      ...next.filter((c) => c.type === "resume" || c.type === "weak-area").map((c) => c.title),
+      profile?.target_specialty || "",
+    ]
+      .filter(Boolean)
+      .map((s: string) => s.toLowerCase());
+
+    const words = new Set(
+      pool.flatMap((p) => p.split(/[^a-z]+/).filter((w) => w.length > 3)),
+    );
+
+    const [mediaRes, artifactRes] = await Promise.all([
+      supabase
+        .from("medical_media")
+        .select("id, title, teaching_caption, description, image_url, source_page_url, credit, license, modality, topic_tags, keywords, usage_count")
+        .eq("status", "approved")
+        .order("usage_count", { ascending: false })
+        .limit(40),
+      supabase
+        .from("atlas_artifacts")
+        .select("id, title, caption, image_url, source_url, credit, license, topic_tags, pinned, session_count, last_studied_at, kind")
+        .eq("user_id", userId)
+        .eq("kind", "image")
+        .order("pinned", { ascending: false })
+        .order("created_at", { ascending: false })
+        .limit(20),
+    ]);
+
+    const scoreTags = (tags: string[]) =>
+      tags.reduce((acc, tag) => {
+        const t = (tag || "").toLowerCase();
+        return acc + ([...words].some((w) => t.includes(w) || w.includes(t)) ? 1 : 0);
+      }, 0);
+
+    const media = (mediaRes.data || [])
+      .filter((m: any) => !!m.image_url)
+      .map((m: any) => ({
+        ...m,
+        score: scoreTags([...(m.topic_tags || []), ...(m.keywords || []), m.title || ""]),
+      }))
+      .sort((a: any, b: any) => b.score - a.score || (b.usage_count || 0) - (a.usage_count || 0))
+      .slice(0, 2);
+
+    media.forEach((m: any, i: number) => {
+      const matched = m.score > 0;
+      next.push({
+        key: `media:${m.id}`,
+        type: "media",
+        priority: matched ? 72 - i : 40 - i,
+        eyebrow: matched ? "Image of the day · matched to you" : "Teaching image",
+        title: m.title,
+        body: m.teaching_caption || m.description || "Faculty-approved teaching image.",
+        icon: ImageIcon,
+        tone: "bg-cyan-600",
+        ctaLabel: "Read the image",
+        atlasContext: `The student is studying the faculty-approved teaching image "${m.title}"${m.modality ? ` (${m.modality})` : ""}.`,
+        askPrompt: `Walk me through how to read this image: ${m.title}. What findings should I name first?`,
+        studyGuidePrompt: `Build a study guide on interpreting ${m.title}, with a systematic reading approach and classic mimics.`,
+        journey: "media",
+        imageUrl: m.image_url,
+        caption: m.teaching_caption || m.description || undefined,
+        credit: m.credit || undefined,
+        license: m.license || undefined,
+        sourceUrl: m.source_page_url || undefined,
+        mediaId: m.id,
+        focus: (m.topic_tags || []).slice(0, 3),
+        subject: profile?.target_specialty ?? undefined,
+      });
+    });
+
+    const artifact = (artifactRes.data || []).filter((a: any) => !!a.image_url)[0] as any;
+    if (artifact) {
+      next.push({
+        key: `artifact:${artifact.id}`,
+        type: "artifact",
+        priority: 50,
+        eyebrow: artifact.pinned ? "Pinned in your library" : "Revisit what you kept",
+        title: artifact.title,
+        body:
+          artifact.session_count > 0
+            ? `You've studied this ${artifact.session_count} time${artifact.session_count === 1 ? "" : "s"} — spaced repetition works.`
+            : "You kept this from an ATLAS answer but haven't studied it yet.",
+        icon: Images,
+        tone: "bg-indigo-500",
+        ctaLabel: "Study again",
+        atlasContext: `The student kept the image "${artifact.title}" in their ATLAS library and is revisiting it.`,
+        askPrompt: `Quiz me on ${artifact.title} using the image I saved.`,
+        studyGuidePrompt: `Build a short study guide around ${artifact.title}.`,
+        journey: "media",
+        imageUrl: artifact.image_url,
+        caption: artifact.caption || undefined,
+        credit: artifact.credit || undefined,
+        license: artifact.license || undefined,
+        sourceUrl: artifact.source_url || undefined,
+        artifactId: artifact.id,
+        focus: (artifact.topic_tags || []).slice(0, 3),
+      });
+    }
+
+    // Animated mechanism diagrams — deterministic keyword match, else rotate daily.
+    const scoredScenes = DIAGRAM_LIBRARY.map((scene) => ({
+      scene,
+      score: scoreTags(scene.title.split(/[^A-Za-z]+/)),
+    })).sort((a, b) => b.score - a.score);
+    const dayIndex = Math.floor(Date.now() / 86_400_000) % DIAGRAM_LIBRARY.length;
+    const pickedScene = scoredScenes[0].score > 0 ? scoredScenes[0].scene : DIAGRAM_LIBRARY[dayIndex];
+    if (pickedScene) {
+      const matched = scoredScenes[0].score > 0 && scoredScenes[0].scene.id === pickedScene.id;
+      next.push({
+        key: `diagram:${pickedScene.id}`,
+        type: "diagram",
+        priority: matched ? 68 : 38,
+        eyebrow: matched ? "Mechanism for your weak area" : "Mechanism of the day",
+        title: pickedScene.title,
+        body: `${pickedScene.steps.length} steps — step through the pathophysiology frame by frame.`,
+        icon: Layers,
+        tone: "bg-fuchsia-600",
+        ctaLabel: "Step through",
+        atlasContext: `The student is stepping through the animated mechanism diagram "${pickedScene.title}".`,
+        askPrompt: `Explain the mechanism behind ${pickedScene.title} and where students usually get it wrong.`,
+        studyGuidePrompt: `Build a study guide on ${pickedScene.title} with the mechanism, clinical correlates and exam traps.`,
+        journey: "diagram",
+        sceneId: pickedScene.id,
+        focus: [pickedScene.title],
+      });
+    }
+
+
     const stateMap: Record<string, CardState> = {};
     (cardStateRes.data || []).forEach((s: any) => {
       stateMap[s.card_key] = {
