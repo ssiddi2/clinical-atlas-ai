@@ -9,10 +9,14 @@ export type CardType =
   | "qbank"
   | "score"
   | "verification"
-  | "onboarding";
+  | "onboarding"
+  | "media"
+  | "diagram"
+  | "artifact";
 
 /** Which expanded flow opens when the card itself is tapped. */
-export type CardJourney = "topic" | "lecture" | "drill";
+export type CardJourney = "topic" | "lecture" | "drill" | "media" | "diagram";
+
 
 export interface PredictiveCard {
   /** Stable key used to persist bookmark / snooze / dismiss state. */
