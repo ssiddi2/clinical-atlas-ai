@@ -16,6 +16,9 @@ import DrillSheet, { DrillRequest } from "@/components/dashboard-next/DrillSheet
 import StudyGuideSheet from "@/components/dashboard-next/StudyGuideSheet";
 import TopicJourneySheet from "@/components/dashboard-next/TopicJourneySheet";
 import LectureJourneySheet from "@/components/dashboard-next/LectureJourneySheet";
+import MediaJourneySheet from "@/components/dashboard-next/MediaJourneySheet";
+import DiagramJourneySheet from "@/components/dashboard-next/DiagramJourneySheet";
+
 import { usePredictiveCards } from "@/components/dashboard-next/usePredictiveCards";
 import { useCardGroups, CardGroup } from "@/components/dashboard-next/useCardGroups";
 import { useStudyGuides, StudyGuide } from "@/components/dashboard-next/useStudyGuides";
