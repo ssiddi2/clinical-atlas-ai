@@ -90,9 +90,12 @@ const DashboardNext = () => {
   const openJourney = (card: PredictiveCard) => {
     if (card.journey === "topic") setTopicCard(card);
     else if (card.journey === "lecture") setLectureCard(card);
+    else if (card.journey === "media") setMediaCard(card);
+    else if (card.journey === "diagram") setDiagramCard(card);
     else if (card.journey === "drill") drillCard(card);
     else if (card.href) navigate(card.href);
   };
+
 
   const snooze = (card: PredictiveCard) => {
     const until = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
