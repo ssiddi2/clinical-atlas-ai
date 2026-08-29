@@ -99,6 +99,24 @@ const PredictiveCardItem = ({
         </button>
       </div>
 
+      {card.imageUrl && (
+        <button
+          onClick={openPrimary}
+          className="mt-3 block w-full overflow-hidden rounded-xl border border-border bg-muted"
+          aria-label={`Open ${card.title}`}
+        >
+          <img
+            src={card.imageUrl}
+            alt={card.title}
+            loading="lazy"
+            className="h-36 w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+            onError={(e) => { (e.currentTarget.parentElement as HTMLElement).style.display = "none"; }}
+          />
+        </button>
+      )}
+
+
+
       <div className="flex flex-wrap items-center gap-1.5 mt-3.5">
         <Button size="sm" className="rounded-full h-8" onClick={openPrimary}>
           {card.ctaLabel || "Open"}

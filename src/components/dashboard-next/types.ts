@@ -9,10 +9,14 @@ export type CardType =
   | "qbank"
   | "score"
   | "verification"
-  | "onboarding";
+  | "onboarding"
+  | "media"
+  | "diagram"
+  | "artifact";
 
 /** Which expanded flow opens when the card itself is tapped. */
-export type CardJourney = "topic" | "lecture" | "drill";
+export type CardJourney = "topic" | "lecture" | "drill" | "media" | "diagram";
+
 
 export interface PredictiveCard {
   /** Stable key used to persist bookmark / snooze / dismiss state. */
@@ -44,7 +48,23 @@ export interface PredictiveCard {
   focus?: string[];
   /** Best-guess QBank subject for drill filtering. */
   subject?: string;
+  /** Preview / teaching image shown on the card and in the media journey. */
+  imageUrl?: string;
+  /** Teaching caption for media cards. */
+  caption?: string;
+  /** Attribution for media cards. */
+  credit?: string;
+  license?: string;
+  /** Page the image came from. */
+  sourceUrl?: string;
+  /** Row id in medical_media, when the card came from the curated library. */
+  mediaId?: string;
+  /** Row id in atlas_artifacts, when the card came from the student's library. */
+  artifactId?: string;
+  /** Diagram scene id from the animated diagram library. */
+  sceneId?: string;
 }
+
 
 export interface CardState {
   bookmarked: boolean;

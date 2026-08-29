@@ -16,6 +16,9 @@ import DrillSheet, { DrillRequest } from "@/components/dashboard-next/DrillSheet
 import StudyGuideSheet from "@/components/dashboard-next/StudyGuideSheet";
 import TopicJourneySheet from "@/components/dashboard-next/TopicJourneySheet";
 import LectureJourneySheet from "@/components/dashboard-next/LectureJourneySheet";
+import MediaJourneySheet from "@/components/dashboard-next/MediaJourneySheet";
+import DiagramJourneySheet from "@/components/dashboard-next/DiagramJourneySheet";
+
 import { usePredictiveCards } from "@/components/dashboard-next/usePredictiveCards";
 import { useCardGroups, CardGroup } from "@/components/dashboard-next/useCardGroups";
 import { useStudyGuides, StudyGuide } from "@/components/dashboard-next/useStudyGuides";
@@ -40,6 +43,9 @@ const DashboardNext = () => {
   const [openGuide, setOpenGuide] = useState<StudyGuide | null>(null);
   const [topicCard, setTopicCard] = useState<PredictiveCard | null>(null);
   const [lectureCard, setLectureCard] = useState<PredictiveCard | null>(null);
+  const [mediaCard, setMediaCard] = useState<PredictiveCard | null>(null);
+  const [diagramCard, setDiagramCard] = useState<PredictiveCard | null>(null);
+
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => {
@@ -84,9 +90,12 @@ const DashboardNext = () => {
   const openJourney = (card: PredictiveCard) => {
     if (card.journey === "topic") setTopicCard(card);
     else if (card.journey === "lecture") setLectureCard(card);
+    else if (card.journey === "media") setMediaCard(card);
+    else if (card.journey === "diagram") setDiagramCard(card);
     else if (card.journey === "drill") drillCard(card);
     else if (card.href) navigate(card.href);
   };
+
 
   const snooze = (card: PredictiveCard) => {
     const until = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
@@ -303,6 +312,25 @@ const DashboardNext = () => {
         onAskAtlas={(c) => { setLectureCard(null); handoff(c, c.askPrompt); }}
         onDrill={(c, focus) => { setLectureCard(null); drillCard(c, focus); }}
       />
+
+      <MediaJourneySheet
+        card={mediaCard}
+        userId={user?.id}
+        onClose={() => setMediaCard(null)}
+        onAskAtlas={(c) => { setMediaCard(null); handoff(c, c.askPrompt); }}
+        onStudyGuide={(c) => { setMediaCard(null); buildGuide(c); }}
+        onDrill={(c) => { setMediaCard(null); drillCard(c); }}
+      />
+
+      <DiagramJourneySheet
+        card={diagramCard}
+        onClose={() => setDiagramCard(null)}
+        onAskAtlas={(c, prompt) => { setDiagramCard(null); handoff(c, prompt); }}
+        onStudyGuide={(c) => { setDiagramCard(null); buildGuide(c); }}
+        onDrill={(c) => { setDiagramCard(null); drillCard(c); }}
+      />
+
+
 
       <DrillSheet
         request={drill}
