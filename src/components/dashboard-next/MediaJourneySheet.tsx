@@ -34,11 +34,8 @@ const MediaJourneySheet = ({ card, userId, onClose, onAskAtlas, onStudyGuide, on
     setKept(false);
   }, [card?.key]);
 
-  // Count the view against the curated library so faculty see what's working.
-  useEffect(() => {
-    if (!card?.mediaId) return;
-    supabase.rpc as unknown; // no rpc needed; usage is tracked below
-  }, [card?.mediaId]);
+
+
 
   const keep = async () => {
     if (!card || !userId || !card.imageUrl) return;
