@@ -77,6 +77,21 @@ function markdownSafeUrl(raw: string): string {
   }
 }
 
+/** Resolve Commons files by filename instead of a mutable hashed upload path. */
+function commonsFileRedirectUrl(raw: string): string {
+  try {
+    const url = new URL(raw);
+    if (url.hostname !== "upload.wikimedia.org") return raw;
+    const parts = url.pathname.split("/").filter(Boolean);
+    const thumbIndex = parts.indexOf("thumb");
+    const encodedFileName = thumbIndex >= 0 ? parts[thumbIndex + 3] : parts[parts.length - 1];
+    if (!encodedFileName) return raw;
+    return `https://commons.wikimedia.org/wiki/Special:Redirect/file/${encodeURIComponent(decodeURIComponent(encodedFileName))}?width=800`;
+  } catch {
+    return raw;
+  }
+}
+
 /**
  * Wikimedia serves only an allowed set of thumbnail widths and answers anything
  * else with HTTP 400 ("Use thumbnail sizes listed on ..."), which shows up as a
@@ -167,7 +182,7 @@ async function commonsSearch(searchString: string, fetchLimit: number): Promise<
       const meta = info.extmetadata ?? {};
       return {
         title: String(page.title ?? "").replace(/^File:/, ""),
-        imageUrl: markdownSafeUrl(safeCommonsImageUrl(info.thumburl, info.url)),
+        imageUrl: commonsFileRedirectUrl(markdownSafeUrl(safeCommonsImageUrl(info.thumburl, info.url))),
         pageUrl: info.descriptionurl || `https://commons.wikimedia.org/wiki/${encodeURIComponent(page.title)}`,
         credit: stripHtml(meta.Artist?.value ?? meta.Credit?.value ?? "Wikimedia Commons").slice(0, 160),
         license: stripHtml(meta.LicenseShortName?.value ?? "See source page").slice(0, 80),
@@ -372,7 +387,7 @@ export async function searchCuratedLibrary(
   return scored.slice(0, limit).map(({ row }) => ({
     id: row.id,
     title: row.title,
-    imageUrl: markdownSafeUrl(row.image_url),
+    imageUrl: commonsFileRedirectUrl(markdownSafeUrl(row.image_url)),
     pageUrl: row.source_page_url ?? "",
     credit: row.credit ?? "Livemed Academy curated library",
     license: row.license ?? "Faculty-approved",

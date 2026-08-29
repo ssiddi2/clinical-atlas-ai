@@ -4,6 +4,7 @@ import { Brain, Bookmark, BookmarkCheck, ExternalLink, ImageOff, Loader2, Send, 
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { getRenderableMediaUrl } from "@/lib/mediaUrl";
 import type { useAtlasChat } from "./useAtlasChat";
 
 /** What a student can keep from an ATLAS answer and later study. */
@@ -74,13 +75,14 @@ const KeepButton = ({ artifact }: { artifact: ArtifactDraft }) => {
  */
 const TeachingImage = ({ src, alt }: { src: string; alt?: string }) => {
   const [failed, setFailed] = useState(false);
+  const renderableSrc = getRenderableMediaUrl(src);
 
   return (
     // Spans (not <figure>) because markdown puts images inside a <p>.
     <span className="block my-3">
       {failed ? (
         <a
-          href={src}
+          href={renderableSrc}
           target="_blank"
           rel="noopener noreferrer"
           className="flex items-center gap-2 rounded-xl border border-border bg-muted px-3 py-3 text-xs text-muted-foreground no-underline"
@@ -92,9 +94,9 @@ const TeachingImage = ({ src, alt }: { src: string; alt?: string }) => {
           </span>
         </a>
       ) : (
-        <a href={src} target="_blank" rel="noopener noreferrer" className="block">
+        <a href={renderableSrc} target="_blank" rel="noopener noreferrer" className="block">
           <img
-            src={src}
+            src={renderableSrc}
             alt={alt ?? "Clinical teaching image"}
             loading="lazy"
             referrerPolicy="no-referrer"
@@ -111,7 +113,7 @@ const TeachingImage = ({ src, alt }: { src: string; alt?: string }) => {
               kind: "image",
               title: (alt ?? "Teaching image").slice(0, 160),
               caption: alt ?? null,
-              imageUrl: src,
+              imageUrl: renderableSrc,
             }}
           />
         )}
