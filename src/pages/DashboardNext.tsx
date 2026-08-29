@@ -313,6 +313,25 @@ const DashboardNext = () => {
         onDrill={(c, focus) => { setLectureCard(null); drillCard(c, focus); }}
       />
 
+      <MediaJourneySheet
+        card={mediaCard}
+        userId={user?.id}
+        onClose={() => setMediaCard(null)}
+        onAskAtlas={(c) => { setMediaCard(null); handoff(c, c.askPrompt); }}
+        onStudyGuide={(c) => { setMediaCard(null); buildGuide(c); }}
+        onDrill={(c) => { setMediaCard(null); drillCard(c); }}
+      />
+
+      <DiagramJourneySheet
+        card={diagramCard}
+        onClose={() => setDiagramCard(null)}
+        onAskAtlas={(c, prompt) => { setDiagramCard(null); handoff(c, prompt); }}
+        onStudyGuide={(c) => { setDiagramCard(null); buildGuide(c); }}
+        onDrill={(c) => { setDiagramCard(null); drillCard(c); }}
+      />
+
+
+
       <DrillSheet
         request={drill}
         userId={user?.id}
