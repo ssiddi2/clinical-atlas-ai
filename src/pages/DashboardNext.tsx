@@ -43,6 +43,9 @@ const DashboardNext = () => {
   const [openGuide, setOpenGuide] = useState<StudyGuide | null>(null);
   const [topicCard, setTopicCard] = useState<PredictiveCard | null>(null);
   const [lectureCard, setLectureCard] = useState<PredictiveCard | null>(null);
+  const [mediaCard, setMediaCard] = useState<PredictiveCard | null>(null);
+  const [diagramCard, setDiagramCard] = useState<PredictiveCard | null>(null);
+
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => {
