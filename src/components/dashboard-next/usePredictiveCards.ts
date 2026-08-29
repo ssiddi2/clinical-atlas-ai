@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import {
-  BookOpen, CalendarCheck, ClipboardCheck, Mail, PlayCircle,
+  BookOpen, CalendarCheck, ClipboardCheck, Image as ImageIcon, Images, Layers, Mail, PlayCircle,
   ShieldCheck, Sparkles, Target, TrendingUp,
 } from "lucide-react";
+import { DIAGRAM_LIBRARY } from "@/components/live/diagramLibrary";
 import type { CardState, PredictiveCard } from "./types";
+
 
 /**
  * Deterministic predictive ranker.
