@@ -1,10 +1,10 @@
 import { motion } from "framer-motion";
-import { ArrowRight, GraduationCap, Award, TrendingUp, Users, Clock, Target, CheckCircle } from "lucide-react";
+import { ArrowRight, GraduationCap, Award, TrendingUp, Users, Target } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "react-router-dom";
 import { useTranslation } from "@/i18n";
 
+const CaseStudies = () => {
   const { t } = useTranslation();
 
   const stats = [
