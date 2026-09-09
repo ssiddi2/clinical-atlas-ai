@@ -188,9 +188,7 @@ serve(async (req) => {
             });
             if (!res.ok || !res.body) {
               console.error("AI Gateway error:", res.status, await res.text().catch(() => ""));
-              send(res.status === 429
-                ? "\n\nATLAS is receiving a lot of requests right now. Please try again in a moment."
-                : "\n\nATLAS could not complete that answer. Please try again.");
+              send(gatewayMessage(res.status));
               break;
             }
 
