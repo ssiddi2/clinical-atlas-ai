@@ -21,11 +21,6 @@ const About = () => {
     { icon: Award, title: t("about.professionalCertificates"), description: t("about.professionalCertificatesDesc") },
   ];
 
-  const team = [
-    { name: "Dr. Sarah Chen", role: "CEO & Co-Founder", bio: "Former residency program director with 15 years in academic medical education." },
-    { name: "Dr. Michael Rivera", role: "Chief Medical Officer", bio: "Board-certified internist and USMLE curriculum development specialist." },
-    { name: "Dr. Aisha Patel", role: "VP of Clinical Education", bio: "Led clinical curriculum development at international medical institutions." },
-  ];
 
   return (
     <div className="flex-1">
@@ -123,26 +118,6 @@ const About = () => {
         </div>
       </section>
 
-      <section className="py-20">
-        <div className="container mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">{t("about.leadershipTeam")}</h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">{t("about.leadershipDesc")}</p>
-          </div>
-          <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-            {team.map((member) => (
-              <Card key={member.name}>
-                <CardContent className="p-6 text-center">
-                  <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center mx-auto mb-4"><Users className="h-10 w-10 text-muted-foreground" /></div>
-                  <h3 className="font-semibold mb-1">{member.name}</h3>
-                  <p className="text-sm text-accent mb-3">{member.role}</p>
-                  <p className="text-sm text-muted-foreground">{member.bio}</p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
 
       <section className="py-12 bg-muted/50">
         <div className="container mx-auto">
