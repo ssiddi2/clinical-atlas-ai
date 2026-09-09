@@ -77,34 +77,11 @@ Remember: You are the most patient, consistent, and rigorous professor a student
 const MODEL = "google/gemini-3-flash-preview";
 const GATEWAY_URL = "https://ai.gateway.lovable.dev/v1/chat/completions";
 
-function gatewayError(status: number) {
-  if (status === 429) {
-    return new Response(
-      JSON.stringify({ error: "rate_limited", message: "You're sending messages too quickly. Please wait a moment and try again." }),
-      { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
-  }
-  if (status === 402) {
-    return new Response(
-      JSON.stringify({ error: "credits_exhausted", message: "AI credits have been exhausted. Please try again later." }),
-      { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
-  }
-  return null;
-}
-
-/** Wraps already-generated text as an OpenAI-style SSE stream for the client. */
-function textAsSSE(text: string) {
-  const encoder = new TextEncoder();
-  const stream = new ReadableStream({
-    start(controller) {
-      const chunk = { choices: [{ delta: { content: text } }] };
-      controller.enqueue(encoder.encode(`data: ${JSON.stringify(chunk)}\n\n`));
-      controller.enqueue(encoder.encode("data: [DONE]\n\n"));
-      controller.close();
-    },
-  });
-  return stream;
+/** Friendly in-stream message for a failed gateway call. */
+function gatewayMessage(status: number) {
+  if (status === 429) return "\n\nATLAS is receiving a lot of requests right now. Please try again in a moment.";
+  if (status === 402) return "\n\nATLAS is out of AI credits right now. Please try again later.";
+  return "\n\nATLAS could not complete that answer. Please try again.";
 }
 
 
@@ -192,66 +169,87 @@ serve(async (req) => {
       "Connection": "keep-alive",
     };
 
-    // Phase 1 — let ATLAS decide whether it needs images / a web page.
-    // Runs non-streaming so tool calls can be resolved, then the final answer streams.
-    for (let round = 0; round < 3; round++) {
-      const resolve = await fetch(GATEWAY_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${LOVABLE_API_KEY}` },
-        body: JSON.stringify({
-          model: MODEL,
-          messages,
-          max_tokens: 2000,
-          temperature: 0.7,
-          tools: ATLAS_TOOLS,
-        }),
-      });
+    // Stream every round: text deltas reach the student immediately, while any
+    // tool calls are collected so visuals can be resolved and the answer continued.
+    const encoder = new TextEncoder();
+    const body = new ReadableStream({
+      async start(controller) {
+        const send = (text: string) =>
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ choices: [{ delta: { content: text } }] })}\n\n`));
+        try {
+          for (let round = 0; round < 3; round++) {
+            const res = await fetch(GATEWAY_URL, {
+              method: "POST",
+              headers: { "Content-Type": "application/json", Authorization: `Bearer ${LOVABLE_API_KEY}` },
+              body: JSON.stringify({
+                model: MODEL, messages, max_tokens: 2000, temperature: 0.7, stream: true,
+                ...(round < 2 ? { tools: ATLAS_TOOLS } : {}),
+              }),
+            });
+            if (!res.ok || !res.body) {
+              console.error("AI Gateway error:", res.status, await res.text().catch(() => ""));
+              send(gatewayMessage(res.status));
+              break;
+            }
 
-      if (!resolve.ok) {
-        const mapped = gatewayError(resolve.status);
-        if (mapped) return mapped;
-        console.error("AI Gateway error (tool phase):", resolve.status, await resolve.text());
-        throw new Error(`AI Gateway error: ${resolve.status}`);
-      }
+            const reader = res.body.getReader();
+            const decoder = new TextDecoder();
+            const calls: any[] = [];
+            let assistantText = "";
+            let buffer = "";
+            let done = false;
 
-      const data = await resolve.json();
-      const choice = data?.choices?.[0]?.message;
-      const toolCalls = choice?.tool_calls ?? [];
+            while (!done) {
+              const { value, done: finished } = await reader.read();
+              if (finished) break;
+              buffer += decoder.decode(value, { stream: true });
+              const lines = buffer.split("\n");
+              buffer = lines.pop() ?? "";
+              for (const line of lines) {
+                const trimmed = line.trim();
+                if (!trimmed.startsWith("data:")) continue;
+                const payload = trimmed.slice(5).trim();
+                if (payload === "[DONE]") { done = true; break; }
+                let delta: any;
+                try { delta = JSON.parse(payload)?.choices?.[0]?.delta; } catch { continue; }
+                if (!delta) continue;
+                if (typeof delta.content === "string" && delta.content) {
+                  assistantText += delta.content;
+                  send(delta.content);
+                }
+                for (const tc of delta.tool_calls ?? []) {
+                  const i = tc.index ?? 0;
+                  calls[i] ??= { id: tc.id, type: "function", function: { name: "", arguments: "" } };
+                  if (tc.id) calls[i].id = tc.id;
+                  if (tc.function?.name) calls[i].function.name = tc.function.name;
+                  if (tc.function?.arguments) calls[i].function.arguments += tc.function.arguments;
+                }
+              }
+            }
 
-      if (toolCalls.length === 0) {
-        // No visuals needed — deliver the answer we already have.
-        const text = typeof choice?.content === "string" ? choice.content : "";
-        if (!text) break;
-        console.log(`ATLAS direct response for user: ${userId}, conversation: ${conversationId}`);
-        return new Response(textAsSSE(text), { headers: sseHeaders });
-      }
+            const toolCalls = calls.filter(Boolean);
+            if (toolCalls.length === 0) break;
 
-      messages.push({ role: "assistant", content: choice.content ?? "", tool_calls: toolCalls } as any);
-      for (const call of toolCalls) {
-        const result = await runAtlasTool(call.function?.name, call.function?.arguments ?? "{}", { admin: adminClient, userId });
-        messages.push({ role: "tool", tool_call_id: call.id, content: result } as any);
-      }
-      console.log(`ATLAS ran ${toolCalls.length} tool call(s) for user ${userId}`);
-    }
-
-    // Phase 2 — stream the final answer with the tool results in context.
-    const response = await fetch(GATEWAY_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${LOVABLE_API_KEY}` },
-      body: JSON.stringify({ model: MODEL, messages, max_tokens: 2000, temperature: 0.7, stream: true }),
+            messages.push({ role: "assistant", content: assistantText, tool_calls: toolCalls } as any);
+            for (const call of toolCalls) {
+              const result = await runAtlasTool(call.function?.name, call.function?.arguments || "{}", { admin: adminClient, userId });
+              messages.push({ role: "tool", tool_call_id: call.id, content: result } as any);
+            }
+            console.log(`ATLAS ran ${toolCalls.length} tool call(s) for user ${userId}`);
+          }
+        } catch (e) {
+          console.error("ATLAS stream error:", e);
+          send("\n\nATLAS lost the connection while answering. Please try again.");
+        } finally {
+          controller.enqueue(encoder.encode("data: [DONE]\n\n"));
+          controller.close();
+        }
+      },
     });
 
-    if (!response.ok) {
-      const mapped = gatewayError(response.status);
-      if (mapped) return mapped;
-      const errorText = await response.text();
-      console.error("AI Gateway error:", response.status, errorText);
-      throw new Error(`AI Gateway error: ${response.status}`);
-    }
-
     console.log(`ATLAS streaming response for user: ${userId}, conversation: ${conversationId}`);
+    return new Response(body, { headers: sseHeaders });
 
-    return new Response(response.body, { headers: sseHeaders });
 
   } catch (error) {
     console.error("Error in atlas-chat function:", error);
