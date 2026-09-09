@@ -35,7 +35,8 @@ export default function LearningUnitSession({ topicId, isInstructor }: Props) {
     const stepRows = (s.data ?? []) as SessionStep[];
     setSteps(stepRows);
     setQuestions((q.data ?? []) as PlayerQuestion[]);
-    setDone(new Set(((p as any).data ?? []).map((r: any) => r.step_id)));
+    const stepIds = new Set(stepRows.map(r => r.id));
+    setDone(new Set(((p as any).data ?? []).map((r: any) => r.step_id).filter((id: string) => stepIds.has(id))));
     if (stepRows.length) {
       const { data } = await supabase
         .from("learning_unit_step_items").select("*")
