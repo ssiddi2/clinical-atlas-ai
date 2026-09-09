@@ -77,34 +77,11 @@ Remember: You are the most patient, consistent, and rigorous professor a student
 const MODEL = "google/gemini-3-flash-preview";
 const GATEWAY_URL = "https://ai.gateway.lovable.dev/v1/chat/completions";
 
-function gatewayError(status: number) {
-  if (status === 429) {
-    return new Response(
-      JSON.stringify({ error: "rate_limited", message: "You're sending messages too quickly. Please wait a moment and try again." }),
-      { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
-  }
-  if (status === 402) {
-    return new Response(
-      JSON.stringify({ error: "credits_exhausted", message: "AI credits have been exhausted. Please try again later." }),
-      { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
-  }
-  return null;
-}
-
-/** Wraps already-generated text as an OpenAI-style SSE stream for the client. */
-function textAsSSE(text: string) {
-  const encoder = new TextEncoder();
-  const stream = new ReadableStream({
-    start(controller) {
-      const chunk = { choices: [{ delta: { content: text } }] };
-      controller.enqueue(encoder.encode(`data: ${JSON.stringify(chunk)}\n\n`));
-      controller.enqueue(encoder.encode("data: [DONE]\n\n"));
-      controller.close();
-    },
-  });
-  return stream;
+/** Friendly in-stream message for a failed gateway call. */
+function gatewayMessage(status: number) {
+  if (status === 429) return "\n\nATLAS is receiving a lot of requests right now. Please try again in a moment.";
+  if (status === 402) return "\n\nATLAS is out of AI credits right now. Please try again later.";
+  return "\n\nATLAS could not complete that answer. Please try again.";
 }
 
 
